@@ -1,11 +1,20 @@
 import { type ReactNode } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
+import { Badge } from '@repo/ui/components/badge'
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@repo/ui/components/collapsible'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@repo/ui/components/dropdown-menu'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -17,15 +26,6 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@repo/ui/components/sidebar'
-import { Badge } from '@repo/ui/components/badge'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@repo/ui/components/dropdown-menu'
 import {
   type NavCollapsible,
   type NavItem,

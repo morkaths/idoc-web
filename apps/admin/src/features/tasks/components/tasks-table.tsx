@@ -70,7 +70,7 @@ export function TasksTable({ data }: DataTableProps) {
       ? (pagination as any).page
       : typeof (pagination as any).pageIndex === 'number'
         ? (pagination as any).pageIndex + 1
-        : 1;
+        : 1
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -148,9 +148,9 @@ export function TasksTable({ data }: DataTableProps) {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   )
                 })}

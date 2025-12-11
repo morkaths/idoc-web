@@ -6,7 +6,11 @@ export function BooksPrimaryButtons() {
   const { setOpen } = useBooksContext()
   return (
     <div className='flex gap-2'>
-      <Button variant='outline' className='space-x-1' onClick={() => setOpen('import')}>
+      <Button
+        variant='outline'
+        className='space-x-1'
+        onClick={() => setOpen('import')}
+      >
         <span>Import</span> <Download size={18} />
       </Button>
 

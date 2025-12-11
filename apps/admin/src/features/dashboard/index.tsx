@@ -1,3 +1,4 @@
+import { Download } from 'lucide-react'
 import { Button } from '@repo/ui/components/button'
 import {
   Card,
@@ -6,11 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@repo/ui/components/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@repo/ui/components/tabs'
 import { Analytics } from './components/analytics'
 import { Overview } from './components/overview'
 import { RecentSales } from './components/recent-sales'
-import { Download } from 'lucide-react'
 
 export function Dashboard() {
   return (
@@ -18,7 +23,9 @@ export function Dashboard() {
       <div className='mb-2 flex items-center justify-between space-y-2'>
         <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
         <div className='flex items-center space-x-2'>
-          <Button><Download /> Download</Button>
+          <Button>
+            <Download /> Download
+          </Button>
         </div>
       </div>
       <Tabs

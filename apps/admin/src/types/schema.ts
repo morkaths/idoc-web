@@ -71,16 +71,20 @@ export const ProfileSchema = z.object({
   updatedAt: dateOrString,
 })
 
-const ThemeSchema = z.object({
-  mode: z.enum(['light', 'dark', 'system']).optional(),
-  layout: z.enum(['vertical', 'horizontal']).optional(),
-  language: z.string().optional(),
-}).optional()
+const ThemeSchema = z
+  .object({
+    mode: z.enum(['light', 'dark', 'system']).optional(),
+    layout: z.enum(['vertical', 'horizontal']).optional(),
+    language: z.string().optional(),
+  })
+  .optional()
 
-const NotificationsSchema = z.object({
-  email: z.boolean().optional(),
-  sms: z.boolean().optional(),
-}).optional()
+const NotificationsSchema = z
+  .object({
+    email: z.boolean().optional(),
+    sms: z.boolean().optional(),
+  })
+  .optional()
 
 export const SettingsSchema = z.object({
   _id: z.string(),
@@ -111,13 +115,17 @@ export const CategorySchema = z.object({
   _id: z.string(),
   slug: z.string().optional(),
   parentId: z.string().optional(),
-  translations: z.array(z.object({
-    lang: z.string(),
-    name: z.string(),
-    description: z.string().optional(),
-    createdAt: dateOrString,
-    updatedAt: dateOrString,
-  })).optional(),
+  translations: z
+    .array(
+      z.object({
+        lang: z.string(),
+        name: z.string(),
+        description: z.string().optional(),
+        createdAt: dateOrString,
+        updatedAt: dateOrString,
+      })
+    )
+    .optional(),
   createdAt: dateOrString,
   updatedAt: dateOrString,
 })

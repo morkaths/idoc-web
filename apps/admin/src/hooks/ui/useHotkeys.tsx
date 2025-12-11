@@ -11,7 +11,9 @@ export type Hotkey = {
   preventDefault?: boolean
 }
 
-export type HotkeyActionsMap = Partial<Record<HotkeyId, (e?: KeyboardEvent) => void>>
+export type HotkeyActionsMap = Partial<
+  Record<HotkeyId, (e?: KeyboardEvent) => void>
+>
 
 /**
  * useHotkeys accepts either:

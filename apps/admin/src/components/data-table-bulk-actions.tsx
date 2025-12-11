@@ -10,7 +10,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@repo/ui/components/tooltip'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@repo/ui/components/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { ConfirmDialogDelete } from './confirm-dialog-delete'
 
@@ -44,17 +48,27 @@ export function DataTableBulkActions<T>({
 
   const renderToast = async (
     promiseOrCb: Promise<void> | (() => Promise<void> | void),
-    messages: { loading: string; success: string | (() => string); error?: string }
+    messages: {
+      loading: string
+      success: string | (() => string)
+      error?: string
+    }
   ) => {
     const promise =
-      typeof promiseOrCb === 'function' ? Promise.resolve().then(() => promiseOrCb()) : promiseOrCb
-    await toast.promise(promise.then(() => sleep(700)), {
-      loading: messages.loading,
-      success: typeof messages.success === 'function'
-        ? (messages.success as () => string)()
-        : (messages.success as string),
-      error: messages.error ?? 'Error',
-    })
+      typeof promiseOrCb === 'function'
+        ? Promise.resolve().then(() => promiseOrCb())
+        : promiseOrCb
+    await toast.promise(
+      promise.then(() => sleep(700)),
+      {
+        loading: messages.loading,
+        success:
+          typeof messages.success === 'function'
+            ? (messages.success as () => string)()
+            : (messages.success as string),
+        error: messages.error ?? 'Error',
+      }
+    )
     table.resetRowSelection()
   }
 
@@ -69,7 +83,8 @@ export function DataTableBulkActions<T>({
       },
       {
         loading: `Updating status...`,
-        success: () => `Status updated to "${status}" for ${count} ${count > 1 ? `${entityName}s` : entityName}.`,
+        success: () =>
+          `Status updated to "${status}" for ${count} ${count > 1 ? `${entityName}s` : entityName}.`,
       }
     )
   }
@@ -85,7 +100,8 @@ export function DataTableBulkActions<T>({
       },
       {
         loading: `Updating priority...`,
-        success: () => `Priority updated to "${priority}" for ${count} ${count > 1 ? `${entityName}s` : entityName}.`,
+        success: () =>
+          `Priority updated to "${priority}" for ${count} ${count > 1 ? `${entityName}s` : entityName}.`,
       }
     )
   }
@@ -101,7 +117,8 @@ export function DataTableBulkActions<T>({
       },
       {
         loading: `Exporting ${entityName}${count > 1 ? 's' : ''}...`,
-        success: () => `Exported ${count} ${entityName}${count > 1 ? 's' : ''}.`,
+        success: () =>
+          `Exported ${count} ${entityName}${count > 1 ? 's' : ''}.`,
       }
     )
   }
@@ -151,7 +168,13 @@ export function DataTableBulkActions<T>({
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
-                <Button variant='outline' size='icon' aria-label='Update priority' title='Update priority' className='size-8'>
+                <Button
+                  variant='outline'
+                  size='icon'
+                  aria-label='Update priority'
+                  title='Update priority'
+                  className='size-8'
+                >
                   <ArrowUpDown />
                 </Button>
               </DropdownMenuTrigger>
@@ -179,7 +202,14 @@ export function DataTableBulkActions<T>({
         {/* Export */}
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant='outline' size='icon' onClick={handleExport} className='size-8' aria-label='Export' title='Export'>
+            <Button
+              variant='outline'
+              size='icon'
+              onClick={handleExport}
+              className='size-8'
+              aria-label='Export'
+              title='Export'
+            >
               <Download />
             </Button>
           </TooltipTrigger>
@@ -224,7 +254,6 @@ export function DataTableBulkActions<T>({
           }
         }}
       />
-
     </>
   )
 }

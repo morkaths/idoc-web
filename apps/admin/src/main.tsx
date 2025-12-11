@@ -7,6 +7,7 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import ENV from '@/config/env'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -17,7 +18,6 @@ import { ThemeProvider } from './context/theme-provider-v2'
 import { routeTree } from './routeTree.gen'
 // Styles
 import './styles/globals.css'
-import ENV from '@/config/env'
 
 const queryClient = new QueryClient({
   defaultOptions: {

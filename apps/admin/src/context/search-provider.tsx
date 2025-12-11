@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react'
-import { CommandMenu } from '@/components/command-menu'
 import useHotkeys from '@/hooks/ui/useHotkeys'
+import { CommandMenu } from '@/components/command-menu'
 
 type SearchContextType = {
   open: boolean
@@ -47,5 +47,5 @@ export const useSearch = () => {
     throw new Error('useSearch has to be used within SearchProvider')
   }
 
-  return searchContext;
+  return searchContext
 }

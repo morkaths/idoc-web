@@ -1,11 +1,20 @@
 import { createContext, useContext, useEffect, useState, useMemo } from 'react'
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 
-type Theme = 'system'
+type Theme =
+  | 'system'
   // Light modes
-  | 'light' | 'sakura' | 'matcha' | 'latte' | 'cyberpunk'
+  | 'light'
+  | 'sakura'
+  | 'matcha'
+  | 'latte'
+  | 'cyberpunk'
   // Dark modes
-  | 'dark' | 'dracula' | 'gruvbox' | 'nordic' | 'ocean'
+  | 'dark'
+  | 'dracula'
+  | 'gruvbox'
+  | 'nordic'
+  | 'ocean'
 type ResolvedTheme = Exclude<Theme, 'system'>
 
 const DEFAULT_THEME: Theme = 'system'
@@ -37,8 +46,16 @@ const initialState: ThemeProviderState = {
 const ThemeContext = createContext<ThemeProviderState>(initialState)
 
 const THEME_VARIANTS: ResolvedTheme[] = [
-  'light', 'sakura', 'latte', 'cyberpunk',
-  'dark', 'dracula', 'gruvbox', 'nordic', 'matcha', 'ocean',
+  'light',
+  'sakura',
+  'latte',
+  'cyberpunk',
+  'dark',
+  'dracula',
+  'gruvbox',
+  'nordic',
+  'matcha',
+  'ocean',
 ]
 
 export function ThemeProvider({
@@ -58,7 +75,9 @@ export function ThemeProvider({
   const resolvedTheme = useMemo((): ResolvedTheme => {
     if (theme === 'system') {
       if (typeof window !== 'undefined') {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
       }
       return 'light'
     }

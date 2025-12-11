@@ -1,4 +1,18 @@
 import { useEffect } from 'react'
+import {
+  Check,
+  Coffee,
+  Droplet,
+  Flame,
+  Flower,
+  HatGlasses,
+  Leaf,
+  Monitor,
+  Moon,
+  Snowflake,
+  Sun,
+  Zap,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/context/theme-provider-v2'
 import { Button } from '@repo/ui/components/button'
@@ -8,7 +22,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu'
-import { Check, Coffee, Droplet, Flame, Flower, HatGlasses, Leaf, Monitor, Moon, Snowflake, Sun, Zap } from 'lucide-react'
 
 const THEMES: { id: string; label: string; Icon?: any }[] = [
   // System
@@ -28,7 +41,7 @@ const THEMES: { id: string; label: string; Icon?: any }[] = [
 ]
 
 export function ThemeSwitch() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme()
   const CurrentIcon = THEMES.find((t) => t.id === theme)?.Icon ?? Sun
 
   /* Update theme-color meta tag
@@ -50,7 +63,7 @@ export function ThemeSwitch() {
       <DropdownMenuContent align='end'>
         {THEMES.map((t) => (
           <DropdownMenuItem key={t.id} onClick={() => setTheme(t.id as any)}>
-            {t.Icon && <t.Icon className='me-2 h-4 w-4 inline-block' />}
+            {t.Icon && <t.Icon className='me-2 inline-block h-4 w-4' />}
             <span>{t.label}</span>
             <Check
               size={14}

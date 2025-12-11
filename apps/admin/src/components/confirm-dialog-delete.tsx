@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert'
 import { Input } from '@repo/ui/components/input'
 import { Label } from '@repo/ui/components/label'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 
 type ConfirmDialogDeleteProps<T> = {
   open: boolean
@@ -26,7 +26,9 @@ export function ConfirmDialogDelete<T>({
   onConfirm,
 }: ConfirmDialogDeleteProps<T>) {
   const [value, setValue] = useState('')
-  const count = table ? table.getFilteredSelectedRowModel().rows.length : selectedCount ?? 0
+  const count = table
+    ? table.getFilteredSelectedRowModel().rows.length
+    : (selectedCount ?? 0)
 
   const handleConfirm = async () => {
     if (confirmWord && value.trim() !== confirmWord) {
@@ -35,15 +37,18 @@ export function ConfirmDialogDelete<T>({
     }
 
     try {
-      await toast.promise(Promise.resolve().then(() => onConfirm()), {
-        loading: `Deleting ${count} ${count > 1 ? `${itemName}s` : itemName}...`,
-        success: () => {
-          if (table) table.resetRowSelection()
-          onOpenChange(false)
-          return `Deleted ${count} ${count > 1 ? `${itemName}s` : itemName}`
-        },
-        error: 'Delete failed',
-      })
+      await toast.promise(
+        Promise.resolve().then(() => onConfirm()),
+        {
+          loading: `Deleting ${count} ${count > 1 ? `${itemName}s` : itemName}...`,
+          success: () => {
+            if (table) table.resetRowSelection()
+            onOpenChange(false)
+            return `Deleted ${count} ${count > 1 ? `${itemName}s` : itemName}`
+          },
+          error: 'Delete failed',
+        }
+      )
     } finally {
       setValue('')
     }
@@ -69,12 +74,18 @@ export function ConfirmDialogDelete<T>({
 
           <Label className='my-4 flex flex-col items-start gap-1.5'>
             <span>Confirm by typing "{confirmWord}":</span>
-            <Input value={value} onChange={(e) => setValue(e.target.value)} placeholder={`Type "${confirmWord}" to confirm.`} />
+            <Input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder={`Type "${confirmWord}" to confirm.`}
+            />
           </Label>
 
           <Alert variant='destructive'>
             <AlertTitle>Warning!</AlertTitle>
-            <AlertDescription>Please be careful, this operation cannot be rolled back.</AlertDescription>
+            <AlertDescription>
+              Please be careful, this operation cannot be rolled back.
+            </AlertDescription>
           </Alert>
         </div>
       }
@@ -84,4 +95,4 @@ export function ConfirmDialogDelete<T>({
   )
 }
 
-export default ConfirmDialogDelete;
+export default ConfirmDialogDelete

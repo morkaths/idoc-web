@@ -49,7 +49,8 @@ export const useCategory = (id: string) => {
 export const useCreateCategory = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (newCategory: Partial<Category>) => CategoryApi.create(newCategory),
+    mutationFn: (newCategory: Partial<Category>) =>
+      CategoryApi.create(newCategory),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
     },

@@ -34,7 +34,6 @@ type LayoutContextType = {
   setHeaderFixed: (v: boolean) => void
   mainFixed: boolean
   setMainFixed: (v: boolean) => void
-
 }
 
 const LayoutContext = createContext<LayoutContextType | null>(null)
@@ -62,7 +61,6 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
     const saved = getCookie(LAYOUT_MAIN_FIXED_COOKIE_NAME)
     return saved !== undefined ? saved === '1' : DEFAULT_MAIN_FIXED
   })
-
 
   const setCollapsible = (newCollapsible: Collapsible) => {
     _setCollapsible(newCollapsible)
@@ -100,7 +98,11 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
     setMainFixed,
   }
 
-  return <LayoutContext.Provider value={contextValue}>{children}</LayoutContext.Provider>
+  return (
+    <LayoutContext.Provider value={contextValue}>
+      {children}
+    </LayoutContext.Provider>
+  )
 }
 
 // Define the hook for the provider

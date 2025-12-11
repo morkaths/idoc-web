@@ -1,17 +1,21 @@
-import * as ApiRequest from './config'
-import type { Category, FindParams, Pagination } from '../types'
 import { API_CONFIG } from '@/config/api'
 import { mockCategories } from '@/mocks'
+import type { Category, FindParams, Pagination } from '../types'
+import * as ApiRequest from './config'
 
 export const CategoryApi = {
-  find: async (params?: FindParams): Promise<{ data: Category[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<{ data?: Category[]; pagination?: Pagination }>(
-      API_CONFIG.endpoints.category.find,
-      { mode: 'public', params }
-    )
+  find: async (
+    params?: FindParams
+  ): Promise<{ data: Category[]; pagination?: Pagination }> => {
+    const response = await ApiRequest.apiGet<{
+      data?: Category[]
+      pagination?: Pagination
+    }>(API_CONFIG.endpoints.category.find, { mode: 'public', params })
     if (response.success && response.data) {
       const payload = (response.data as any).data ?? response.data
-      const pagination = (response.data as any).pagination as Pagination | undefined
+      const pagination = (response.data as any).pagination as
+        | Pagination
+        | undefined
       return { data: payload as Category[], pagination }
     }
     return { data: [], pagination: undefined }
@@ -23,12 +27,16 @@ export const CategoryApi = {
         (API_CONFIG.endpoints as any)?.category?.findAll ??
         API_CONFIG.endpoints.category.find
 
-      const effectiveParams = { ...(params ?? {}), page: 1, limit: Number(params?.limit ?? 100000) }
+      const effectiveParams = {
+        ...(params ?? {}),
+        page: 1,
+        limit: Number(params?.limit ?? 100000),
+      }
 
-      const response = await ApiRequest.apiGet<{ data?: Category[]; pagination?: Pagination }>(
-        endpoint,
-        { mode: 'public', params: effectiveParams }
-      )
+      const response = await ApiRequest.apiGet<{
+        data?: Category[]
+        pagination?: Pagination
+      }>(endpoint, { mode: 'public', params: effectiveParams })
 
       if (response.success && response.data) {
         const payload = (response.data as any).data ?? response.data
@@ -58,7 +66,10 @@ export const CategoryApi = {
     return null
   },
 
-  update: async (id: string, data: Partial<Category>): Promise<Category | null> => {
+  update: async (
+    id: string,
+    data: Partial<Category>
+  ): Promise<Category | null> => {
     const response = await ApiRequest.apiPatch<Category>(
       API_CONFIG.endpoints.category.update(id),
       { mode: 'private', data }
@@ -77,7 +88,9 @@ export const CategoryApi = {
 }
 
 export const CategoryApiMock = {
-  find: async (params: FindParams = {}): Promise<{ data: Category[]; pagination?: Pagination }> => {
+  find: async (
+    params: FindParams = {}
+  ): Promise<{ data: Category[]; pagination?: Pagination }> => {
     const { page = 1, limit = 10, filters, sorts: sort, query } = params
 
     let items = [...mockCategories]
@@ -85,14 +98,21 @@ export const CategoryApiMock = {
     if (query) {
       const q = String(query).toLowerCase()
       items = items.filter((c) => {
-        const en = Array.isArray(c.translations) ? (c.translations.find(t => t.lang === 'en')?.name ?? '') : ''
-        const vi = Array.isArray(c.translations) ? (c.translations.find(t => t.lang === 'vi')?.name ?? '') : ''
+        const en = Array.isArray(c.translations)
+          ? (c.translations.find((t) => t.lang === 'en')?.name ?? '')
+          : ''
+        const vi = Array.isArray(c.translations)
+          ? (c.translations.find((t) => t.lang === 'vi')?.name ?? '')
+          : ''
         const fields = {
           slug: String(c.slug ?? ''),
           enName: String(en),
           viName: String(vi),
         }
-        const haystack = Object.values(fields).filter(Boolean).join(' ').toLowerCase()
+        const haystack = Object.values(fields)
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase()
         return haystack.includes(q)
       })
     }
@@ -102,13 +122,22 @@ export const CategoryApiMock = {
         items = items.filter((item) => {
           const value = (item as any)[key]
           if (value == null) return false
-          if (typeof condition === 'string') return String(value).toLowerCase().includes(String(condition).toLowerCase())
+          if (typeof condition === 'string')
+            return String(value)
+              .toLowerCase()
+              .includes(String(condition).toLowerCase())
           if (Array.isArray(condition)) return condition.includes(value)
           if (typeof condition === 'object') {
-            if ('$eq' in condition) return String(value) === String((condition as any).$eq)
-            if ('$contains' in condition) return String(value).toLowerCase().includes(String((condition as any).$contains).toLowerCase())
-            if ('$gte' in condition) return Number(value) >= Number((condition as any).$gte)
-            if ('$lte' in condition) return Number(value) <= Number((condition as any).$lte)
+            if ('$eq' in condition)
+              return String(value) === String((condition as any).$eq)
+            if ('$contains' in condition)
+              return String(value)
+                .toLowerCase()
+                .includes(String((condition as any).$contains).toLowerCase())
+            if ('$gte' in condition)
+              return Number(value) >= Number((condition as any).$gte)
+            if ('$lte' in condition)
+              return Number(value) <= Number((condition as any).$lte)
           }
           return true
         })
@@ -127,8 +156,10 @@ export const CategoryApiMock = {
             const cmp = leftValue.localeCompare(rightValue)
             if (cmp !== 0) return sortDescriptor.dir === 'desc' ? -cmp : cmp
           } else {
-            if (leftValue > rightValue) return sortDescriptor.dir === 'desc' ? -1 : 1
-            if (leftValue < rightValue) return sortDescriptor.dir === 'desc' ? 1 : -1
+            if (leftValue > rightValue)
+              return sortDescriptor.dir === 'desc' ? -1 : 1
+            if (leftValue < rightValue)
+              return sortDescriptor.dir === 'desc' ? 1 : -1
           }
         }
         return 0
@@ -152,31 +183,41 @@ export const CategoryApiMock = {
   },
 
   findAll: async (): Promise<Category[]> => {
-    return new Promise((resolve) => setTimeout(() => resolve([...mockCategories]), 150))
+    return new Promise((resolve) =>
+      setTimeout(() => resolve([...mockCategories]), 150)
+    )
   },
 
   findById: async (id: string): Promise<Category | null> => {
-    const category = mockCategories.find(c => c._id === id) || null
-    return new Promise(resolve => setTimeout(() => resolve(category), 200))
+    const category = mockCategories.find((c) => c._id === id) || null
+    return new Promise((resolve) => setTimeout(() => resolve(category), 200))
   },
 
   create: async (data: Partial<Category>): Promise<Category | null> => {
-    const newItem: Category = { _id: Date.now().toString(), ...data } as Category
+    const newItem: Category = {
+      _id: Date.now().toString(),
+      ...data,
+    } as Category
     mockCategories.push(newItem)
-    return new Promise(resolve => setTimeout(() => resolve(newItem), 200))
+    return new Promise((resolve) => setTimeout(() => resolve(newItem), 200))
   },
 
-  update: async (id: string, data: Partial<Category>): Promise<Category | null> => {
-    const index = mockCategories.findIndex(c => c._id === id)
+  update: async (
+    id: string,
+    data: Partial<Category>
+  ): Promise<Category | null> => {
+    const index = mockCategories.findIndex((c) => c._id === id)
     if (index === -1) return null
     mockCategories[index] = { ...mockCategories[index], ...data }
-    return new Promise(resolve => setTimeout(() => resolve(mockCategories[index]), 200))
+    return new Promise((resolve) =>
+      setTimeout(() => resolve(mockCategories[index]), 200)
+    )
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const index = mockCategories.findIndex(c => c._id === id)
+    const index = mockCategories.findIndex((c) => c._id === id)
     if (index === -1) return false
     mockCategories.splice(index, 1)
-    return new Promise(resolve => setTimeout(() => resolve(true), 200))
+    return new Promise((resolve) => setTimeout(() => resolve(true), 200))
   },
 }

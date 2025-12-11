@@ -21,10 +21,10 @@ const CONFIRM_WORD = 'DELETE'
 export function BooksDeleteDialog<T>({
   open,
   onOpenChange,
-  table
+  table,
 }: BookDeleteDialogProps<T>) {
-  const [value, setValue] = useState('');
-  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const [value, setValue] = useState('')
+  const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const handleDelete = () => {
     if (value.trim() !== CONFIRM_WORD) {
@@ -38,8 +38,9 @@ export function BooksDeleteDialog<T>({
       loading: 'Deleting tasks...',
       success: () => {
         table.resetRowSelection()
-        return `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'tasks' : 'task'
-          }`
+        return `Deleted ${selectedRows.length} ${
+          selectedRows.length > 1 ? 'tasks' : 'task'
+        }`
       },
       error: 'Error',
     })

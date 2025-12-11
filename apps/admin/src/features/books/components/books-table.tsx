@@ -10,6 +10,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
+import { useBooks } from '@/hooks/data/useBook'
+import { useAllCategories } from '@/hooks/data/useCategory'
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState'
 import {
   Table,
@@ -21,8 +23,6 @@ import {
 } from '@repo/ui/components/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { booksColumns as columns } from './books-columns'
-import { useBooks } from '@/hooks/data/useBook'
-import { useAllCategories } from '@/hooks/data/useCategory'
 import BooksTableBulkActions from './books-table-bulk-actions'
 
 const route = getRouteApi('/_authenticated/books/')
@@ -48,7 +48,7 @@ export function BooksTable() {
     globalFilter: { enabled: true, key: 'q' },
     columnFilters: [
       { columnId: 'categories', searchKey: 'category', type: 'array' },
-      { columnId: 'language', searchKey: 'language', type: 'array' }
+      { columnId: 'language', searchKey: 'language', type: 'array' },
     ],
   })
 
@@ -56,11 +56,14 @@ export function BooksTable() {
   const apiFilters = (() => {
     if (!columnFilters) return undefined
     if (Array.isArray(columnFilters)) {
-      const normalized = (columnFilters as any[]).reduce((acc, f) => {
-        const key = f.id ?? f.columnId ?? f.field
-        if (key) acc[key] = f.value
-        return acc
-      }, {} as Record<string, any>)
+      const normalized = (columnFilters as any[]).reduce(
+        (acc, f) => {
+          const key = f.id ?? f.columnId ?? f.field
+          if (key) acc[key] = f.value
+          return acc
+        },
+        {} as Record<string, any>
+      )
       return Object.keys(normalized).length ? normalized : undefined
     }
     return Object.keys(columnFilters).length ? columnFilters : undefined
@@ -69,37 +72,42 @@ export function BooksTable() {
   // map react-table sorting -> API sort
   const apiSorts: Record<string, string>[] | undefined =
     sorting.length > 0
-      ? sorting.map((s) => ({ field: String(s.id), dir: s.desc ? 'desc' : 'asc' }))
-      : undefined;
+      ? sorting.map((s) => ({
+          field: String(s.id),
+          dir: s.desc ? 'desc' : 'asc',
+        }))
+      : undefined
 
   const page =
     typeof (pagination as any).page === 'number'
       ? (pagination as any).page
       : typeof (pagination as any).pageIndex === 'number'
         ? (pagination as any).pageIndex + 1
-        : 1;
-  const limit = pagination.pageSize ?? 10;
+        : 1
+  const limit = pagination.pageSize ?? 10
 
   // fetch server-side page
   const { data: booksData, isFetching: isBooksFetching } = useBooks({
     page,
     limit,
-    query: globalFilter ?? "",
+    query: globalFilter ?? '',
     filters: apiFilters,
     sorts: apiSorts,
   })
   const books = booksData?.books ?? []
   const bookPagination = booksData?.pagination
 
-  const { data: categoriesData = [] } = useAllCategories();
+  const { data: categoriesData = [] } = useAllCategories()
   const categories = useMemo(() => {
     return categoriesData.map((c) => ({
       label: Array.isArray(c.translations)
-        ? (c.translations.find(t => t.lang === 'en')?.name ?? c.translations[0]?.name ?? 'Unnamed')
+        ? (c.translations.find((t) => t.lang === 'en')?.name ??
+          c.translations[0]?.name ??
+          'Unnamed')
         : 'Unnamed',
       value: c._id,
     }))
-  }, [categoriesData]);
+  }, [categoriesData])
 
   const table = useReactTable({
     data: books,
@@ -135,13 +143,11 @@ export function BooksTable() {
       pageIndex: 0,
       pageSize: pagination.pageSize ?? 10,
     }))
-  }, [globalFilter]);
+  }, [globalFilter])
 
   useEffect(() => {
     ensurePageInRange(table.getPageCount())
-  }, [table.getPageCount(), ensurePageInRange]);
-
-
+  }, [table.getPageCount(), ensurePageInRange])
 
   return (
     <div
@@ -152,7 +158,7 @@ export function BooksTable() {
     >
       <DataTableToolbar
         table={table}
-        searchPlaceholder="Search books..."
+        searchPlaceholder='Search books...'
         filters={[
           {
             columnId: 'categories',
@@ -161,7 +167,7 @@ export function BooksTable() {
           },
         ]}
       />
-      <div className="overflow-hidden rounded-md border">
+      <div className='overflow-hidden rounded-md border'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
@@ -178,9 +184,9 @@ export function BooksTable() {
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -190,7 +196,10 @@ export function BooksTable() {
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
@@ -199,14 +208,20 @@ export function BooksTable() {
                         cell.column.columnDef.meta?.tdClassName
                       )}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className='h-24 text-center'
+                >
                   {isBooksFetching ? 'Loading...' : 'No results.'}
                 </TableCell>
               </TableRow>
@@ -215,7 +230,7 @@ export function BooksTable() {
         </Table>
       </div>
 
-      <DataTablePagination table={table} className="mt-auto" />
+      <DataTablePagination table={table} className='mt-auto' />
       <BooksTableBulkActions table={table} />
     </div>
   )

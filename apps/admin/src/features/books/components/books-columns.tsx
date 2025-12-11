@@ -1,10 +1,10 @@
 import { type ColumnDef } from '@tanstack/react-table'
+import type { Book } from '@/types'
 import { Badge } from '@repo/ui/components/badge'
 import { Checkbox } from '@repo/ui/components/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
-import type { Book } from '@/types'
-import { BooksTableRowActions } from './books-table-row-actions'
 import Highlight from '@/components/highlight'
+import { BooksTableRowActions } from './books-table-row-actions'
 
 export const booksColumns: ColumnDef<Book>[] = [
   {
@@ -33,7 +33,9 @@ export const booksColumns: ColumnDef<Book>[] = [
   },
   {
     accessorKey: 'isbn',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='ISBN' />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='ISBN' />
+    ),
     enableSorting: false,
     enableHiding: false,
     cell: ({ row, table }) => {
@@ -48,22 +50,26 @@ export const booksColumns: ColumnDef<Book>[] = [
   },
   {
     accessorKey: 'coverUrl',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Cover' />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Cover' />
+    ),
     enableSorting: false,
     enableHiding: true,
     cell: ({ row }) => {
-      const src = (row.getValue('coverUrl') ?? row.original.coverUrl) as string | undefined
+      const src = (row.getValue('coverUrl') ?? row.original.coverUrl) as
+        | string
+        | undefined
       const title = String(row.getValue('title') ?? '')
       return src ? (
         <img
           src={src}
           alt={title}
-          className='w-12 h-16 object-cover rounded'
+          className='h-16 w-12 rounded object-cover'
           style={{ borderRadius: 'var(--radius-img)' }}
           loading='lazy'
         />
       ) : (
-        <div className='w-12 h-16 bg-muted/20 rounded-md flex items-center justify-center text-xs text-muted-foreground'>
+        <div className='bg-muted/20 text-muted-foreground flex h-16 w-12 items-center justify-center rounded-md text-xs'>
           No image
         </div>
       )
@@ -71,19 +77,25 @@ export const booksColumns: ColumnDef<Book>[] = [
   },
   {
     accessorKey: 'title',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Title' />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Title' />
+    ),
     meta: { className: 'ps-1', tdClassName: 'ps-4' },
     cell: ({ row, table }) => {
       const title = row.getValue('title') as string
       const query = String(table.getState().globalFilter ?? '')
-      const authors = Array.isArray(row.original.authors) ? row.original.authors : []
-      const authorsText = authors.length ? authors.map(a => a.name).join(', ') : ''
+      const authors = Array.isArray(row.original.authors)
+        ? row.original.authors
+        : []
+      const authorsText = authors.length
+        ? authors.map((a) => a.name).join(', ')
+        : ''
       return (
         <div className='flex flex-col'>
-          <span className='truncate font-medium max-w-32 sm:max-w-72 md:max-w-124'>
+          <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-124'>
             <Highlight text={title} query={query} />
           </span>
-          <small className='text-muted-foreground truncate max-w-32 sm:max-w-72 md:max-w-124'>
+          <small className='text-muted-foreground max-w-32 truncate sm:max-w-72 md:max-w-124'>
             <Highlight text={authorsText} query={query} />
           </small>
         </div>
@@ -92,7 +104,9 @@ export const booksColumns: ColumnDef<Book>[] = [
   },
   {
     accessorKey: 'publishedDate',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Published' />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Published' />
+    ),
     meta: { className: 'ps-1', tdClassName: 'ps-4' },
     cell: ({ row }) => {
       const d = row.getValue('publishedDate') as string | Date | undefined
@@ -103,7 +117,9 @@ export const booksColumns: ColumnDef<Book>[] = [
   },
   {
     accessorKey: 'price',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Price' />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Price' />
+    ),
     meta: { className: 'ps-1', tdClassName: 'ps-4' },
     enableHiding: true,
     cell: ({ row }) => {
@@ -143,7 +159,9 @@ export const booksColumns: ColumnDef<Book>[] = [
   // },
   {
     accessorKey: 'language',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Language' />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Language' />
+    ),
     meta: { className: 'ps-1', tdClassName: 'ps-4' },
     enableHiding: true,
     cell: ({ row }) => {
@@ -157,15 +175,17 @@ export const booksColumns: ColumnDef<Book>[] = [
   },
   {
     accessorKey: 'categories',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Categories' />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Categories' />
+    ),
     meta: { className: 'ps-1' },
     enableSorting: false,
     cell: ({ row }) => {
       const cats = row.getValue('categories') as { slug?: string }[] | undefined
       if (!Array.isArray(cats) || cats.length === 0) return null
       return (
-        <div className="max-w-[260px] overflow-x-auto">
-          <div className='flex gap-1 items-center whitespace-nowrap'>
+        <div className='max-w-[260px] overflow-x-auto'>
+          <div className='flex items-center gap-1 whitespace-nowrap'>
             {cats.slice(0, 2).map((c, i) => (
               <Badge key={i} variant='outline' className='text-xs'>
                 {c?.slug ?? '-'}

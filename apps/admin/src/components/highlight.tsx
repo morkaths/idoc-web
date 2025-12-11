@@ -8,7 +8,11 @@ function escapeRegExp(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-export default function Highlight({ text = '', query = '', className = '' }: HighlightProps) {
+export default function Highlight({
+  text = '',
+  query = '',
+  className = '',
+}: HighlightProps) {
   const q = String(query).trim()
   if (!q) return <>{text}</>
 
@@ -31,7 +35,10 @@ export default function Highlight({ text = '', query = '', className = '' }: Hig
           typeof p === 'string' ? (
             <span key={i}>{p}</span>
           ) : (
-            <mark key={i} className={`bg-yellow-200 text-black rounded px-0.5 ${className}`}>
+            <mark
+              key={i}
+              className={`rounded bg-yellow-200 px-0.5 text-black ${className}`}
+            >
               {p.match}
             </mark>
           )
