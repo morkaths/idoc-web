@@ -9,7 +9,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { handleServerError } from '@/lib/handle-server-error';
 import { DirectionProvider } from './context/direction-provider';
 import { FontProvider } from './context/font-provider';
-import { ThemeProvider } from './context/theme-provider-v2';
+import { ThemeProvider } from './context/theme-provider';
 // Generated Routes
 import { routeTree } from './routeTree.gen';
 // Styles

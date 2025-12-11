@@ -4,7 +4,7 @@ export const dateOrString = z.preprocess((val) => {
   if (val == null || val === '') return undefined;
   if (val instanceof Date) return val;
   if (typeof val === 'string' || typeof val === 'number') {
-    const d = new Date(val as any);
+    const d = new Date(val as string | number);
     return isNaN(d.getTime()) ? undefined : d;
   }
   return undefined;

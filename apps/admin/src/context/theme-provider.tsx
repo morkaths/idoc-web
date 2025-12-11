@@ -1,10 +1,23 @@
 import { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies';
 
-type Theme = 'dark' | 'light' | 'system';
+type Theme =
+  | 'system'
+  // Light modes
+  | 'light'
+  | 'sakura'
+  | 'matcha'
+  | 'latte'
+  | 'cyberpunk'
+  // Dark modes
+  | 'dark'
+  | 'dracula'
+  | 'gruvbox'
+  | 'nordic'
+  | 'ocean';
 type ResolvedTheme = Exclude<Theme, 'system'>;
 
-const DEFAULT_THEME = 'system';
+const DEFAULT_THEME: Theme = 'system';
 const THEME_COOKIE_NAME = 'vite-ui-theme';
 const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
 
@@ -32,20 +45,39 @@ const initialState: ThemeProviderState = {
 
 const ThemeContext = createContext<ThemeProviderState>(initialState);
 
+const THEME_VARIANTS: ResolvedTheme[] = [
+  'light',
+  'sakura',
+  'latte',
+  'cyberpunk',
+  'dark',
+  'dracula',
+  'gruvbox',
+  'nordic',
+  'matcha',
+  'ocean',
+];
+
 export function ThemeProvider({
   children,
   defaultTheme = DEFAULT_THEME,
   storageKey = THEME_COOKIE_NAME,
   ...props
 }: ThemeProviderProps) {
-  const [theme, _setTheme] = useState<Theme>(
-    () => (getCookie(storageKey) as Theme) || defaultTheme
-  );
+  const [theme, _setTheme] = useState<Theme>(() => {
+    try {
+      return (getCookie(storageKey) as Theme) || defaultTheme;
+    } catch {
+      return defaultTheme;
+    }
+  });
 
-  // Optimized: Memoize the resolved theme calculation to prevent unnecessary re-computations
   const resolvedTheme = useMemo((): ResolvedTheme => {
     if (theme === 'system') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (typeof window !== 'undefined') {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      return 'light';
     }
     return theme as ResolvedTheme;
   }, [theme]);
@@ -54,36 +86,73 @@ export function ThemeProvider({
     const root = window.document.documentElement;
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    const applyTheme = (currentResolvedTheme: ResolvedTheme) => {
-      root.classList.remove('light', 'dark'); // Remove existing theme classes
-      root.classList.add(currentResolvedTheme); // Add the new theme class
+    const clearAll = () => {
+      root.classList.remove('dark');
+      // remove theme-* classes
+      THEME_VARIANTS.forEach((t) => {
+        if (t !== 'dark' && t !== 'light') root.classList.remove(`theme-${t}`);
+      });
+      // optionally remove 'light' if you ever add it
+      root.classList.remove('light');
     };
 
-    const handleChange = () => {
+    const apply = () => {
+      clearAll();
       if (theme === 'system') {
-        const systemTheme = mediaQuery.matches ? 'dark' : 'light';
-        applyTheme(systemTheme);
+        if (mediaQuery.matches) {
+          root.classList.add('dark');
+        } else {
+          // leave as default (light) — or add 'light' class if desired
+        }
+        return;
       }
+
+      if (theme === 'dark') {
+        root.classList.add('dark');
+        return;
+      }
+
+      if (theme === 'light') {
+        // keep default root variables (no extra class) or add 'light' class:
+        // root.classList.add('light')
+        return;
+      }
+
+      // other named themes: add theme-{name}
+      root.classList.add(`theme-${theme}`);
     };
 
-    applyTheme(resolvedTheme);
+    // initial apply
+    apply();
 
-    mediaQuery.addEventListener('change', handleChange);
+    // listen to system changes only if using 'system'
+    const handleChange = () => {
+      if (theme === 'system') apply();
+    };
 
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [theme, resolvedTheme]);
+    mediaQuery.addEventListener?.('change', handleChange);
+    return () => mediaQuery.removeEventListener?.('change', handleChange);
+  }, [theme]);
 
-  const setTheme = (theme: Theme) => {
-    setCookie(storageKey, theme, THEME_COOKIE_MAX_AGE);
-    _setTheme(theme);
+  const setTheme = (t: Theme) => {
+    try {
+      setCookie(storageKey, t, THEME_COOKIE_MAX_AGE);
+    } catch {
+      /* ignore cookie set errors */
+    }
+    _setTheme(t);
   };
 
   const resetTheme = () => {
-    removeCookie(storageKey);
+    try {
+      removeCookie(storageKey);
+    } catch {
+      /* ignore */
+    }
     _setTheme(DEFAULT_THEME);
   };
 
-  const contextValue = {
+  const contextValue: ThemeProviderState = {
     defaultTheme,
     resolvedTheme,
     resetTheme,
@@ -92,9 +161,9 @@ export function ThemeProvider({
   };
 
   return (
-    <ThemeContext value={contextValue} {...props}>
+    <ThemeContext.Provider value={contextValue} {...props}>
       {children}
-    </ThemeContext>
+    </ThemeContext.Provider>
   );
 }
 

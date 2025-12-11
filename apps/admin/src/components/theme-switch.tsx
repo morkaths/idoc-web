@@ -14,7 +14,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useTheme } from '@/context/theme-provider-v2';
+import { useTheme } from '@/context/theme-provider';
 import { Button } from '@repo/ui/components/button';
 import {
   DropdownMenu,

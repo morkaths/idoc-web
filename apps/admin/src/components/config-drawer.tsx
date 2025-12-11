@@ -14,7 +14,7 @@ import { IconThemeSystem } from '@/assets/custom/icon-theme-system';
 import { cn } from '@/lib/utils';
 import { useDirection } from '@/context/direction-provider';
 import { type Collapsible, useLayout } from '@/context/layout-provider';
-import { useTheme } from '@/context/theme-provider-v2';
+import { useTheme } from '@/context/theme-provider';
 import { Button } from '@repo/ui/components/button';
 import {
   Sheet,

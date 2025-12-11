@@ -10,9 +10,9 @@ export const BookApi = {
       pagination?: Pagination;
     }>(API_CONFIG.endpoints.book.find, { mode: 'public', params });
     if (response.success && response.data) {
-      const payload = (response.data as any).data ?? response.data;
-      const pagination = (response.data as any).pagination as Pagination | undefined;
-      return { data: payload as Book[], pagination };
+      const payload = (response.data as { data?: Book[] }).data ?? [];
+      const pagination = (response.data as { pagination?: Pagination }).pagination;
+      return { data: payload, pagination };
     }
     return { data: [], pagination: undefined };
   },

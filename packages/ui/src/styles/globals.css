@@ -75,7 +75,7 @@
 .theme-sakura {
   --radius: 1rem;
   --font-sans: 'Manrope', sans-serif;
-  
+
   --background: oklch(0.99 0.01 20);
   --foreground: oklch(0.18 0.13 340);
   --card: oklch(1 0 0);
@@ -105,7 +105,7 @@
 /* Matcha (light green, soothing) */
 .theme-matcha {
   --radius: 1.3rem;
-  
+
   --background: #fcfcfc;
   --foreground: #2d3c32;
   --card: #f2f7f3;
@@ -170,7 +170,7 @@
 
   --background: oklch(0.99 0.01 105);
   --foreground: oklch(0.30 0.10 105);
-  --card: oklch(0.98 0.02 105);
+  --card: oklch(0.96 0.02 105);
   --card-foreground: oklch(0.20 0.08 105);
   --popover: oklch(0.98 0.02 105);
   --popover-foreground: oklch(0.20 0.08 105);
@@ -184,7 +184,7 @@
   --accent-foreground: oklch(0.30 0.10 105);
   --destructive: oklch(0.65 0.20 30);
   --destructive-foreground: oklch(0.98 0.01 30);
-  --border: oklch(0.90 0.04 105);
+  --border: oklch(0.85 0.04 105);
   --input: oklch(0.90 0.04 105);
   --ring: oklch(0.85 0.18 105);
   --chart-1: oklch(0.85 0.18 105);
@@ -214,14 +214,14 @@
   --accent-foreground: #f8f8f2;
   --destructive: #ff5555;
   --destructive-foreground: #f8f8f2;
-  --border: #44475a;
+  --border: #3b3d4f;
   --input: #44475a;
   --ring: #ff79c6;
   --chart-1: #ff79c6;
   --chart-2: #bd93f9;
   --chart-3: #50fa7b;
   --chart-4: #f1fa8c;
-  --chart-5: #8be9fd; 
+  --chart-5: #8be9fd;
 }
 
 /* Gruvbox (dark, earthy) */
@@ -257,7 +257,7 @@
 /* Nordic (cool, muted) */
 .theme-nordic {
   --font-sans: 'Manrope', sans-serif;
-  
+
   --background: #242933;
   --foreground: #eceff4;
   --card: #2e3440;
@@ -274,7 +274,8 @@
   --accent-foreground: #eceff4;
   --destructive: #bf616a;
   --destructive-foreground: #eceff4;
-  --border: #3b4252;
+
+  --border: #434c5e;
   --input: #3b4252;
   --ring: #88c0d0;
   --chart-1: #88c0d0;
@@ -302,8 +303,8 @@
   --accent-foreground: #f0faff;
   --destructive: #ef4444;
   --destructive-foreground: #f0faff;
-  --border: #2c4263;
-  --input: #1b3558;
+  --border: #394961;
+  --input: #394961;
   --ring: #3b82f6;
   --chart-1: #3b82f6;
   --chart-2: #60a5fa;
@@ -358,6 +359,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
