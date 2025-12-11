@@ -16,7 +16,7 @@ import { ThemeProvider } from './context/theme-provider-v2'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 // Styles
-import './styles/index.css'
+import './styles/globals.css'
 import ENV from '@/config/env'
 
 const queryClient = new QueryClient({

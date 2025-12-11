@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { IconFacebook, IconGithub } from '@/assets/brand-icons'
 import { useAuthStore } from '@/stores/auth-store'
 import { sleep, cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import { Button } from '@repo/ui/components/button'
 import {
   Form,
   FormControl,
@@ -16,8 +16,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from '@repo/ui/components/form'
+import { Input } from '@repo/ui/components/input'
 import { PasswordInput } from '@/components/password-input'
 
 const formSchema = z.object({

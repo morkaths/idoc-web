@@ -1,16 +1,16 @@
 import { type ChangeEvent, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import { SlidersHorizontal, ArrowUpAZ, ArrowDownAZ } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Button } from '@repo/ui/components/button'
+import { Input } from '@repo/ui/components/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
+} from '@repo/ui/components/select'
+import { Separator } from '@repo/ui/components/separator'
 import { apps } from './data/apps'
 
 const route = getRouteApi('/_authenticated/apps/')

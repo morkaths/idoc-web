@@ -8,7 +8,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import useDialogState from '@/hooks/ui/useDialogState'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,13 +17,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@repo/ui/components/dropdown-menu'
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar'
+} from '@repo/ui/components/sidebar'
 import { SignOutDialog } from '@/components/sign-out-dialog'
 
 type NavUserProps = {

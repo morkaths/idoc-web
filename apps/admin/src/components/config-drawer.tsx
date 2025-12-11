@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { useDirection } from '@/context/direction-provider'
 import { type Collapsible, useLayout } from '@/context/layout-provider'
 import { useTheme } from '@/context/theme-provider-v2'
-import { Button } from '@/components/ui/button'
+import { Button } from '@repo/ui/components/button'
 import {
   Sheet,
   SheetContent,
@@ -24,8 +24,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet'
-import { useSidebar } from './ui/sidebar'
+} from '@repo/ui/components/sheet'
+import { useSidebar } from '@repo/ui/components/sidebar'
 
 export function ConfigDrawer() {
   const { setOpen } = useSidebar()

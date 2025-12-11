@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/context/theme-provider-v2'
-import { Button } from '@/components/ui/button'
+import { Button } from '@repo/ui/components/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@repo/ui/components/dropdown-menu'
 import { Check, Coffee, Droplet, Flame, Flower, HatGlasses, Leaf, Monitor, Moon, Snowflake, Sun, Zap } from 'lucide-react'
 
 const THEMES: { id: string; label: string; Icon?: any }[] = [

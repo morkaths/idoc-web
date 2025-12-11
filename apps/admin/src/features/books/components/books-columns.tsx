@@ -1,6 +1,6 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@repo/ui/components/badge'
+import { Checkbox } from '@repo/ui/components/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
 import type { Book } from '@/types'
 import { BooksTableRowActions } from './books-table-row-actions'

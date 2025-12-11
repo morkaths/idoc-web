@@ -6,7 +6,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from '@repo/ui/components/card'
 import { AuthLayout } from '../auth-layout'
 import { OtpForm } from './components/otp-form'
 

@@ -18,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '@repo/ui/components/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { booksColumns as columns } from './books-columns'
 import { useBooks } from '@/hooks/data/useBook'

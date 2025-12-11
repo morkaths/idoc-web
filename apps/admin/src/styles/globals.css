@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'flag-icons/css/flag-icons.min.css';
-@import './theme.css';
+@import "@repo/ui/styles/globals.css";
+@source "../../../../packages/ui/src/**/*.{ts,tsx}";
 
 
 @custom-variant dark (&:is(.dark *));

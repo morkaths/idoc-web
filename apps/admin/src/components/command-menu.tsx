@@ -11,9 +11,9 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@/components/ui/command'
+} from '@repo/ui/components/command'
 import { sidebarData } from './layout/data/sidebar-data'
-import { ScrollArea } from './ui/scroll-area'
+import { ScrollArea } from '@repo/ui/components/scroll-area'
 
 export function CommandMenu() {
   const navigate = useNavigate()

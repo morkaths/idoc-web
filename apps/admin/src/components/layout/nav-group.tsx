@@ -5,7 +5,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible'
+} from '@repo/ui/components/collapsible'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -16,8 +16,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from '@/components/ui/sidebar'
-import { Badge } from '../ui/badge'
+} from '@repo/ui/components/sidebar'
+import { Badge } from '@repo/ui/components/badge'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +25,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu'
+} from '@repo/ui/components/dropdown-menu'
 import {
   type NavCollapsible,
   type NavItem,
