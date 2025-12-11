@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import {
   type SortingState,
   type VisibilityState,
@@ -10,9 +10,9 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table'
-import { cn } from '@/lib/utils'
-import { type NavigateFn, useTableUrlState } from '@/hooks/ui/useTableUrlState'
+} from '@tanstack/react-table';
+import { cn } from '@/lib/utils';
+import { type NavigateFn, useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
   Table,
   TableBody,
@@ -20,24 +20,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@repo/ui/components/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { roles } from '../data/data'
-import { type User } from '../data/schema'
-import { DataTableBulkActions } from './data-table-bulk-actions'
-import { usersColumns as columns } from './users-columns'
+} from '@repo/ui/components/table';
+import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
+import { roles } from '../data/data';
+import { type User } from '../data/schema';
+import { DataTableBulkActions } from './data-table-bulk-actions';
+import { usersColumns as columns } from './users-columns';
 
 type DataTableProps = {
-  data: User[]
-  search: Record<string, unknown>
-  navigate: NavigateFn
-}
+  data: User[];
+  search: Record<string, unknown>;
+  navigate: NavigateFn;
+};
 
 export function UsersTable({ data, search, navigate }: DataTableProps) {
   // Local UI-only states
-  const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   // Local state management for table (uncomment to use local-only state, not synced with URL)
   // const [columnFilters, onColumnFiltersChange] = useState<ColumnFiltersState>([])
@@ -61,7 +61,7 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
       { columnId: 'status', searchKey: 'status', type: 'array' },
       { columnId: 'role', searchKey: 'role', type: 'array' },
     ],
-  })
+  });
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -86,11 +86,11 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-  })
+  });
 
   useEffect(() => {
-    ensurePageInRange(table.getPageCount())
-  }, [table, ensurePageInRange])
+    ensurePageInRange(table.getPageCount());
+  }, [table, ensurePageInRange]);
 
   return (
     <div
@@ -139,12 +139,9 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
                     >
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -166,20 +163,14 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
                         cell.column.columnDef.meta?.tdClassName
                       )}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
+                <TableCell colSpan={columns.length} className='h-24 text-center'>
                   No results.
                 </TableCell>
               </TableRow>
@@ -190,5 +181,5 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
       <DataTablePagination table={table} className='mt-auto' />
       <DataTableBulkActions table={table} />
     </div>
-  )
+  );
 }

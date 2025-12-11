@@ -1,6 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { SignIn } from '@clerk/clerk-react'
-import { Skeleton } from '@repo/ui/components/skeleton'
+import { createFileRoute } from '@tanstack/react-router';
+import { SignIn } from '@clerk/clerk-react';
+import { Skeleton } from '@repo/ui/components/skeleton';
 
 export const Route = createFileRoute('/clerk/(auth)/sign-in')({
   component: () => (
@@ -11,4 +11,4 @@ export const Route = createFileRoute('/clerk/(auth)/sign-in')({
       fallback={<Skeleton className='h-[30rem] w-[25rem]' />}
     />
   ),
-})
+});

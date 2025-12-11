@@ -1,21 +1,17 @@
-import { useState, useEffect, useRef } from 'react'
-import { type Table } from '@tanstack/react-table'
-import { X } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Badge } from '@repo/ui/components/badge'
-import { Button } from '@repo/ui/components/button'
-import { Separator } from '@repo/ui/components/separator'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@repo/ui/components/tooltip'
+import { useState, useEffect, useRef } from 'react';
+import { type Table } from '@tanstack/react-table';
+import { X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Badge } from '@repo/ui/components/badge';
+import { Button } from '@repo/ui/components/button';
+import { Separator } from '@repo/ui/components/separator';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@repo/ui/components/tooltip';
 
 type DataTableBulkActionsProps<TData> = {
-  table: Table<TData>
-  entityName: string
-  children: React.ReactNode
-}
+  table: Table<TData>;
+  entityName: string;
+  children: React.ReactNode;
+};
 
 /**
  * A modular toolbar for displaying bulk actions when table rows are selected.
@@ -32,106 +28,99 @@ export function DataTableBulkActions<TData>({
   entityName,
   children,
 }: DataTableBulkActionsProps<TData>): React.ReactNode | null {
-  const selectedRows = table.getFilteredSelectedRowModel().rows
-  const selectedCount = selectedRows.length
-  const toolbarRef = useRef<HTMLDivElement>(null)
-  const [announcement, setAnnouncement] = useState('')
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const selectedCount = selectedRows.length;
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const [announcement, setAnnouncement] = useState('');
 
   // Announce selection changes to screen readers
   useEffect(() => {
     if (selectedCount > 0) {
-      const message = `${selectedCount} ${entityName}${selectedCount > 1 ? 's' : ''} selected. Bulk actions toolbar is available.`
+      const message = `${selectedCount} ${entityName}${selectedCount > 1 ? 's' : ''} selected. Bulk actions toolbar is available.`;
 
       // Use queueMicrotask to defer state update and avoid cascading renders
       queueMicrotask(() => {
-        setAnnouncement(message)
-      })
+        setAnnouncement(message);
+      });
 
       // Clear announcement after a delay
-      const timer = setTimeout(() => setAnnouncement(''), 3000)
-      return () => clearTimeout(timer)
+      const timer = setTimeout(() => setAnnouncement(''), 3000);
+      return () => clearTimeout(timer);
     }
-  }, [selectedCount, entityName])
+  }, [selectedCount, entityName]);
 
   const handleClearSelection = () => {
-    table.resetRowSelection()
-  }
+    table.resetRowSelection();
+  };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    const buttons = toolbarRef.current?.querySelectorAll('button')
-    if (!buttons) return
+    const buttons = toolbarRef.current?.querySelectorAll('button');
+    if (!buttons) return;
 
     const currentIndex = Array.from(buttons).findIndex(
       (button) => button === document.activeElement
-    )
+    );
 
     switch (event.key) {
       case 'ArrowRight': {
-        event.preventDefault()
-        const nextIndex = (currentIndex + 1) % buttons.length
-        buttons[nextIndex]?.focus()
-        break
+        event.preventDefault();
+        const nextIndex = (currentIndex + 1) % buttons.length;
+        buttons[nextIndex]?.focus();
+        break;
       }
       case 'ArrowLeft': {
-        event.preventDefault()
-        const prevIndex =
-          currentIndex === 0 ? buttons.length - 1 : currentIndex - 1
-        buttons[prevIndex]?.focus()
-        break
+        event.preventDefault();
+        const prevIndex = currentIndex === 0 ? buttons.length - 1 : currentIndex - 1;
+        buttons[prevIndex]?.focus();
+        break;
       }
       case 'Home':
-        event.preventDefault()
-        buttons[0]?.focus()
-        break
+        event.preventDefault();
+        buttons[0]?.focus();
+        break;
       case 'End':
-        event.preventDefault()
-        buttons[buttons.length - 1]?.focus()
-        break
+        event.preventDefault();
+        buttons[buttons.length - 1]?.focus();
+        break;
       case 'Escape': {
         // Check if the Escape key came from a dropdown trigger or content
         // We can't check dropdown state because Radix UI closes it before our handler runs
-        const target = event.target as HTMLElement
-        const activeElement = document.activeElement as HTMLElement
+        const target = event.target as HTMLElement;
+        const activeElement = document.activeElement as HTMLElement;
 
         // Check if the event target or currently focused element is a dropdown trigger
         const isFromDropdownTrigger =
           target?.getAttribute('data-slot') === 'dropdown-menu-trigger' ||
-          activeElement?.getAttribute('data-slot') ===
-            'dropdown-menu-trigger' ||
+          activeElement?.getAttribute('data-slot') === 'dropdown-menu-trigger' ||
           target?.closest('[data-slot="dropdown-menu-trigger"]') ||
-          activeElement?.closest('[data-slot="dropdown-menu-trigger"]')
+          activeElement?.closest('[data-slot="dropdown-menu-trigger"]');
 
         // Check if the focused element is inside dropdown content (which is portaled)
         const isFromDropdownContent =
           activeElement?.closest('[data-slot="dropdown-menu-content"]') ||
-          target?.closest('[data-slot="dropdown-menu-content"]')
+          target?.closest('[data-slot="dropdown-menu-content"]');
 
         if (isFromDropdownTrigger || isFromDropdownContent) {
           // Escape was meant for the dropdown - don't clear selection
-          return
+          return;
         }
 
         // Escape was meant for the toolbar - clear selection
-        event.preventDefault()
-        handleClearSelection()
-        break
+        event.preventDefault();
+        handleClearSelection();
+        break;
       }
     }
-  }
+  };
 
   if (selectedCount === 0) {
-    return null
+    return null;
   }
 
   return (
     <>
       {/* Live region for screen reader announcements */}
-      <div
-        aria-live='polite'
-        aria-atomic='true'
-        className='sr-only'
-        role='status'
-      >
+      <div aria-live='polite' aria-atomic='true' className='sr-only' role='status'>
         {announcement}
       </div>
 
@@ -175,16 +164,9 @@ export function DataTableBulkActions<TData>({
             </TooltipContent>
           </Tooltip>
 
-          <Separator
-            className='h-5'
-            orientation='vertical'
-            aria-hidden='true'
-          />
+          <Separator className='h-5' orientation='vertical' aria-hidden='true' />
 
-          <div
-            className='flex items-center gap-x-1 text-sm'
-            id='bulk-actions-description'
-          >
+          <div className='flex items-center gap-x-1 text-sm' id='bulk-actions-description'>
             <Badge
               variant='default'
               className='min-w-8 rounded-lg'
@@ -199,15 +181,11 @@ export function DataTableBulkActions<TData>({
             selected
           </div>
 
-          <Separator
-            className='h-5'
-            orientation='vertical'
-            aria-hidden='true'
-          />
+          <Separator className='h-5' orientation='vertical' aria-hidden='true' />
 
           {children}
         </div>
       </div>
     </>
-  )
+  );
 }

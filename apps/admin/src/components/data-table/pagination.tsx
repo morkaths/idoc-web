@@ -3,30 +3,27 @@ import {
   ChevronRightIcon,
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
-} from '@radix-ui/react-icons'
-import { type Table } from '@tanstack/react-table'
-import { cn, getPageNumbers } from '@/lib/utils'
-import { Button } from '@repo/ui/components/button'
+} from '@radix-ui/react-icons';
+import { type Table } from '@tanstack/react-table';
+import { cn, getPageNumbers } from '@/lib/utils';
+import { Button } from '@repo/ui/components/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@repo/ui/components/select'
+} from '@repo/ui/components/select';
 
 type DataTablePaginationProps<TData> = {
-  table: Table<TData>
-  className?: string
-}
+  table: Table<TData>;
+  className?: string;
+};
 
-export function DataTablePagination<TData>({
-  table,
-  className,
-}: DataTablePaginationProps<TData>) {
-  const currentPage = table.getState().pagination.pageIndex + 1
-  const totalPages = table.getPageCount()
-  const pageNumbers = getPageNumbers(currentPage, totalPages)
+export function DataTablePagination<TData>({ table, className }: DataTablePaginationProps<TData>) {
+  const currentPage = table.getState().pagination.pageIndex + 1;
+  const totalPages = table.getPageCount();
+  const pageNumbers = getPageNumbers(currentPage, totalPages);
 
   return (
     <div
@@ -45,7 +42,7 @@ export function DataTablePagination<TData>({
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
-              table.setPageSize(Number(value))
+              table.setPageSize(Number(value));
             }}
           >
             <SelectTrigger className='h-8 w-[70px]'>
@@ -126,5 +123,5 @@ export function DataTablePagination<TData>({
         </div>
       </div>
     </div>
-  )
+  );
 }

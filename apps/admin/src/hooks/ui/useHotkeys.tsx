@@ -1,19 +1,17 @@
-import React from 'react'
-import { HOTKEYS, type HotkeyId } from '@/config/hotkeys'
+import React from 'react';
+import { HOTKEYS, type HotkeyId } from '@/config/hotkeys';
 
 export type Hotkey = {
-  key: string
-  ctrl?: boolean
-  shift?: boolean
-  alt?: boolean
-  meta?: boolean
-  handler: (e: KeyboardEvent) => void
-  preventDefault?: boolean
-}
+  key: string;
+  ctrl?: boolean;
+  shift?: boolean;
+  alt?: boolean;
+  meta?: boolean;
+  handler: (e: KeyboardEvent) => void;
+  preventDefault?: boolean;
+};
 
-export type HotkeyActionsMap = Partial<
-  Record<HotkeyId, (e?: KeyboardEvent) => void>
->
+export type HotkeyActionsMap = Partial<Record<HotkeyId, (e?: KeyboardEvent) => void>>;
 
 /**
  * useHotkeys accepts either:
@@ -22,23 +20,23 @@ export type HotkeyActionsMap = Partial<
  */
 export default function useHotkeys(input?: Hotkey[] | HotkeyActionsMap | null) {
   // resolve input into a canonical Hotkey[] (stable via ref)
-  const resolvedRef = React.useRef<Hotkey[]>([])
+  const resolvedRef = React.useRef<Hotkey[]>([]);
 
-  React.useMemo(() => {
+  React.useEffect(() => {
     if (!input) {
-      resolvedRef.current = []
-      return
+      resolvedRef.current = [];
+      return;
     }
 
     if (Array.isArray(input)) {
-      resolvedRef.current = input
-      return
+      resolvedRef.current = input;
+      return;
     }
 
     // input is actions map -> map using HOTKEYS config
     const mapped: Hotkey[] = HOTKEYS.flatMap((cfg) => {
-      const handler = input[cfg.id]
-      if (!handler) return []
+      const handler = input[cfg.id];
+      if (!handler) return [];
       return {
         key: cfg.key,
         ctrl: cfg.ctrl,
@@ -47,38 +45,37 @@ export default function useHotkeys(input?: Hotkey[] | HotkeyActionsMap | null) {
         meta: cfg.meta,
         handler: (e: KeyboardEvent) => handler(e),
         preventDefault: true,
-      } as Hotkey
-    })
+      } as Hotkey;
+    });
 
-    resolvedRef.current = mapped
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [input])
+    resolvedRef.current = mapped;
+  }, [input]);
 
   React.useEffect(() => {
     function match(e: KeyboardEvent, hk: Hotkey) {
-      const keyMatch = e.key.toLowerCase() === hk.key.toLowerCase()
-      const ctrlMatch = hk.ctrl === undefined || hk.ctrl === e.ctrlKey
-      const shiftMatch = hk.shift === undefined || hk.shift === e.shiftKey
-      const altMatch = hk.alt === undefined || hk.alt === e.altKey
-      const metaMatch = hk.meta === undefined || hk.meta === e.metaKey
-      return keyMatch && ctrlMatch && shiftMatch && altMatch && metaMatch
+      const keyMatch = e.key.toLowerCase() === hk.key.toLowerCase();
+      const ctrlMatch = hk.ctrl === undefined || hk.ctrl === e.ctrlKey;
+      const shiftMatch = hk.shift === undefined || hk.shift === e.shiftKey;
+      const altMatch = hk.alt === undefined || hk.alt === e.altKey;
+      const metaMatch = hk.meta === undefined || hk.meta === e.metaKey;
+      return keyMatch && ctrlMatch && shiftMatch && altMatch && metaMatch;
     }
 
     function onKey(e: KeyboardEvent) {
       for (const hk of resolvedRef.current) {
         if (match(e, hk)) {
-          if (hk.preventDefault) e.preventDefault()
+          if (hk.preventDefault) e.preventDefault();
           try {
-            hk.handler(e)
+            hk.handler(e);
           } catch {
             /* swallow handler errors */
           }
-          break
+          break;
         }
       }
     }
 
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [])
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 }

@@ -1,50 +1,44 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { type Table } from '@tanstack/react-table'
-import { AlertTriangle } from 'lucide-react'
-import { toast } from 'sonner'
-import { sleep } from '@/lib/utils'
-import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert'
-import { Input } from '@repo/ui/components/input'
-import { Label } from '@repo/ui/components/label'
-import { ConfirmDialog } from '@/components/confirm-dialog'
+import { useState } from 'react';
+import { type Table } from '@tanstack/react-table';
+import { AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
+import { sleep } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert';
+import { Input } from '@repo/ui/components/input';
+import { Label } from '@repo/ui/components/label';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 
 type BookDeleteDialogProps<T> = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  table: Table<T>
-}
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  table: Table<T>;
+};
 
-const CONFIRM_WORD = 'DELETE'
+const CONFIRM_WORD = 'DELETE';
 
-export function BooksDeleteDialog<T>({
-  open,
-  onOpenChange,
-  table,
-}: BookDeleteDialogProps<T>) {
-  const [value, setValue] = useState('')
-  const selectedRows = table.getFilteredSelectedRowModel().rows
+export function BooksDeleteDialog<T>({ open, onOpenChange, table }: BookDeleteDialogProps<T>) {
+  const [value, setValue] = useState('');
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
 
   const handleDelete = () => {
     if (value.trim() !== CONFIRM_WORD) {
-      toast.error(`Please type "${CONFIRM_WORD}" to confirm.`)
-      return
+      toast.error(`Please type "${CONFIRM_WORD}" to confirm.`);
+      return;
     }
 
-    onOpenChange(false)
+    onOpenChange(false);
 
     toast.promise(sleep(2000), {
       loading: 'Deleting tasks...',
       success: () => {
-        table.resetRowSelection()
-        return `Deleted ${selectedRows.length} ${
-          selectedRows.length > 1 ? 'tasks' : 'task'
-        }`
+        table.resetRowSelection();
+        return `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'tasks' : 'task'}`;
       },
       error: 'Error',
-    })
-  }
+    });
+  };
 
   return (
     <ConfirmDialog
@@ -54,12 +48,8 @@ export function BooksDeleteDialog<T>({
       disabled={value.trim() !== CONFIRM_WORD}
       title={
         <span className='text-destructive'>
-          <AlertTriangle
-            className='stroke-destructive me-1 inline-block'
-            size={18}
-          />{' '}
-          Delete {selectedRows.length}{' '}
-          {selectedRows.length > 1 ? 'tasks' : 'task'}
+          <AlertTriangle className='stroke-destructive me-1 inline-block' size={18} /> Delete{' '}
+          {selectedRows.length} {selectedRows.length > 1 ? 'tasks' : 'task'}
         </span>
       }
       desc={
@@ -88,7 +78,7 @@ export function BooksDeleteDialog<T>({
       confirmText='Delete'
       destructive
     />
-  )
+  );
 }
 
-export default BooksDeleteDialog
+export default BooksDeleteDialog;

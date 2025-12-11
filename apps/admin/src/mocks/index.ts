@@ -1,1 +1,1 @@
-export * from './document.mock'
+export * from './document.mock';

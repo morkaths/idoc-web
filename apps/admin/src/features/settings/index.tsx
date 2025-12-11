@@ -1,13 +1,13 @@
-import { Outlet } from '@tanstack/react-router'
-import { Monitor, Bell, Palette, Wrench, UserCog } from 'lucide-react'
-import { Separator } from '@repo/ui/components/separator'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { SidebarNav } from './components/sidebar-nav'
+import { Outlet } from '@tanstack/react-router';
+import { Monitor, Bell, Palette, Wrench, UserCog } from 'lucide-react';
+import { Separator } from '@repo/ui/components/separator';
+import { ConfigDrawer } from '@/components/config-drawer';
+import { Header } from '@/components/layout/header';
+import { Main } from '@/components/layout/main';
+import { ProfileDropdown } from '@/components/profile-dropdown';
+import { Search } from '@/components/search';
+import { ThemeSwitch } from '@/components/theme-switch';
+import { SidebarNav } from './components/sidebar-nav';
 
 const sidebarNavItems = [
   {
@@ -35,7 +35,7 @@ const sidebarNavItems = [
     href: '/settings/display',
     icon: <Monitor size={18} />,
   },
-]
+];
 
 export function Settings() {
   return (
@@ -52,9 +52,7 @@ export function Settings() {
 
       <Main fixed>
         <div className='space-y-0.5'>
-          <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
-            Settings
-          </h1>
+          <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>Settings</h1>
           <p className='text-muted-foreground'>
             Manage your account settings and set e-mail preferences.
           </p>
@@ -70,5 +68,5 @@ export function Settings() {
         </div>
       </Main>
     </>
-  )
+  );
 }

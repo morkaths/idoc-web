@@ -1,4 +1,4 @@
-import { useSearch } from '@tanstack/react-router'
+import { useSearch } from '@tanstack/react-router';
 import {
   Card,
   CardContent,
@@ -6,12 +6,12 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@repo/ui/components/card'
-import { AuthLayout } from '../auth-layout'
-import { UserAuthForm } from './components/user-auth-form'
+} from '@repo/ui/components/card';
+import { AuthLayout } from '../auth-layout';
+import { UserAuthForm } from './components/user-auth-form';
 
 export function SignIn() {
-  const { redirect } = useSearch({ from: '/(auth)/sign-in' })
+  const { redirect } = useSearch({ from: '/(auth)/sign-in' });
 
   return (
     <AuthLayout>
@@ -29,17 +29,11 @@ export function SignIn() {
         <CardFooter>
           <p className='text-muted-foreground px-8 text-center text-sm'>
             By clicking sign in, you agree to our{' '}
-            <a
-              href='/terms'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <a href='/terms' className='hover:text-primary underline underline-offset-4'>
               Terms of Service
             </a>{' '}
             and{' '}
-            <a
-              href='/privacy'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <a href='/privacy' className='hover:text-primary underline underline-offset-4'>
               Privacy Policy
             </a>
             .
@@ -47,5 +41,5 @@ export function SignIn() {
         </CardFooter>
       </Card>
     </AuthLayout>
-  )
+  );
 }

@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { Check, X } from 'lucide-react'
-import { showSubmittedData } from '@/lib/show-submitted-data'
-import { Badge } from '@repo/ui/components/badge'
-import { Button } from '@repo/ui/components/button'
+import { useState } from 'react';
+import { Check, X } from 'lucide-react';
+import { showSubmittedData } from '@/lib/show-submitted-data';
+import { Badge } from '@repo/ui/components/badge';
+import { Button } from '@repo/ui/components/button';
 import {
   Command,
   CommandEmpty,
@@ -10,44 +10,39 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@repo/ui/components/command'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@repo/ui/components/dialog'
-import { type ChatUser } from '../data/chat-types'
+} from '@repo/ui/components/command';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@repo/ui/components/dialog';
+import { type ChatUser } from '../data/chat-types';
 
-type User = Omit<ChatUser, 'messages'>
+type User = Omit<ChatUser, 'messages'>;
 
 type NewChatProps = {
-  users: User[]
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
+  users: User[];
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
 export function NewChat({ users, onOpenChange, open }: NewChatProps) {
-  const [selectedUsers, setSelectedUsers] = useState<User[]>([])
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
 
   const handleSelectUser = (user: User) => {
     if (!selectedUsers.find((u) => u.id === user.id)) {
-      setSelectedUsers([...selectedUsers, user])
+      setSelectedUsers([...selectedUsers, user]);
     } else {
-      handleRemoveUser(user.id)
+      handleRemoveUser(user.id);
     }
-  }
+  };
 
   const handleRemoveUser = (userId: string) => {
-    setSelectedUsers(selectedUsers.filter((user) => user.id !== userId))
-  }
+    setSelectedUsers(selectedUsers.filter((user) => user.id !== userId));
+  };
 
   const handleOpenChange = (newOpen: boolean) => {
-    onOpenChange(newOpen)
+    onOpenChange(newOpen);
     // Reset selected users when dialog closes
     if (!newOpen) {
-      setSelectedUsers([])
+      setSelectedUsers([]);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -65,7 +60,7 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
                   className='ring-offset-background focus:ring-ring ms-1 rounded-full outline-hidden focus:ring-2 focus:ring-offset-2'
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      handleRemoveUser(user.id)
+                      handleRemoveUser(user.id);
                     }
                   }}
                   onClick={() => handleRemoveUser(user.id)}
@@ -76,10 +71,7 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
             ))}
           </div>
           <Command className='rounded-lg border'>
-            <CommandInput
-              placeholder='Search people...'
-              className='text-foreground'
-            />
+            <CommandInput placeholder='Search people...' className='text-foreground' />
             <CommandList>
               <CommandEmpty>No people found.</CommandEmpty>
               <CommandGroup>
@@ -96,18 +88,12 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
                         className='h-8 w-8 rounded-full'
                       />
                       <div className='flex flex-col'>
-                        <span className='text-sm font-medium'>
-                          {user.fullName}
-                        </span>
-                        <span className='text-accent-foreground/70 text-xs'>
-                          {user.username}
-                        </span>
+                        <span className='text-sm font-medium'>{user.fullName}</span>
+                        <span className='text-accent-foreground/70 text-xs'>{user.username}</span>
                       </div>
                     </div>
 
-                    {selectedUsers.find((u) => u.id === user.id) && (
-                      <Check className='h-4 w-4' />
-                    )}
+                    {selectedUsers.find((u) => u.id === user.id) && <Check className='h-4 w-4' />}
                   </CommandItem>
                 ))}
               </CommandGroup>
@@ -123,5 +109,5 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

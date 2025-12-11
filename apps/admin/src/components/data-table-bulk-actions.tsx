@@ -1,35 +1,31 @@
-import React, { useState } from 'react'
-import { type Table } from '@tanstack/react-table'
-import { Trash2, CircleArrowUp, ArrowUpDown, Download } from 'lucide-react'
-import { toast } from 'sonner'
-import { sleep } from '@/lib/utils'
-import { Button } from '@repo/ui/components/button'
+import React, { useState } from 'react';
+import { type Table } from '@tanstack/react-table';
+import { Trash2, CircleArrowUp, ArrowUpDown, Download } from 'lucide-react';
+import { toast } from 'sonner';
+import { sleep } from '@/lib/utils';
+import { Button } from '@repo/ui/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@repo/ui/components/dropdown-menu'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@repo/ui/components/tooltip'
-import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
-import { ConfirmDialogDelete } from './confirm-dialog-delete'
+} from '@repo/ui/components/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@repo/ui/components/tooltip';
+import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table';
+import { ConfirmDialogDelete } from './confirm-dialog-delete';
 
-type Option = { label: string; value: string; icon?: React.ComponentType<any> }
+type Option = { label: string; value: string; icon?: React.ComponentType<any> };
 
 export type DataTableBulkActionsProps<T> = {
-  table: Table<T>
-  entityName?: string
-  statuses?: Option[]
-  priorities?: Option[]
-  onBulkStatusChange?: (status: string, items: T[]) => Promise<void> | void
-  onBulkPriorityChange?: (priority: string, items: T[]) => Promise<void> | void
-  onBulkExport?: (items: T[]) => Promise<void> | void
-  onBulkDelete?: (items: T[]) => Promise<void> | void
-}
+  table: Table<T>;
+  entityName?: string;
+  statuses?: Option[];
+  priorities?: Option[];
+  onBulkStatusChange?: (status: string, items: T[]) => Promise<void> | void;
+  onBulkPriorityChange?: (priority: string, items: T[]) => Promise<void> | void;
+  onBulkExport?: (items: T[]) => Promise<void> | void;
+  onBulkDelete?: (items: T[]) => Promise<void> | void;
+};
 
 export function DataTableBulkActions<T>({
   table,
@@ -41,23 +37,21 @@ export function DataTableBulkActions<T>({
   onBulkExport,
   onBulkDelete,
 }: DataTableBulkActionsProps<T>) {
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const selectedRows = table.getFilteredSelectedRowModel().rows
-  const items = selectedRows.map((r) => r.original as T)
-  const count = items.length
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const items = selectedRows.map((r) => r.original as T);
+  const count = items.length;
 
   const renderToast = async (
     promiseOrCb: Promise<void> | (() => Promise<void> | void),
     messages: {
-      loading: string
-      success: string | (() => string)
-      error?: string
+      loading: string;
+      success: string | (() => string);
+      error?: string;
     }
   ) => {
     const promise =
-      typeof promiseOrCb === 'function'
-        ? Promise.resolve().then(() => promiseOrCb())
-        : promiseOrCb
+      typeof promiseOrCb === 'function' ? Promise.resolve().then(() => promiseOrCb()) : promiseOrCb;
     await toast.promise(
       promise.then(() => sleep(700)),
       {
@@ -68,17 +62,17 @@ export function DataTableBulkActions<T>({
             : (messages.success as string),
         error: messages.error ?? 'Error',
       }
-    )
-    table.resetRowSelection()
-  }
+    );
+    table.resetRowSelection();
+  };
 
   const handleStatus = (status: string) => {
     return renderToast(
       async () => {
         if (onBulkStatusChange) {
-          await Promise.resolve(onBulkStatusChange(status, items) as any)
+          await Promise.resolve(onBulkStatusChange(status, items) as any);
         } else {
-          await sleep(1000)
+          await sleep(1000);
         }
       },
       {
@@ -86,16 +80,16 @@ export function DataTableBulkActions<T>({
         success: () =>
           `Status updated to "${status}" for ${count} ${count > 1 ? `${entityName}s` : entityName}.`,
       }
-    )
-  }
+    );
+  };
 
   const handlePriority = (priority: string) => {
     return renderToast(
       async () => {
         if (onBulkPriorityChange) {
-          await Promise.resolve(onBulkPriorityChange(priority, items) as any)
+          await Promise.resolve(onBulkPriorityChange(priority, items) as any);
         } else {
-          await sleep(1000)
+          await sleep(1000);
         }
       },
       {
@@ -103,27 +97,26 @@ export function DataTableBulkActions<T>({
         success: () =>
           `Priority updated to "${priority}" for ${count} ${count > 1 ? `${entityName}s` : entityName}.`,
       }
-    )
-  }
+    );
+  };
 
   const handleExport = () => {
     return renderToast(
       async () => {
         if (onBulkExport) {
-          await Promise.resolve(onBulkExport(items) as any)
+          await Promise.resolve(onBulkExport(items) as any);
         } else {
-          await sleep(1000)
+          await sleep(1000);
         }
       },
       {
         loading: `Exporting ${entityName}${count > 1 ? 's' : ''}...`,
-        success: () =>
-          `Exported ${count} ${entityName}${count > 1 ? 's' : ''}.`,
+        success: () => `Exported ${count} ${entityName}${count > 1 ? 's' : ''}.`,
       }
-    )
-  }
+    );
+  };
 
-  if (!table) return null
+  if (!table) return null;
 
   return (
     <>
@@ -155,9 +148,7 @@ export function DataTableBulkActions<T>({
                 defaultValue={status.value}
                 onClick={() => handleStatus(status.value)}
               >
-                {status.icon && (
-                  <status.icon className='text-muted-foreground size-4' />
-                )}
+                {status.icon && <status.icon className='text-muted-foreground size-4' />}
                 {status.label}
               </DropdownMenuItem>
             ))}
@@ -190,9 +181,7 @@ export function DataTableBulkActions<T>({
                 defaultValue={priority.value}
                 onClick={() => handlePriority(priority.value)}
               >
-                {priority.icon && (
-                  <priority.icon className='text-muted-foreground size-4' />
-                )}
+                {priority.icon && <priority.icon className='text-muted-foreground size-4' />}
                 {priority.label}
               </DropdownMenuItem>
             ))}
@@ -248,14 +237,14 @@ export function DataTableBulkActions<T>({
         confirmWord='DELETE'
         onConfirm={async () => {
           if (onBulkDelete) {
-            await Promise.resolve(onBulkDelete(items) as any)
+            await Promise.resolve(onBulkDelete(items) as any);
           } else {
-            await sleep(1000)
+            await sleep(1000);
           }
         }}
       />
     </>
-  )
+  );
 }
 
-export default DataTableBulkActions
+export default DataTableBulkActions;

@@ -1,4 +1,4 @@
-import * as ENV from './env'
+import * as ENV from './env';
 
 export const API_CONFIG = {
   timeout: 10000,
@@ -33,4 +33,4 @@ export const API_CONFIG = {
       delete: (id: string) => `/categories/${id}`,
     },
   },
-}
+};

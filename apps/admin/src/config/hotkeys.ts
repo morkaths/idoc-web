@@ -1,13 +1,13 @@
-export type HotkeyId = 'profile' | 'billing' | 'settings' | 'signout'
+export type HotkeyId = 'profile' | 'billing' | 'settings' | 'signout';
 
 export type HotkeyConfig = {
-  id: HotkeyId // Mã định danh phím tắt
-  key: string // Phím chính
-  ctrl?: boolean // Phím Ctrl
-  shift?: boolean // Phím Shift
-  alt?: boolean // Phím Alt
-  meta?: boolean // Phím Meta (Command trên Mac, Windows trên Windows)
-}
+  id: HotkeyId; // Mã định danh phím tắt
+  key: string; // Phím chính
+  ctrl?: boolean; // Phím Ctrl
+  shift?: boolean; // Phím Shift
+  alt?: boolean; // Phím Alt
+  meta?: boolean; // Phím Meta (Command trên Mac, Windows trên Windows)
+};
 
 export const HOTKEYS: HotkeyConfig[] = [
   { id: 'profile', key: 'p', meta: true, shift: true },
@@ -21,4 +21,4 @@ export const HOTKEYS: HotkeyConfig[] = [
 
   { id: 'signout', key: 'q', meta: true, shift: true },
   { id: 'signout', key: 'q', ctrl: true, shift: true },
-]
+];

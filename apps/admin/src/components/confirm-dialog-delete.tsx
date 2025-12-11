@@ -1,20 +1,20 @@
-import { useState } from 'react'
-import { type Table } from '@tanstack/react-table'
-import { toast } from 'sonner'
-import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert'
-import { Input } from '@repo/ui/components/input'
-import { Label } from '@repo/ui/components/label'
-import { ConfirmDialog } from '@/components/confirm-dialog'
+import { useState } from 'react';
+import { type Table } from '@tanstack/react-table';
+import { toast } from 'sonner';
+import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert';
+import { Input } from '@repo/ui/components/input';
+import { Label } from '@repo/ui/components/label';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 
 type ConfirmDialogDeleteProps<T> = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  table?: Table<T>
-  selectedCount?: number
-  confirmWord?: string
-  itemName?: string
-  onConfirm: () => Promise<void> | void
-}
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  table?: Table<T>;
+  selectedCount?: number;
+  confirmWord?: string;
+  itemName?: string;
+  onConfirm: () => Promise<void> | void;
+};
 
 export function ConfirmDialogDelete<T>({
   open,
@@ -25,15 +25,13 @@ export function ConfirmDialogDelete<T>({
   itemName = 'item',
   onConfirm,
 }: ConfirmDialogDeleteProps<T>) {
-  const [value, setValue] = useState('')
-  const count = table
-    ? table.getFilteredSelectedRowModel().rows.length
-    : (selectedCount ?? 0)
+  const [value, setValue] = useState('');
+  const count = table ? table.getFilteredSelectedRowModel().rows.length : (selectedCount ?? 0);
 
   const handleConfirm = async () => {
     if (confirmWord && value.trim() !== confirmWord) {
-      toast.error(`Please type "${confirmWord}" to confirm.`)
-      return
+      toast.error(`Please type "${confirmWord}" to confirm.`);
+      return;
     }
 
     try {
@@ -42,17 +40,17 @@ export function ConfirmDialogDelete<T>({
         {
           loading: `Deleting ${count} ${count > 1 ? `${itemName}s` : itemName}...`,
           success: () => {
-            if (table) table.resetRowSelection()
-            onOpenChange(false)
-            return `Deleted ${count} ${count > 1 ? `${itemName}s` : itemName}`
+            if (table) table.resetRowSelection();
+            onOpenChange(false);
+            return `Deleted ${count} ${count > 1 ? `${itemName}s` : itemName}`;
           },
           error: 'Delete failed',
         }
-      )
+      );
     } finally {
-      setValue('')
+      setValue('');
     }
-  }
+  };
 
   return (
     <ConfirmDialog
@@ -92,7 +90,7 @@ export function ConfirmDialogDelete<T>({
       confirmText='Delete'
       destructive
     />
-  )
+  );
 }
 
-export default ConfirmDialogDelete
+export default ConfirmDialogDelete;

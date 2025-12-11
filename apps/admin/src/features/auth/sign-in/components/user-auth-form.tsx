@@ -1,14 +1,14 @@
-import { useState } from 'react'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useNavigate } from '@tanstack/react-router'
-import { Loader2, LogIn } from 'lucide-react'
-import { toast } from 'sonner'
-import { IconFacebook, IconGithub } from '@/assets/brand-icons'
-import { useAuthStore } from '@/stores/auth-store'
-import { sleep, cn } from '@/lib/utils'
-import { Button } from '@repo/ui/components/button'
+import { useState } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Link, useNavigate } from '@tanstack/react-router';
+import { Loader2, LogIn } from 'lucide-react';
+import { toast } from 'sonner';
+import { IconFacebook, IconGithub } from '@/assets/brand-icons';
+import { useAuthStore } from '@/stores/auth-store';
+import { sleep, cn } from '@/lib/utils';
+import { Button } from '@repo/ui/components/button';
 import {
   Form,
   FormControl,
@@ -16,9 +16,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@repo/ui/components/form'
-import { Input } from '@repo/ui/components/input'
-import { PasswordInput } from '@/components/password-input'
+} from '@repo/ui/components/form';
+import { Input } from '@repo/ui/components/input';
+import { PasswordInput } from '@/components/password-input';
 
 const formSchema = z.object({
   email: z.email({
@@ -28,20 +28,16 @@ const formSchema = z.object({
     .string()
     .min(1, 'Please enter your password')
     .min(7, 'Password must be at least 7 characters long'),
-})
+});
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLFormElement> {
-  redirectTo?: string
+  redirectTo?: string;
 }
 
-export function UserAuthForm({
-  className,
-  redirectTo,
-  ...props
-}: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
-  const { auth } = useAuthStore()
+export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { auth } = useAuthStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,15 +45,15 @@ export function UserAuthForm({
       email: '',
       password: '',
     },
-  })
+  });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
+    setIsLoading(true);
 
     toast.promise(sleep(2000), {
       loading: 'Signing in...',
       success: () => {
-        setIsLoading(false)
+        setIsLoading(false);
 
         // Mock successful authentication with expiry computed at success time
         const mockUser = {
@@ -65,20 +61,20 @@ export function UserAuthForm({
           email: data.email,
           role: ['user'],
           exp: Date.now() + 24 * 60 * 60 * 1000, // 24 hours from now
-        }
+        };
 
         // Set user and access token
-        auth.setUser(mockUser)
-        auth.setAccessToken('mock-access-token')
+        auth.setUser(mockUser);
+        auth.setAccessToken('mock-access-token');
 
         // Redirect to the stored location or default to dashboard
-        const targetPath = redirectTo || '/'
-        navigate({ to: targetPath, replace: true })
+        const targetPath = redirectTo || '/';
+        navigate({ to: targetPath, replace: true });
 
-        return `Welcome back, ${data.email}!`
+        return `Welcome back, ${data.email}!`;
       },
       error: 'Error',
-    })
+    });
   }
 
   return (
@@ -130,9 +126,7 @@ export function UserAuthForm({
             <span className='w-full border-t' />
           </div>
           <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-background text-muted-foreground px-2'>
-              Or continue with
-            </span>
+            <span className='bg-background text-muted-foreground px-2'>Or continue with</span>
           </div>
         </div>
 
@@ -146,5 +140,5 @@ export function UserAuthForm({
         </div>
       </form>
     </Form>
-  )
+  );
 }

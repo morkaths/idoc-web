@@ -1,26 +1,24 @@
-import { Outlet } from '@tanstack/react-router'
-import { getCookie } from '@/lib/cookies'
-import { cn } from '@/lib/utils'
-import { LayoutProvider, useLayout } from '@/context/layout-provider'
-import { SearchProvider } from '@/context/search-provider'
-import { SidebarInset, SidebarProvider } from '@repo/ui/components/sidebar'
-import { AppSidebar } from '@/components/layout/app-sidebar'
-import { SkipToMain } from '@/components/skip-to-main'
-import { ConfigDrawer } from '../config-drawer'
-import { ProfileDropdown } from '../profile-dropdown'
-import { Search } from '../search'
-import { ThemeSwitch } from '../theme-switch'
-import { Header } from './header'
-import { Main } from './main'
+import { Outlet } from '@tanstack/react-router';
+import { getCookie } from '@/lib/cookies';
+import { cn } from '@/lib/utils';
+import { LayoutProvider, useLayout } from '@/context/layout-provider';
+import { SearchProvider } from '@/context/search-provider';
+import { SidebarInset, SidebarProvider } from '@repo/ui/components/sidebar';
+import { AppSidebar } from '@/components/layout/app-sidebar';
+import { SkipToMain } from '@/components/skip-to-main';
+import { ConfigDrawer } from '../config-drawer';
+import { ProfileDropdown } from '../profile-dropdown';
+import { Search } from '../search';
+import { ThemeSwitch } from '../theme-switch';
+import { Header } from './header';
+import { Main } from './main';
 
 type AuthenticatedLayoutProps = {
-  children?: React.ReactNode
-}
+  children?: React.ReactNode;
+};
 
-export function AuthenticatedLayoutWrapper({
-  children,
-}: AuthenticatedLayoutProps) {
-  const defaultOpen = getCookie('sidebar_state') !== 'false'
+export function AuthenticatedLayoutWrapper({ children }: AuthenticatedLayoutProps) {
+  const defaultOpen = getCookie('sidebar_state') !== 'false';
   return (
     <SearchProvider>
       <LayoutProvider>
@@ -46,7 +44,7 @@ export function AuthenticatedLayoutWrapper({
         </SidebarProvider>
       </LayoutProvider>
     </SearchProvider>
-  )
+  );
 }
 
 /**
@@ -54,7 +52,7 @@ export function AuthenticatedLayoutWrapper({
  * Must be rendered inside Providers so useLayout() is valid.
  */
 function InnerLayout({ children }: AuthenticatedLayoutProps) {
-  const { headerFixed, mainFixed } = useLayout()
+  const { headerFixed, mainFixed } = useLayout();
 
   return (
     <>
@@ -73,7 +71,7 @@ function InnerLayout({ children }: AuthenticatedLayoutProps) {
         {children ?? <Outlet />}
       </Main>
     </>
-  )
+  );
 }
 
 export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
@@ -81,5 +79,5 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
     <AuthenticatedLayoutWrapper>
       <InnerLayout>{children}</InnerLayout>
     </AuthenticatedLayoutWrapper>
-  )
+  );
 }

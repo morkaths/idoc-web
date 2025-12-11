@@ -1,22 +1,14 @@
-import * as React from 'react'
-import { Eye, EyeOff } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Button } from '@repo/ui/components/button'
+import * as React from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@repo/ui/components/button';
 
-type PasswordInputProps = Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  'type'
-> & {
-  ref?: React.Ref<HTMLInputElement>
-}
+type PasswordInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> & {
+  ref?: React.Ref<HTMLInputElement>;
+};
 
-export function PasswordInput({
-  className,
-  disabled,
-  ref,
-  ...props
-}: PasswordInputProps) {
-  const [showPassword, setShowPassword] = React.useState(false)
+export function PasswordInput({ className, disabled, ref, ...props }: PasswordInputProps) {
+  const [showPassword, setShowPassword] = React.useState(false);
 
   return (
     <div className={cn('relative rounded-md', className)}>
@@ -38,5 +30,5 @@ export function PasswordInput({
         {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
       </Button>
     </div>
-  )
+  );
 }

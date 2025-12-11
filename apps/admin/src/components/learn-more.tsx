@@ -1,24 +1,15 @@
-import { type Root, type Content, type Trigger } from '@radix-ui/react-popover'
-import { CircleQuestionMark } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Button } from '@repo/ui/components/button'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@repo/ui/components/popover'
+import { type Root, type Content, type Trigger } from '@radix-ui/react-popover';
+import { CircleQuestionMark } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@repo/ui/components/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui/components/popover';
 
 type LearnMoreProps = React.ComponentProps<typeof Root> & {
-  contentProps?: React.ComponentProps<typeof Content>
-  triggerProps?: React.ComponentProps<typeof Trigger>
-}
+  contentProps?: React.ComponentProps<typeof Content>;
+  triggerProps?: React.ComponentProps<typeof Trigger>;
+};
 
-export function LearnMore({
-  children,
-  contentProps,
-  triggerProps,
-  ...props
-}: LearnMoreProps) {
+export function LearnMore({ children, contentProps, triggerProps, ...props }: LearnMoreProps) {
   return (
     <Popover {...props}>
       <PopoverTrigger
@@ -40,5 +31,5 @@ export function LearnMore({
         {children}
       </PopoverContent>
     </Popover>
-  )
+  );
 }

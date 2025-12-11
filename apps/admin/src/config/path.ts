@@ -21,6 +21,6 @@ const paths = {
   search: '/search',
   books: '/books',
   book: (slug: string | undefined) => `/books/${slug}`,
-}
+};
 
-export default paths
+export default paths;

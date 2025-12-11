@@ -1,7 +1,7 @@
-import { Link } from '@tanstack/react-router'
-import useDialogState from '@/hooks/ui/useDialogState'
-import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar'
-import { Button } from '@repo/ui/components/button'
+import { Link } from '@tanstack/react-router';
+import useDialogState from '@/hooks/ui/useDialogState';
+import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
+import { Button } from '@repo/ui/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,11 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from '@repo/ui/components/dropdown-menu'
-import { SignOutDialog } from '@/components/sign-out-dialog'
+} from '@repo/ui/components/dropdown-menu';
+import { SignOutDialog } from '@/components/sign-out-dialog';
 
 export function ProfileDropdown() {
-  const [open, setOpen] = useDialogState()
+  const [open, setOpen] = useDialogState();
 
   return (
     <>
@@ -32,9 +32,7 @@ export function ProfileDropdown() {
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
               <p className='text-sm leading-none font-medium'>Vuong</p>
-              <p className='text-muted-foreground text-xs leading-none'>
-                morkaths@gmail.com
-              </p>
+              <p className='text-muted-foreground text-xs leading-none'>morkaths@gmail.com</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -62,14 +60,12 @@ export function ProfileDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
             Sign out
-            <DropdownMenuShortcut className='text-current'>
-              ⇧⌘Q
-            </DropdownMenuShortcut>
+            <DropdownMenuShortcut className='text-current'>⇧⌘Q</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <SignOutDialog open={!!open} onOpenChange={setOpen} />
     </>
-  )
+  );
 }

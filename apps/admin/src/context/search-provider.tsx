@@ -1,20 +1,20 @@
-import { createContext, useContext, useState } from 'react'
-import useHotkeys from '@/hooks/ui/useHotkeys'
-import { CommandMenu } from '@/components/command-menu'
+import { createContext, useContext, useState } from 'react';
+import useHotkeys from '@/hooks/ui/useHotkeys';
+import { CommandMenu } from '@/components/command-menu';
 
 type SearchContextType = {
-  open: boolean
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
-}
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-const SearchContext = createContext<SearchContextType | null>(null)
+const SearchContext = createContext<SearchContextType | null>(null);
 
 type SearchProviderProps = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 export function SearchProvider({ children }: SearchProviderProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   useHotkeys([
     {
@@ -29,23 +29,23 @@ export function SearchProvider({ children }: SearchProviderProps) {
       handler: () => setOpen((o) => !o),
       preventDefault: true,
     },
-  ])
+  ]);
 
   return (
     <SearchContext.Provider value={{ open, setOpen }}>
       {children}
       <CommandMenu />
     </SearchContext.Provider>
-  )
+  );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useSearch = () => {
-  const searchContext = useContext(SearchContext)
+  const searchContext = useContext(SearchContext);
 
   if (!searchContext) {
-    throw new Error('useSearch has to be used within SearchProvider')
+    throw new Error('useSearch has to be used within SearchProvider');
   }
 
-  return searchContext
-}
+  return searchContext;
+};

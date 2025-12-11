@@ -4,8 +4,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@repo/ui/components/card'
-import { AnalyticsChart } from './analytics-chart'
+} from '@repo/ui/components/card';
+import { AnalyticsChart } from './analytics-chart';
 
 export function Analytics() {
   return (
@@ -44,9 +44,7 @@ export function Analytics() {
         </Card>
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>
-              Unique Visitors
-            </CardTitle>
+            <CardTitle className='text-sm font-medium'>Unique Visitors</CardTitle>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               viewBox='0 0 24 24'
@@ -148,7 +146,7 @@ export function Analytics() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
 
 function SimpleBarList({
@@ -156,34 +154,27 @@ function SimpleBarList({
   valueFormatter,
   barClass,
 }: {
-  items: { name: string; value: number }[]
-  valueFormatter: (n: number) => string
-  barClass: string
+  items: { name: string; value: number }[];
+  valueFormatter: (n: number) => string;
+  barClass: string;
 }) {
-  const max = Math.max(...items.map((i) => i.value), 1)
+  const max = Math.max(...items.map((i) => i.value), 1);
   return (
     <ul className='space-y-3'>
       {items.map((i) => {
-        const width = `${Math.round((i.value / max) * 100)}%`
+        const width = `${Math.round((i.value / max) * 100)}%`;
         return (
           <li key={i.name} className='flex items-center justify-between gap-3'>
             <div className='min-w-0 flex-1'>
-              <div className='text-muted-foreground mb-1 truncate text-xs'>
-                {i.name}
-              </div>
+              <div className='text-muted-foreground mb-1 truncate text-xs'>{i.name}</div>
               <div className='bg-muted h-2.5 w-full rounded-full'>
-                <div
-                  className={`h-2.5 rounded-full ${barClass}`}
-                  style={{ width }}
-                />
+                <div className={`h-2.5 rounded-full ${barClass}`} style={{ width }} />
               </div>
             </div>
-            <div className='ps-2 text-xs font-medium tabular-nums'>
-              {valueFormatter(i.value)}
-            </div>
+            <div className='ps-2 text-xs font-medium tabular-nums'>{valueFormatter(i.value)}</div>
           </li>
-        )
+        );
       })}
     </ul>
-  )
+  );
 }

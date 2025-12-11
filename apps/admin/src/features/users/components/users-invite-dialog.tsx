@@ -1,9 +1,9 @@
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { MailPlus, Send } from 'lucide-react'
-import { showSubmittedData } from '@/lib/show-submitted-data'
-import { Button } from '@repo/ui/components/button'
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { MailPlus, Send } from 'lucide-react';
+import { showSubmittedData } from '@/lib/show-submitted-data';
+import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
   DialogClose,
@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@repo/ui/components/dialog'
+} from '@repo/ui/components/dialog';
 import {
   Form,
   FormControl,
@@ -20,49 +20,45 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@repo/ui/components/form'
-import { Input } from '@repo/ui/components/input'
-import { Textarea } from '@repo/ui/components/textarea'
-import { SelectDropdown } from '@/components/select-dropdown'
-import { roles } from '../data/data'
+} from '@repo/ui/components/form';
+import { Input } from '@repo/ui/components/input';
+import { Textarea } from '@repo/ui/components/textarea';
+import { SelectDropdown } from '@/components/select-dropdown';
+import { roles } from '../data/data';
 
 const formSchema = z.object({
   email: z.email({
-    error: (iss) =>
-      iss.input === '' ? 'Please enter an email to invite.' : undefined,
+    error: (iss) => (iss.input === '' ? 'Please enter an email to invite.' : undefined),
   }),
   role: z.string().min(1, 'Role is required.'),
   desc: z.string().optional(),
-})
+});
 
-type UserInviteForm = z.infer<typeof formSchema>
+type UserInviteForm = z.infer<typeof formSchema>;
 
 type UserInviteDialogProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
 
-export function UsersInviteDialog({
-  open,
-  onOpenChange,
-}: UserInviteDialogProps) {
+export function UsersInviteDialog({ open, onOpenChange }: UserInviteDialogProps) {
   const form = useForm<UserInviteForm>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '', role: '', desc: '' },
-  })
+  });
 
   const onSubmit = (values: UserInviteForm) => {
-    form.reset()
-    showSubmittedData(values)
-    onOpenChange(false)
-  }
+    form.reset();
+    showSubmittedData(values);
+    onOpenChange(false);
+  };
 
   return (
     <Dialog
       open={open}
       onOpenChange={(state) => {
-        form.reset()
-        onOpenChange(state)
+        form.reset();
+        onOpenChange(state);
       }}
     >
       <DialogContent className='sm:max-w-md'>
@@ -71,16 +67,12 @@ export function UsersInviteDialog({
             <MailPlus /> Invite User
           </DialogTitle>
           <DialogDescription>
-            Invite new user to join your team by sending them an email
-            invitation. Assign a role to define their access level.
+            Invite new user to join your team by sending them an email invitation. Assign a role to
+            define their access level.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            id='user-invite-form'
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='space-y-4'
-          >
+          <form id='user-invite-form' onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
             <FormField
               control={form.control}
               name='email'
@@ -88,11 +80,7 @@ export function UsersInviteDialog({
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      type='email'
-                      placeholder='eg: john.doe@gmail.com'
-                      {...field}
-                    />
+                    <Input type='email' placeholder='eg: john.doe@gmail.com' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -146,5 +134,5 @@ export function UsersInviteDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

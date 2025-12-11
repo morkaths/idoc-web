@@ -1,24 +1,24 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { ClerkProvider } from '@clerk/clerk-react'
-import { ExternalLink, Key } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert'
-import { Separator } from '@repo/ui/components/separator'
-import { SidebarTrigger } from '@repo/ui/components/sidebar'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { AuthenticatedLayout } from '@/components/layout/authenticated-layout'
-import { Main } from '@/components/layout/main'
-import { ThemeSwitch } from '@/components/theme-switch'
+import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { ClerkProvider } from '@clerk/clerk-react';
+import { ExternalLink, Key } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert';
+import { Separator } from '@repo/ui/components/separator';
+import { SidebarTrigger } from '@repo/ui/components/sidebar';
+import { ConfigDrawer } from '@/components/config-drawer';
+import { AuthenticatedLayout } from '@/components/layout/authenticated-layout';
+import { Main } from '@/components/layout/main';
+import { ThemeSwitch } from '@/components/theme-switch';
 
 export const Route = createFileRoute('/clerk')({
   component: RouteComponent,
-})
+});
 
 // Import your Publishable Key
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 function RouteComponent() {
   if (!PUBLISHABLE_KEY) {
-    return <MissingClerkPubKey />
+    return <MissingClerkPubKey />;
   }
 
   return (
@@ -32,12 +32,11 @@ function RouteComponent() {
     >
       <Outlet />
     </ClerkProvider>
-  )
+  );
 }
 
 function MissingClerkPubKey() {
-  const codeBlock =
-    'bg-foreground/10 rounded-sm py-0.5 px-1 text-xs text-foreground font-bold'
+  const codeBlock = 'bg-foreground/10 rounded-sm py-0.5 px-1 text-xs text-foreground font-bold';
   return (
     <AuthenticatedLayout>
       <div className='bg-background flex h-16 justify-between p-4'>
@@ -54,8 +53,8 @@ function MissingClerkPubKey() {
             <AlertTitle>No Publishable Key Found!</AlertTitle>
             <AlertDescription>
               <p className='text-balance'>
-                You need to generate a publishable key from Clerk and put it
-                inside the <code className={codeBlock}>.env</code> file.
+                You need to generate a publishable key from Clerk and put it inside the{' '}
+                <code className={codeBlock}>.env</code> file.
               </p>
             </AlertDescription>
           </Alert>
@@ -78,16 +77,14 @@ function MissingClerkPubKey() {
                 Dashboard, navigate to the API keys page.
               </li>
               <li>
-                In the <strong>Quick Copy</strong> section, copy your Clerk
-                Publishable Key.
+                In the <strong>Quick Copy</strong> section, copy your Clerk Publishable Key.
               </li>
               <li>
                 Rename <code className={codeBlock}>.env.example</code> to{' '}
                 <code className={codeBlock}>.env</code>
               </li>
               <li>
-                Paste your key into your <code className={codeBlock}>.env</code>{' '}
-                file.
+                Paste your key into your <code className={codeBlock}>.env</code> file.
               </li>
             </ol>
             <p>The final result should resemble the following:</p>
@@ -111,24 +108,21 @@ function MissingClerkPubKey() {
             <AlertDescription>
               <p className='text-balance'>
                 The Clerk integration lives entirely inside{' '}
-                <code className={codeBlock}>src/routes/clerk</code>. If you plan
-                to use Clerk as your auth service, you might want to place{' '}
-                <code className={codeBlock}>ClerkProvider</code> at the root
-                route.
+                <code className={codeBlock}>src/routes/clerk</code>. If you plan to use Clerk as
+                your auth service, you might want to place{' '}
+                <code className={codeBlock}>ClerkProvider</code> at the root route.
               </p>
               <p>
-                However, if you don't plan to use Clerk, you can safely remove
-                this directory and related dependency_{' '}
-                <code className={codeBlock}>@clerk/clerk-react</code>.
+                However, if you don't plan to use Clerk, you can safely remove this directory and
+                related dependency_ <code className={codeBlock}>@clerk/clerk-react</code>.
               </p>
               <p className='mt-2 text-sm'>
-                This setup is modular by design and won't affect the rest of the
-                application.
+                This setup is modular by design and won't affect the rest of the application.
               </p>
             </AlertDescription>
           </Alert>
         </div>
       </Main>
     </AuthenticatedLayout>
-  )
+  );
 }

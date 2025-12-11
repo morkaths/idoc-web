@@ -1,10 +1,7 @@
-import { type SVGProps } from 'react'
-import { cn } from '@/lib/utils'
+import { type SVGProps } from 'react';
+import { cn } from '@/lib/utils';
 
-export function IconThemeSystem({
-  className,
-  ...props
-}: SVGProps<SVGSVGElement>) {
+export function IconThemeSystem({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
       data-name='icon-theme-system'
@@ -112,5 +109,5 @@ export function IconThemeSystem({
         strokeMiterlimit={10}
       />
     </svg>
-  )
+  );
 }

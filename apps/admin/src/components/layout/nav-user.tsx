@@ -1,14 +1,7 @@
-import { Link } from '@tanstack/react-router'
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from 'lucide-react'
-import useDialogState from '@/hooks/ui/useDialogState'
-import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar'
+import { Link } from '@tanstack/react-router';
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
+import useDialogState from '@/hooks/ui/useDialogState';
+import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,26 +10,26 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@repo/ui/components/dropdown-menu'
+} from '@repo/ui/components/dropdown-menu';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@repo/ui/components/sidebar'
-import { SignOutDialog } from '@/components/sign-out-dialog'
+} from '@repo/ui/components/sidebar';
+import { SignOutDialog } from '@/components/sign-out-dialog';
 
 type NavUserProps = {
   user: {
-    name: string
-    email: string
-    avatar: string
-  }
-}
+    name: string;
+    email: string;
+    avatar: string;
+  };
+};
 
 export function NavUser({ user }: NavUserProps) {
-  const { isMobile } = useSidebar()
-  const [open, setOpen] = useDialogState()
+  const { isMobile } = useSidebar();
+  const [open, setOpen] = useDialogState();
 
   return (
     <>
@@ -106,10 +99,7 @@ export function NavUser({ user }: NavUserProps) {
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant='destructive'
-                onClick={() => setOpen(true)}
-              >
+              <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
                 <LogOut />
                 Sign out
               </DropdownMenuItem>
@@ -120,5 +110,5 @@ export function NavUser({ user }: NavUserProps) {
 
       <SignOutDialog open={!!open} onOpenChange={setOpen} />
     </>
-  )
+  );
 }

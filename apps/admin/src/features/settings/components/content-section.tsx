@@ -1,10 +1,10 @@
-import { Separator } from '@repo/ui/components/separator'
+import { Separator } from '@repo/ui/components/separator';
 
 type ContentSectionProps = {
-  title: string
-  desc: string
-  children: React.JSX.Element
-}
+  title: string;
+  desc: string;
+  children: React.JSX.Element;
+};
 
 export function ContentSection({ title, desc, children }: ContentSectionProps) {
   return (
@@ -18,5 +18,5 @@ export function ContentSection({ title, desc, children }: ContentSectionProps) {
         <div className='-mx-1 px-1.5 lg:max-w-xl'>{children}</div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,14 +1,14 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const dateOrString = z.preprocess((val) => {
-  if (val == null || val === '') return undefined
-  if (val instanceof Date) return val
+  if (val == null || val === '') return undefined;
+  if (val instanceof Date) return val;
   if (typeof val === 'string' || typeof val === 'number') {
-    const d = new Date(val as any)
-    return isNaN(d.getTime()) ? undefined : d
+    const d = new Date(val as any);
+    return isNaN(d.getTime()) ? undefined : d;
   }
-  return undefined
-}, z.date().optional())
+  return undefined;
+}, z.date().optional());
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // AUTH TYPES: Xử lý người dùng, vai trò và quyền
@@ -20,7 +20,7 @@ export const PermissionSchema = z.object({
   createdAt: dateOrString,
   modifiedAt: dateOrString,
   modifiedBy: z.string().optional(),
-})
+});
 
 export const RoleSchema = z.object({
   id: z.string(),
@@ -30,7 +30,7 @@ export const RoleSchema = z.object({
   createdAt: dateOrString,
   modifiedAt: dateOrString,
   modifiedBy: z.string().optional(),
-})
+});
 
 export const UserSchema = z.object({
   id: z.string(),
@@ -42,7 +42,7 @@ export const UserSchema = z.object({
   createdAt: dateOrString,
   modifiedAt: dateOrString,
   modifiedBy: z.string().optional(),
-})
+});
 
 export const LinkedAccountSchema = z.object({
   _id: z.string(),
@@ -50,12 +50,12 @@ export const LinkedAccountSchema = z.object({
   provider: z.string(),
   providerId: z.string(),
   linkedAt: dateOrString,
-})
+});
 
-export type Permission = z.infer<typeof PermissionSchema>
-export type Role = z.infer<typeof RoleSchema>
-export type User = z.infer<typeof UserSchema>
-export type LinkedAccount = z.infer<typeof LinkedAccountSchema>
+export type Permission = z.infer<typeof PermissionSchema>;
+export type Role = z.infer<typeof RoleSchema>;
+export type User = z.infer<typeof UserSchema>;
+export type LinkedAccount = z.infer<typeof LinkedAccountSchema>;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // USER TYPES: Xử lý hồ sơ và cài đặt người dùng
@@ -69,7 +69,7 @@ export const ProfileSchema = z.object({
   bio: z.string().optional(),
   location: z.string().optional(),
   updatedAt: dateOrString,
-})
+});
 
 const ThemeSchema = z
   .object({
@@ -77,14 +77,14 @@ const ThemeSchema = z
     layout: z.enum(['vertical', 'horizontal']).optional(),
     language: z.string().optional(),
   })
-  .optional()
+  .optional();
 
 const NotificationsSchema = z
   .object({
     email: z.boolean().optional(),
     sms: z.boolean().optional(),
   })
-  .optional()
+  .optional();
 
 export const SettingsSchema = z.object({
   _id: z.string(),
@@ -92,10 +92,10 @@ export const SettingsSchema = z.object({
   theme: ThemeSchema,
   notifications: NotificationsSchema,
   updatedAt: dateOrString,
-})
+});
 
-export type Profile = z.infer<typeof ProfileSchema>
-export type Settings = z.infer<typeof SettingsSchema>
+export type Profile = z.infer<typeof ProfileSchema>;
+export type Settings = z.infer<typeof SettingsSchema>;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // DOCUMENT TYPES: Xử lý tài liệu, sách và tác giả
@@ -109,7 +109,7 @@ export const AuthorSchema = z.object({
   bio: z.string().optional(),
   createdAt: dateOrString,
   updatedAt: dateOrString,
-})
+});
 
 export const CategorySchema = z.object({
   _id: z.string(),
@@ -128,7 +128,7 @@ export const CategorySchema = z.object({
     .optional(),
   createdAt: dateOrString,
   updatedAt: dateOrString,
-})
+});
 
 export const BookSchema = z.object({
   _id: z.string(),
@@ -154,8 +154,8 @@ export const BookSchema = z.object({
   categoryIds: z.array(z.string()).optional(),
   authors: z.array(AuthorSchema).optional(),
   categories: z.array(CategorySchema).optional(),
-})
+});
 
-export type Author = z.infer<typeof AuthorSchema>
-export type Category = z.infer<typeof CategorySchema>
-export type Book = z.infer<typeof BookSchema>
+export type Author = z.infer<typeof AuthorSchema>;
+export type Category = z.infer<typeof CategorySchema>;
+export type Book = z.infer<typeof BookSchema>;

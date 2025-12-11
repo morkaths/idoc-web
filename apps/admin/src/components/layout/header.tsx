@@ -1,27 +1,27 @@
-import { useEffect, useState } from 'react'
-import { cn } from '@/lib/utils'
-import { Separator } from '@repo/ui/components/separator'
-import { SidebarTrigger } from '@repo/ui/components/sidebar'
+import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Separator } from '@repo/ui/components/separator';
+import { SidebarTrigger } from '@repo/ui/components/sidebar';
 
 type HeaderProps = React.HTMLAttributes<HTMLElement> & {
-  fixed?: boolean
-  ref?: React.Ref<HTMLElement>
-}
+  fixed?: boolean;
+  ref?: React.Ref<HTMLElement>;
+};
 
 export function Header({ className, fixed, children, ...props }: HeaderProps) {
-  const [offset, setOffset] = useState(0)
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
     const onScroll = () => {
-      setOffset(document.body.scrollTop || document.documentElement.scrollTop)
-    }
+      setOffset(document.body.scrollTop || document.documentElement.scrollTop);
+    };
 
     // Add scroll listener to the body
-    document.addEventListener('scroll', onScroll, { passive: true })
+    document.addEventListener('scroll', onScroll, { passive: true });
 
     // Clean up the event listener on unmount
-    return () => document.removeEventListener('scroll', onScroll)
-  }, [])
+    return () => document.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <header
@@ -46,5 +46,5 @@ export function Header({ className, fixed, children, ...props }: HeaderProps) {
         {children}
       </div>
     </header>
-  )
+  );
 }

@@ -1,7 +1,7 @@
-import z from 'zod'
-import { createFileRoute } from '@tanstack/react-router'
-import { Users } from '@/features/users'
-import { roles } from '@/features/users/data/data'
+import z from 'zod';
+import { createFileRoute } from '@tanstack/react-router';
+import { Users } from '@/features/users';
+import { roles } from '@/features/users/data/data';
 
 const usersSearchSchema = z.object({
   page: z.number().optional().catch(1),
@@ -24,9 +24,9 @@ const usersSearchSchema = z.object({
     .catch([]),
   // Per-column text filter (example for username)
   username: z.string().optional().catch(''),
-})
+});
 
 export const Route = createFileRoute('/_authenticated/users/')({
   validateSearch: usersSearchSchema,
   component: Users,
-})
+});

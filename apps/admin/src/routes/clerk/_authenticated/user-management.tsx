@@ -1,46 +1,41 @@
-import { useEffect, useState } from 'react'
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-  useRouter,
-} from '@tanstack/react-router'
-import { SignedIn, useAuth, UserButton } from '@clerk/clerk-react'
-import { ExternalLink, Loader2 } from 'lucide-react'
-import { ClerkLogo } from '@/assets/clerk-logo'
-import { Button } from '@repo/ui/components/button'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { LearnMore } from '@/components/learn-more'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { UsersDialogs } from '@/features/users/components/users-dialogs'
-import { UsersPrimaryButtons } from '@/features/users/components/users-primary-buttons'
-import { UsersProvider } from '@/features/users/components/users-provider'
-import { UsersTable } from '@/features/users/components/users-table'
-import { users } from '@/features/users/data/users'
+import { useEffect, useState } from 'react';
+import { createFileRoute, Link, useNavigate, useRouter } from '@tanstack/react-router';
+import { SignedIn, useAuth, UserButton } from '@clerk/clerk-react';
+import { ExternalLink, Loader2 } from 'lucide-react';
+import { ClerkLogo } from '@/assets/clerk-logo';
+import { Button } from '@repo/ui/components/button';
+import { Header } from '@/components/layout/header';
+import { Main } from '@/components/layout/main';
+import { LearnMore } from '@/components/learn-more';
+import { Search } from '@/components/search';
+import { ThemeSwitch } from '@/components/theme-switch';
+import { UsersDialogs } from '@/features/users/components/users-dialogs';
+import { UsersPrimaryButtons } from '@/features/users/components/users-primary-buttons';
+import { UsersProvider } from '@/features/users/components/users-provider';
+import { UsersTable } from '@/features/users/components/users-table';
+import { users } from '@/features/users/data/users';
 
 export const Route = createFileRoute('/clerk/_authenticated/user-management')({
   component: UserManagement,
-})
+});
 
 function UserManagement() {
-  const search = Route.useSearch()
-  const navigate = Route.useNavigate()
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
 
-  const [opened, setOpened] = useState(true)
-  const { isLoaded, isSignedIn } = useAuth()
+  const [opened, setOpened] = useState(true);
+  const { isLoaded, isSignedIn } = useAuth();
 
   if (!isLoaded) {
     return (
       <div className='flex h-svh items-center justify-center'>
         <Loader2 className='size-8 animate-spin' />
       </div>
-    )
+    );
   }
 
   if (!isSignedIn) {
-    return <Unauthorized />
+    return <Unauthorized />;
   }
 
   return (
@@ -60,9 +55,7 @@ function UserManagement() {
               <div>
                 <h2 className='text-2xl font-bold tracking-tight'>User List</h2>
                 <div className='flex gap-1'>
-                  <p className='text-muted-foreground'>
-                    Manage your users and their roles here.
-                  </p>
+                  <p className='text-muted-foreground'>Manage your users and their roles here.</p>
                   <LearnMore
                     open={opened}
                     onOpenChange={setOpened}
@@ -79,8 +72,8 @@ function UserManagement() {
                     </p>
 
                     <p className='mt-4'>
-                      You can sign out or manage/delete your account via the
-                      User Profile menu in the top-right corner of the page.
+                      You can sign out or manage/delete your account via the User Profile menu in
+                      the top-right corner of the page.
                       <ExternalLink className='inline-block size-4' />
                     </p>
                   </LearnMore>
@@ -97,33 +90,33 @@ function UserManagement() {
         </UsersProvider>
       </SignedIn>
     </>
-  )
+  );
 }
 
-const COUNTDOWN = 5 // Countdown second
+const COUNTDOWN = 5; // Countdown second
 
 function Unauthorized() {
-  const navigate = useNavigate()
-  const { history } = useRouter()
+  const navigate = useNavigate();
+  const { history } = useRouter();
 
-  const [opened, setOpened] = useState(true)
-  const [cancelled, setCancelled] = useState(false)
-  const [countdown, setCountdown] = useState(COUNTDOWN)
+  const [opened, setOpened] = useState(true);
+  const [cancelled, setCancelled] = useState(false);
+  const [countdown, setCountdown] = useState(COUNTDOWN);
 
   // Set and run the countdown conditionally
   useEffect(() => {
-    if (cancelled || opened) return
+    if (cancelled || opened) return;
     const interval = setInterval(() => {
-      setCountdown((prev) => (prev > 0 ? prev - 1 : 0))
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [cancelled, opened])
+      setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [cancelled, opened]);
 
   // Navigate to sign-in page when countdown hits 0
   useEffect(() => {
-    if (countdown > 0) return
-    navigate({ to: '/clerk/sign-in' })
-  }, [countdown, navigate])
+    if (countdown > 0) return;
+    navigate({ to: '/clerk/sign-in' });
+  }, [countdown, navigate]);
 
   return (
     <div className='h-svh'>
@@ -147,8 +140,8 @@ function Unauthorized() {
               <p>You must first sign in using Clerk to access this route. </p>
 
               <p className='mt-4'>
-                After signing in, you'll be able to sign out or delete your
-                account via the User Profile dropdown on this page.
+                After signing in, you'll be able to sign out or delete your account via the User
+                Profile dropdown on this page.
               </p>
             </LearnMore>
           </sup>
@@ -167,9 +160,7 @@ function Unauthorized() {
           {!cancelled && !opened && (
             <>
               <p>
-                {countdown > 0
-                  ? `Redirecting to Sign In page in ${countdown}s`
-                  : `Redirecting...`}
+                {countdown > 0 ? `Redirecting to Sign In page in ${countdown}s` : `Redirecting...`}
               </p>
               <Button variant='link' onClick={() => setCancelled(true)}>
                 Cancel Redirect
@@ -179,5 +170,5 @@ function Unauthorized() {
         </div>
       </div>
     </div>
-  )
+  );
 }
