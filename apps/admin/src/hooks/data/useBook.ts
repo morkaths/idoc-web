@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { BookApiMock as BookApi } from '@/apis';
+import { BookApi } from '@/apis';
 import type { Book, FindParams } from '@/types';
 
 export const useBooks = (params: FindParams = {}) => {
@@ -13,7 +13,7 @@ export const useBooks = (params: FindParams = {}) => {
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
     select: (data) => ({
-      books: data.data,
+      data: data.data,
       pagination: data.pagination,
     }),
   });
@@ -32,7 +32,7 @@ export const useCreateBook = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (newBook: Book) => BookApi.create(newBook),
+    mutationFn: (newBook: Partial<Book>) => BookApi.create(newBook),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['books'] });
     },

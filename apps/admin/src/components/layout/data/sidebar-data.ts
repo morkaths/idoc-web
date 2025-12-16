@@ -22,6 +22,8 @@ import {
   Command,
   GalleryVerticalEnd,
   Library,
+  Tag,
+  UserPen
 } from 'lucide-react';
 import { ClerkLogo } from '@/assets/clerk-logo';
 import { type SidebarData } from '../types';
@@ -87,6 +89,16 @@ export const sidebarData: SidebarData = {
           icon: Library,
         },
         {
+          title: 'Categories',
+          url: '/categories',
+          icon: Tag,
+        },
+        {
+          title: 'Authors',
+          url: '/authors',
+          icon: UserPen,
+        },
+        {
           title: 'Tasks',
           url: '/tasks',
           icon: ListTodo,
@@ -95,12 +107,6 @@ export const sidebarData: SidebarData = {
           title: 'Apps',
           url: '/apps',
           icon: Package,
-        },
-        {
-          title: 'Chats',
-          url: '/chats',
-          badge: '3',
-          icon: MessagesSquare,
         },
         {
           title: 'Users',
@@ -182,6 +188,12 @@ export const sidebarData: SidebarData = {
               title: 'Profile',
               url: '/settings',
               icon: UserCog,
+            },
+            {
+              title: 'Chats',
+              url: '/chats',
+              badge: '3',
+              icon: MessagesSquare,
             },
             {
               title: 'Account',

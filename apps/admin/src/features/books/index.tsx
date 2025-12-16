@@ -1,4 +1,4 @@
-// ...existing code...
+import { BooksDialogs } from './components/books-dialogs';
 import { BooksPrimaryButtons } from './components/books-primary-buttons';
 import { BooksProvider } from './components/books-provider';
 import { BooksTable } from './components/books-table';
@@ -15,10 +15,9 @@ export function Books() {
           </div>
           <BooksPrimaryButtons />
         </div>
-
-        {/* ===== Content ===== */}
         <BooksTable />
       </div>
+      <BooksDialogs />
     </BooksProvider>
   );
 }

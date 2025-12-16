@@ -114,17 +114,16 @@ export const AuthorSchema = z.object({
 export const CategorySchema = z.object({
   _id: z.string(),
   slug: z.string().optional(),
-  parentId: z.string().optional(),
-  translations: z
-    .array(
-      z.object({
-        lang: z.string(),
-        name: z.string(),
-        description: z.string().optional(),
-        createdAt: dateOrString,
-        updatedAt: dateOrString,
-      })
-    )
+  parentId: z.string().nullable().optional(),
+  translations: z.array(
+    z.object({
+      lang: z.string(),
+      name: z.string(),
+      description: z.string().optional(),
+      createdAt: dateOrString,
+      updatedAt: dateOrString,
+    })
+  )
     .optional(),
   createdAt: dateOrString,
   updatedAt: dateOrString,
@@ -145,7 +144,7 @@ export const BookSchema = z.object({
   price: z.number().optional(),
   stock: z.number().int().optional(),
   coverUrl: z.string().optional(),
-  fileUrl: z.string().optional(),
+  fileKey: z.string().optional(),
   tags: z.array(z.string()).optional(),
   createdAt: dateOrString,
   updatedAt: dateOrString,

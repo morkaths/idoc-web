@@ -4,7 +4,18 @@ export * from './schema';
 // ───────────────────────────────────────────────────────────────────────────────
 // COMMON TYPE: Các kiểu dữ liệu chung dùng trong toàn bộ hệ thống
 // ───────────────────────────────────────────────────────────────────────────────
-export type Language = 'vi' | 'en' | 'ja' | 'ko' | 'zh' | 'fr' | 'de' | 'es';
+
+export const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
+  { value: 'vn', label: 'Vietnamese' },
+  { value: 'gb', label: 'English' },
+  { value: 'jp', label: 'Japanese' },
+  { value: 'kr', label: 'Korean' },
+  { value: 'cn', label: 'Chinese' },
+  { value: 'fr', label: 'French' },
+  { value: 'de', label: 'German' },
+  { value: 'es', label: 'Spanish' },
+];
+
 export enum ModeType {
   Light = 'light',
   Dark = 'dark',

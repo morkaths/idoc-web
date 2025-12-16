@@ -1,41 +1,37 @@
 import { showSubmittedData } from '@/lib/show-submitted-data';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ImportDialog } from '@/components/import-dialog';
-import { BooksMutateDialog } from './books-mutate-dialog';
-import { useBooksContext } from './books-provider';
-import { useAuthors } from '@/hooks/data/useAuthor';
-import { useCreateBook, useUpdateBook } from '@/hooks/data/useBook';
+import { AuthorsMutateDialog } from './authors-mutate-dialog';
+import { useAuthorsContext } from './authors-provider';
+import { useCreateAuthor, useUpdateAuthor } from '@/hooks/data/useAuthor';
 
-export function BooksDialogs() {
-  const { open, setOpen, currentRow, setCurrentRow } = useBooksContext();
-  const { data } = useAuthors();
-  const authors = data?.data ?? [];
-  const createBookMut = useCreateBook();
-  const updateBookMut = useUpdateBook();
+export function AuthorsDialogs() {
+  const { open, setOpen, currentRow, setCurrentRow } = useAuthorsContext();
+  const createAuthorMut = useCreateAuthor();
+  const updateAuthorMut = useUpdateAuthor();
 
   return (
     <>
-      <BooksMutateDialog
-        key='book-create'
+      <AuthorsMutateDialog
+        key='author-create'
         open={open === 'create'}
         onOpenChange={() => setOpen('create')}
-        authors={authors}
         onSubmit={async (data) => {
-          await createBookMut.mutateAsync(data);
+          await createAuthorMut.mutateAsync(data);
           setOpen(null);
         }}
       />
 
       <ImportDialog
-        key='books-import'
+        key='authors-import'
         open={open === 'import'}
         onOpenChange={() => setOpen('import')}
       />
 
       {currentRow && (
         <>
-          <BooksMutateDialog
-            key={`book-update-${currentRow._id}`}
+          <AuthorsMutateDialog
+            key={`author-update-${currentRow._id}`}
             open={open === 'update'}
             onOpenChange={() => {
               setOpen('update');
@@ -44,16 +40,15 @@ export function BooksDialogs() {
               }, 500);
             }}
             initialData={currentRow}
-            authors={authors}
             onSubmit={async (data) => {
-              await updateBookMut.mutateAsync({ id: currentRow._id!, data });
+              await updateAuthorMut.mutateAsync({ id: currentRow._id!, data });
               setOpen(null);
               setTimeout(() => setCurrentRow(null), 500);
             }}
           />
 
           <ConfirmDialog
-            key='book-delete'
+            key='author-delete'
             destructive
             open={open === 'delete'}
             onOpenChange={() => {
@@ -67,13 +62,13 @@ export function BooksDialogs() {
               setTimeout(() => {
                 setCurrentRow(null);
               }, 500);
-              showSubmittedData(currentRow, 'The following book has been deleted:');
+              showSubmittedData(currentRow, 'The following author has been deleted:');
             }}
             className='max-w-md'
-            title={`Delete this book: ${currentRow.title || currentRow._id} ?`}
+            title={`Delete this author: ${currentRow.name || currentRow._id} ?`}
             desc={
               <>
-                You are about to delete a book with the ID <strong>{currentRow._id}</strong>.<br />
+                You are about to delete an author with the ID <strong>{currentRow._id}</strong>.<br />
                 This action cannot be undone.
               </>
             }

@@ -1,13 +1,13 @@
 // ...existing code...
 import React, { useState } from 'react';
-import { Book } from '@/types';
+import type { Book } from '@/types';
 import useDialogState from '@/hooks/ui/useDialogState';
 
-type BooksDialogType = 'create' | 'update' | 'delete' | 'import';
+type DialogType = 'create' | 'update' | 'delete' | 'import';
 
 type BooksContextType = {
-  open: BooksDialogType | null;
-  setOpen: (str: BooksDialogType | null) => void;
+  open: DialogType | null;
+  setOpen: (str: DialogType | null) => void;
   currentRow: Book | null;
   setCurrentRow: React.Dispatch<React.SetStateAction<Book | null>>;
 };
@@ -15,7 +15,7 @@ type BooksContextType = {
 const BooksContext = React.createContext<BooksContextType | null>(null);
 
 export function BooksProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useDialogState<BooksDialogType>(null);
+  const [open, setOpen] = useDialogState<DialogType>(null);
   const [currentRow, setCurrentRow] = useState<Book | null>(null);
 
   return (
@@ -35,4 +35,3 @@ export const useBooksContext = () => {
 
   return ctx;
 };
-// ...existing code...

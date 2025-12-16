@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { CategoryApiMock as CategoryApi } from '@/apis';
+import { CategoryApi } from '@/apis';
 import type { FindParams, Category } from '@/types';
 
 // ==================== QUERIES ====================
@@ -10,21 +10,11 @@ export const useCategories = (params: FindParams = {}) => {
     queryFn: async () => await CategoryApi.find(params),
     enabled: true,
     refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 60 * 1000,
     select: (data) => ({
-      categories: data.data,
+      data: data.data,
       pagination: data.pagination,
     }),
-  });
-};
-
-export const useAllCategories = () => {
-  return useQuery<Category[]>({
-    queryKey: ['categories', 'all'],
-    queryFn: async () => await CategoryApi.findAll(),
-    enabled: true,
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000,
   });
 };
 

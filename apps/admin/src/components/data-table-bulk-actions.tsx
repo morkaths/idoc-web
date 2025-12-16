@@ -14,7 +14,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@repo/ui/components/too
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table';
 import { ConfirmDialogDelete } from './confirm-dialog-delete';
 
-type Option = { label: string; value: string; icon?: React.ComponentType<any> };
+type Option = { label: string; value: string; icon?: React.ComponentType<{ className?: string }> };
 
 export type DataTableBulkActionsProps<T> = {
   table: Table<T>;
@@ -70,7 +70,7 @@ export function DataTableBulkActions<T>({
     return renderToast(
       async () => {
         if (onBulkStatusChange) {
-          await Promise.resolve(onBulkStatusChange(status, items) as any);
+          await Promise.resolve(onBulkStatusChange(status, items));
         } else {
           await sleep(1000);
         }
@@ -87,7 +87,7 @@ export function DataTableBulkActions<T>({
     return renderToast(
       async () => {
         if (onBulkPriorityChange) {
-          await Promise.resolve(onBulkPriorityChange(priority, items) as any);
+          await Promise.resolve(onBulkPriorityChange(priority, items));
         } else {
           await sleep(1000);
         }
@@ -104,7 +104,7 @@ export function DataTableBulkActions<T>({
     return renderToast(
       async () => {
         if (onBulkExport) {
-          await Promise.resolve(onBulkExport(items) as any);
+          await Promise.resolve(onBulkExport(items));
         } else {
           await sleep(1000);
         }
@@ -237,7 +237,7 @@ export function DataTableBulkActions<T>({
         confirmWord='DELETE'
         onConfirm={async () => {
           if (onBulkDelete) {
-            await Promise.resolve(onBulkDelete(items) as any);
+            await Promise.resolve(onBulkDelete(items));
           } else {
             await sleep(1000);
           }

@@ -10,8 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
-import { useBooks } from '@/hooks/data/useBook';
-// import { useCategories } from '@/hooks/data/useCategory';
+import { useCategories } from '@/hooks/data/useCategory';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
   Table,
@@ -22,17 +21,16 @@ import {
   TableRow,
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
-import { booksColumns as columns } from './books-columns';
-import BooksTableBulkActions from './books-table-bulk-actions';
+import { categoriesColumns as columns } from './categories-columns';
+import CategoriesTableBulkActions from './categories-table-bulk-actions';
 
-const route = getRouteApi('/_authenticated/books/');
+const route = getRouteApi('/_authenticated/categories/');
 
-export function BooksTable() {
+export function CategoriesTable() {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-  // statuses for filter
   const {
     globalFilter,
     onGlobalFilterChange,
@@ -46,48 +44,35 @@ export function BooksTable() {
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'q' },
-    columnFilters: [
-      { columnId: 'categories', searchKey: 'category', type: 'array' },
-      { columnId: 'language', searchKey: 'language', type: 'array' },
-    ],
+    columnFilters: [],
   });
 
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
 
-  const bookParams = useMemo(() => {
-  const apiSort = sorting[0]
-    ? {
-        sortBy: String(sorting[0].id),
-        sortOrder: sorting[0].desc ? 'desc' : 'asc',
-      }
-    : undefined;
+  const categoryParams = useMemo(() => {
+    const apiSort = sorting[0]
+      ? {
+          sortBy: String(sorting[0].id),
+          sortOrder: sorting[0].desc ? 'desc' : 'asc',
+        }
+      : undefined;
 
-  return {
-    page,
-    limit,
-    query: globalFilter ?? '',
-    ...(apiSort || {}),
-  };
-}, [page, limit, globalFilter, sorting]);
+    return {
+      page,
+      limit,
+      query: globalFilter ?? '',
+      ...(apiSort || {}),
+    };
+  }, [page, limit, globalFilter, sorting]);
 
   // fetch server-side page
-  const { data: booksData, isFetching: isBooksFetching } = useBooks(bookParams);
-  const books = booksData?.data ?? [];
-  const bookPagination = booksData?.pagination;
+  const { data: categoriesData, isFetching: isCategoriesFetching } = useCategories(categoryParams);
+  const categories = categoriesData?.data ?? [];
+  const categoryPagination = categoriesData?.pagination;
 
-  // const { data: categoriesData } = useCategories();
-  // const categories = useMemo(() => {
-  //   const arr = categoriesData?.data ?? [];
-  //   return arr.map((cat) => ({
-  //     label: cat.slug ?? '',
-  //     value: cat.slug ?? '',
-  //   }));
-  // }, [categoriesData]);
-
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data: books,
+    data: categories,
     columns,
     state: {
       sorting,
@@ -101,7 +86,7 @@ export function BooksTable() {
       },
     },
     manualPagination: true,
-    pageCount: bookPagination?.pages ?? 0,
+    pageCount: categoryPagination?.pages ?? 0,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -130,14 +115,7 @@ export function BooksTable() {
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Search books...'
-        // filters={[
-        //   {
-        //     columnId: 'categories',
-        //     title: 'Category',
-        //     options: categories,
-        //   },
-        // ]}
+        searchPlaceholder='Search categories...'
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>
@@ -182,7 +160,7 @@ export function BooksTable() {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  {isBooksFetching ? 'Loading...' : 'No results.'}
+                  {isCategoriesFetching ? 'Loading...' : 'No results.'}
                 </TableCell>
               </TableRow>
             )}
@@ -191,9 +169,9 @@ export function BooksTable() {
       </div>
 
       <DataTablePagination table={table} className='mt-auto' />
-      <BooksTableBulkActions table={table} />
+      <CategoriesTableBulkActions table={table} />
     </div>
   );
 }
 
-export default BooksTable;
+export default CategoriesTable;

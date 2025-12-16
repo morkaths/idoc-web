@@ -18,12 +18,12 @@ export const API_CONFIG = {
       update: (id: string) => `/users/${id}`,
       delete: (id: string) => `/users/${id}`,
     },
-    book: {
-      find: '/books',
-      findById: (id: string) => `/books/${id}`,
-      create: '/books',
-      update: (id: string) => `/books/${id}`,
-      delete: (id: string) => `/books/${id}`,
+    author: {
+      find: '/authors',
+      findById: (id: string) => `/authors/${id}`,
+      create: '/authors',
+      update: (id: string) => `/authors/${id}`,
+      delete: (id: string) => `/authors/${id}`,
     },
     category: {
       find: '/categories',
@@ -31,6 +31,13 @@ export const API_CONFIG = {
       create: '/categories',
       update: (id: string) => `/categories/${id}`,
       delete: (id: string) => `/categories/${id}`,
+    },
+    book: {
+      find: '/books',
+      findById: (id: string) => `/books/${id}`,
+      create: '/books',
+      update: (id: string) => `/books/${id}`,
+      delete: (id: string) => `/books/${id}`,
     },
   },
 };
