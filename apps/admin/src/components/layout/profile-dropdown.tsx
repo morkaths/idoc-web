@@ -13,9 +13,24 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { SignOutDialog } from '@/components/sign-out-dialog';
+import { useAuthStore } from '@/stores/auth-store';
 
 export function ProfileDropdown() {
+  const user = useAuthStore((state) => state.auth.user);
   const [open, setOpen] = useDialogState();
+
+  if (!user) {
+    return (
+      <div className="flex gap-2">
+        <Button asChild variant="default">
+          <Link to="/sign-in">Sign in</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link to="/sign-up">Sign up</Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -23,16 +38,16 @@ export function ProfileDropdown() {
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
             <Avatar className='h-8 w-8'>
-              <AvatarImage src='/avatars/01.png' alt='@shadcn' />
-              <AvatarFallback>V</AvatarFallback>
+              <AvatarImage src='' alt={user.username} />
+              <AvatarFallback>{user.username.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-56' align='end' forceMount>
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
-              <p className='text-sm leading-none font-medium'>Vuong</p>
-              <p className='text-muted-foreground text-xs leading-none'>morkaths@gmail.com</p>
+              <p className='text-sm leading-none font-medium'>{user.username || 'User'}</p>
+              <p className='text-muted-foreground text-xs leading-none'>{user.email || ''}</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

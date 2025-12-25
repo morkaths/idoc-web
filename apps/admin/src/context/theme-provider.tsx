@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies';
 
-type Theme =
+export type Theme =
   | 'system'
   // Light modes
   | 'light'

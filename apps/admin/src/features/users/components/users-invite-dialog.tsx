@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MailPlus, Send } from 'lucide-react';
-import { showSubmittedData } from '@/lib/show-submitted-data';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
@@ -23,14 +22,12 @@ import {
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
 import { Textarea } from '@repo/ui/components/textarea';
-import { SelectDropdown } from '@/components/select-dropdown';
-import { roles } from '../data/data';
+import { type Role } from '@/types';
+import { RolesCombobox } from './roles-combobox';
 
 const formSchema = z.object({
-  email: z.email({
-    error: (iss) => (iss.input === '' ? 'Please enter an email to invite.' : undefined),
-  }),
-  role: z.string().min(1, 'Role is required.'),
+  email: z.string().email({ message: 'Email is required.' }),
+  roles: z.array(z.string()).min(1, 'Select at least one role'),
   desc: z.string().optional(),
 });
 
@@ -39,28 +36,23 @@ type UserInviteForm = z.infer<typeof formSchema>;
 type UserInviteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSubmit?: (data: UserInviteForm) => void;
+  roles: Role[];
 };
 
-export function UsersInviteDialog({ open, onOpenChange }: UserInviteDialogProps) {
+export function UsersInviteDialog({
+  open,
+  onOpenChange,
+  onSubmit,
+  roles
+}: UserInviteDialogProps) {
   const form = useForm<UserInviteForm>({
     resolver: zodResolver(formSchema),
-    defaultValues: { email: '', role: '', desc: '' },
+    defaultValues: { email: '', roles: [], desc: '' },
   });
 
-  const onSubmit = (values: UserInviteForm) => {
-    form.reset();
-    showSubmittedData(values);
-    onOpenChange(false);
-  };
-
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(state) => {
-        form.reset();
-        onOpenChange(state);
-      }}
-    >
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-md'>
         <DialogHeader className='text-start'>
           <DialogTitle className='flex items-center gap-2'>
@@ -72,7 +64,18 @@ export function UsersInviteDialog({ open, onOpenChange }: UserInviteDialogProps)
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form id='user-invite-form' onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+          <form
+            id='user-invite-form'
+            onSubmit={form.handleSubmit(data => {
+              onSubmit?.({
+                ...data,
+                email: data.email,
+                roles: data.roles,
+                desc: data.desc,
+              });
+              onOpenChange(false);
+              form.reset();
+            })} className='space-y-4'>
             <FormField
               control={form.control}
               name='email'
@@ -88,18 +91,14 @@ export function UsersInviteDialog({ open, onOpenChange }: UserInviteDialogProps)
             />
             <FormField
               control={form.control}
-              name='role'
+              name='roles'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <SelectDropdown
-                    defaultValue={field.value}
-                    onValueChange={field.onChange}
-                    placeholder='Select a role'
-                    items={roles.map(({ label, value }) => ({
-                      label,
-                      value,
-                    }))}
+                  <RolesCombobox
+                    roles={roles}
+                    value={field.value || []}
+                    onChange={field.onChange}
+                    placeholder="Select roles..."
                   />
                   <FormMessage />
                 </FormItem>

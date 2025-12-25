@@ -2,7 +2,8 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { API_CONFIG } from '@/config/api';
 import { API_KEY } from '@/config/env';
 import type { ApiResponse } from '@/types';
-import { getCookie } from '@/lib/cookies';
+import { useAuthStore } from '@/stores/auth-store';
+import { toast } from 'sonner';
 
 type ApiMode = 'public' | 'private';
 
@@ -17,20 +18,35 @@ function createApiInstance(withCredentials = false): AxiosInstance {
     config.headers = config.headers || {};
     config.headers['x-api-key'] = API_KEY;
     if (withCredentials) {
-      const token = getCookie('authToken');
-      if (token) config.headers['Authorization'] = `Bearer ${token}`;
+      const { auth } = useAuthStore.getState();
+      const accessToken = auth.token?.accessToken;
+      if (accessToken) {
+        config.headers['Authorization'] = `Bearer ${accessToken}`;
+      }
     }
     return config;
   });
 
   instance.interceptors.response.use(
     (res) => res,
-    (error) =>
-      Promise.reject({
+    async (error) => {
+      if (error?.response?.status === 401) {
+        const { auth } = useAuthStore.getState();
+        const refreshed = await auth.refresh();
+        if (refreshed) {
+          error.config.headers.Authorization = `Bearer ${useAuthStore.getState().auth.token?.accessToken}`;
+          return instance.request(error.config);
+        } else {
+          await auth.logout();
+          toast.error('Session expired. Please log in again.');
+        }
+      }
+      return Promise.reject({
         success: false,
         message: error?.response?.data?.message ?? error?.message,
         statusCode: error?.response?.status ?? 500,
       })
+    }
   );
 
   return instance;

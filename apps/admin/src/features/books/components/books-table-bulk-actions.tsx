@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { Table } from '@tanstack/react-table';
 import type { Book } from '@/types';
 import { useDeleteBook } from '@/hooks/data/useBook';
-import DataTableBulkActions from '@/components/data-table-bulk-actions';
+import DataTableBulkActions from '@/components/data-table/data-table-bulk-actions';
 
 type Props = {
   table: Table<Book>;

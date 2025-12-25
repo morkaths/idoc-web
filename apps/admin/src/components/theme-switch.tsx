@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { type FC, type SVGProps, useEffect } from 'react';
 import {
   Check,
   Coffee,
@@ -14,7 +14,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useTheme } from '@/context/theme-provider';
+import { type Theme, useTheme } from '@/context/theme-provider';
 import { Button } from '@repo/ui/components/button';
 import {
   DropdownMenu,
@@ -23,26 +23,26 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 
-const THEMES: { id: string; label: string; Icon?: any }[] = [
+const THEMES: { id: Theme; label: string; icon?: FC<SVGProps<SVGSVGElement>> }[] = [
   // System
-  { id: 'system', label: 'System', Icon: Monitor },
-  { id: 'light', label: 'Light', Icon: Sun },
-  { id: 'dark', label: 'Dark', Icon: Moon },
+  { id: 'system', label: 'System', icon: Monitor },
+  { id: 'light', label: 'Light', icon: Sun },
+  { id: 'dark', label: 'Dark', icon: Moon },
   // Light modes
-  { id: 'sakura', label: 'Sakura', Icon: Flower },
-  { id: 'matcha', label: 'Matcha', Icon: Leaf },
-  { id: 'latte', label: 'Latte', Icon: Coffee },
-  { id: 'cyberpunk', label: 'Cyberpunk', Icon: Zap },
+  { id: 'sakura', label: 'Sakura', icon: Flower },
+  { id: 'matcha', label: 'Matcha', icon: Leaf },
+  { id: 'latte', label: 'Latte', icon: Coffee },
+  { id: 'cyberpunk', label: 'Cyberpunk', icon: Zap },
   // Dark modes
-  { id: 'dracula', label: 'Dracula', Icon: HatGlasses },
-  { id: 'gruvbox', label: 'Gruvbox', Icon: Flame },
-  { id: 'nordic', label: 'Nordic', Icon: Snowflake },
-  { id: 'ocean', label: 'Ocean', Icon: Droplet },
+  { id: 'dracula', label: 'Dracula', icon: HatGlasses },
+  { id: 'gruvbox', label: 'Gruvbox', icon: Flame },
+  { id: 'nordic', label: 'Nordic', icon: Snowflake },
+  { id: 'ocean', label: 'Ocean', icon: Droplet },
 ];
 
 export function ThemeSwitch() {
   const { theme, setTheme } = useTheme();
-  const CurrentIcon = THEMES.find((t) => t.id === theme)?.Icon ?? Sun;
+  const CurrentIcon = THEMES.find((t) => t.id === theme)?.icon ?? Sun;
 
   /* Update theme-color meta tag
    * when theme is updated */
@@ -62,8 +62,8 @@ export function ThemeSwitch() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
         {THEMES.map((t) => (
-          <DropdownMenuItem key={t.id} onClick={() => setTheme(t.id as any)}>
-            {t.Icon && <t.Icon className='me-2 inline-block h-4 w-4' />}
+          <DropdownMenuItem key={t.id} onClick={() => setTheme(t.id)}>
+            {t.icon && <t.icon className='me-2 inline-block h-4 w-4' />}
             <span>{t.label}</span>
             <Check size={14} className={cn('ms-auto', theme !== t.id && 'hidden')} />
           </DropdownMenuItem>

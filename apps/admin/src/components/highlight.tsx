@@ -1,3 +1,5 @@
+import React, { useMemo } from 'react';
+
 interface HighlightProps {
   text?: string;
   query?: string;
@@ -9,36 +11,38 @@ function escapeRegExp(s: string) {
 }
 
 export default function Highlight({ text = '', query = '', className = '' }: HighlightProps) {
-  const q = String(query).trim();
-  if (!q) return <>{text}</>;
+  const parts = useMemo(() => {
+    const q = String(query).trim();
+    if (!q) return [text];
 
-  try {
-    const re = new RegExp(escapeRegExp(q), 'gi');
-    const parts: (string | { match: string })[] = [];
-    let lastIndex = 0;
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(text)) !== null) {
-      if (m.index > lastIndex) parts.push(text.slice(lastIndex, m.index));
-      parts.push({ match: m[0] });
-      lastIndex = m.index + m[0].length;
-      if (m.index === re.lastIndex) re.lastIndex++;
+    try {
+      const escapedQuery = escapeRegExp(q);
+      const re = new RegExp(`(${escapedQuery})`, 'gi');
+      return text.split(re);
+    } catch {
+      return [text];
     }
-    if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  }, [text, query]);
 
-    return (
-      <>
-        {parts.map((p, i) =>
-          typeof p === 'string' ? (
-            <span key={i}>{p}</span>
-          ) : (
-            <mark key={i} className={`rounded bg-yellow-200 px-0.5 text-black ${className}`}>
-              {p.match}
-            </mark>
-          )
-        )}
-      </>
-    );
-  } catch {
-    return <>{text}</>;
-  }
+  if (parts.length <= 1) return <>{text}</>;
+
+  return (
+    <>
+      {parts.map((part, i) => {
+        // Kiểm tra xem part có khớp với query không (không phân biệt hoa thường)
+        const isMatch = part.toLowerCase() === query.trim().toLowerCase();
+        
+        return isMatch ? (
+          <mark 
+            key={i} 
+            className={`rounded bg-yellow-200 px-0.5 text-black ${className}`}
+          >
+            {part}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        );
+      })}
+    </>
+  );
 }

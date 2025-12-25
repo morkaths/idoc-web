@@ -76,7 +76,7 @@ export const booksColumns: ColumnDef<Book>[] = [
       const title = row.getValue('title') as string;
       const query = String(table.getState().globalFilter ?? '');
       const authors = Array.isArray(row.original.authors) ? row.original.authors : [];
-      const authorsText = authors.length ? authors.map((a) => a.name).join(', ') : '';
+      const authorsText = authors.length ? authors.map((a) => a.name).join(', ') : 'Unknown author';
       return (
         <div className='flex flex-col'>
           <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-124'>
@@ -90,14 +90,35 @@ export const booksColumns: ColumnDef<Book>[] = [
     },
   },
   {
-    accessorKey: 'publishedDate',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Published' />,
-    meta: { className: 'ps-1', tdClassName: 'ps-4' },
+    accessorKey: 'slug',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Slug' />,
+    cell: ({ row, table }) => {
+      const slug = String(row.getValue('slug') ?? '');
+      const query = String(table.getState().globalFilter ?? '');
+      return (
+        <span className='max-w-32 truncate sm:max-w-60 md:max-w-100'>
+          <Highlight text={slug} query={query} />
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: 'publisher',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Publish' />,
     cell: ({ row }) => {
-      const d = row.getValue('publishedDate') as string | Date | undefined;
-      if (!d) return null;
-      const date = d instanceof Date ? d : new Date(String(d));
-      return <div>{isNaN(date.getTime()) ? '' : date.toLocaleDateString()}</div>;
+      const publisher = row.getValue('publisher') as string | undefined;
+      const d = row.original.publishedDate as string | Date | undefined;
+      const date = d ? (d instanceof Date ? d : new Date(String(d))) : null;
+      return (
+        <div className="flex flex-col">
+          <span className='max-w-32 truncate sm:max-w-50 md:max-w-70'>
+            {publisher || '-'}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}
+          </span>
+        </div>
+      );
     },
   },
   {
@@ -163,7 +184,7 @@ export const booksColumns: ColumnDef<Book>[] = [
       const cats = row.getValue('categories') as { slug?: string }[] | undefined;
       if (!Array.isArray(cats) || cats.length === 0) return null;
       return (
-        <div className='max-w-[260px] overflow-x-auto'>
+        <div className='max-w-65 overflow-x-auto'>
           <div className='flex items-center gap-1 whitespace-nowrap'>
             {cats.slice(0, 2).map((c, i) => (
               <Badge key={i} variant='outline' className='text-xs'>

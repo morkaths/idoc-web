@@ -7,7 +7,7 @@ import { SidebarInset, SidebarProvider } from '@repo/ui/components/sidebar';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SkipToMain } from '@/components/skip-to-main';
 import { ConfigDrawer } from '../config-drawer';
-import { ProfileDropdown } from '../profile-dropdown';
+import { ProfileDropdown } from './profile-dropdown';
 import { Search } from '../search';
 import { ThemeSwitch } from '../theme-switch';
 import { Header } from './header';

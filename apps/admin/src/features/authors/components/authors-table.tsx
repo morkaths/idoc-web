@@ -105,10 +105,12 @@ export function AuthorsTable() {
       pageIndex: 0,
       pageSize: pagination.pageSize ?? 10,
     }));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalFilter]);
 
   useEffect(() => {
     ensurePageInRange(table.getPageCount());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [table.getPageCount(), ensurePageInRange]);
 
   return (

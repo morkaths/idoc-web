@@ -1,4 +1,4 @@
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Category } from "@/types/schema";
 import { Button } from "@repo/ui/components/button";
@@ -12,19 +12,12 @@ import {
     DialogTitle,
 } from "@repo/ui/components/dialog";
 import { Input } from "@repo/ui/components/input";
-import { Label } from "@repo/ui/components/label";
 import { z } from "zod";
 import { X } from "lucide-react";
 import { LanguageSelect } from "./language-select";
+import { Form, FormControl, FormField, FormLabel, FormMessage } from "@repo/ui/components/form";
 
-type CategoriesMutateDialogProps = {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    initialData?: Partial<Category>;
-    onSubmit: (data: Partial<Category>) => void;
-};
-
-export const CategoryFormSchema = z.object({
+const CategoryFormSchema = z.object({
     slug: z.string().min(1, "Slug is required"),
     translations: z.array(
         z.object({
@@ -34,7 +27,14 @@ export const CategoryFormSchema = z.object({
         })
     ).min(1, "At least one translation is required"),
 });
-export type CategoryForm = z.infer<typeof CategoryFormSchema>;
+type CategoryForm = z.infer<typeof CategoryFormSchema>;
+
+type CategoriesMutateDialogProps = {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    initialData?: Partial<Category>;
+    onSubmit: (data: Partial<Category>) => void;
+};
 
 export function CategoriesMutateDialog({
     open,
@@ -59,7 +59,7 @@ export function CategoriesMutateDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[400px]">
+            <DialogContent className="sm:max-w-100">
                 <DialogHeader>
                     <DialogTitle>{initialData?._id ? "Edit Category" : "Add Category"}</DialogTitle>
                     <DialogDescription>
@@ -68,91 +68,122 @@ export function CategoriesMutateDialog({
                             : "Enter the information for the new category."}
                     </DialogDescription>
                 </DialogHeader>
-                <form
-                    onSubmit={form.handleSubmit((data) => {
-                        onSubmit({
-                            ...initialData,
-                            slug: data.slug,
-                            translations: data.translations,
-                        });
-                        onOpenChange(false);
-                        form.reset();
-                    })}
-                    className="space-y-4"
-                >
-                    <div className="grid gap-3">
-                        <Label htmlFor="slug">Slug</Label>
-                        <Input id="slug" {...form.register("slug")} />
-                    </div>
-
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => append({ lang: "", name: "", description: "" })}
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit((data) => {
+                            onSubmit({
+                                ...initialData,
+                                ...data,
+                            });
+                            onOpenChange(false);
+                            form.reset();
+                        })}
+                        className="space-y-4"
                     >
-                        Add translation
-                    </Button>
+                        <FormField
+                            control={form.control}
+                            name="slug"
+                            render={({ field }) => (
+                                <div className="grid gap-3">
+                                    <FormLabel htmlFor="slug">Slug</FormLabel>
+                                    <FormControl>
+                                        <Input id="slug" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </div>
+                            )}
+                        />
 
-                    <div className="max-h-72 overflow-auto space-y-3">
-                        {fields.map((field, idx) => {
-                            const selectedLangs = fields.map((f, i) => i !== idx ? f.lang : null).filter(Boolean);
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => append({ lang: "", name: "", description: "" })}
+                        >
+                            Add translation
+                        </Button>
 
-                            return (
-                                <div key={field.id} className="relative border p-4 rounded space-y-2 bg-muted/40">
-                                    {/* Nút xoá bản dịch */}
-                                    {fields.length > 1 && (
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="icon"
-                                            className="absolute top-2 right-2"
-                                            onClick={() => remove(idx)}
-                                            tabIndex={-1}
-                                        >
-                                            <X size={16} />
-                                        </Button>
-                                    )}
+                        <div className="max-h-72 overflow-auto space-y-3">
+                            {fields.map((field, idx) => {
+                                const selectedLangs = fields.map((f, i) => i !== idx ? f.lang : null).filter(Boolean);
 
-                                    <div className="flex items-center gap-3">
-                                        <Label htmlFor={`translations.${idx}.lang`} className="whitespace-nowrap">Language</Label>
-                                        <Controller
+                                return (
+                                    <div key={field.id} className="relative border p-4 rounded space-y-2 bg-muted/40">
+                                        {/* Nút xoá bản dịch */}
+                                        {fields.length > 1 && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="absolute top-2 right-2"
+                                                onClick={() => remove(idx)}
+                                                tabIndex={-1}
+                                            >
+                                                <X size={16} />
+                                            </Button>
+                                        )}
+
+                                        <FormField
                                             control={form.control}
                                             name={`translations.${idx}.lang`}
                                             render={({ field }) => (
-                                                <LanguageSelect
-                                                    value={field.value}
-                                                    onChange={field.onChange}
-                                                    id={`translations.${idx}.lang`}
-                                                    name={field.name}
-                                                    disabledValues={selectedLangs as string[]}
-                                                />
+                                                <div className="flex items-center gap-3">
+                                                    <FormLabel htmlFor={`translations.${idx}.lang`} className="whitespace-nowrap">Language</FormLabel>
+                                                    <FormControl>
+                                                        <LanguageSelect
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            id={`translations.${idx}.lang`}
+                                                            name={field.name}
+                                                            disabledValues={selectedLangs as string[]}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </div>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name={`translations.${idx}.name`}
+                                            render={({ field }) => (
+                                                <div className="grid gap-3">
+                                                    <FormLabel htmlFor={`translations.${idx}.name`}>Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input id={`translations.${idx}.name`} {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </div>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name={`translations.${idx}.description`}
+                                            render={({ field }) => (
+                                                <div className="grid gap-3">
+                                                    <FormLabel htmlFor={`translations.${idx}.description`}>Description</FormLabel>
+                                                    <FormControl>
+                                                        <Input id={`translations.${idx}.description`} {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </div>
                                             )}
                                         />
                                     </div>
-                                    <div className="grid gap-3">
-                                        <Label htmlFor={`translations.${idx}.name`}>Name</Label>
-                                        <Input id={`translations.${idx}.name`} {...form.register(`translations.${idx}.name`)} />
-                                    </div>
-                                    <div className="grid gap-3">
-                                        <Label htmlFor={`translations.${idx}.description`}>Description</Label>
-                                        <Input id={`translations.${idx}.description`} {...form.register(`translations.${idx}.description`)} />
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                                );
+                            })}
+                        </div>
 
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button variant="outline" type="button">
-                                Cancel
+                        <DialogFooter>
+                            <DialogClose asChild>
+                                <Button variant="outline" type="button">
+                                    Cancel
+                                </Button>
+                            </DialogClose>
+                            <Button type="submit">
+                                {initialData?._id ? "Save changes" : "Create"}
                             </Button>
-                        </DialogClose>
-                        <Button type="submit">
-                            {initialData?._id ? "Save changes" : "Create"}
-                        </Button>
-                    </DialogFooter>
-                </form>
+                        </DialogFooter>
+                    </form>
+                </Form>
             </DialogContent>
         </Dialog>
     );

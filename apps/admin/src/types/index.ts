@@ -26,6 +26,13 @@ export enum LayoutType {
   Horizontal = 'horizontal',
 }
 
+export enum RoleCode {
+  Admin = 'admin',
+  Manager = 'manager',
+  Staff = 'staff',
+  User = 'user',
+}
+
 // Phân trang
 export interface Pagination {
   total: number; // Tổng số item (bản ghi) trong toàn bộ dữ liệu

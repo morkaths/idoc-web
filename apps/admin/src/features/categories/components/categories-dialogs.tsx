@@ -3,12 +3,14 @@ import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ImportDialog } from '@/components/import-dialog';
 import { CategoriesMutateDialog } from './categories-mutate-dialog';
 import { useCategoriesContext } from './categories-provider';
-import { useCreateCategory, useUpdateCategory } from '@/hooks/data/useCategory';
+import { useCreateCategory, useDeleteCategory, useUpdateCategory } from '@/hooks/data/useCategory';
+import { toast } from 'sonner';
 
 export function CategoriesDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useCategoriesContext();
   const createCategoryMut = useCreateCategory();
   const updateCategoryMut = useUpdateCategory();
+  const deleteCategoryMut = useDeleteCategory();
 
   return (
     <>
@@ -17,8 +19,17 @@ export function CategoriesDialogs() {
         open={open === 'create'}
         onOpenChange={() => setOpen('create')}
         onSubmit={async (data) => {
-          await createCategoryMut.mutateAsync(data);
-          setOpen(null);
+          toast.promise(
+            createCategoryMut.mutateAsync(data),
+            {
+              loading: 'Creating category...',
+              success: () => {
+                setOpen(null);
+                return 'Category created successfully!';
+              },
+              error: (err) => err?.message || 'Failed to create category',
+            }
+          );
         }}
       />
 
@@ -41,9 +52,18 @@ export function CategoriesDialogs() {
             }}
             initialData={currentRow}
             onSubmit={async (data) => {
-              await updateCategoryMut.mutateAsync({ id: currentRow._id!, data });
-              setOpen(null);
-              setTimeout(() => setCurrentRow(null), 500);
+              toast.promise(
+                updateCategoryMut.mutateAsync({ id: currentRow._id!, data }),
+                {
+                  loading: 'Updating category...',
+                  success: () => {
+                    setOpen(null);
+                    setTimeout(() => setCurrentRow(null), 500);
+                    return 'Category updated successfully!';
+                  },
+                  error: (err) => err?.message || 'Failed to update category',
+                }
+              );
             }}
           />
 
@@ -58,11 +78,19 @@ export function CategoriesDialogs() {
               }, 500);
             }}
             handleConfirm={() => {
-              setOpen(null);
-              setTimeout(() => {
-                setCurrentRow(null);
-              }, 500);
-              showSubmittedData(currentRow, 'The following category has been deleted:');
+              toast.promise(
+                deleteCategoryMut.mutateAsync(currentRow._id!),
+                {
+                  loading: 'Deleting category...',
+                  success: () => {
+                    setOpen(null);
+                    setTimeout(() => setCurrentRow(null), 500);
+                    showSubmittedData(currentRow, 'The following category has been deleted:');
+                    return 'Category deleted successfully!';
+                  },
+                  error: (err) => err?.message || 'Failed to delete category',
+                }
+              );
             }}
             className='max-w-md'
             title={`Delete this category: ${currentRow.translations?.[0]?.name || currentRow._id} ?`}

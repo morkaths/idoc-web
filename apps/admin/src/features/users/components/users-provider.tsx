@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import useDialogState from '@/hooks/ui/useDialogState';
-import { type User } from '../data/schema';
+import { type User } from '@/types';
 
 type UsersDialogType = 'invite' | 'add' | 'edit' | 'delete';
 
@@ -18,17 +18,19 @@ export function UsersProvider({ children }: { children: React.ReactNode }) {
   const [currentRow, setCurrentRow] = useState<User | null>(null);
 
   return (
-    <UsersContext value={{ open, setOpen, currentRow, setCurrentRow }}>{children}</UsersContext>
+    <UsersContext.Provider value={{ open, setOpen, currentRow, setCurrentRow }}>
+      {children}
+    </UsersContext.Provider>
   );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useUsers = () => {
-  const usersContext = React.useContext(UsersContext);
+export const useUsersContext = () => {
+  const ctx = React.useContext(UsersContext);
 
-  if (!usersContext) {
-    throw new Error('useUsers has to be used within <UsersContext>');
+  if (!ctx) {
+    throw new Error('useUsersContext has to be used within <UsersProvider>');
   }
 
-  return usersContext;
+  return ctx;
 };

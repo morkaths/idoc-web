@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
 import { type Table } from '@tanstack/react-table';
-import { Trash2, CircleArrowUp, ArrowUpDown, Download } from 'lucide-react';
+import { Trash2, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { sleep } from '@/lib/utils';
 import { Button } from '@repo/ui/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@repo/ui/components/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@repo/ui/components/tooltip';
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table';
-import { ConfirmDialogDelete } from './confirm-dialog-delete';
+import { ConfirmDialogDelete } from '../confirm-dialog-delete';
 
 type Option = { label: string; value: string; icon?: React.ComponentType<{ className?: string }> };
 
@@ -30,10 +24,6 @@ export type DataTableBulkActionsProps<T> = {
 export function DataTableBulkActions<T>({
   table,
   entityName = 'item',
-  statuses = [],
-  priorities = [],
-  onBulkStatusChange,
-  onBulkPriorityChange,
   onBulkExport,
   onBulkDelete,
 }: DataTableBulkActionsProps<T>) {
@@ -66,40 +56,6 @@ export function DataTableBulkActions<T>({
     table.resetRowSelection();
   };
 
-  const handleStatus = (status: string) => {
-    return renderToast(
-      async () => {
-        if (onBulkStatusChange) {
-          await Promise.resolve(onBulkStatusChange(status, items));
-        } else {
-          await sleep(1000);
-        }
-      },
-      {
-        loading: `Updating status...`,
-        success: () =>
-          `Status updated to "${status}" for ${count} ${count > 1 ? `${entityName}s` : entityName}.`,
-      }
-    );
-  };
-
-  const handlePriority = (priority: string) => {
-    return renderToast(
-      async () => {
-        if (onBulkPriorityChange) {
-          await Promise.resolve(onBulkPriorityChange(priority, items));
-        } else {
-          await sleep(1000);
-        }
-      },
-      {
-        loading: `Updating priority...`,
-        success: () =>
-          `Priority updated to "${priority}" for ${count} ${count > 1 ? `${entityName}s` : entityName}.`,
-      }
-    );
-  };
-
   const handleExport = () => {
     return renderToast(
       async () => {
@@ -121,73 +77,6 @@ export function DataTableBulkActions<T>({
   return (
     <>
       <BulkActionsToolbar table={table} entityName={entityName}>
-        <DropdownMenu>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant='outline'
-                  size='icon'
-                  className='size-8'
-                  aria-label='Update status'
-                  title='Update status'
-                >
-                  <CircleArrowUp />
-                  <span className='sr-only'>Update status</span>
-                </Button>
-              </DropdownMenuTrigger>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Update status</p>
-            </TooltipContent>
-          </Tooltip>
-          <DropdownMenuContent sideOffset={8}>
-            {statuses.map((status) => (
-              <DropdownMenuItem
-                key={status.value}
-                defaultValue={status.value}
-                onClick={() => handleStatus(status.value)}
-              >
-                {status.icon && <status.icon className='text-muted-foreground size-4' />}
-                {status.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant='outline'
-                  size='icon'
-                  aria-label='Update priority'
-                  title='Update priority'
-                  className='size-8'
-                >
-                  <ArrowUpDown />
-                </Button>
-              </DropdownMenuTrigger>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Update priority</p>
-            </TooltipContent>
-          </Tooltip>
-          <DropdownMenuContent sideOffset={8}>
-            {priorities.map((priority) => (
-              <DropdownMenuItem
-                key={priority.value}
-                defaultValue={priority.value}
-                onClick={() => handlePriority(priority.value)}
-              >
-                {priority.icon && <priority.icon className='text-muted-foreground size-4' />}
-                {priority.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
         {/* Export */}
         <Tooltip>
           <TooltipTrigger asChild>

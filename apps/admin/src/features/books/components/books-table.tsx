@@ -56,20 +56,20 @@ export function BooksTable() {
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
 
   const bookParams = useMemo(() => {
-  const apiSort = sorting[0]
-    ? {
+    const apiSort = sorting[0]
+      ? {
         sortBy: String(sorting[0].id),
         sortOrder: sorting[0].desc ? 'desc' : 'asc',
       }
-    : undefined;
+      : undefined;
 
-  return {
-    page,
-    limit,
-    query: globalFilter ?? '',
-    ...(apiSort || {}),
-  };
-}, [page, limit, globalFilter, sorting]);
+    return {
+      page,
+      limit,
+      query: globalFilter ?? '',
+      ...(apiSort || {}),
+    };
+  }, [page, limit, globalFilter, sorting]);
 
   // fetch server-side page
   const { data: booksData, isFetching: isBooksFetching } = useBooks(bookParams);
@@ -85,7 +85,6 @@ export function BooksTable() {
   //   }));
   // }, [categoriesData]);
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: books,
     columns,
@@ -120,10 +119,12 @@ export function BooksTable() {
       pageIndex: 0,
       pageSize: pagination.pageSize ?? 10,
     }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalFilter]);
 
   useEffect(() => {
     ensurePageInRange(table.getPageCount());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [table.getPageCount(), ensurePageInRange]);
 
   return (
@@ -131,13 +132,13 @@ export function BooksTable() {
       <DataTableToolbar
         table={table}
         searchPlaceholder='Search books...'
-        // filters={[
-        //   {
-        //     columnId: 'categories',
-        //     title: 'Category',
-        //     options: categories,
-        //   },
-        // ]}
+      // filters={[
+      //   {
+      //     columnId: 'categories',
+      //     title: 'Category',
+      //     options: categories,
+      //   },
+      // ]}
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>

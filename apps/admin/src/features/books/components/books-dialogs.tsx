@@ -3,15 +3,14 @@ import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ImportDialog } from '@/components/import-dialog';
 import { BooksMutateDialog } from './books-mutate-dialog';
 import { useBooksContext } from './books-provider';
-import { useAuthors } from '@/hooks/data/useAuthor';
-import { useCreateBook, useUpdateBook } from '@/hooks/data/useBook';
+import { useCreateBook, useDeleteBook, useUpdateBook } from '@/hooks/data/useBook';
+import { toast } from 'sonner';
 
 export function BooksDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useBooksContext();
-  const { data } = useAuthors();
-  const authors = data?.data ?? [];
   const createBookMut = useCreateBook();
   const updateBookMut = useUpdateBook();
+  const deleteBookMut = useDeleteBook();
 
   return (
     <>
@@ -19,10 +18,18 @@ export function BooksDialogs() {
         key='book-create'
         open={open === 'create'}
         onOpenChange={() => setOpen('create')}
-        authors={authors}
         onSubmit={async (data) => {
-          await createBookMut.mutateAsync(data);
-          setOpen(null);
+          toast.promise(
+            createBookMut.mutateAsync(data),
+            {
+              loading: 'Creating book...',
+              success: () => {
+                setOpen(null);
+                return 'Book created successfully!';
+              },
+              error: (err) => err?.message || 'Failed to create book',
+            }
+          );
         }}
       />
 
@@ -44,11 +51,19 @@ export function BooksDialogs() {
               }, 500);
             }}
             initialData={currentRow}
-            authors={authors}
             onSubmit={async (data) => {
-              await updateBookMut.mutateAsync({ id: currentRow._id!, data });
-              setOpen(null);
-              setTimeout(() => setCurrentRow(null), 500);
+              toast.promise(
+                updateBookMut.mutateAsync({ id: currentRow._id!, data }),
+                {
+                  loading: 'Updating book...',
+                  success: () => {
+                    setOpen(null);
+                    setTimeout(() => setCurrentRow(null), 500);
+                    return 'Book updated successfully!';
+                  },
+                  error: (err) => err?.message || 'Failed to update book',
+                }
+              );
             }}
           />
 
@@ -62,12 +77,20 @@ export function BooksDialogs() {
                 setCurrentRow(null);
               }, 500);
             }}
-            handleConfirm={() => {
-              setOpen(null);
-              setTimeout(() => {
-                setCurrentRow(null);
-              }, 500);
-              showSubmittedData(currentRow, 'The following book has been deleted:');
+            handleConfirm={async () => {
+              toast.promise(
+                deleteBookMut.mutateAsync(currentRow._id!),
+                {
+                  loading: 'Deleting book...',
+                  success: () => {
+                    setOpen(null);
+                    setTimeout(() => setCurrentRow(null), 500);
+                    showSubmittedData(currentRow, 'The following book has been deleted:');
+                    return 'Book deleted successfully!';
+                  },
+                  error: (err) => err?.message || 'Failed to delete book',
+                }
+              );
             }}
             className='max-w-md'
             title={`Delete this book: ${currentRow.title || currentRow._id} ?`}

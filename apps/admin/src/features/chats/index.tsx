@@ -22,7 +22,7 @@ import { Separator } from '@repo/ui/components/separator';
 import { ConfigDrawer } from '@/components/config-drawer';
 import { Header } from '@/components/layout/header';
 import { Main } from '@/components/layout/main';
-import { ProfileDropdown } from '@/components/profile-dropdown';
+import { ProfileDropdown } from '@/components/layout/profile-dropdown';
 import { Search } from '@/components/search';
 import { ThemeSwitch } from '@/components/theme-switch';
 import { NewChat } from './components/new-chat';

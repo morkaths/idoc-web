@@ -1,9 +1,9 @@
 import { MailPlus, UserPlus } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
-import { useUsers } from './users-provider';
+import { useUsersContext } from './users-provider';
 
 export function UsersPrimaryButtons() {
-  const { setOpen } = useUsers();
+  const { setOpen } = useUsersContext();
   return (
     <div className='flex gap-2'>
       <Button variant='outline' className='space-x-1' onClick={() => setOpen('invite')}>

@@ -7,7 +7,7 @@ import type { Pagination, User } from './index';
 export interface ApiResponse<T> {
   success: boolean;
   message?: string;
-  token?: string;
+  token?: AuthToken;
   user?: User;
   data?: T;
   pagination?: Pagination;
@@ -19,16 +19,21 @@ export interface ApiError {
   errors?: string[];
 }
 
-export interface LoginResponse {
-  success: true;
-  user: User;
-  token: string;
-  message: string;
-}
-
 export interface ErrorResponse {
   success: false;
   message: string;
   errors?: string[];
   statusCode: number;
+}
+
+export interface AuthenticationResponse {
+  user: User;
+  token: AuthToken;
+}
+
+export interface AuthToken {
+  accessToken: string;
+  refreshToken: string;
+  accessTokenExpiresIn: number;
+  authenticated: boolean;
 }

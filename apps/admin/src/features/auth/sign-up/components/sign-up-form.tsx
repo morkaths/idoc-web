@@ -15,12 +15,19 @@ import {
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
+import { useAuthStore } from '@/stores/auth-store';
+import { useNavigate } from '@tanstack/react-router';
+import { toast } from 'sonner';
 
 const formSchema = z
   .object({
     email: z.email({
       error: (iss) => (iss.input === '' ? 'Please enter your email' : undefined),
     }),
+    username: z
+      .string()
+      .min(1, 'Please enter your username')
+      .min(3, 'Username must be at least 3 characters long'),
     password: z
       .string()
       .min(1, 'Please enter your password')
@@ -34,11 +41,14 @@ const formSchema = z
 
 export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { auth } = useAuthStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
+      username: '',
       password: '',
       confirmPassword: '',
     },
@@ -46,9 +56,25 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    // eslint-disable-next-line no-console
-    console.log(data);
 
+    toast.promise(
+      auth.register({ email: data.email, username: data.username, password: data.password }),
+      {
+        loading: 'Creating account...',
+        success: (result) => {
+          setIsLoading(false);
+          if (result) {
+            navigate({ to: '/', replace: true });
+            return 'Account created successfully!';
+          }
+          return 'Error creating account.';
+        },
+        error: (err) => {
+          setIsLoading(false);
+          return `Error: ${err.message}`;
+        },
+      }
+    );
     setTimeout(() => {
       setIsLoading(false);
     }, 3000);
@@ -61,6 +87,19 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
         className={cn('grid gap-3', className)}
         {...props}
       >
+        <FormField
+          control={form.control}
+          name='username'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder='your username' {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name='email'

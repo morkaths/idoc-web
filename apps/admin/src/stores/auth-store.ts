@@ -1,52 +1,106 @@
 import { create } from 'zustand';
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies';
-
-const ACCESS_TOKEN = 'thisisjustarandomstring';
-
-interface AuthUser {
-  accountNo: string;
-  email: string;
-  role: string[];
-  exp: number;
-}
+import { AuthApi } from '@/apis/auth.api';
+import type { User } from '@/types/schema';
+import type { AuthToken } from '@/types/api';
+import { TOKEN_COOKIE_KEY, USER_COOKIE_KEY } from '@/config/env';
 
 interface AuthState {
   auth: {
-    user: AuthUser | null;
-    setUser: (user: AuthUser | null) => void;
-    accessToken: string;
-    setAccessToken: (accessToken: string) => void;
-    resetAccessToken: () => void;
-    reset: () => void;
+    user: User | null;
+    token: AuthToken | null;
+    setUser: (user: User | null) => void;
+    setToken: (token: AuthToken | null) => void;
+    refresh: () => Promise<boolean>;
+    logout: () => Promise<boolean>;
+    login: (identifier: string, password: string) => Promise<boolean>;
+    register: (data: Partial<User>) => Promise<boolean>;
   };
 }
 
 export const useAuthStore = create<AuthState>()((set) => {
-  const cookieState = getCookie(ACCESS_TOKEN);
-  const initToken = cookieState ? JSON.parse(cookieState) : '';
+  const tokenCookie = getCookie(TOKEN_COOKIE_KEY);
+  const userCookie = getCookie(USER_COOKIE_KEY);
+  const initToken = tokenCookie ? JSON.parse(tokenCookie) as AuthToken : null;
+  const initUser = userCookie ? JSON.parse(userCookie) as User : null;
   return {
     auth: {
-      user: null,
+      user: initUser,
+      token: initToken,
       setUser: (user) => set((state) => ({ ...state, auth: { ...state.auth, user } })),
-      accessToken: initToken,
-      setAccessToken: (accessToken) =>
+      setToken: (token) =>
         set((state) => {
-          setCookie(ACCESS_TOKEN, JSON.stringify(accessToken));
-          return { ...state, auth: { ...state.auth, accessToken } };
+          setCookie(TOKEN_COOKIE_KEY, JSON.stringify(token));
+          return { ...state, auth: { ...state.auth, token } };
         }),
-      resetAccessToken: () =>
-        set((state) => {
-          removeCookie(ACCESS_TOKEN);
-          return { ...state, auth: { ...state.auth, accessToken: '' } };
-        }),
-      reset: () =>
-        set((state) => {
-          removeCookie(ACCESS_TOKEN);
-          return {
+      refresh: async () => {
+        const response = await AuthApi.refresh(initToken?.refreshToken ?? '');
+        if (response) {
+          set((state) => ({
             ...state,
-            auth: { ...state.auth, user: null, accessToken: '' },
-          };
-        }),
+            auth: {
+              ...state.auth,
+              user: response.user,
+              token: response.token,
+            },
+          }));
+          setCookie(TOKEN_COOKIE_KEY, JSON.stringify(response.token));
+          setCookie(USER_COOKIE_KEY, JSON.stringify(response.user));
+          return true;
+        }
+        return false;
+      },
+      logout: async () => {
+        const success = await AuthApi.logout();
+        if (success) {
+          set((state) => ({
+            ...state,
+            auth: {
+              ...state.auth,
+              user: null,
+              token: null,
+            },
+          }));
+          removeCookie(TOKEN_COOKIE_KEY);
+          removeCookie(USER_COOKIE_KEY);
+          return true;
+        }
+        return false;
+      },
+      login: async (identifier, password) => {
+        const response = await AuthApi.login({ identifier, password });
+        if (response) {
+          set((state) => ({
+            ...state,
+            auth: {
+              ...state.auth,
+              user: response.user,
+              token: response.token,
+            },
+          }));
+          setCookie(TOKEN_COOKIE_KEY, JSON.stringify(response.token));
+          setCookie(USER_COOKIE_KEY, JSON.stringify(response.user));
+          return true;
+        }
+        return false;
+      },
+      register: async (data) => {
+        const response = await AuthApi.register(data);
+        if (response) {
+          set((state) => ({
+            ...state,
+            auth: {
+              ...state.auth,
+              user: response.user,
+              token: response.token,
+            },
+          }));
+          setCookie(TOKEN_COOKIE_KEY, JSON.stringify(response.token));
+          setCookie(USER_COOKIE_KEY, JSON.stringify(response.user));
+          return true;
+        }
+        return false;
+      },
     },
   };
 });

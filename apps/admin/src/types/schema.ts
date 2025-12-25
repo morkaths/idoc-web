@@ -26,7 +26,8 @@ export const RoleSchema = z.object({
   id: z.string(),
   code: z.string(),
   name: z.string(),
-  permissions: z.array(PermissionSchema),
+  permissions: z.array(PermissionSchema).optional(),
+  permissionIds: z.array(z.string()).optional(),
   createdAt: dateOrString,
   modifiedAt: dateOrString,
   modifiedBy: z.string().optional(),
@@ -38,7 +39,8 @@ export const UserSchema = z.object({
   username: z.string(),
   password: z.string().optional(),
   status: z.number().int(), // 0: inactive, 1: active, 2: banned
-  roles: z.array(RoleSchema),
+  roles: z.array(RoleSchema).optional(),
+  roleIds: z.array(z.string()).optional(),
   createdAt: dateOrString,
   modifiedAt: dateOrString,
   modifiedBy: z.string().optional(),
@@ -158,3 +160,21 @@ export const BookSchema = z.object({
 export type Author = z.infer<typeof AuthorSchema>;
 export type Category = z.infer<typeof CategorySchema>;
 export type Book = z.infer<typeof BookSchema>;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FILE TYPES: Xử lý file và tải lên
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const FileMetaSchema = z.object({
+  _id: z.string(),
+  key: z.string(),
+  filename: z.string(),
+  mimeType: z.string(),
+  type: z.string(),
+  size: z.number().int(),
+  url: z.string(),
+  provider: z.string(),
+  uploadedBy: z.string(),
+});
+
+export type FileMeta = z.infer<typeof FileMetaSchema>;
