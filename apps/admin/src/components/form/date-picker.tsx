@@ -10,7 +10,7 @@ type DatePickerProps = {
   placeholder?: string;
 };
 
-export function DatePicker({ selected, onSelect, placeholder = 'Pick a date' }: DatePickerProps) {
+export function DatePicker({ selected, onSelect, placeholder = 'Pick a date', disabled = false }: DatePickerProps & { disabled?: boolean }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -18,6 +18,8 @@ export function DatePicker({ selected, onSelect, placeholder = 'Pick a date' }: 
           variant='outline'
           data-empty={!selected}
           className='data-[empty=true]:text-muted-foreground justify-start text-start font-normal'
+          disabled={disabled}
+          tabIndex={disabled ? -1 : 0}
         >
           {selected ? format(selected, 'MMM d, yyyy') : <span>{placeholder}</span>}
           <CalendarIcon className='ms-auto h-4 w-4 opacity-50' />

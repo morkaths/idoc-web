@@ -30,11 +30,11 @@ export function AuthorsCombobox({
     const [page, setPage] = useState(1);
     const [query, setQuery] = useState("");
     const debouncedQuery = useDebounce(query);
-    const authorParams = useMemo(() => ({
+    const params = useMemo(() => ({
         page,
         query: debouncedQuery,
     }), [page, debouncedQuery]);
-    const { data, isLoading } = useAuthors(authorParams);
+    const { data, isLoading } = useAuthors(params);
     const [authors, setAuthors] = useState<Author[]>([]);
     const pagination = Array.isArray(data?.pagination) ? data.pagination[0] : data?.pagination;
     const total = pagination?.total ?? 0;

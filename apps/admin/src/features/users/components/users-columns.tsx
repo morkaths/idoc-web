@@ -85,7 +85,7 @@ export const usersColumns: ColumnDef<User>[] = [
       const roles = row.original.roles ?? [];
       const maxShow = 2;
       return (
-        <div className='max-w-[260px] overflow-x-auto'>
+        <div className='max-w-65 overflow-x-auto'>
           <div className='flex items-center gap-1 whitespace-nowrap'>
             {roles.slice(0, maxShow).map((role) => {
               let icon = <User2 className="w-3.5 h-3.5 mr-1" />;

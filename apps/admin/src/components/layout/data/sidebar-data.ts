@@ -21,7 +21,8 @@ import {
   GalleryVerticalEnd,
   Library,
   Tag,
-  UserPen
+  UserPen,
+  Bookmark
 } from 'lucide-react';
 import { ClerkLogo } from '@/assets/clerk-logo';
 import { type SidebarData } from '../types';
@@ -95,6 +96,11 @@ export const sidebarData: SidebarData = {
           title: 'Authors',
           url: '/authors',
           icon: UserPen,
+        },
+        {
+          title: 'Borrows',
+          url: '/borrows',
+          icon: Bookmark,
         },
         {
           title: 'Users',
