@@ -51,21 +51,17 @@ export const useAuthStore = create<AuthState>()((set) => {
         return false;
       },
       logout: async () => {
-        const success = await AuthApi.logout();
-        if (success) {
-          set((state) => ({
-            ...state,
-            auth: {
-              ...state.auth,
-              user: null,
-              token: null,
-            },
-          }));
-          removeCookie(TOKEN_COOKIE_KEY);
-          removeCookie(USER_COOKIE_KEY);
-          return true;
-        }
-        return false;
+        set((state) => ({
+          ...state,
+          auth: {
+            ...state.auth,
+            user: null,
+            token: null,
+          },
+        }));
+        removeCookie(TOKEN_COOKIE_KEY);
+        removeCookie(USER_COOKIE_KEY);
+        return true;
       },
       login: async (identifier, password) => {
         const response = await AuthApi.login({ identifier, password });

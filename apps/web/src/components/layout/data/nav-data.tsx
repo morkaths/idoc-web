@@ -9,7 +9,8 @@ import {
   BookmarkIcon,
   BookOpenIcon,
   HistoryIcon,
-  Tag
+  Tag,
+  Sparkles
 } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
@@ -27,7 +28,7 @@ export type NavItem = {
   dropdown?: NavDropdownItem[];
   hero?: {
     title: string;
-    description: string;
+    image: string;
     href: string;
   };
 };
@@ -42,6 +43,12 @@ export const NavComponents: NavItem[] = [
     label: "Catalog",
     icon: LibraryIcon,
     dropdown: [
+      {
+        title: "Discover",
+        icon: Sparkles,
+        href: "/books/discover",
+        description: "Explore curated collections and recommendations tailored for you.",
+      },
       {
         title: "New Arrivals",
         icon: CompassIcon,
@@ -63,7 +70,7 @@ export const NavComponents: NavItem[] = [
     ],
     hero: {
       title: "Digital Library",
-      description: "Access thousands of e-books, research papers, and journals anytime, anywhere.",
+      image: "https://i.pinimg.com/1200x/47/5f/40/475f4037d1df064b68d51516ee148b96.jpg",
       href: "/books",
     },
   },
@@ -86,10 +93,11 @@ export const NavComponents: NavItem[] = [
     ],
     hero: {
       title: "Authors Hub",
-      description: "Discover author interviews, writing tips, and upcoming book releases.",
+      image: "https://i.pinimg.com/1200x/3f/58/f8/3f58f845c93ca0120d51da68763f290b.jpg",
       href: "/authors",
     },
   },
+
   {
     label: "Library",
     icon: BookmarkIcon,
@@ -113,5 +121,10 @@ export const NavComponents: NavItem[] = [
         description: "Your borrowing history and past interactions with the library.",
       },
     ],
+    hero: {
+      title: "Library Center",
+      image: "https://i.pinimg.com/1200x/cb/43/ee/cb43eec212897418bcaf7b25d129b0b1.jpg",
+      href: "/library",
+    },
   },
 ];

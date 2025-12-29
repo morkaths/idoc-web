@@ -6,25 +6,29 @@ import { Input } from '@repo/ui/components/input';
 import { Label } from '@repo/ui/components/label';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 
-type ConfirmDialogDeleteProps<T> = {
+type ConfirmBulkDialogProps<T> = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   table?: Table<T>;
   selectedCount?: number;
   confirmWord?: string;
+  confirmDesc?: string;
   itemName?: string;
   onConfirm: () => Promise<void> | void;
+  action?: string;
 };
 
-export function ConfirmDialogDelete<T>({
+export function ConfirmBulkDialog<T>({
   open,
   onOpenChange,
   table,
   selectedCount,
   confirmWord = 'DELETE',
+  confirmDesc,
   itemName = 'item',
+  action = 'Delete',
   onConfirm,
-}: ConfirmDialogDeleteProps<T>) {
+}: ConfirmBulkDialogProps<T>) {
   const [value, setValue] = useState('');
   const count = table ? table.getFilteredSelectedRowModel().rows.length : (selectedCount ?? 0);
 
@@ -38,13 +42,13 @@ export function ConfirmDialogDelete<T>({
       await toast.promise(
         Promise.resolve().then(() => onConfirm()),
         {
-          loading: `Deleting ${count} ${count > 1 ? `${itemName}s` : itemName}...`,
+          loading: `${action} ${count} ${count > 1 ? `${itemName}s` : itemName}...`,
           success: () => {
             if (table) table.resetRowSelection();
             onOpenChange(false);
-            return `Deleted ${count} ${count > 1 ? `${itemName}s` : itemName}`;
+            return `${action} ${count} ${count > 1 ? `${itemName}s` : itemName} successfully!`;
           },
-          error: 'Delete failed',
+          error: `${action} failed!`,
         }
       );
     } finally {
@@ -60,18 +64,19 @@ export function ConfirmDialogDelete<T>({
       disabled={confirmWord ? value.trim() !== confirmWord : false}
       title={
         <span className='text-destructive'>
-          Delete {count} {count > 1 ? `${itemName}s` : itemName}
+          {action} {count} {count > 1 ? `${itemName}s` : itemName}
         </span>
       }
       desc={
         <div className='space-y-4'>
           <p>
-            Are you sure you want to delete the selected {itemName}
-            {count > 1 ? 's' : ''}? This action cannot be undone.
+            {confirmDesc || `Are you sure you want to ${action.toLowerCase()} the selected ${itemName}${
+              count > 1 ? 's' : ''
+            }?`}
           </p>
 
           <Label className='my-4 flex flex-col items-start gap-1.5'>
-            <span>Confirm by typing "{confirmWord}":</span>
+            <span>Confirm by typing &quot;{confirmWord}&quot;:</span>
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}
@@ -87,10 +92,10 @@ export function ConfirmDialogDelete<T>({
           </Alert>
         </div>
       }
-      confirmText='Delete'
+      confirmText={action}
       destructive
     />
   );
 }
 
-export default ConfirmDialogDelete;
+export default ConfirmBulkDialog;

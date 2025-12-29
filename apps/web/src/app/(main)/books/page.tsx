@@ -1,18 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import dynamic from "next/dynamic";
 import { Button } from "@repo/ui/components/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "@repo/ui/components/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@repo/ui/components/tabs";
 import { Card } from "@repo/ui/components/card";
-import BookFilter from "./components/book-filter";
-import BookSort from "./components/book-sort";
+import BookFilter from "./_components/book-filter";
+import BookSort from "./_components/book-sort";
 import { FindParams } from "@/types";
 import { ArrowDownAZ, FilterIcon, LayoutGrid, List, SlidersHorizontal, Sparkles } from "lucide-react";
-
-const BookGridView = dynamic(() => import("./components/book-grid-view"), { ssr: false });
-const BookListView = dynamic(() => import("./components/book-list-view"), { ssr: false });
+import BookView from "./_components/book-view";
 
 export default function BooksPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -94,11 +91,7 @@ export default function BooksPage() {
         </div>
 
         {/* Danh sách sách */}
-        {view === "grid" ? (
-          <BookGridView filter={filter} />
-        ) : (
-          <BookListView filter={filter} />
-        )}
+        <BookView filter={{ ...filter, ...sort }} view={view} />
       </section>
     </main>
   );

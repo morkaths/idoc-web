@@ -1,3 +1,4 @@
+import qs from 'qs';
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { API_CONFIG } from '@/config/api';
 import { API_KEY } from '@/config/env';
@@ -88,6 +89,8 @@ async function apiRequest<T>(
       method,
       url,
       ...axiosOptions,
+      paramsSerializer: (params) =>
+        qs.stringify(params, { arrayFormat: 'repeat' }),
     });
     return response.data;
   } catch (error) {

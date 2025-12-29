@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import {
   Command,
@@ -24,12 +23,20 @@ export const Header = () => {
       "
     >
       <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-8">
           {/* Logo */}
           <Link href="/" className="font-bold text-lg flex items-center pl-2">
             <Command className="w-9 h-9 mr-2" />
             <span className="hidden md:flex">iDoc</span>
           </Link>
+          {/* Nav */}
+          <nav className="hidden xl:flex items-center gap-8">
+            <Navbar items={NavComponents} />
+          </nav>
+        </div>
+
+        {/* Right actions */}
+        <div className="flex items-center gap-2">
           {/* Search */}
           <div className="hidden md:flex w-50 lg:w-70 max-w-sm md:max-w-md lg:max-w-lg">
             <Search />
@@ -38,13 +45,6 @@ export const Header = () => {
           <div className="flex items-center xl:hidden">
             <AppSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
           </div>
-        </div>
-        {/* Desktop Menu */}
-        <nav className="hidden xl:flex flex-1 justify-center items-center gap-8">
-          <Navbar items={NavComponents} />
-        </nav>
-        {/* Right actions */}
-        <div className="flex items-center gap-2">
           <ThemeSwitch />
           <ProfileDropdown />
         </div>

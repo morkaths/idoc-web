@@ -1,21 +1,18 @@
 import type { NextConfig } from "next";
 
+const imageDomains = [
+  "picsum.photos",
+  "res.cloudinary.com",
+  "images.unsplash.com",
+  "i.pravatar.cc",
+  "github.com",
+  "images.unsplash.com",
+  "i.pinimg.com",
+];
+
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "i.pravatar.cc",
-      },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "github.com",
-      },
-    ],
+    domains: imageDomains,
   },
 };
 

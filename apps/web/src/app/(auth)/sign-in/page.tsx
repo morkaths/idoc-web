@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui/components/card";
-import SignInForm  from "./components/sign-in-form";
+import SignInForm  from "./_components/sign-in-form";
 
 export default function SignIn() {
   const searchParams = useSearchParams();

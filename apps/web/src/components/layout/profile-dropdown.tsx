@@ -1,4 +1,6 @@
+"use client";
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import useDialogState from '@/hooks/ui/useDialogState';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import { Button } from '@repo/ui/components/button';
@@ -18,6 +20,17 @@ import { useAuthStore } from '@/stores/auth-store';
 export function ProfileDropdown() {
   const user = useAuthStore((state) => state.auth.user);
   const [open, setOpen] = useDialogState();
+  const [isMounted, setIsMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setIsMounted(true); }, []);
+
+  if (!isMounted) {
+    return (
+      <div className="flex gap-2 opacity-0">
+        <Button variant="default" disabled>Sign in</Button>
+      </div>
+    );
+  }
 
   if (!user) {
     return (

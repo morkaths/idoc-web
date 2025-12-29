@@ -1,8 +1,7 @@
 "use client";
-
-import { Header } from "@/components/layout/header";
 import { SearchProvider } from "@/context/search-provider";
 import { LayoutProvider } from "@/context/layout-provider";
+import { Header } from "@/components/layout/header";
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -23,7 +23,7 @@ const BookGridItems: React.FC<BookGridItemsProps> = ({
 }) => {
     const router = useRouter();
 
-    if (!loading) {
+    if (loading) {
         return (
             <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 justify-items-center items-start ${className}`}>
                 {[...Array(10)].map((_, i) => (
@@ -61,7 +61,7 @@ const BookGridItems: React.FC<BookGridItemsProps> = ({
                 <BookGridItem
                     key={book._id}
                     book={book}
-                    onClick={() => router.push(paths.book(book.slug))}
+                    onClick={() => router.push(paths.book(book._id))}
                 />
             ))}
         </div>

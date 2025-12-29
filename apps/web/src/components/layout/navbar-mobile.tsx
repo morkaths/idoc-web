@@ -39,9 +39,10 @@ function convertNavItemsToMobile(items: NavItem[]): NavigationItem[] {
 
 interface NavbarMobileProps {
     items: NavItem[];
+    onNavigate?: () => void;
 }
 
-export function NavbarMobile({ items }: NavbarMobileProps) {
+export function NavbarMobile({ items, onNavigate }: NavbarMobileProps) {
     const navigationMenu = convertNavItemsToMobile(items);
     const NavigationMenuItemMobile = ({
         item,
@@ -52,9 +53,9 @@ export function NavbarMobile({ items }: NavbarMobileProps) {
     }) => {
         if (item.type === "page") {
             return (
-                <Link href={item.href || "#"} className="block">
+                <Link href={item.href || "#"} className="block" onClick={onNavigate}>
                     <div
-                        className="focus-visible:ring-ring/50 flex items-center gap-2 rounded-md p-1 outline-none focus-visible:ring-[3px]"
+                        className="focus-visible:ring-ring/50 flex items-center gap-2 rounded-md p-1 outline-none focus-visible:ring-[3px] hover:bg-muted hover:text-primary transition-colors"
                         style={{ paddingLeft: `${level === 0 ? 0.25 : 1.75}rem` }}
                     >
                         {item.icon ? (
@@ -73,7 +74,7 @@ export function NavbarMobile({ items }: NavbarMobileProps) {
                 className="flex flex-col gap-1.5"
                 style={{ paddingLeft: `${level === 0 ? 0 : 1.5}rem` }}
             >
-                <CollapsibleTrigger className="focus-visible:ring-ring/50 flex items-center gap-2 rounded-md p-1 outline-none focus-visible:ring-[3px]">
+                <CollapsibleTrigger className="focus-visible:ring-ring/50 flex items-center gap-2 rounded-md p-1 outline-none focus-visible:ring-[3px] hover:bg-muted hover:text-primary transition-colors">
                     {item.icon ? (
                         <item.icon className="size-4 shrink-0" />
                     ) : (

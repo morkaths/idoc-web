@@ -13,13 +13,11 @@ import {
     FormMessage,
 } from "@repo/ui/components/form";
 import { Input } from "@repo/ui/components/input";
-import { Slider } from "@repo/ui/components/slider";
 import { FindParams } from "@/types";
 
 const FilterSchema = z.object({
     search: z.string().optional(),
-    categories: z.array(z.string()).optional(),
-    priceRange: z.tuple([z.number(), z.number()]).optional(),
+    categoryIds: z.array(z.string()).optional(),
 });
 
 type FilterForm = z.infer<typeof FilterSchema>;
@@ -39,8 +37,7 @@ export default function BookFilter({
         resolver: zodResolver(FilterSchema),
         defaultValues: {
             search: "",
-            categories: [],
-            priceRange: [0, 1000],
+            categoryIds: [],
             ...filter,
         },
     });
@@ -51,14 +48,8 @@ export default function BookFilter({
                 onSubmit={form.handleSubmit(async (data) => {
                     const params: FindParams = {
                         query: data.search,
-                        filters: [],
+                        categoryIds: data.categoryIds,
                     };
-                    if (data.categories && data.categories.length > 0) {
-                        params.filters!.push({ categories: data.categories });
-                    }
-                    if (data.priceRange) {
-                        params.filters!.push({ price: { $gte: data.priceRange[0], $lte: data.priceRange[1] } });
-                    }
                     onFilter(params);
 
                 })}
@@ -81,10 +72,10 @@ export default function BookFilter({
                 {/* Categories (multi-select) */}
                 <FormField
                     control={form.control}
-                    name="categories"
+                    name="categoryIds"
                     render={({ field }) => (
                         <div className="grid gap-3">
-                            <FormLabel htmlFor="categories">Categories</FormLabel>
+                            <FormLabel htmlFor="categoryIds">Categories</FormLabel>
                             <FormControl>
                                 <CategoriesCombobox
                                     value={field.value || []}
@@ -95,37 +86,16 @@ export default function BookFilter({
                         </div>
                     )}
                 />
-                {/* Year range */}
-                <FormField
-                    control={form.control}
-                    name="priceRange"
-                    render={({ field }) => (
-                        <div className="grid gap-3">
-                            <FormLabel htmlFor="priceRange">Price range</FormLabel>
-                            <FormControl>
-                                <Slider
-                                    min={0}
-                                    max={9999}
-                                    step={1}
-                                    value={field.value || [0, 1000]}
-                                    onValueChange={field.onChange}
-                                    className="mt-2"
-                                />
-                            </FormControl>
-                            <div className="flex justify-between text-xs mt-1">
-                                <span>{field.value?.[0] ?? 0} $</span>
-                                <span>{field.value?.[1] ?? 1000} $</span>
-                            </div>
-                            <FormMessage />
-                        </div>
-                    )}
-                />
                 {/* Reset & Submit */}
                 <div className="flex gap-2">
                     <Button variant="outline" type="button" className="flex-1" onClick={() => { form.reset(); onReset(); }}>
                         Reset
                     </Button>
-                    <Button type="submit" className="flex-1">
+                    <Button
+                        type="submit"
+                        className="flex-1"
+                        disabled={form.formState.isSubmitting}
+                    >
                         Apply
                     </Button>
                 </div>

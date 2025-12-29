@@ -9,7 +9,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@repo/ui/components/card';
-import { SignUpForm } from './components/sign-up-form';
+import { SignUpForm } from './_components/sign-up-form';
 
 export default function SignUp() {
     return (

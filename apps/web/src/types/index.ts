@@ -47,7 +47,7 @@ export interface FindParams {
   limit?: number;
   query?: string;
   sorts?: Record<string, string>[];
-  filters?: Record<string, unknown>[];
+  [key: string]: unknown;
 }
 
 // View mode: grid, list, compact, etc.

@@ -2,6 +2,8 @@ import BookListItem from "./book-list-item";
 import { Book } from "@/types";
 import { Skeleton } from "@repo/ui/components/skeleton";
 import { Card, CardContent } from "@repo/ui/components/card";
+import { useRouter } from "next/navigation";
+import paths from "@/config/path";
 
 interface BookListItemsProps {
   data?: Book[];
@@ -16,7 +18,9 @@ export default function BookListItems({
   error = null,
   className = "",
 }: BookListItemsProps) {
-  if (!loading) {
+  const router = useRouter();
+
+  if (loading) {
     return (
       <div className={`flex flex-col gap-4 ${className}`}>
         {[...Array(8)].map((_, i) => (
@@ -51,9 +55,13 @@ export default function BookListItems({
     );
   }
   return (
-    <div className={`flex flex-col gap-4 ${className}`}>
+    <div className={`grid grid-cols-1 xl:grid-cols-2 gap-6 ${className}`}>
       {data.map((book) => (
-        <BookListItem key={book._id} book={book} />
+        <BookListItem
+          key={book._id}
+          book={book}
+          onClick={() => router.push(paths.book(book._id))}
+        />
       ))}
     </div>
   );

@@ -1,6 +1,4 @@
 "use client";
-
-import React from "react";
 import {
   Sheet,
   SheetContent,
@@ -9,7 +7,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@repo/ui/components/sheet";
-import { Separator } from "@repo/ui/components/separator";
 import { Button } from "@repo/ui/components/button";
 import { LayoutPanelLeft, Command } from "lucide-react";
 import Link from "next/link";
@@ -17,8 +14,13 @@ import { NavbarMobile } from "./navbar-mobile";
 import { NavComponents } from "./data/nav-data";
 import { Search } from "./search";
 import { NavUser } from "./nav-user";
+import { useEffect, useState } from "react";
 
 export function AppSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (v: boolean) => void }) {
+  const [isMounted, setIsMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setIsMounted(true); }, []);
+  if (!isMounted) return null;
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
@@ -46,11 +48,10 @@ export function AppSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: 
             <Search />
           </div>
           <div className="flex flex-col gap-2.5 p-4 pt-0">
-            <NavbarMobile items={NavComponents} />
+            <NavbarMobile items={NavComponents} onNavigate={() => setIsOpen(false)} />
           </div>
         </div>
-        <SheetFooter className="flex-col sm:flex-col justify-center items-center">
-          <Separator className="mb-2" />
+        <SheetFooter className="flex-col sm:flex-col justify-center items-center w-full px-2 pb-4 border-t border-border mt-auto">
           <NavUser />
         </SheetFooter>
       </SheetContent>

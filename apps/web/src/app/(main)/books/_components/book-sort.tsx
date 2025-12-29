@@ -17,7 +17,7 @@ const SORT_FIELDS = [
     { value: "title", label: "Title" },
     { value: "createdAt", label: "Created At" },
     { value: "updatedAt", label: "Updated At" },
-    { value: "year", label: "Year" },
+    { value: "publishedYear", label: "Published Year" },
     { value: "price", label: "Price" },
     { value: "pages", label: "Pages" },
 ];
@@ -115,7 +115,11 @@ export default function BookSort({
                     <Button variant="outline" type="button" className="flex-1" onClick={() => { form.reset(); onReset(); }}>
                         Reset
                     </Button>
-                    <Button type="submit" className="flex-1">
+                    <Button
+                        type="submit"
+                        className="flex-1"
+                        disabled={form.formState.isSubmitting}
+                    >
                         Apply
                     </Button>
                 </div>

@@ -12,6 +12,7 @@ import {
     navigationMenuTriggerStyle,
 } from "@repo/ui/components/navigation-menu"
 import { NavItem } from "../layout/data/nav-data"
+import Image from "next/image"
 
 interface NavbarProps {
     items: NavItem[];
@@ -37,14 +38,24 @@ export function Navbar({ items }: NavbarProps) {
                                     }
                                 >
                                     {item.hero && (
-                                        <li className="row-span-3">
+                                        <li className="row-span-4 p-0 m-0">
                                             <NavigationMenuLink asChild>
                                                 <Link
-                                                    className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-4 no-underline outline-hidden transition-all duration-200 select-none focus:shadow-md md:p-6"
+                                                    className="flex h-full w-full items-stretch justify-stretch bg-transparent p-0 m-0 rounded-md"
                                                     href={item.hero.href}
+                                                    tabIndex={-1}
                                                 >
-                                                    <div className="mb-2 text-lg font-medium sm:mt-4">{item.hero.title}</div>
-                                                    <p className="text-muted-foreground text-sm leading-tight">{item.hero.description}</p>
+                                                    {item.hero.image && (
+                                                        <Image
+                                                            src={item.hero.image}
+                                                            alt={item.hero.title}
+                                                            width={320}
+                                                            height={480}
+                                                            className="w-full h-full object-cover rounded-md border shadow-sm"
+                                                            style={{ display: "block" }}
+                                                            priority
+                                                        />
+                                                    )}
                                                 </Link>
                                             </NavigationMenuLink>
                                         </li>
