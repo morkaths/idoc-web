@@ -35,7 +35,7 @@ export default function BookViewPage() {
                     </DialogHeader>
                     <div
                         className="w-full flex items-center justify-center border-t"
-                        style={{ ["--scale-factor" as any]: 1, minHeight: 500, height: '80vh' }}
+                        style={{ ["--scale-factor" as never]: 1, minHeight: 500, height: '80vh' }}
                     >
                         {file.url.match(/\.pdf(\?|$)/i) ? (
                             <PdfViewer fileUrl={file.url} mode="simple" />

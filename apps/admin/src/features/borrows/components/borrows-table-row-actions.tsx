@@ -17,24 +17,35 @@ type BorrowsTableRowActionsProps<TData> = {
 };
 
 export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsProps<TData>) {
-  const original = row.original as unknown as Borrow; 
+  const original = row.original as unknown as Borrow;
   const safeBorrow = {
     ...original,
     count: typeof original.count === 'number' ? original.count : 1,
     borrower: original.borrower
       ? {
-          ...original.borrower,
-          id: String(original.borrower.id ?? ''),
-          status: typeof original.borrower.status === 'number'
-            ? original.borrower.status
-            : 1,
-        }
+        ...original.borrower,
+        id: String(original.borrower.id ?? ''),
+        status: typeof original.borrower.status === 'number'
+          ? original.borrower.status
+          : 1,
+        password: typeof original.borrower.password === 'string'
+          ? original.borrower.password
+          : '', // chuyển null/undefined thành chuỗi rỗng
+        roles: Array.isArray(original.borrower.roles)
+          ? original.borrower.roles.map(role => ({
+            ...role,
+            id: typeof role.id === 'string'
+              ? role.id
+              : String(role.id ?? ''),
+          }))
+          : [],
+      }
       : undefined,
     item: original.item
       ? {
-          ...original.item,
-          _id: String(original.item._id ?? ''),
-        }
+        ...original.item,
+        _id: String(original.item._id ?? ''),
+      }
       : undefined,
   };
   const borrow = BorrowSchema.parse(safeBorrow);
