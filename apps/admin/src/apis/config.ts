@@ -1,3 +1,4 @@
+import qs from 'qs';
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { API_CONFIG } from '@/config/api';
 import { API_KEY } from '@/config/env';
@@ -7,13 +8,7 @@ import { toast } from 'sonner';
 
 type ApiMode = 'public' | 'private';
 
-function createApiInstance(withCredentials = false): AxiosInstance {
-  const instance = axios.create({
-    baseURL: API_CONFIG.baseURL,
-    timeout: API_CONFIG.timeout,
-    withCredentials,
-  });
-
+function attachInterceptors(instance: AxiosInstance, withCredentials: boolean) {
   instance.interceptors.request.use((config) => {
     config.headers = config.headers || {};
     config.headers['x-api-key'] = API_KEY;
@@ -30,12 +25,17 @@ function createApiInstance(withCredentials = false): AxiosInstance {
   instance.interceptors.response.use(
     (res) => res,
     async (error) => {
-      if (error?.response?.status === 401) {
+      const originalRequest = error.config;
+      if (
+        error?.response?.status === 401 &&
+        !originalRequest._retry
+      ) {
+        originalRequest._retry = true;
         const { auth } = useAuthStore.getState();
         const refreshed = await auth.refresh();
         if (refreshed) {
-          error.config.headers.Authorization = `Bearer ${useAuthStore.getState().auth.token?.accessToken}`;
-          return instance.request(error.config);
+          originalRequest.headers.Authorization = `Bearer ${useAuthStore.getState().auth.token?.accessToken}`;
+          return instance.request(originalRequest);
         } else {
           await auth.logout();
           toast.error('Session expired. Please log in again.');
@@ -45,10 +45,19 @@ function createApiInstance(withCredentials = false): AxiosInstance {
         success: false,
         message: error?.response?.data?.message ?? error?.message,
         statusCode: error?.response?.status ?? 500,
-      })
+      });
     }
   );
+}
 
+function createApiInstance(withCredentials = false): AxiosInstance {
+  const instance = axios.create({
+    baseURL: API_CONFIG.baseURL,
+    timeout: API_CONFIG.timeout,
+    withCredentials,
+    paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
+  });
+  attachInterceptors(instance, withCredentials);
   return instance;
 }
 
@@ -57,6 +66,13 @@ function getApiInstance(mode: ApiMode): AxiosInstance {
 }
 
 function handleError<T>(error: unknown): ApiResponse<T> {
+  if (axios.isAxiosError(error)) {
+    return {
+      success: false,
+      message: error.response?.data?.message ?? error.message,
+      statusCode: error.response?.status ?? 500,
+    };
+  }
   if (typeof error === 'object' && error !== null && 'message' in error) {
     const err = error as { message?: string; statusCode?: number };
     return {
