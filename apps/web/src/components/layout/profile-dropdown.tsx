@@ -35,10 +35,10 @@ export function ProfileDropdown() {
   if (!user) {
     return (
       <div className="flex gap-2">
-        <Button asChild variant="default">
+        <Button asChild variant="outline">
           <Link href="/sign-in">Sign in</Link>
         </Button>
-        <Button asChild variant="outline">
+        <Button asChild variant="default">
           <Link href="/sign-up">Sign up</Link>
         </Button>
       </div>

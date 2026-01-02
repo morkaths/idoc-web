@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@repo/ui/components/button";
 
-export default function ForbiddenError() {
+export default function ForbiddenPage() {
   const router = useRouter();
 
   return (

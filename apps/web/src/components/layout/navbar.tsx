@@ -25,7 +25,7 @@ export function Navbar({ items }: NavbarProps) {
                 {items.map((item) =>
                     item.dropdown ? (
                         <NavigationMenuItem key={item.label}>
-                            <NavigationMenuTrigger className="bg-card flex items-center gap-2">
+                            <NavigationMenuTrigger className="bg-transparent flex items-center gap-2">
                                 {item.icon && React.createElement(item.icon, { className: "w-4 h-4" })}
                                 {item.label}
                             </NavigationMenuTrigger>
@@ -75,7 +75,7 @@ export function Navbar({ items }: NavbarProps) {
                         </NavigationMenuItem>
                     ) : (
                         <NavigationMenuItem key={item.label}>
-                            <NavigationMenuLink asChild className={navigationMenuTriggerStyle() + " bg-card"}>
+                            <NavigationMenuLink asChild className={navigationMenuTriggerStyle() + " bg-transparent"}>
                                 <Link href={item.href || "#"} className="flex items-center gap-2">
                                     <div className="flex items-center gap-2">
                                         {item.icon && React.createElement(item.icon, { className: "w-4 h-4" })}

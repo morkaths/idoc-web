@@ -1,54 +1,70 @@
 "use client";
 import React from "react";
-import {
-  Command,
-} from "lucide-react";
-import Link from "next/link";
-import { ThemeSwitch } from "./theme-switch";
+import { useScroll } from "@/hooks/ui/useScroll";
+import { Logo } from "@/components/layout/logo";
+import { cn } from "@/lib/utils";
 import { Navbar } from "./navbar";
 import { NavComponents } from "./data/nav-data";
 import { Search } from "./search";
-import { ProfileDropdown } from "./profile-dropdown";
 import { AppSidebar } from "./sidebar";
+import { ThemeSwitch } from "./theme-switch";
+import { ProfileDropdown } from "./profile-dropdown";
 
+export function Header() {
+	const scrolled = useScroll(10);
+	const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
-export const Header = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  return (
-    <header
-      className="
-        w-full fixed top-0 left-0 backdrop-blur bg-card/80
-        md:sticky md:top-5 md:w-[90%] md:rounded-md md:bg-card
-        bg-opacity-15 mx-auto border border-secondary z-40 p-2
-      "
-    >
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-8">
-          {/* Logo */}
-          <Link href="/" className="font-bold text-lg flex items-center pl-2">
-            <Command className="w-9 h-9 mr-2" />
-            <span className="hidden md:flex">iDoc</span>
-          </Link>
-          {/* Nav */}
-          <nav className="hidden xl:flex items-center gap-8">
-            <Navbar items={NavComponents} />
-          </nav>
-        </div>
+	React.useEffect(() => {
+		if (mobileMenuOpen) {
+			document.body.style.overflow = "hidden";
+		} else {
+			document.body.style.overflow = "";
+		}
+		return () => {
+			document.body.style.overflow = "";
+		}
+	}, [mobileMenuOpen]);
 
-        {/* Right actions */}
-        <div className="flex items-center gap-2">
-          {/* Search */}
-          <div className="hidden md:flex w-50 lg:w-70 max-w-sm md:max-w-md lg:max-w-lg">
-            <Search />
-          </div>
-          {/* Mobile */}
-          <div className="flex items-center xl:hidden">
-            <AppSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
-          </div>
-          <ThemeSwitch />
-          <ProfileDropdown />
-        </div>
-      </div>
-    </header>
-  );
-};
+	return (
+		<header
+			className={cn(
+				"sticky top-0 z-50 mx-auto w-full border-transparent border-b xl:rounded-md xl:border xl:transition-all xl:ease-out",
+				{
+					"border-border bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/50 xl:top-2 xl:max-w-6xl xl:shadow":
+						scrolled,
+				}
+			)}
+		>
+			<nav
+				className={cn(
+					"flex h-14 w-full items-center justify-between px-4 xl:h-12 xl:transition-all xl:ease-out",
+					{
+						"xl:px-2": scrolled,
+					}
+				)}
+			>
+				<div className="flex items-center gap-2">
+					<Logo className="h-4.5" />
+				</div>
+
+				<div className="hidden lg:flex items-center gap-1">
+					<Navbar items={NavComponents} />
+				</div>
+
+				{/* Right actions */}
+				<div className="flex items-center gap-2">
+					{/* Search */}
+					<div className="hidden sm:flex w-40 xl:w-50 max-w-sm md:max-w-md lg:max-w-lg">
+						<Search />
+					</div>
+					{/* Mobile */}
+					<div className="flex items-center lg:hidden">
+						<AppSidebar isOpen={mobileMenuOpen} setIsOpen={setMobileMenuOpen} />
+					</div>
+					<ThemeSwitch />
+					<ProfileDropdown />
+				</div>
+			</nav>
+		</header>
+	);
+}
