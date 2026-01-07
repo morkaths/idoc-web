@@ -11,6 +11,14 @@ export const AuthApi = {
     return (response.success && response.data) ? response.data : null;
   },
 
+  loginGoogle: async (idToken: string): Promise<AuthenticationResponse | null> => {
+    const response = await ApiRequest.apiPost<AuthenticationResponse>(
+      API_CONFIG.endpoints.auth.loginGoogle,
+      { mode: "public", data: { idToken } }
+    );
+    return (response.success && response.data) ? response.data : null;
+  },
+
   register: async (data: Partial<User>): Promise<AuthenticationResponse | null> => {
     const response = await ApiRequest.apiPost<AuthenticationResponse>(
       API_CONFIG.endpoints.auth.register,

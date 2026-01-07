@@ -15,13 +15,14 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { SignOutDialog } from '@/components/sign-out-dialog';
-import { useAuthStore } from '@/stores/auth-store';
+import { useSession } from "next-auth/react";
+import type { User } from "@/types/schema";
 
 export function ProfileDropdown() {
-  const user = useAuthStore((state) => state.auth.user);
+  const { data: session } = useSession();
+  const user = session?.user as User;
   const [open, setOpen] = useDialogState();
   const [isMounted, setIsMounted] = useState(false);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setIsMounted(true); }, []);
 
   if (!isMounted) {
@@ -59,20 +60,20 @@ export function ProfileDropdown() {
         <DropdownMenuContent className='w-56' align='end' forceMount>
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
-              <p className='text-sm leading-none font-medium'>{user.username || 'User'}</p>
-              <p className='text-muted-foreground text-xs leading-none'>{user.email || ''}</p>
+              <p className='truncate text-sm leading-none font-medium' title={user.username}>{user.username || 'User'}</p>
+              <p className='text-muted-foreground truncate text-xs leading-none' title={user.email}>{user.email || ''}</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href='/settings'>
+              <Link href='/profile'>
                 Profile
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href='/settings'>
+              <Link href='/billing'>
                 Billing
                 <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
               </Link>

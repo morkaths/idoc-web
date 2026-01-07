@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+const isServer = typeof window === 'undefined';
+
 const envSchema = z.object({
   MODE: z.enum(['development', 'production']).default('development'),
   PORT: z.string().default('3000'),
@@ -8,10 +10,10 @@ const envSchema = z.object({
   API_KEY: z.string().optional(),
   TOKEN_COOKIE_KEY: z.string().default('authtoken'),
   USER_COOKIE_KEY: z.string().default('authuser'),
-  AUTH_SECRET: z.string().default('dev-auth-secret'),
-  GOOGLE_CLIENT_ID: z.string().default('dev-auth-google-id'),
-  GOOGLE_CLIENT_SECRET: z.string().optional(),
-})
+  AUTH_SECRET: isServer ? z.string().min(1, 'AUTH_SECRET is required') : z.string().optional(),
+  GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID is required'),
+  GOOGLE_CLIENT_SECRET: isServer ? z.string().min(1, 'GOOGLE_CLIENT_SECRET is required') : z.string().optional(),
+});
 
 const processEnv = {
   MODE: process.env.NEXT_PUBLIC_MODE,
@@ -21,12 +23,13 @@ const processEnv = {
   API_KEY: process.env.NEXT_PUBLIC_API_KEY,
   TOKEN_COOKIE_KEY: process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY,
   USER_COOKIE_KEY: process.env.NEXT_PUBLIC_USER_COOKIE_KEY,
-  AUTH_SECRET: process.env.NEXT_PUBLIC_AUTH_SECRET,
-  GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  AUTH_SECRET: process.env.AUTH_SECRET,
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET,
 };
 
 const parsed = envSchema.safeParse(processEnv);
+
 if (!parsed.success) {
   console.error('[ENV] Invalid Environment Variables:');
   const formattedError = parsed.error.format();
@@ -35,15 +38,17 @@ if (!parsed.success) {
       console.error(`   [${key}]: ${value._errors.join(', ')}`);
     }
   });
-  if (typeof process !== 'undefined' && process.exit) {
-    process.exit(1);
-  } else {
-    throw new Error('Invalid Environment Variables');
+
+  if (isServer) {
+    if (typeof process !== 'undefined' && process.exit) {
+      process.exit(1);
+    } else {
+      throw new Error('Invalid Environment Variables');
+    }
   }
 }
 
-const _env = parsed.data;
-
+const _env = parsed.success ? parsed.data : (processEnv as unknown as z.infer<typeof envSchema>);
 export const env = {
   app: {
     mode: _env.MODE,

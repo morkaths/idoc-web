@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,9 +17,10 @@ import {
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
-import { useAuthStore } from '@/stores/auth-store';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { handleRegister } from '@/actions/auth-actions';
+import { useState } from 'react';
 
 const formSchema = z
   .object({
@@ -44,7 +45,6 @@ const formSchema = z
 export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { auth } = useAuthStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,20 +56,24 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
     },
   });
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("username", data.username);
+    formData.append("password", data.password);
 
     toast.promise(
-      auth.register({ email: data.email, username: data.username, password: data.password }),
+      handleRegister(formData),
       {
         loading: 'Creating account...',
         success: (result) => {
           setIsLoading(false);
-          if (result) {
-            router.replace('/');
-            return 'Account created successfully!';
+          if (result.success) {
+            router.replace('/sign-in');
+            return 'Account created successfully! Please sign in.';
           }
-          return 'Error creating account.';
+          throw new Error(result.error || 'Error creating account.');
         },
         error: (err) => {
           setIsLoading(false);
@@ -77,9 +81,6 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
         },
       }
     );
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
   }
 
   return (

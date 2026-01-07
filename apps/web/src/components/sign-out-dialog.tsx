@@ -1,5 +1,7 @@
+"use client";
+
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/stores/auth-store';
+import { signOut } from 'next-auth/react';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { toast } from 'sonner';
 
@@ -9,21 +11,17 @@ interface SignOutDialogProps {
 }
 
 export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
-    const router = useRouter();
-  const { auth } = useAuthStore();
+  const router = useRouter();
 
   const handleSignOut = () => {
     toast.promise(
-      auth.logout(),
+      signOut({ redirect: false }),
       {
         loading: 'Signing out...',
-        success: (result) => {
-          if (result) {
-            const currentPath = location.href;
-            router.replace('/sign-in?redirect=' + encodeURIComponent(currentPath));
-            return 'Signed out successfully!';
-          }
-          return 'Error signing out.';
+        success: () => {
+          const currentPath = location.href;
+          router.replace('/sign-in?redirect=' + encodeURIComponent(currentPath));
+          return 'Signed out successfully!';
         },
         error: (err) => `Error: ${err.message}`,
       }

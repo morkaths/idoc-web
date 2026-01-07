@@ -11,13 +11,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
-import { SignOutDialog } from '@/components/sign-out-dialog';
-import { useAuthStore } from '@/stores/auth-store';
-import { useResponsive } from '@/hooks/ui/useResponsive';
 import { Button } from '@repo/ui/components/button';
+import { SignOutDialog } from '@/components/sign-out-dialog';
+import { useSession } from "next-auth/react";
+import { useResponsive } from '@/hooks/ui/useResponsive';
+import type { User } from "@/types/schema";
 
 export function NavUser() {
-  const user = useAuthStore((state) => state.auth.user);
+  const { data: session } = useSession();
+  const user = session?.user as User;
   const { isMobile } = useResponsive();
   const [open, setOpen] = useDialogState();
 
@@ -46,9 +48,9 @@ export function NavUser() {
               <AvatarImage src='/avatars/01.png' alt={user.username} />
               <AvatarFallback className='rounded-lg'>{user.username.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
             </Avatar>
-            <div className='hidden md:grid flex-1 text-start text-sm leading-tight'>
-              <span className='truncate font-semibold'>{user.username}</span>
-              <span className='truncate text-xs'>{user.email}</span>
+            <div className='grid flex-1 text-start text-sm leading-tight'>
+              <span className='truncate font-semibold' title={user.username}>{user.username}</span>
+              <span className='truncate text-xs' title={user.email}>{user.email}</span>
             </div>
             <ChevronsUpDown className='ms-auto size-4' />
           </Button>
@@ -66,8 +68,8 @@ export function NavUser() {
                 <AvatarFallback className='rounded-lg'>{user.username.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
               </Avatar>
               <div className='grid flex-1 text-start text-sm leading-tight'>
-                <span className='truncate font-semibold'>{user.username}</span>
-                <span className='truncate text-xs'>{user.email}</span>
+                <span className='truncate font-semibold' title={user.username}>{user.username}</span>
+                <span className='truncate text-xs' title={user.email}>{user.email}</span>
               </div>
             </div>
           </DropdownMenuLabel>

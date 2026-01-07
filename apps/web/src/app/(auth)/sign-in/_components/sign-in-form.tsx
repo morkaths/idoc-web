@@ -8,8 +8,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Loader2, LogIn } from 'lucide-react';
 import { toast } from 'sonner';
-import { IconFacebook, IconGithub } from '@/assets/brand-icons';
-import { useAuthStore } from '@/stores/auth-store';
+import { IconFacebook, IconGmail } from '@/assets/brand-icons';
+import { handleGoogleLogin, handleCredentialsLogin } from '@/actions/auth-actions';
 import { cn } from '@/lib/utils';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -22,6 +22,7 @@ import {
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   email: z.email({
@@ -40,7 +41,7 @@ interface SignInFormProps extends React.HTMLAttributes<HTMLFormElement> {
 export function SignInForm({ className, redirectTo, ...props }: SignInFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { auth } = useAuthStore();
+  const { update } = useSession();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,25 +51,30 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
     },
   });
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("password", data.password);
 
     toast.promise(
-      auth.login(data.email, data.password),
+      handleCredentialsLogin(formData),
       {
         loading: 'Signing in...',
-        success: (result) => {
+        success: async (result) => {
           setIsLoading(false);
-          if (result) {
-            const targetPath = redirectTo || '/';
+          if (result.success) {
+            await update();
+            router.refresh();
+            const targetPath = redirectTo || '/?login=success';
             router.replace(targetPath);
-            return `Welcome back, ${data.email}!`;
+            return 'Redirecting...';
           }
-          return 'Invalid email or password';
+          throw new Error(result.error || 'Invalid credentials');
         },
         error: (err) => {
           setIsLoading(false);
-          return err?.message || 'Error';
+          return err?.message || 'Error signing in';
         },
       }
     );
@@ -128,10 +134,26 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
         </div>
 
         <div className='grid grid-cols-2 gap-2'>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconGithub className='h-4 w-4' /> GitHub
+          <Button
+            variant='outline'
+            type='button'
+            disabled={isLoading}
+            onClick={() => {
+              setIsLoading(true);
+              toast.promise(handleGoogleLogin(), {
+                loading: 'Redirecting to Google...',
+                success: () => 'Redirecting...',
+                error: 'Something went wrong',
+              });
+            }}
+          >
+            <IconGmail className='h-4 w-4 mr-2' /> Continue with Google
           </Button>
-          <Button variant='outline' type='button' disabled={isLoading}>
+          <Button
+            variant='outline'
+            type='button'
+            disabled={isLoading}
+          >
             <IconFacebook className='h-4 w-4' /> Facebook
           </Button>
         </div>

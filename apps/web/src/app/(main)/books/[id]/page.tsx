@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useBook } from "@/hooks/data/useBook";
+import { useSession } from "next-auth/react";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import Image from "next/image";
@@ -12,12 +13,12 @@ import { useState } from "react";
 import { BorrowBookDialog } from "./_components/borrow-book-dialog";
 import { toast } from "sonner";
 import { useCreateBorrow } from "@/hooks/data/useBorrow";
-import { useAuthStore } from "@/stores/auth-store";
 
 export default function BookDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const user = useAuthStore((state) => state.auth.user);
+  const { data: session } = useSession();
+  const user = session?.user;
   const { data: book, isLoading, error } = useBook(id);
   const [openBorrow, setOpenBorrow] = useState(false);
   const createBorrowMut = useCreateBorrow();

@@ -3,24 +3,29 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { API_CONFIG } from '@/config/api';
 import env from '@/config/env';
 import type { ApiResponse } from '@/types';
-import { useAuthStore } from '@/stores/auth-store';
 import { toast } from 'sonner';
 
 type ApiMode = 'public' | 'private';
 
+import { getSession, signOut } from 'next-auth/react';
+
+let currentAccessToken: string | null = null;
+
+export const setAccessToken = (token: string | null) => {
+  currentAccessToken = token;
+};
+
 function attachInterceptors(instance: AxiosInstance, withCredentials: boolean) {
-  instance.interceptors.request.use((config) => {
+  instance.interceptors.request.use(async (config) => {
     config.headers = config.headers || {};
     config.headers['x-api-key'] = env.api.key;
     if (withCredentials) {
-      const { auth } = useAuthStore.getState();
-      const accessToken = auth.token?.accessToken;
-      if (accessToken) {
-        config.headers['Authorization'] = `Bearer ${accessToken}`;
+      if (typeof window !== 'undefined' && currentAccessToken) {
+        config.headers['Authorization'] = `Bearer ${currentAccessToken}`;
       }
     }
     return config;
-  });
+  }, (error) => Promise.reject(error));
 
   instance.interceptors.response.use(
     (res) => res,
@@ -30,15 +35,22 @@ function attachInterceptors(instance: AxiosInstance, withCredentials: boolean) {
         error?.response?.status === 401 &&
         !originalRequest._retry
       ) {
-        originalRequest._retry = true;
-        const { auth } = useAuthStore.getState();
-        const refreshed = await auth.refresh();
-        if (refreshed) {
-          originalRequest.headers.Authorization = `Bearer ${useAuthStore.getState().auth.token?.accessToken}`;
-          return instance.request(originalRequest);
-        } else {
-          await auth.logout();
-          toast.error('Session expired. Please log in again.');
+        if (typeof window !== 'undefined') {
+          originalRequest._retry = true;
+          // Try to get a fresh session from NextAuth
+          const session = await getSession();
+          const newToken = session?.accessToken;
+
+          if (newToken && newToken !== currentAccessToken) {
+            setAccessToken(newToken);
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            return instance.request(originalRequest);
+          } else {
+            // Determine if we should sign out. If we already had a token and it's 401, likely expired.
+            // If getSession returned null or same token, then rotation failed or session is invalid.
+            await signOut();
+            toast.error('Session expired. Please log in again.');
+          }
         }
       }
       return Promise.reject({
