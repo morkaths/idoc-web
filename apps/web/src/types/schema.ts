@@ -14,7 +14,7 @@ export const dateOrString = z.preprocess((val) => {
 // AUTH TYPES: Xử lý người dùng, vai trò và quyền
 // ═══════════════════════════════════════════════════════════════════════════════
 export const PermissionSchema = z.object({
-  id: z.string(),
+  id: z.union([z.string(), z.number()]),
   code: z.string(),
   name: z.string(),
   createdAt: dateOrString,
@@ -23,7 +23,7 @@ export const PermissionSchema = z.object({
 });
 
 export const RoleSchema = z.object({
-  id: z.string(),
+  id: z.union([z.string(), z.number()]),
   code: z.string(),
   name: z.string(),
   permissions: z.array(PermissionSchema).optional(),
@@ -34,7 +34,7 @@ export const RoleSchema = z.object({
 });
 
 export const UserSchema = z.object({
-  id: z.string(),
+  id: z.union([z.string(), z.number()]),
   email: z.string().email(),
   username: z.string(),
   password: z.string().optional(),
@@ -183,19 +183,23 @@ export type FileMeta = z.infer<typeof FileMetaSchema>;
 // BORROW TYPES: Xử lý mượn sách
 // ═══════════════════════════════════════════════════════════════════════════════
 export const BorrowSchema = z.object({
-  _id: z.string(),
-  userId: z.string(),
-  borrower: UserSchema.optional(),
-  itemId: z.string(),
-  item: BookSchema.optional(),
-  count: z.number().int(),
-  borrowTime: dateOrString,
-  expireTime: dateOrString,
-  returnTime: dateOrString.optional(),
-  note: z.string().optional(),
-  status: z.string(),
-  createdAt: dateOrString,
-  updatedAt: dateOrString,
+    _id: z.string(),
+    userId: z.string(),
+    borrower: UserSchema.optional(),
+    itemId: z.string(),
+    item: BookSchema.optional(),
+    renewals: z.array(z.object({
+        renewedAt: dateOrString,
+        oldExpireTime: dateOrString,
+        newExpireTime: dateOrString
+    })),
+    borrowTime: dateOrString,
+    expireTime: dateOrString,
+    returnTime: dateOrString.optional(),
+    note: z.string().optional(),
+    status: z.string(),
+    createdAt: dateOrString,
+    updatedAt: dateOrString,
 });
 
 export type Borrow = z.infer<typeof BorrowSchema>;

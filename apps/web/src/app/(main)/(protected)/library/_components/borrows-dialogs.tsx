@@ -5,6 +5,7 @@ import { useBorrowsContext } from './borrows-provider';
 import { useExtendBorrow, useReturnBorrow } from '@/hooks/data/useBorrow';
 import { toast } from 'sonner';
 import { BorrowsExtendDialog } from './borrows-extend-dialog';
+import { BorrowsHistoryDialog } from './borrows-history-dialog';
 
 export function BorrowsDialogs() {
     const { open, setOpen, currentRow, setCurrentRow } = useBorrowsContext();
@@ -55,6 +56,12 @@ export function BorrowsDialogs() {
                                 }
                             );
                         }}
+                    />
+
+                    <BorrowsHistoryDialog
+                        open={open === 'history'}
+                        onOpenChange={() => setOpen('history')}
+                        borrow={currentRow}
                     />
 
                     <ConfirmDialog

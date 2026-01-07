@@ -57,12 +57,12 @@ export const booksColumns: ColumnDef<Book>[] = [
         <img
           src={src}
           alt={title}
-          className='h-16 w-12 rounded object-cover'
+          className='h-15 w-10 rounded object-cover'
           style={{ borderRadius: 'var(--radius-img)' }}
           loading='lazy'
         />
       ) : (
-        <div className='bg-muted/20 text-muted-foreground flex h-16 w-12 items-center justify-center rounded-md text-xs'>
+        <div className='bg-muted/20 text-muted-foreground flex h-15 w-10 items-center justify-center rounded-md text-xs'>
           No image
         </div>
       );

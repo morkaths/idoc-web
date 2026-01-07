@@ -1,7 +1,7 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type Row } from '@tanstack/react-table';
 import { type Borrow, BorrowSchema } from '@/types/schema';
-import { Clock, Eye, Undo2 } from 'lucide-react';
+import { Clock, Eye, Undo2, History } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
   DropdownMenu,
@@ -24,7 +24,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
   const original = row.original as unknown as Borrow;
   const safeBorrow = {
     ...original,
-    count: typeof original.count === 'number' ? original.count : 1,
+    renewals: original.renewals ?? [],
     borrower: original.borrower
       ? {
         ...original.borrower,
@@ -83,6 +83,15 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
           <DropdownMenuItem
             onClick={() => {
               setCurrentRow(borrow);
+              setOpen('history');
+            }}
+          >
+            History
+            <span className="ml-auto"><History size={16} /></span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(borrow);
               setOpen('extend');
             }}
           >
@@ -107,7 +116,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       <FilePreviewDialog
         open={openPreview}
         onOpenChange={setOpenPreview}

@@ -1,8 +1,8 @@
-import * as ENV from './env';
+import env from './env';
 
 export const API_CONFIG = {
   timeout: 10000,
-  baseURL: ENV.API_URL,
+  baseURL: env.api.url,
   endpoints: {
     auth: {
       login: '/auth/login',

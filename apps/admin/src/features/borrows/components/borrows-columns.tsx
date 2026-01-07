@@ -31,7 +31,38 @@ export const borrowsColumns: ColumnDef<Borrow>[] = [
     ),
   },
   {
+    accessorKey: 'item',
+    enableSorting: false,
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Item' />,
+    cell: ({ row, table }) => {
+      const item = row.original.item;
+      const title = item?.title ?? '-';
+      const query = String(table.getState().globalFilter ?? '');
+      const authors = item?.authors && item.authors.length > 0
+        ? item.authors.map((a) => a.name).join(', ')
+        : 'Unknown Author';
+      return (
+        <div className='flex items-center gap-2 max-w-48'>
+          <img
+            src={item?.coverUrl || '/images/book-cover-placeholder.png'}
+            alt={title}
+            className='h-10 w-7 rounded object-cover border'
+          />
+          <div className='flex flex-col truncate'>
+            <span className='truncate font-medium'>
+              <Highlight text={title} query={query} />
+            </span>
+            <span className='truncate text-xs text-muted-foreground'>
+              <Highlight text={authors} query={query} />
+            </span>
+          </div>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: 'borrower',
+    enableSorting: false,
     header: ({ column }) => <DataTableColumnHeader column={column} title='Borrower' />,
     cell: ({ row, table }) => {
       const borrower = row.original.borrower;
@@ -51,29 +82,16 @@ export const borrowsColumns: ColumnDef<Borrow>[] = [
     },
   },
   {
-    accessorKey: 'item',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Item' />,
-    cell: ({ row, table }) => {
-      const item = row.original.item;
-      const title = item?.title ?? '-';
-      const query = String(table.getState().globalFilter ?? '');
-      return (
-        <div className='max-w-32 truncate'>
-          <Highlight text={title} query={query} />
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: 'count',
+    accessorKey: 'renewals',
+    enableSorting: false,
     header: ({ column }) => (
-      <div className="text-center w-full">
-        <DataTableColumnHeader column={column} title='Count' />
+      <div className='text-center w-full'>
+        <DataTableColumnHeader column={column} title='Renewals' />
       </div>
     ),
     cell: ({ row }) => {
-      const count = row.original.count ?? '-';
-      return <span className="block text-center w-full">{count}</span>;
+      const count = row.original.renewals?.length ?? 0;
+      return <span className='block text-center w-full'>{count}</span>;
     },
   },
   {

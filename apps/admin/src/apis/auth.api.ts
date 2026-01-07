@@ -8,10 +8,7 @@ export const AuthApi = {
       API_CONFIG.endpoints.auth.login,
       { mode: 'public', data }
     );
-    return (response && response.user && response.token) ? {
-      user: response.user,
-      token: response.token,
-    } : null;
+    return (response.success && response.data) ? response.data : null;
   },
 
   register: async (data: Partial<User>): Promise<AuthenticationResponse | null> => {

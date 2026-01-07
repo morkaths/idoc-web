@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
-import { useBorrows } from '@/hooks/data/useBorrow';
+import { useBorrowHistory } from '@/hooks/data/useBorrow';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
   Table,
@@ -70,7 +70,7 @@ export function BorrowsTable() {
   }, [page, limit, globalFilter, sorting]);
 
   // fetch server-side page
-  const { data: borrowsData, isFetching: isBorrowsFetching } = useBorrows(borrowParams);
+  const { data: borrowsData, isFetching: isBorrowsFetching } = useBorrowHistory(borrowParams);
   const borrows = borrowsData?.data ?? [];
   const borrowPagination = borrowsData?.pagination;
 

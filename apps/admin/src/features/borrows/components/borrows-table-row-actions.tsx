@@ -20,7 +20,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
   const original = row.original as unknown as Borrow;
   const safeBorrow = {
     ...original,
-    count: typeof original.count === 'number' ? original.count : 1,
+    renewals: original.renewals ?? [],
     borrower: original.borrower
       ? {
         ...original.borrower,
@@ -30,7 +30,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
           : 1,
         password: typeof original.borrower.password === 'string'
           ? original.borrower.password
-          : '', // chuyển null/undefined thành chuỗi rỗng
+          : '',
         roles: Array.isArray(original.borrower.roles)
           ? original.borrower.roles.map(role => ({
             ...role,

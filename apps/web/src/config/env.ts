@@ -1,21 +1,70 @@
+import { z } from 'zod';
 
-export const DEV = process.env.NEXT_PUBLIC_MODE ?? 'production';
-export const PROD = !DEV;
+const envSchema = z.object({
+  MODE: z.enum(['development', 'production']).default('development'),
+  PORT: z.string().default('3000'),
+  BASE_URL: z.string().default('http://localhost:3000'),
+  API_URL: z.string().default('http://localhost:8000/api'),
+  API_KEY: z.string().optional(),
+  TOKEN_COOKIE_KEY: z.string().default('authtoken'),
+  USER_COOKIE_KEY: z.string().default('authuser'),
+  AUTH_SECRET: z.string().default('dev-auth-secret'),
+  GOOGLE_CLIENT_ID: z.string().default('dev-auth-google-id'),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+})
 
-export const BASE_URL: string = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
-export const API_URL: string = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
-export const API_KEY: string = process.env.NEXT_PUBLIC_API_KEY ?? 'dev-api-key';
-export const TOKEN_COOKIE_KEY: string = process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY ?? 'authtoken';
-export const USER_COOKIE_KEY: string = process.env.NEXT_PUBLIC_USER_COOKIE_KEY ?? 'authuser';
-
-const ENV = {
-  DEV,
-  PROD,
-  BASE_URL,
-  API_URL,
-  API_KEY,
-  TOKEN_COOKIE_KEY,
-  USER_COOKIE_KEY,
+const processEnv = {
+  MODE: process.env.NEXT_PUBLIC_MODE,
+  PORT: process.env.NEXT_PUBLIC_PORT,
+  BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+  API_URL: process.env.NEXT_PUBLIC_API_URL,
+  API_KEY: process.env.NEXT_PUBLIC_API_KEY,
+  TOKEN_COOKIE_KEY: process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY,
+  USER_COOKIE_KEY: process.env.NEXT_PUBLIC_USER_COOKIE_KEY,
+  AUTH_SECRET: process.env.NEXT_PUBLIC_AUTH_SECRET,
+  GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 };
 
-export default ENV;
+const parsed = envSchema.safeParse(processEnv);
+if (!parsed.success) {
+  console.error('[ENV] Invalid Environment Variables:');
+  const formattedError = parsed.error.format();
+  Object.entries(formattedError).forEach(([key, value]) => {
+    if (key !== '_errors' && value && '_errors' in value) {
+      console.error(`   [${key}]: ${value._errors.join(', ')}`);
+    }
+  });
+  if (typeof process !== 'undefined' && process.exit) {
+    process.exit(1);
+  } else {
+    throw new Error('Invalid Environment Variables');
+  }
+}
+
+const _env = parsed.data;
+
+export const env = {
+  app: {
+    mode: _env.MODE,
+    port: _env.PORT,
+    url: _env.BASE_URL,
+  },
+  api: {
+    url: _env.API_URL,
+    key: _env.API_KEY,
+  },
+  cookie: {
+    token: _env.TOKEN_COOKIE_KEY,
+    user: _env.USER_COOKIE_KEY,
+  },
+  auth: {
+    secret: _env.AUTH_SECRET,
+    google: {
+      clientId: _env.GOOGLE_CLIENT_ID,
+      clientSecret: _env.GOOGLE_CLIENT_SECRET,
+    },
+  },
+};
+
+export default env;

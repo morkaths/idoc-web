@@ -24,7 +24,6 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 const BorrowFormSchema = z.object({
     userId: z.string().min(1, "User ID is required"),
     itemId: z.string().min(1, "Item ID is required"),
-    count: z.number().int().min(1, "Extend count must be at least 1"),
     expireTime: z.union([z.date(), z.string(), z.number()]).refine(val => !!val, { message: "Expire time is required" }),
     status: z.string().optional(),
     note: z.string().optional(),
@@ -49,7 +48,6 @@ export function BorrowsMutateDialog({
         defaultValues: {
             userId: initialData?.userId ?? "",
             itemId: initialData?.itemId ?? "",
-            count: initialData?.count ?? 1,
             expireTime: initialData?.expireTime ? new Date(initialData.expireTime) : undefined,
             status: initialData?.status ?? "",
             note: initialData?.note ?? "",

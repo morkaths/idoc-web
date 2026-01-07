@@ -12,8 +12,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/popover";
 import { useUsers } from "@/hooks/data/useUser";
 import { useDebounce } from "@/hooks/ui/useDebounce";
-
-type User = { id: string; username: string; email: string };
+import { User } from "@/types";
 
 type UserComboboxProps = {
     value: string;
@@ -117,9 +116,9 @@ export function UserCombobox({ value, onChange, error }: UserComboboxProps) {
                                         {groupUsers.map(user => (
                                             <CommandItem
                                                 key={user.id}
-                                                value={user.id}
+                                                value={String(user.id)}
                                                 onSelect={() => {
-                                                    onChange(user.id);
+                                                    onChange(String(user.id));
                                                     setOpen(false);
                                                 }}
                                             >
@@ -127,7 +126,7 @@ export function UserCombobox({ value, onChange, error }: UserComboboxProps) {
                                                     <span className="font-medium">{user.username}</span>
                                                     <span className="text-xs text-muted-foreground">{user.email}</span>
                                                 </span>
-                                                {value === user.id && <CheckIcon size={16} className="ml-auto" />}
+                                                {value === String(user.id) && <CheckIcon size={16} className="ml-auto" />}
                                             </CommandItem>
                                         ))}
                                     </CommandGroup>

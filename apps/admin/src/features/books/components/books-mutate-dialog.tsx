@@ -137,7 +137,7 @@ export function BooksMutateDialog({
                             try {
                                 if (files.length > 0) {
                                     toast.loading("Uploading book file...", { id: "upload-file" });
-                                    const key = await uploadFile.mutateAsync({ file: files[0] });
+                                    const key = await uploadFile.mutateAsync({ file: files[0], folder: "books" });
                                     const fileMeta = await confirmUpload.mutateAsync(key);
                                     fileKey = fileMeta.key;
                                     toast.success("Book file uploaded!", { id: "upload-file" });
@@ -408,14 +408,17 @@ export function BooksMutateDialog({
                                 maxSizeMB={100}
                             />
                             {fileMeta && (
-                                <FileItem
-                                    file={fileMeta}
-                                    progress={100}
-                                    onDelete={async () => {
-                                        await deleteFile.mutateAsync(fileMeta.key);
-                                        form.setValue("fileKey", "");
-                                    }}
-                                />
+                                <div className="space-y-3 mt-4 px-4">
+                                    <FileItem
+                                        key={fileMeta.filename}
+                                        file={fileMeta}
+                                        progress={100}
+                                        onDelete={async () => {
+                                            await deleteFile.mutateAsync(fileMeta.key);
+                                            form.setValue("fileKey", "");
+                                        }}
+                                    />
+                                </div>
                             )}
                         </div>
 

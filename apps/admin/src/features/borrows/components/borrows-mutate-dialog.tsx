@@ -49,7 +49,6 @@ export function BorrowsMutateDialog({
         defaultValues: {
             userId: initialData?.userId ?? "",
             itemId: initialData?.itemId ?? "",
-            count: initialData?.count ?? 1,
             expireTime: initialData?.expireTime ? new Date(initialData.expireTime) : undefined,
             status: initialData?.status ?? "",
             note: initialData?.note ?? "",

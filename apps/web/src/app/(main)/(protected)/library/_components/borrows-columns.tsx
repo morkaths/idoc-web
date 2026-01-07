@@ -65,15 +65,15 @@ export const borrowsColumns: ColumnDef<Borrow>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: 'count',
+    accessorKey: 'renewals',
     header: ({ column }) => (
-      <div className="text-center w-full">
-        <DataTableColumnHeader column={column} title='Count' />
+      <div className='text-center w-full'>
+        <DataTableColumnHeader column={column} title='Renewals' />
       </div>
     ),
     cell: ({ row }) => {
-      const count = row.original.count ?? '-';
-      return <span className="block text-center w-full">{count}</span>;
+      const count = row.original.renewals?.length ?? 0;
+      return <span className='block text-center w-full'>{count}</span>;
     },
   },
   {

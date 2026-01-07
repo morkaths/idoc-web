@@ -7,8 +7,6 @@ import type { Pagination, User } from './index';
 export interface ApiResponse<T> {
   success: boolean;
   message?: string;
-  token?: AuthToken;
-  user?: User;
   data?: T;
   pagination?: Pagination;
   statusCode?: number;

@@ -1,7 +1,7 @@
 import qs from 'qs';
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { API_CONFIG } from '@/config/api';
-import { API_KEY } from '@/config/env';
+import env from '@/config/env';
 import type { ApiResponse } from '@/types';
 import { useAuthStore } from '@/stores/auth-store';
 import { toast } from 'sonner';
@@ -11,7 +11,7 @@ type ApiMode = 'public' | 'private';
 function attachInterceptors(instance: AxiosInstance, withCredentials: boolean) {
   instance.interceptors.request.use((config) => {
     config.headers = config.headers || {};
-    config.headers['x-api-key'] = API_KEY;
+    config.headers['x-api-key'] = env.api.key;
     if (withCredentials) {
       const { auth } = useAuthStore.getState();
       const accessToken = auth.token?.accessToken;

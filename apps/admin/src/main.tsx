@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { AxiosError } from 'axios';
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
-import ENV from '@/config/env';
+import env from '@/config/env';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth-store';
 import { handleServerError } from '@/lib/handle-server-error';
@@ -19,13 +19,14 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
-        // eslint-disable-next-line no-console
-        if (ENV.DEV) console.log({ failureCount, error });
-        if (ENV.DEV) return false;
-        if (failureCount > 3 && ENV.PROD) return false;
+        if (env.app.mode === 'development') {
+          console.log({ failureCount, error });
+          return false;
+        }
+        if (failureCount > 3 && env.app.mode === 'production') return false;
         return !(error instanceof AxiosError && [401, 403].includes(error.response?.status ?? 0));
       },
-      refetchOnWindowFocus: ENV.PROD,
+      refetchOnWindowFocus: env.app.mode === 'production',
       staleTime: 10 * 1000, // 10s
     },
     mutations: {

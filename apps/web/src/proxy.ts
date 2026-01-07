@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { TOKEN_COOKIE_KEY } from "@/config/env";
+import env from "@/config/env";
 
 export function proxy(request: NextRequest) {
-  const token = request.cookies.get(TOKEN_COOKIE_KEY)?.value;
+  const token = request.cookies.get(env.cookie.token)?.value;
 
   if (
     !token &&

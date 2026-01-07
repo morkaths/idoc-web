@@ -3,7 +3,7 @@ import { getCookie, setCookie, removeCookie } from '@/lib/cookies';
 import { AuthApi } from '@/apis/auth.api';
 import type { User } from '@/types/schema';
 import type { AuthToken } from '@/types/api';
-import { TOKEN_COOKIE_KEY, USER_COOKIE_KEY } from '@/config/env';
+import env from '@/config/env';
 
 interface AuthState {
   auth: {
@@ -19,8 +19,8 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>()((set) => {
-  const tokenCookie = getCookie(TOKEN_COOKIE_KEY);
-  const userCookie = getCookie(USER_COOKIE_KEY);
+  const tokenCookie = getCookie(env.cookie.token);
+  const userCookie = getCookie(env.cookie.user);
   const initToken = tokenCookie ? JSON.parse(tokenCookie) as AuthToken : null;
   const initUser = userCookie ? JSON.parse(userCookie) as User : null;
   return {
@@ -30,7 +30,7 @@ export const useAuthStore = create<AuthState>()((set) => {
       setUser: (user) => set((state) => ({ ...state, auth: { ...state.auth, user } })),
       setToken: (token) =>
         set((state) => {
-          setCookie(TOKEN_COOKIE_KEY, JSON.stringify(token));
+          setCookie(env.cookie.token, JSON.stringify(token));
           return { ...state, auth: { ...state.auth, token } };
         }),
       refresh: async () => {
@@ -44,8 +44,8 @@ export const useAuthStore = create<AuthState>()((set) => {
               token: response.token,
             },
           }));
-          setCookie(TOKEN_COOKIE_KEY, JSON.stringify(response.token));
-          setCookie(USER_COOKIE_KEY, JSON.stringify(response.user));
+          setCookie(env.cookie.token, JSON.stringify(response.token));
+          setCookie(env.cookie.user, JSON.stringify(response.user));
           return true;
         }
         return false;
@@ -59,8 +59,8 @@ export const useAuthStore = create<AuthState>()((set) => {
             token: null,
           },
         }));
-        removeCookie(TOKEN_COOKIE_KEY);
-        removeCookie(USER_COOKIE_KEY);
+        removeCookie(env.cookie.token);
+        removeCookie(env.cookie.user);
         return true;
       },
       login: async (identifier, password) => {
@@ -74,8 +74,8 @@ export const useAuthStore = create<AuthState>()((set) => {
               token: response.token,
             },
           }));
-          setCookie(TOKEN_COOKIE_KEY, JSON.stringify(response.token));
-          setCookie(USER_COOKIE_KEY, JSON.stringify(response.user));
+          setCookie(env.cookie.token, JSON.stringify(response.token));
+          setCookie(env.cookie.user, JSON.stringify(response.user));
           return true;
         }
         return false;
@@ -91,8 +91,8 @@ export const useAuthStore = create<AuthState>()((set) => {
               token: response.token,
             },
           }));
-          setCookie(TOKEN_COOKIE_KEY, JSON.stringify(response.token));
-          setCookie(USER_COOKIE_KEY, JSON.stringify(response.user));
+          setCookie(env.cookie.token, JSON.stringify(response.token));
+          setCookie(env.cookie.user, JSON.stringify(response.user));
           return true;
         }
         return false;

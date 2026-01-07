@@ -15,7 +15,7 @@ export function FileItem({
     const size = file.size;
     const name = file instanceof File ? file.name : file.filename;
     const ext = name.split('.').pop()?.toLowerCase() || "";
-    
+
     function getFileIcon(ext: string) {
         switch (ext) {
             case "xls":
