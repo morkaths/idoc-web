@@ -47,8 +47,8 @@ export const UserSchema = z.object({
 });
 
 export const LinkedAccountSchema = z.object({
-  _id: z.string(),
-  userId: z.string(),
+  id: z.union([z.string(), z.number()]),
+  userId: z.union([z.string(), z.number()]),
   provider: z.string(),
   providerId: z.string(),
   linkedAt: dateOrString,

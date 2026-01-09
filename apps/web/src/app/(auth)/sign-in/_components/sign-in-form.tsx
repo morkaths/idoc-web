@@ -147,7 +147,7 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
               });
             }}
           >
-            <IconGmail className='h-4 w-4 mr-2' /> Continue with Google
+            <IconGmail className='h-4 w-4 mr-2' /> Google
           </Button>
           <Button
             variant='outline'
