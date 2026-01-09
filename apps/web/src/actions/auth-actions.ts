@@ -3,6 +3,9 @@
 import { signIn } from "@/auth";
 import { AuthApi } from "@/apis/auth.api";
 import { User } from "@/types";
+import { AuthError } from "next-auth";
+
+
 
 export async function handleGoogleLogin() {
     await signIn("google", { redirectTo: "/?login=google" });
@@ -20,6 +23,15 @@ export async function handleCredentialsLogin(formData: FormData) {
         });
         return { success: true };
     } catch (error) {
+        if (error instanceof AuthError) {
+             switch (error.type) {
+                case "CredentialsSignin":
+                    return { error: "Invalid credentials" };
+                default:
+                    return { error: "Something went wrong" };
+             }
+        }
+        // Fallback for string checks if instance check fails or different version
         if ((error as Error).message.includes("CredentialsSignin")) {
             return { error: "Invalid credentials" };
         }

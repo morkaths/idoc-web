@@ -46,9 +46,7 @@ function attachInterceptors(instance: AxiosInstance, withCredentials: boolean) {
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
             return instance.request(originalRequest);
           } else {
-            // Determine if we should sign out. If we already had a token and it's 401, likely expired.
-            // If getSession returned null or same token, then rotation failed or session is invalid.
-            await signOut();
+            await signOut({ callbackUrl: '/sign-in' });
             toast.error('Session expired. Please log in again.');
           }
         }

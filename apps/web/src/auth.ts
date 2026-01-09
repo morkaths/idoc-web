@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthConfig } from "next-auth";
+import NextAuth, { NextAuthConfig, CredentialsSignin } from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import env from "@/config/env";
@@ -29,9 +29,9 @@ export const authConfig = {
               accessTokenExpiresIn: result.token.accessTokenExpiresIn,
             } as any;
           }
-          return null;
+          throw new CredentialsSignin();
         } catch (error) {
-          return null;
+          throw new CredentialsSignin();
         }
       },
     }),
@@ -62,20 +62,33 @@ export const authConfig = {
                 accessToken: backendResponse.token.accessToken,
                 refreshToken: backendResponse.token.refreshToken,
                 expiresAt: Date.now() + (backendResponse.token.accessTokenExpiresIn * 1000),
+                error: undefined,
+              };
+            } else {
+              return {
+                ...token,
+                user: token.user ?? null,
+                accessToken: token.accessToken ?? null,
+                refreshToken: token.refreshToken ?? null,
+                expiresAt: token.expiresAt ?? 0,
+                error: "InvalidCredentials" as const,
               };
             }
           } catch (error) {
             console.error("Google verify failed", error);
-            throw new Error("GoogleSignInError");
+            return {
+              ...token,
+              error: "InvalidCredentials" as const,
+            };
           }
         }
-
         return {
           ...token,
           user: user as any,
           accessToken: (user as any).accessToken,
           refreshToken: (user as any).refreshToken,
           expiresAt: Date.now() + ((user as any).accessTokenExpiresIn * 1000),
+          error: undefined,
         };
       }
 
@@ -87,11 +100,12 @@ export const authConfig = {
       // Access token has expired, try to update it
       try {
         const result = await AuthApi.refresh(token.refreshToken);
-
         if (!result || !result.token) {
-          throw new Error("RefreshAccessTokenError");
+          return {
+            ...token,
+            error: "InvalidCredentials" as const,
+          };
         }
-
         return {
           ...token,
           accessToken: result.token.accessToken,
@@ -103,7 +117,7 @@ export const authConfig = {
         console.error("Error refreshing access token", error);
         return {
           ...token,
-          error: "RefreshAccessTokenError" as const,
+          error: "InvalidCredentials" as const,
         };
       }
     }
