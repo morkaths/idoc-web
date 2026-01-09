@@ -8,7 +8,7 @@ declare module 'next-auth' {
         user: User;
         accessToken: string;
         refreshToken: string;
-        error?: 'RefreshAccessTokenError';
+        error?: 'RefreshAccessTokenError' | 'InvalidCredentials' | string;
     }
 }
 
@@ -18,6 +18,6 @@ declare module 'next-auth/jwt' {
         accessToken: string;
         refreshToken: string;
         expiresAt: number;
-        error?: 'RefreshAccessTokenError';
+        error?: 'RefreshAccessTokenError' | 'InvalidCredentials' | string;
     }
 }
