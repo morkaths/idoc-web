@@ -121,7 +121,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
         open={openPreview}
         onOpenChange={setOpenPreview}
         fileUrl={file?.url || ""}
-        fileName={file?.filename || book?.title || "Xem tài liệu"}
+        title={ book?.title || "No title" }
         mode="simple"
       />
     </>

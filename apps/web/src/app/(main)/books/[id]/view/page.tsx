@@ -30,7 +30,7 @@ export default function BookViewPage() {
                 >
                     <DialogHeader className="px-6 pt-6 pb-2">
                         <DialogTitle className="text-lg font-semibold">
-                            {file.filename || "Xem tài liệu"}
+                            {book.title || "No title"}
                         </DialogTitle>
                     </DialogHeader>
                     <div

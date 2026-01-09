@@ -9,11 +9,11 @@ type FilePreviewDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     fileUrl: string;
-    fileName?: string;
+    title?: string;
     mode?: "full" | "simple";
 };
 
-export function FilePreviewDialog({ open, onOpenChange, fileUrl, fileName, mode = "simple" }: FilePreviewDialogProps) {
+export function FilePreviewDialog({ open, onOpenChange, fileUrl, title, mode = "simple" }: FilePreviewDialogProps) {
     useEffect(() => {
         if (!open) return;
         if (!fileUrl) {
@@ -63,7 +63,7 @@ export function FilePreviewDialog({ open, onOpenChange, fileUrl, fileName, mode 
             <DialogContent className="max-w-[90vw]! w-[80vw]! h-[90vh]! p-0">
                 <DialogHeader className="px-6 pt-6 pb-2">
                     <DialogTitle className="text-lg font-semibold">
-                        {fileName || "Xem tài liệu"}
+                        {title || "No title"}
                     </DialogTitle>
                 </DialogHeader>
                 <div
