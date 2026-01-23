@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { ProfileContent } from "./_components/profile-content";
 import ProfileHeader from "./_components/profile-header";
+
+export const metadata: Metadata = {
+  title: "Profile",
+  description: "Manage your account settings",
+};
 
 export default function ProfilePage() {
     return (

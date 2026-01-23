@@ -161,5 +161,3 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
     </Form>
   );
 }
-
-export default SignInForm;

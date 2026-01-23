@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -9,23 +10,25 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const inter = Inter({ subsets: ["latin"] });
 
+export const metadata: Metadata = {
+  title: {
+    default: "iDoc",
+    template: "%s | iDoc",
+  },
+  description: "Digital Document Library",
+  icons: {
+    icon: [
+      { url: "/images/favicon.svg", media: "(prefers-color-scheme: light)" },
+      { url: "/images/favicon_light.svg", media: "(prefers-color-scheme: dark)" },
+    ],
+  },
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-br" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
-        <link
-          rel="icon"
-          href="/images/favicon.svg"
-          type="image/svg+xml"
-          media="(prefers-color-scheme: light)"
-        />
-        <link
-          rel="icon"
-          href="/images/favicon_light.svg"
-          type="image/svg+xml"
-          media="(prefers-color-scheme: dark)"
-        />
-        <link rel="icon" href="/images/favicon_light.svg" type="image/svg+xml" />
+
         <script
           dangerouslySetInnerHTML={{
             __html: `

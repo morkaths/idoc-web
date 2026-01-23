@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
     Card,
     CardContent,
@@ -7,9 +8,14 @@ import {
     CardHeader,
     CardTitle,
 } from "@repo/ui/components/card";
-import { ForgotPasswordForm } from "./_components/forgot-password-form";
+import { ForgotPasswordForm } from "./_components/form";
 
-export default function ForgotPassword() {
+export const metadata: Metadata = {
+  title: "Forgot Password",
+  description: "Recover your iDoc account password",
+};
+
+export default function ForgotPasswordPage() {
     return (
         <Card className="gap-4">
             <CardHeader>
