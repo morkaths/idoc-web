@@ -1,10 +1,10 @@
 "use client";
 
-import BookGridItems from "@/components/book/book-grid-items";
+import { BookGridItems } from "@/components/book/book-grid-items";
 import Pagination from "@/components/pagination";
 import { Book, Pagination as PaginationType } from "@/types";
 
-export default function BookGridView({
+export function BookGridView({
   data = [],
   loading = false,
   error,

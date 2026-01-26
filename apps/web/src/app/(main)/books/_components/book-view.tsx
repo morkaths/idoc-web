@@ -3,10 +3,10 @@
 import { useBooks } from "@/hooks/data/useBook";
 import { FindParams } from "@/types";
 import { useEffect, useState } from "react";
-import BookGridView from "./book-grid-view";
-import BookListView from "./book-list-view";
+import { BookGridView } from "./book-grid-view";
+import { BookListView } from "./book-list-view";
 
-export default function BookView({
+export function BookView({
     filter,
     view = "grid",
 }: {

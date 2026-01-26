@@ -17,7 +17,7 @@ import { sidebarData } from './layout/data/sidebar-data';
 
 export function CommandMenu() {
   const navigate = useNavigate();
-  const { setTheme } = useTheme();
+  const { setMode } = useTheme();
   const { open, setOpen } = useSearch();
 
   const runCommand = React.useCallback(
@@ -72,14 +72,14 @@ export function CommandMenu() {
           ))}
           <CommandSeparator />
           <CommandGroup heading='Theme'>
-            <CommandItem onSelect={() => runCommand(() => setTheme('light'))}>
+            <CommandItem onSelect={() => runCommand(() => setMode('light'))}>
               <Sun /> <span>Light</span>
             </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => setTheme('dark'))}>
+            <CommandItem onSelect={() => runCommand(() => setMode('dark'))}>
               <Moon className='scale-90' />
               <span>Dark</span>
             </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => setTheme('system'))}>
+            <CommandItem onSelect={() => runCommand(() => setMode('system'))}>
               <Laptop />
               <span>System</span>
             </CommandItem>

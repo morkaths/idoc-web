@@ -27,10 +27,10 @@ export enum LayoutType {
 }
 
 export enum RoleCode {
-  Admin = 'admin',
-  Manager = 'manager',
-  Staff = 'staff',
-  User = 'user',
+  Admin = 'ADMIN',
+  Manager = 'MANAGER',
+  Staff = 'STAFF',
+  User = 'USER',
 }
 
 // Phân trang

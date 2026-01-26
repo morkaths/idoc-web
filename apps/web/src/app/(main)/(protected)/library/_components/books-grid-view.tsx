@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import BookGridItems from "@/components/book/book-grid-items";
+import { BookGridItems } from "@/components/book/book-grid-items";
 import Pagination from "@/components/pagination";
 import { useBorrowHistory } from "@/hooks/data/useBorrow";
 import { Book, FindParams } from "@/types";

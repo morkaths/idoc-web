@@ -1,9 +1,9 @@
-import BookListItem from "./book-list-item";
 import { Book } from "@/types";
 import { Skeleton } from "@repo/ui/components/skeleton";
 import { Card, CardContent } from "@repo/ui/components/card";
 import { useRouter } from "next/navigation";
 import paths from "@/config/path";
+import { BookListItem } from "./book-list-item";
 
 interface BookListItemsProps {
   data?: Book[];
@@ -12,7 +12,7 @@ interface BookListItemsProps {
   className?: string;
 }
 
-export default function BookListItems({
+export function BookListItems({
   data = [],
   loading = false,
   error = null,

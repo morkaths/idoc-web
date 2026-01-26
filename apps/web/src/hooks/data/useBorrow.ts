@@ -19,14 +19,14 @@ export const useBorrows = (params: FindParams = {}) => {
   });
 };
 
-export const useBorrowHistory = (params: FindParams = {}) => {
+export const useBorrowHistory = (params: FindParams = {}, options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ['borrows', 'history', params],
     queryFn: async () => {
       const res = await BorrowApi.history(params);
       return res;
     },
-    enabled: true,
+    enabled: options?.enabled ?? true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
     select: (data) => ({

@@ -19,11 +19,13 @@ type Author = { _id: string; name: string };
 type AuthorsComboboxProps = {
     value: string[];
     onChange: (authors: string[]) => void;
+    initialAuthors?: Author[];
 };
 
 export function AuthorsCombobox({
     value,
     onChange,
+    initialAuthors = [],
 }: AuthorsComboboxProps) {
     const id = useId();
     const [open, setOpen] = useState(false);
@@ -36,21 +38,36 @@ export function AuthorsCombobox({
     }), [page, debouncedQuery]);
     const { data, isLoading } = useAuthors(params);
     const [authors, setAuthors] = useState<Author[]>([]);
+    // Cache all seen authors to ensure selected items can always be displayed
+    const [authorMap, setAuthorMap] = useState<Map<string, Author>>(() => {
+        const map = new Map<string, Author>();
+        initialAuthors.forEach(a => map.set(a._id, a));
+        return map;
+    });
+
     const pagination = Array.isArray(data?.pagination) ? data.pagination[0] : data?.pagination;
     const total = pagination?.total ?? 0;
     const limited = pagination?.limit ?? 10;
     const hasMore = page * limited < total;
 
     useEffect(() => {
-        if (page === 1) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setAuthors(data?.data ?? []);
-        } else if (data?.data) {
-            setAuthors(prev => {
-                const prevIds = new Set(prev.map(a => a._id));
-                const newAuthors = data.data.filter(a => !prevIds.has(a._id));
-                return [...prev, ...newAuthors];
+        if (data?.data) {
+            // Update cache map
+            setAuthorMap(prev => {
+                const next = new Map(prev);
+                data.data.forEach(a => next.set(a._id, a));
+                return next;
             });
+
+            if (page === 1) {
+                setAuthors(data.data);
+            } else {
+                setAuthors(prev => {
+                    const prevIds = new Set(prev.map(a => a._id));
+                    const newAuthors = data.data.filter(a => !prevIds.has(a._id));
+                    return [...prev, ...newAuthors];
+                });
+            }
         }
     }, [data, page]);
 
@@ -92,7 +109,7 @@ export function AuthorsCombobox({
                         <div className="flex flex-wrap items-center gap-1 pr-2.5">
                             {value.length > 0 ? (
                                 value.map((authorId) => {
-                                    const author = authors.find((a) => a._id === authorId);
+                                    const author = authorMap.get(authorId);
                                     return author ? (
                                         <Badge key={author._id} variant="outline" className="rounded-sm">
                                             {author.name}
@@ -145,7 +162,7 @@ export function AuthorsCombobox({
                                         )}
                                     </CommandItem>
                                 ))}
-                                {isLoading && page > 1 && <div className="p-2 text-center text-xs">Loading more...</div>}
+                                {isLoading && <div className="p-2 text-center text-xs">Loading...</div>}
                             </CommandGroup>
                         </CommandList>
                     </Command>

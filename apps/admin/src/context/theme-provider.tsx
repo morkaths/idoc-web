@@ -1,163 +1,239 @@
 import { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies';
+import { themeColors, themeConfig } from '@/components/layout/data/theme-data';
 
-export type Theme =
-  | 'system'
-  // Light modes
-  | 'light'
-  | 'sakura'
-  | 'matcha'
-  | 'latte'
-  | 'cyberpunk'
-  // Dark modes
-  | 'dark'
-  | 'dracula'
-  | 'gruvbox'
-  | 'nordic'
-  | 'ocean';
-type ResolvedTheme = Exclude<Theme, 'system'>;
+export type Mode = "dark" | "light" | "system";
+type ColorKey = string;
+type ResolvedMode = "dark" | "light";
 
-const DEFAULT_THEME: Theme = 'system';
-const THEME_COOKIE_NAME = 'idoc_admin_theme';
+const DEFAULT_MODE: Mode = themeConfig.defaults.mode;
+const DEFAULT_COLOR: ColorKey = themeConfig.defaults.color;
+const MODE_COOKIE_NAME = 'idoc_admin_mode';
+const COLOR_COOKIE_NAME = 'idoc_admin_color';
 const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
 
 type ThemeProviderProps = {
   children: React.ReactNode;
-  defaultTheme?: Theme;
+  defaultMode?: Mode;
+  defaultColor?: ColorKey;
   storageKey?: string;
+  colorStorageKey?: string;
 };
 
 type ThemeProviderState = {
-  defaultTheme: Theme;
-  resolvedTheme: ResolvedTheme;
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
+  defaultMode: Mode;
+  resolvedMode: ResolvedMode;
+  mode: Mode;
+  setMode: (mode: Mode) => void;
   resetTheme: () => void;
+  
+  color: ColorKey;
+  setColor: (color: ColorKey) => void;
+  availableColors: string[];
+  
+  radius: string;
+  setRadius: (radius: string) => void;
+
+  font: string;
+  setFont: (font: string) => void;
+  availableFonts: { label: string; value: string }[];
 };
 
 const initialState: ThemeProviderState = {
-  defaultTheme: DEFAULT_THEME,
-  resolvedTheme: 'light',
-  theme: DEFAULT_THEME,
-  setTheme: () => null,
+  defaultMode: DEFAULT_MODE,
+  resolvedMode: 'light',
+  mode: DEFAULT_MODE,
+  setMode: () => null,
   resetTheme: () => null,
+  color: DEFAULT_COLOR,
+  setColor: () => null,
+  availableColors: [],
+  radius: themeConfig.defaults.radius,
+  setRadius: () => null,
+  font: themeConfig.defaults.font,
+  setFont: () => null,
+  availableFonts: [],
 };
 
 const ThemeContext = createContext<ThemeProviderState>(initialState);
 
-const THEME_VARIANTS: ResolvedTheme[] = [
-  'light',
-  'sakura',
-  'latte',
-  'cyberpunk',
-  'dark',
-  'dracula',
-  'gruvbox',
-  'nordic',
-  'matcha',
-  'ocean',
-];
-
 export function ThemeProvider({
   children,
-  defaultTheme = DEFAULT_THEME,
-  storageKey = THEME_COOKIE_NAME,
+  defaultMode = DEFAULT_MODE,
+  defaultColor = DEFAULT_COLOR,
+  storageKey = MODE_COOKIE_NAME,
+  colorStorageKey = COLOR_COOKIE_NAME,
   ...props
 }: ThemeProviderProps) {
-  const [theme, _setTheme] = useState<Theme>(() => {
+  // --- MODE STATE (Light/Dark/System) ---
+  const [mode, _setMode] = useState<Mode>(() => {
     try {
-      return (getCookie(storageKey) as Theme) || defaultTheme;
+      return (getCookie(storageKey) as Mode) || defaultMode;
     } catch {
-      return defaultTheme;
+      return defaultMode;
     }
   });
 
-  const resolvedTheme = useMemo((): ResolvedTheme => {
-    if (theme === 'system') {
+  const [radius, _setRadius] = useState<string>(() => {
+    try {
+      return getCookie('idoc_admin_radius') || themeConfig.defaults.radius;
+    } catch {
+      return themeConfig.defaults.radius;
+    }
+  });
+
+  const [font, _setFont] = useState<string>(() => {
+    try {
+      return getCookie('idoc_admin_font') || themeConfig.defaults.font;
+    } catch {
+      return themeConfig.defaults.font;
+    }
+  });
+
+  // --- COLOR STATE (Color Scheme) ---
+  const [color, _setColor] = useState<ColorKey>(() => {
+    try {
+      // Validate if the cookie value exists in our color presets
+      const cookieColor = getCookie(colorStorageKey) as string;
+      if (cookieColor && themeColors[cookieColor]) {
+        return cookieColor;
+      }
+      return defaultColor;
+    } catch {
+      return defaultColor;
+    }
+  });
+
+  const resolvedMode = useMemo((): ResolvedMode => {
+    if (mode === 'system') {
       if (typeof window !== 'undefined') {
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       }
       return 'light';
     }
-    return theme as ResolvedTheme;
-  }, [theme]);
+    return mode as ResolvedMode;
+  }, [mode]);
 
+  // Apply Theme (Mode + Color + Radius + Font)
   useEffect(() => {
     const root = window.document.documentElement;
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    const clearAll = () => {
-      root.classList.remove('dark');
-      // remove theme-* classes
-      THEME_VARIANTS.forEach((t) => {
-        if (t !== 'dark' && t !== 'light') root.classList.remove(`theme-${t}`);
-      });
-      // optionally remove 'light' if you ever add it
-      root.classList.remove('light');
+    // 1. Handle Class for Dark Mode
+    const applyModeClass = () => {
+      root.classList.remove('dark', 'light');
+
+      if (mode === 'system') {
+         if (mediaQuery.matches) root.classList.add('dark');
+      } else if (mode === 'dark') {
+         root.classList.add('dark');
+      } 
+      // 'light' is default, generally no class needed or you can add 'light'
     };
 
-    const apply = () => {
-      clearAll();
-      if (theme === 'system') {
-        if (mediaQuery.matches) {
-          root.classList.add('dark');
-        } else {
-          // leave as default (light) — or add 'light' class if desired
+    // 2. Handle CSS Variables from Color
+    const applyColorStyles = () => {
+      // Determine effective mode for variable selection
+      let effectiveMode: 'dark' | 'light';
+      if (mode === 'system') {
+        effectiveMode = mediaQuery.matches ? 'dark' : 'light';
+      } else {
+        effectiveMode = mode === 'dark' ? 'dark' : 'light';
+      }
+
+      const selectedColor = themeColors[color];
+      if (!selectedColor) return;
+
+      const styles = effectiveMode === 'dark' ? selectedColor.styles.dark : selectedColor.styles.light;
+
+      // Inject variables
+      Object.entries(styles).forEach(([key, value]) => {
+        if (value && key !== 'radius' && key !== 'font-sans') {
+            root.style.setProperty(`--${key}`, value);
         }
-        return;
-      }
-
-      if (theme === 'dark') {
-        root.classList.add('dark');
-        return;
-      }
-
-      if (theme === 'light') {
-        // keep default root variables (no extra class) or add 'light' class:
-        // root.classList.add('light')
-        return;
-      }
-
-      // other named themes: add theme-{name}
-      root.classList.add(`theme-${theme}`);
+      });
+      
+      // Apply Radius and Font separately
+      root.style.setProperty('--radius', radius);
+      root.style.setProperty('--font-sans', font);
     };
 
-    // initial apply
-    apply();
-
-    // listen to system changes only if using 'system'
-    const handleChange = () => {
-      if (theme === 'system') apply();
+    const applyAll = () => {
+        applyModeClass();
+        applyColorStyles();
     };
 
-    mediaQuery.addEventListener?.('change', handleChange);
-    return () => mediaQuery.removeEventListener?.('change', handleChange);
-  }, [theme]);
+    applyAll();
 
-  const setTheme = (t: Theme) => {
+    // Listen for system changes if mode is system
+    const handleSystemChange = () => {
+      if (mode === 'system') {
+        applyAll();
+      }
+    };
+
+    mediaQuery.addEventListener?.('change', handleSystemChange);
+    return () => mediaQuery.removeEventListener?.('change', handleSystemChange);
+
+  }, [mode, color, radius, font]);
+
+
+  const setMode = (t: Mode) => {
     try {
       setCookie(storageKey, t, THEME_COOKIE_MAX_AGE);
-    } catch {
-      /* ignore cookie set errors */
-    }
-    _setTheme(t);
+    } catch {}
+    _setMode(t);
+  };
+
+  const setColor = (p: ColorKey) => {
+    if (!themeColors[p]) return; // Guard
+    try {
+      setCookie(colorStorageKey, p, THEME_COOKIE_MAX_AGE);
+    } catch {}
+    _setColor(p);
+  };
+  
+  const setRadius = (r: string) => {
+    try {
+      setCookie('idoc_admin_radius', r, THEME_COOKIE_MAX_AGE);
+    } catch {}
+    _setRadius(r);
+  };
+  
+  const setFont = (f: string) => {
+    try {
+      setCookie('idoc_admin_font', f, THEME_COOKIE_MAX_AGE);
+    } catch {}
+    _setFont(f);
   };
 
   const resetTheme = () => {
     try {
       removeCookie(storageKey);
-    } catch {
-      /* ignore */
-    }
-    _setTheme(DEFAULT_THEME);
+      removeCookie(colorStorageKey);
+      removeCookie('idoc_admin_radius');
+      removeCookie('idoc_admin_font');
+    } catch {}
+    _setMode(DEFAULT_MODE);
+    _setColor(DEFAULT_COLOR);
+    _setRadius(themeConfig.defaults.radius);
+    _setFont(themeConfig.defaults.font);
   };
 
   const contextValue: ThemeProviderState = {
-    defaultTheme,
-    resolvedTheme,
+    defaultMode,
+    resolvedMode,
     resetTheme,
-    theme,
-    setTheme,
+    mode,
+    setMode,
+    color,
+    setColor,
+    availableColors: Object.keys(themeColors),
+    radius,
+    setRadius,
+    font,
+    setFont,
+    availableFonts: themeConfig.availableFonts,
   };
 
   return (

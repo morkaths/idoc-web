@@ -9,7 +9,7 @@ import BookFilter from "./book-filter";
 import BookSort from "./book-sort";
 import { FindParams } from "@/types";
 import { ArrowDownAZ, FilterIcon, LayoutGrid, List, SlidersHorizontal, Sparkles } from "lucide-react";
-import BookView from "./book-view";
+import { BookView } from "./book-view";
 
 export function BooksView() {
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -112,12 +112,18 @@ function FilterTabs({
 }) {
   return (
     <Tabs defaultValue={defaultValue} className="w-full">
-      <TabsList className="w-full mb-4 bg-card border">
-        <TabsTrigger value="filter" className="flex-1">
+      <TabsList className="w-full mb-4 bg-background gap-1 border p-1">
+        <TabsTrigger
+          value="filter"
+          className="flex-1 data-[state=active]:bg-primary dark:data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:border-transparent"
+        >
           <FilterIcon className="w-4 h-4" />
           Filter
         </TabsTrigger>
-        <TabsTrigger value="sort" className="flex-1">
+        <TabsTrigger
+          value="sort"
+          className="flex-1 data-[state=active]:bg-primary dark:data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:border-transparent"
+        >
           <ArrowDownAZ className="w-4 h-4" />
           Sort
         </TabsTrigger>

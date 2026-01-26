@@ -377,6 +377,7 @@ export function BooksMutateDialog({
                                         <AuthorsCombobox
                                             value={field.value || []}
                                             onChange={field.onChange}
+                                            initialAuthors={initialData?.authors}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -393,6 +394,7 @@ export function BooksMutateDialog({
                                         <CategoriesCombobox
                                             value={field.value || []}
                                             onChange={field.onChange}
+                                            initialCategories={initialData?.categories}
                                         />
                                     </FormControl>
                                     <FormMessage />

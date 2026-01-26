@@ -4,10 +4,10 @@ import { ExternalLink, Key } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert';
 import { Separator } from '@repo/ui/components/separator';
 import { SidebarTrigger } from '@repo/ui/components/sidebar';
-import { ConfigDrawer } from '@/components/config-drawer';
+import { ConfigDrawer } from '@/components/layout/config-drawer';
 import { AuthenticatedLayout } from '@/components/layout/authenticated-layout';
 import { Main } from '@/components/layout/main';
-import { ThemeSwitch } from '@/components/theme-switch';
+import { ThemeSwitch } from '@/components/layout/theme-switch';
 
 export const Route = createFileRoute('/clerk')({
   component: RouteComponent,

@@ -19,12 +19,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar'
 import { Button } from '@repo/ui/components/button';
 import { ScrollArea } from '@repo/ui/components/scroll-area';
 import { Separator } from '@repo/ui/components/separator';
-import { ConfigDrawer } from '@/components/config-drawer';
+import { ConfigDrawer } from '@/components/layout/config-drawer';
 import { Header } from '@/components/layout/header';
 import { Main } from '@/components/layout/main';
 import { ProfileDropdown } from '@/components/layout/profile-dropdown';
-import { Search } from '@/components/search';
-import { ThemeSwitch } from '@/components/theme-switch';
+import { Search } from '@/components/layout/search';
+import { ThemeSwitch } from '@/components/layout/theme-switch';
 import { NewChat } from './components/new-chat';
 import { type ChatUser, type Convo } from './data/chat-types';
 // Fake Data

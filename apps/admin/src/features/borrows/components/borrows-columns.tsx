@@ -5,6 +5,30 @@ import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
 import { Badge } from '@repo/ui/components/badge';
 import { BorrowsTableRowActions } from './borrows-table-row-actions';
+import { useState } from 'react';
+import { ImageOff } from 'lucide-react';
+
+const BookCoverCell = ({ src, title }: { src?: string; title: string }) => {
+  const [error, setError] = useState(false);
+
+  if (!src || error) {
+    return (
+      <div className='bg-muted/20 text-muted-foreground flex h-10 w-7 flex-shrink-0 items-center justify-center rounded-md border'>
+        <ImageOff className="h-4 w-4 opacity-50" />
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={title}
+      className='h-10 w-7 flex-shrink-0 rounded object-cover border'
+      loading='lazy'
+      onError={() => setError(true)}
+    />
+  );
+};
 
 export const borrowsColumns: ColumnDef<Borrow>[] = [
   {
@@ -43,11 +67,7 @@ export const borrowsColumns: ColumnDef<Borrow>[] = [
         : 'Unknown Author';
       return (
         <div className='flex items-center gap-2 max-w-48'>
-          <img
-            src={item?.coverUrl || '/images/book-cover-placeholder.png'}
-            alt={title}
-            className='h-10 w-7 rounded object-cover border'
-          />
+          <BookCoverCell src={item?.coverUrl} title={title} />
           <div className='flex flex-col truncate'>
             <span className='truncate font-medium'>
               <Highlight text={title} query={query} />
@@ -70,11 +90,11 @@ export const borrowsColumns: ColumnDef<Borrow>[] = [
       const email = borrower?.email ?? '-';
       const query = String(table.getState().globalFilter ?? '');
       return (
-        <div className='flex flex-col max-w-32 truncate'>
-          <span className='font-medium'>
+        <div className='flex flex-col max-w-48'>
+          <span className='truncate font-medium'>
             <Highlight text={username} query={query} />
           </span>
-          <span className='text-xs text-muted-foreground'>
+          <span className='truncate text-xs text-muted-foreground'>
             <Highlight text={email} query={query} />
           </span>
         </div>

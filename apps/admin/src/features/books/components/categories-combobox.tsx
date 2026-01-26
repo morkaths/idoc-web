@@ -18,11 +18,13 @@ import { useCategories } from "@/hooks/data/useCategory";
 type CategoriesComboboxProps = {
     value: string[];
     onChange: (categories: string[]) => void;
+    initialCategories?: Category[];
 };
 
 export function CategoriesCombobox({
     value,
     onChange,
+    initialCategories = [],
 }: CategoriesComboboxProps) {
     const id = useId();
     const [open, setOpen] = useState(false);
@@ -35,21 +37,36 @@ export function CategoriesCombobox({
     }), [page, debouncedQuery]);
     const { data, isLoading } = useCategories(categoryParams);
     const [categories, setCategories] = useState<Category[]>([]);
+     // Cache all seen categories to ensure selected items can always be displayed
+    const [categoryMap, setCategoryMap] = useState<Map<string, Category>>(() => {
+        const map = new Map<string, Category>();
+        initialCategories.forEach(c => map.set(c._id, c));
+        return map;
+    });
+
     const pagination = Array.isArray(data?.pagination) ? data.pagination[0] : data?.pagination;
     const total = pagination?.total ?? 0;
     const limited = pagination?.limit ?? 10;
     const hasMore = page * limited < total;
 
     useEffect(() => {
-        if (page === 1) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setCategories(data?.data ?? []);
-        } else if (data?.data) {
-            setCategories(prev => {
-                const prevIds = new Set(prev.map(a => a._id));
-                const newCategories = data.data.filter(a => !prevIds.has(a._id));
-                return [...prev, ...newCategories];
+        if (data?.data) {
+             // Update cache map
+            setCategoryMap(prev => {
+                const next = new Map(prev);
+                data.data.forEach(c => next.set(c._id, c));
+                return next;
             });
+
+            if (page === 1) {
+                setCategories(data.data);
+            } else {
+                setCategories(prev => {
+                    const prevIds = new Set(prev.map(a => a._id));
+                    const newCategories = data.data.filter(a => !prevIds.has(a._id));
+                    return [...prev, ...newCategories];
+                });
+            }
         }
     }, [data, page]);
 
@@ -91,7 +108,7 @@ export function CategoriesCombobox({
                         <div className="flex flex-wrap items-center gap-1 pr-2.5">
                             {value.length > 0 ? (
                                 value.map((categoryId) => {
-                                    const category = categories.find((c) => c._id === categoryId);
+                                    const category = categoryMap.get(categoryId);
                                     return category ? (
                                         <Badge key={category._id} variant="outline" className="rounded-sm">
                                             {category?.slug ?? ''}
@@ -144,7 +161,7 @@ export function CategoriesCombobox({
                                         )}
                                     </CommandItem>
                                 ))}
-                                {isLoading && page > 1 && <div className="p-2 text-center text-xs">Loading more...</div>}
+                                {isLoading && <div className="p-2 text-center text-xs">Loading...</div>}
                             </CommandGroup>
                         </CommandList>
                     </Command>

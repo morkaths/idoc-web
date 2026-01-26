@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@repo/ui/components/dialog";
 import { toast } from "sonner";
 import { useEffect } from "react";
-const PdfViewer = dynamic(() => import("@/components/pdf-viewer"), { ssr: false });
+const PdfViewer = dynamic(() => import("@/components/viewers/pdf-viewer"), { ssr: false });
 
 type FilePreviewDialogProps = {
     open: boolean;

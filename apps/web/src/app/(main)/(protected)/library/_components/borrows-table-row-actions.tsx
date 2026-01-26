@@ -11,10 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { useBorrowsContext } from './borrows-provider';
-import { useState } from 'react';
-import { useBook } from '@/hooks/data/useBook';
-import { useFile } from '@/hooks/data/useFile';
-import { FilePreviewDialog } from '@/components/file-preview-dialog';
+import { useRouter } from 'next/navigation';
 
 type BorrowsTableRowActionsProps<TData> = {
   row: Row<TData>;
@@ -56,9 +53,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
   const ctx = useBorrowsContext();
   if (!ctx) throw new Error('BorrowsTableRowActions must be used inside BorrowsProvider');
   const { setOpen, setCurrentRow } = ctx;
-  const [openPreview, setOpenPreview] = useState(false);
-  const { data: book } = useBook(borrow.item?._id || "");
-  const { data: file } = useFile(book?.fileKey || "");
+  const router = useRouter();
 
 
   return (
@@ -74,7 +69,9 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
         <DropdownMenuContent align='end' className='w-40'>
           <DropdownMenuItem
             onClick={() => {
-              setOpenPreview(true);
+              if (borrow.item?._id) {
+                router.push(`/books/${borrow.item._id}/view`);
+              }
             }}
           >
             View file
@@ -116,14 +113,6 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <FilePreviewDialog
-        open={openPreview}
-        onOpenChange={setOpenPreview}
-        fileUrl={file?.url || ""}
-        title={ book?.title || "No title" }
-        mode="simple"
-      />
     </>
   );
 }

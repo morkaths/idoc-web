@@ -9,6 +9,7 @@ import { Search } from "./search";
 import { AppSidebar } from "./sidebar";
 import { ThemeSwitch } from "./theme-switch";
 import { ProfileDropdown } from "./profile-dropdown";
+import { ConfigDrawer } from "./config-drawer";
 
 export function Header() {
 	const scrolled = useScroll(10);
@@ -62,6 +63,7 @@ export function Header() {
 						<AppSidebar isOpen={mobileMenuOpen} setIsOpen={setMobileMenuOpen} />
 					</div>
 					<ThemeSwitch />
+					<ConfigDrawer />
 					<ProfileDropdown />
 				</div>
 			</nav>

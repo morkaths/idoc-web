@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { BookDetailView } from "./_components/view";
 import { BookApi } from "@/apis";
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   try {
-    const book = await BookApi.findById(params.id);
+    const { id } = await params;
+    const book = await BookApi.findById(id);
     if (!book) {
       return {
         title: "Sách không tồn tại",
@@ -24,6 +25,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-export default function BookDetailPage({ params }: { params: { id: string } }) {
-  return <BookDetailView id={params.id} />;
+export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <BookDetailView id={id} />;
 }

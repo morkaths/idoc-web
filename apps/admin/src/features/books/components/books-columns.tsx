@@ -5,6 +5,32 @@ import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
 import { BooksTableRowActions } from './books-table-row-actions';
+import { useState } from 'react';
+
+import { ImageOff } from 'lucide-react';
+
+const BookCoverCell = ({ src, title }: { src?: string; title: string }) => {
+  const [error, setError] = useState(false);
+
+  if (!src || error) {
+    return (
+      <div className='bg-muted/20 text-muted-foreground flex h-15 w-10 items-center justify-center rounded-md border'>
+        <ImageOff className="h-4 w-4 opacity-50" />
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={title}
+      className='h-15 w-10 rounded object-cover border'
+      style={{ borderRadius: 'var(--radius-img)' }}
+      loading='lazy'
+      onError={() => setError(true)}
+    />
+  );
+};
 
 export const booksColumns: ColumnDef<Book>[] = [
   {
@@ -53,19 +79,7 @@ export const booksColumns: ColumnDef<Book>[] = [
     cell: ({ row }) => {
       const src = (row.getValue('coverUrl') ?? row.original.coverUrl) as string | undefined;
       const title = String(row.getValue('title') ?? '');
-      return src ? (
-        <img
-          src={src}
-          alt={title}
-          className='h-15 w-10 rounded object-cover'
-          style={{ borderRadius: 'var(--radius-img)' }}
-          loading='lazy'
-        />
-      ) : (
-        <div className='bg-muted/20 text-muted-foreground flex h-15 w-10 items-center justify-center rounded-md text-xs'>
-          No image
-        </div>
-      );
+      return <BookCoverCell src={src} title={title} />;
     },
   },
   {

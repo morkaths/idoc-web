@@ -7,7 +7,7 @@ import { Button } from "@repo/ui/components/button";
 import Image from "next/image";
 import dayjs from "dayjs";
 import { Bookmark, Plus } from "lucide-react";
-import BookTabs from "./book-tags";
+import { BookTabs } from "./book-tabs";
 import { useState } from "react";
 import { BorrowBookDialog } from "./borrow-book-dialog";
 import { toast } from "sonner";
@@ -18,11 +18,37 @@ interface BookDetailViewProps {
   id: string;
 }
 
+const CoverImage = ({ title, src }: { title: string, src?: string }) => {
+  const [imageError, setImageError] = useState(false);
+
+  return (
+    <div className="relative w-46 sm:w-64 md:w-72 lg:w-80 aspect-[3/4] rounded-xl overflow-hidden border-2 bg-white dark:bg-zinc-800">
+      {!imageError && src ? (
+        <Image
+          src={src}
+          alt={title}
+          fill
+          className="object-cover"
+          priority
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center p-6 text-center">
+          <span className="font-bold text-lg md:text-xl line-clamp-4 leading-tight opacity-90 break-words w-full">
+            {title}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export function BookDetailView({ id }: BookDetailViewProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const user = session?.user;
   const { data: book, isLoading, error } = useBook(id);
+  const [imageError, setImageError] = useState(false);
   const [openBorrow, setOpenBorrow] = useState(false);
   const createBorrowMut = useCreateBorrow();
 
@@ -40,30 +66,12 @@ export function BookDetailView({ id }: BookDetailViewProps) {
   return (
     <div className="relative min-h-screen py-10">
       {/* Banner */}
-      <div className="w-full flex justify-center">
-        <div className="relative w-full max-w-7xl h-72 md:h-96 lg:h-128 md:rounded-xl overflow-hidden border-2">
-          <Image
-            src={book.coverUrl || "/images/placeholder-book.png"}
-            alt={book.title}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-      </div>
+      <div className="w-full h-64 md:h-72 lg:h-96 bg-primary/10 dark:bg-primary/10 relative" />
 
       {/* Main content */}
       <div className="relative z-10 max-w-5xl mx-auto -mt-40 flex flex-col md:flex-row gap-8 px-4">
         {/* Book cover */}
-        <div className="relative w-46 sm:w-64 md:w-72 lg:w-80 aspect-2/3 rounded-xl overflow-hidden shadow-2xl border-2">
-          <Image
-            src={book.coverUrl || "/images/placeholder-book.png"}
-            alt={book.title}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
+        <CoverImage title={book.title} src={book.coverUrl} />
 
         {/* Book info */}
         <div className="flex-1 flex flex-col justify-end">
@@ -80,7 +88,22 @@ export function BookDetailView({ id }: BookDetailViewProps) {
             ))}
           </div>
           {/* Description */}
-          <p className="text-sm mb-6">{book.description}</p>
+          {/* Author */}
+          <div className="text-sm text-muted-foreground mb-6">
+            By{" "}
+            {book.authors?.length ? (
+              book.authors.map((a, i) => (
+                <span key={i}>
+                  <span className="font-semibold text-muted-foreground underline hover:text-primary transition-colors cursor-pointer">
+                    {a.name}
+                  </span>
+                  {i < (book.authors?.length || 0) - 1 && ", "}
+                </span>
+              ))
+            ) : (
+              "Unknown Author"
+            )}
+          </div>
           {/* Actions */}
           <div className="flex gap-2">
             <Button variant="outline">
@@ -116,7 +139,7 @@ export function BookDetailView({ id }: BookDetailViewProps) {
       </div>
 
       <div className="max-w-5xl mx-auto mt-10 px-4">
-        <BookTabs />
+        <BookTabs book={book} />
       </div>
     </div>
   );
