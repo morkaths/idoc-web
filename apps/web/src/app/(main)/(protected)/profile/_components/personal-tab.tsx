@@ -32,10 +32,10 @@ export function PersonalTab() {
     }, [profile]);
 
     const handleSave = () => {
-        if (!profile?._id) return;
+        if (!profile?.id) return;
 
         updateProfile.mutate({
-            id: profile._id,
+            id: profile.id,
             data: {
                 fullName,
                 bio,

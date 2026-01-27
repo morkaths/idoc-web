@@ -61,9 +61,9 @@ export function AuthorsMutateDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-150 max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>{initialData?._id ? "Edit Author" : "Add Author"}</DialogTitle>
+                    <DialogTitle>{initialData?.id ? "Edit Author" : "Add Author"}</DialogTitle>
                     <DialogDescription>
-                        {initialData?._id
+                        {initialData?.id
                             ? "Update the author information below."
                             : "Enter the information for the new author."}
                     </DialogDescription>
@@ -183,7 +183,7 @@ export function AuthorsMutateDialog({
                                 </Button>
                             </DialogClose>
                             <Button type="submit" disabled={uploadImage.isPending}>
-                                {initialData?._id ? "Save changes" : "Create"}
+                                {initialData?.id ? "Save changes" : "Create"}
                             </Button>
                         </DialogFooter>
                     </form>

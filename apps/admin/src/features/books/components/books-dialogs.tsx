@@ -42,7 +42,7 @@ export function BooksDialogs() {
       {currentRow && (
         <>
           <BooksMutateDialog
-            key={`book-update-${currentRow._id}`}
+            key={`book-update-${currentRow.id}`}
             open={open === 'update'}
             onOpenChange={() => {
               setOpen('update');
@@ -53,7 +53,7 @@ export function BooksDialogs() {
             initialData={currentRow}
             onSubmit={async (data) => {
               toast.promise(
-                updateBookMut.mutateAsync({ id: currentRow._id!, data }),
+                updateBookMut.mutateAsync({ id: currentRow.id!, data }),
                 {
                   loading: 'Updating book...',
                   success: () => {
@@ -79,7 +79,7 @@ export function BooksDialogs() {
             }}
             handleConfirm={async () => {
               toast.promise(
-                deleteBookMut.mutateAsync(currentRow._id!),
+                deleteBookMut.mutateAsync(currentRow.id!),
                 {
                   loading: 'Deleting book...',
                   success: () => {
@@ -93,10 +93,10 @@ export function BooksDialogs() {
               );
             }}
             className='max-w-md'
-            title={`Delete this book: ${currentRow.title || currentRow._id} ?`}
+            title={`Delete this book: ${currentRow.title || currentRow.id} ?`}
             desc={
               <>
-                You are about to delete a book with the ID <strong>{currentRow._id}</strong>.<br />
+                You are about to delete a book with the ID <strong>{currentRow.id}</strong>.<br />
                 This action cannot be undone.
               </>
             }

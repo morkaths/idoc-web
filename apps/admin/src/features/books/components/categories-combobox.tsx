@@ -40,7 +40,7 @@ export function CategoriesCombobox({
      // Cache all seen categories to ensure selected items can always be displayed
     const [categoryMap, setCategoryMap] = useState<Map<string, Category>>(() => {
         const map = new Map<string, Category>();
-        initialCategories.forEach(c => map.set(c._id, c));
+        initialCategories.forEach(c => map.set(c.id, c));
         return map;
     });
 
@@ -54,7 +54,7 @@ export function CategoriesCombobox({
              // Update cache map
             setCategoryMap(prev => {
                 const next = new Map(prev);
-                data.data.forEach(c => next.set(c._id, c));
+                data.data.forEach(c => next.set(c.id, c));
                 return next;
             });
 
@@ -62,8 +62,8 @@ export function CategoriesCombobox({
                 setCategories(data.data);
             } else {
                 setCategories(prev => {
-                    const prevIds = new Set(prev.map(a => a._id));
-                    const newCategories = data.data.filter(a => !prevIds.has(a._id));
+                    const prevIds = new Set(prev.map(a => a.id));
+                    const newCategories = data.data.filter(a => !prevIds.has(a.id));
                     return [...prev, ...newCategories];
                 });
             }
@@ -83,15 +83,15 @@ export function CategoriesCombobox({
     };
 
     const toggleSelection = (category: Category) => {
-        if (value.includes(category._id)) {
-            onChange(value.filter((id) => id !== category._id));
+        if (value.includes(category.id)) {
+            onChange(value.filter((id) => id !== category.id));
         } else {
-            onChange([...value, category._id]);
+            onChange([...value, category.id]);
         }
     };
 
     const removeSelection = (category: Category) => {
-        onChange(value.filter((id) => id !== category._id));
+        onChange(value.filter((id) => id !== category.id));
     };
 
     return (
@@ -110,7 +110,7 @@ export function CategoriesCombobox({
                                 value.map((categoryId) => {
                                     const category = categoryMap.get(categoryId);
                                     return category ? (
-                                        <Badge key={category._id} variant="outline" className="rounded-sm">
+                                        <Badge key={category.id} variant="outline" className="rounded-sm">
                                             {category?.slug ?? ''}
                                             <Button
                                                 variant="ghost"
@@ -151,12 +151,12 @@ export function CategoriesCombobox({
                             <CommandGroup>
                                 {categories.map((category) => (
                                     <CommandItem
-                                        key={category._id}
-                                        value={category._id}
+                                        key={category.id}
+                                        value={category.id}
                                         onSelect={() => toggleSelection(category)}
                                     >
                                         <span className="truncate">{category.slug}</span>
-                                        {value.includes(category._id) && (
+                                        {value.includes(category.id) && (
                                             <CheckIcon size={16} className="ml-auto" />
                                         )}
                                     </CommandItem>

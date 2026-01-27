@@ -86,9 +86,9 @@ export function BookGridItems({
         <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 justify-items-center items-start ${className}`}>
             {data.map((book) => (
                 <BookGridItem
-                    key={book._id}
+                    key={book.id}
                     book={book}
-                    onClick={() => router.push(paths.book(book._id))}
+                    onClick={() => router.push(paths.book(book.id))}
                 />
             ))}
         </div>

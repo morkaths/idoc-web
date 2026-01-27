@@ -17,7 +17,7 @@ export function BooksTableBulkActions({ table }: Props) {
       table={table}
       entityName='book'
       onBulkDelete={async (items) => {
-        await Promise.all(items.map((it) => deleteMut.mutateAsync(it._id)));
+        await Promise.all(items.map((it) => deleteMut.mutateAsync(it.id)));
         await qc.invalidateQueries({ queryKey: ['books'] });
       }}
     />

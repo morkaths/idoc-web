@@ -94,8 +94,8 @@ export function BooksMutateDialog({
             coverUrl: initialData?.coverUrl ?? "",
             fileKey: initialData?.fileKey ?? "",
             tags: initialData?.tags ?? [],
-            authors: initialData?.authors?.map((a) => a._id) ?? [],
-            categories: initialData?.categories?.map((c) => c._id) ?? [],
+            authors: initialData?.authors?.map((a) => a.id) ?? [],
+            categories: initialData?.categories?.map((c) => c.id) ?? [],
         },
     });
 
@@ -111,9 +111,9 @@ export function BooksMutateDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-200 max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>{initialData?._id ? "Edit Book" : "Add Book"}</DialogTitle>
+                    <DialogTitle>{initialData?.id ? "Edit Book" : "Add Book"}</DialogTitle>
                     <DialogDescription>
-                        {initialData?._id
+                        {initialData?.id
                             ? "Update the book information below."
                             : "Enter the information for the new book."}
                     </DialogDescription>
@@ -431,7 +431,7 @@ export function BooksMutateDialog({
                                 </Button>
                             </DialogClose>
                             <Button type="submit" disabled={uploadImage.isPending || uploadFile.isPending || confirmUpload.isPending}>
-                                {initialData?._id ? "Save changes" : "Create"}
+                                {initialData?.id ? "Save changes" : "Create"}
                             </Button>
                         </DialogFooter>
                     </form>

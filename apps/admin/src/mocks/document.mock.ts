@@ -19,7 +19,7 @@ export const mockCategories: Category[] = Array.from({ length: 20 }).map((_, idx
   const slug = `${slugify(enName)}`;
 
   return {
-    _id: i.toString(),
+    id: i.toString(),
     slug,
     parentId: i > 1 ? '1' : undefined,
     translations: [
@@ -46,7 +46,7 @@ export const mockCategories: Category[] = Array.from({ length: 20 }).map((_, idx
 export const mockAuthors: Author[] = Array.from({ length: 20 }).map((_, idx) => {
   const i = idx + 1;
   return {
-    _id: i.toString(),
+    id: i.toString(),
     name: faker.person.fullName(),
     avatarUrl: `https://placehold.co/80x80?text=Author+${i}`,
     birthDate: faker.date.birthdate({ min: 1940, max: 1995, mode: 'year' }),
@@ -69,7 +69,7 @@ export const mockBooks: Book[] = Array.from({ length: 100 }).map((_, idx) => {
   );
 
   return {
-    _id: i.toString(),
+    id: i.toString(),
     title: faker.lorem.sentence({ min: 2, max: 6 }),
     subtitle: faker.lorem.sentence({ min: 3, max: 8 }),
     description: faker.lorem.paragraphs(2),

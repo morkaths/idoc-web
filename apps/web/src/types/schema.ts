@@ -47,7 +47,7 @@ export const UserSchema = z.object({
 });
 
 export const LinkedAccountSchema = z.object({
-  _id: z.string(),
+  id: z.string(),
   userId: z.string(),
   provider: z.string(),
   providerId: z.string(),
@@ -63,7 +63,7 @@ export type LinkedAccount = z.infer<typeof LinkedAccountSchema>;
 // USER TYPES: Xử lý hồ sơ và cài đặt người dùng
 // ═══════════════════════════════════════════════════════════════════════════════
 export const ProfileSchema = z.object({
-  _id: z.string(),
+  id: z.string(),
   userId: z.string(),
   fullName: z.string().optional(),
   birthday: dateOrString,
@@ -89,7 +89,7 @@ const NotificationsSchema = z
   .optional();
 
 export const SettingsSchema = z.object({
-  _id: z.string(),
+  id: z.string(),
   userId: z.string(),
   theme: ThemeSchema,
   notifications: NotificationsSchema,
@@ -103,7 +103,7 @@ export type Settings = z.infer<typeof SettingsSchema>;
 // DOCUMENT TYPES: Xử lý tài liệu, sách và tác giả
 // ═══════════════════════════════════════════════════════════════════════════════
 export const AuthorSchema = z.object({
-  _id: z.string(),
+  id: z.string(),
   name: z.string(),
   avatarUrl: z.string().optional(),
   birthDate: dateOrString,
@@ -114,7 +114,7 @@ export const AuthorSchema = z.object({
 });
 
 export const CategorySchema = z.object({
-  _id: z.string(),
+  id: z.string(),
   slug: z.string().optional(),
   parentId: z.string().nullable().optional(),
   translations: z.array(
@@ -132,7 +132,7 @@ export const CategorySchema = z.object({
 });
 
 export const BookSchema = z.object({
-  _id: z.string(),
+  id: z.string(),
   title: z.string(),
   subtitle: z.string().optional(),
   description: z.string().optional(),
@@ -166,7 +166,7 @@ export type Book = z.infer<typeof BookSchema>;
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export const FileMetaSchema = z.object({
-  _id: z.string(),
+  id: z.string(),
   key: z.string(),
   filename: z.string(),
   mimeType: z.string(),
@@ -183,7 +183,7 @@ export type FileMeta = z.infer<typeof FileMetaSchema>;
 // BORROW TYPES: Xử lý mượn sách
 // ═══════════════════════════════════════════════════════════════════════════════
 export const BorrowSchema = z.object({
-    _id: z.string(),
+    id: z.string(),
     userId: z.string(),
     borrower: UserSchema.optional(),
     itemId: z.string(),

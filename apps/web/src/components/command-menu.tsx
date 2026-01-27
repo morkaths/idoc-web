@@ -54,9 +54,9 @@ export function CommandMenu() {
             <CommandGroup heading="Books" className='w-lg'>
               {booksData.data.map((book) => (
                 <CommandItem
-                  key={book._id}
+                  key={book.id}
                   value={`${book.title}`}
-                  onSelect={() => runCommand(() => router.push(`/books/${book._id}`))}
+                  onSelect={() => runCommand(() => router.push(`/books/${book.id}`))}
                   className="p-2 w-full cursor-pointer rounded-md aria-selected:bg-accent"
                 >
                   <div className="flex items-start gap-2 w-full">
@@ -89,9 +89,9 @@ export function CommandMenu() {
             <CommandGroup heading="Authors">
               {authorsData.data.map((author) => (
                 <CommandItem
-                  key={author._id}
+                  key={author.id}
                   value={author.name}
-                  onSelect={() => runCommand(() => router.push(`/authors/${author._id}`))}
+                  onSelect={() => runCommand(() => router.push(`/authors/${author.id}`))}
                 >
                   <Avatar className="w-7 h-7 mr-2">
                     <AvatarImage

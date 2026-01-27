@@ -44,7 +44,7 @@ export function BorrowsDialogs() {
                         onOpenChange={() => setOpen('extend')}
                         onSubmit={async (data) => {
                             toast.promise(
-                                extendBorrowMut.mutateAsync({ id: currentRow!._id!, ...data }),
+                                extendBorrowMut.mutateAsync({ id: currentRow!.id!, ...data }),
                                 {
                                     loading: 'Extending borrow...',
                                     success: () => {
@@ -76,7 +76,7 @@ export function BorrowsDialogs() {
                         }}
                         handleConfirm={async () => {
                             toast.promise(
-                                returnBorrowMut.mutateAsync(currentRow._id!),
+                                returnBorrowMut.mutateAsync(currentRow.id!),
                                 {
                                     loading: 'Returning...',
                                     success: () => {
@@ -90,10 +90,10 @@ export function BorrowsDialogs() {
                             );
                         }}
                         className='max-w-md'
-                        title={`Return this borrow: ${currentRow._id} ?`}
+                        title={`Return this borrow: ${currentRow.id} ?`}
                         desc={
                             <>
-                                You are about to return a borrow with the ID <strong>{currentRow._id}</strong>.<br />
+                                You are about to return a borrow with the ID <strong>{currentRow.id}</strong>.<br />
                                 This action cannot be undone.
                             </>
                         }

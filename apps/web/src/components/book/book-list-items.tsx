@@ -58,9 +58,9 @@ export function BookListItems({
     <div className={`grid grid-cols-1 xl:grid-cols-2 gap-6 ${className}`}>
       {data.map((book) => (
         <BookListItem
-          key={book._id}
+          key={book.id}
           book={book}
-          onClick={() => router.push(paths.book(book._id))}
+          onClick={() => router.push(paths.book(book.id))}
         />
       ))}
     </div>

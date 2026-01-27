@@ -58,9 +58,9 @@ export function BorrowsMutateDialog({
         <Dialog modal={true} open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-100 max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>{initialData?._id ? "Edit Borrow" : "Add Borrow"}</DialogTitle>
+                    <DialogTitle>{initialData?.id ? "Edit Borrow" : "Add Borrow"}</DialogTitle>
                     <DialogDescription>
-                        {initialData?._id
+                        {initialData?.id
                             ? "Update the borrow information below."
                             : "Enter the information for the new borrow."}
                     </DialogDescription>
@@ -169,7 +169,7 @@ export function BorrowsMutateDialog({
                                 </Button>
                             </DialogClose>
                             <Button type="submit">
-                                {initialData?._id ? "Save changes" : "Create"}
+                                {initialData?.id ? "Save changes" : "Create"}
                             </Button>
                         </DialogFooter>
                     </form>

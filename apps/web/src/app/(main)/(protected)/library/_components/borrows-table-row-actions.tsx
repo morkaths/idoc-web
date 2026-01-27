@@ -45,7 +45,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
     item: original.item
       ? {
         ...original.item,
-        _id: String(original.item._id ?? ''),
+        id: String(original.item.id ?? ''),
       }
       : undefined,
   };
@@ -69,8 +69,8 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
         <DropdownMenuContent align='end' className='w-40'>
           <DropdownMenuItem
             onClick={() => {
-              if (borrow.item?._id) {
-                router.push(`/books/${borrow.item._id}/view`);
+              if (borrow.item?.id) {
+                router.push(`/books/${borrow.item.id}/view`);
               }
             }}
           >

@@ -61,9 +61,9 @@ export function CategoriesMutateDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-100">
                 <DialogHeader>
-                    <DialogTitle>{initialData?._id ? "Edit Category" : "Add Category"}</DialogTitle>
+                    <DialogTitle>{initialData?.id ? "Edit Category" : "Add Category"}</DialogTitle>
                     <DialogDescription>
-                        {initialData?._id
+                        {initialData?.id
                             ? "Update the category information below."
                             : "Enter the information for the new category."}
                     </DialogDescription>
@@ -179,7 +179,7 @@ export function CategoriesMutateDialog({
                                 </Button>
                             </DialogClose>
                             <Button type="submit">
-                                {initialData?._id ? "Save changes" : "Create"}
+                                {initialData?.id ? "Save changes" : "Create"}
                             </Button>
                         </DialogFooter>
                     </form>

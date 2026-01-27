@@ -82,8 +82,8 @@ export function BookDetailView({ id }: BookDetailViewProps) {
           {/* Categories */}
           <div className="flex flex-wrap gap-2 mb-4">
             {book.categories?.map((cat) => (
-              <Badge key={cat._id} variant="outline">
-                {cat.translations?.[0]?.name || cat._id}
+              <Badge key={cat.id} variant="outline">
+                {cat.translations?.[0]?.name || cat.id}
               </Badge>
             ))}
           </div>
@@ -120,7 +120,7 @@ export function BookDetailView({ id }: BookDetailViewProps) {
               onSubmit={(data) => {
                 toast.promise(
                   createBorrowMut.mutateAsync({
-                    itemId: book._id!,
+                    itemId: book.id!,
                     ...data,
                   }),
                   {

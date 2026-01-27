@@ -15,8 +15,8 @@ export default function BookGridView({ filter }: { filter: Partial<FindParams> }
         return (data?.data || [])
             .map(borrow => borrow.item)
             .filter((book): book is Book => {
-                if (!book || seen.has(book._id)) return false;
-                seen.add(book._id);
+                if (!book || seen.has(book.id)) return false;
+                seen.add(book.id);
                 return true;
             });
     }, [data]);

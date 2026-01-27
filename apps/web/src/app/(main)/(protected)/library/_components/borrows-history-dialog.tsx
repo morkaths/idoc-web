@@ -53,7 +53,7 @@ export function BorrowsHistoryDialog({ open, onOpenChange, borrow }: BorrowsHist
                                 : <span className="text-xs text-muted-foreground">No Category</span>}
                         </div>
                         <div className="mt-2 text-xs text-muted-foreground">
-                            ID: <span className="font-mono">{borrow.item?._id}</span>
+                            ID: <span className="font-mono">{borrow.item?.id}</span>
                         </div>
                     </div>
                 </div>

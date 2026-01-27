@@ -44,7 +44,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
     item: original.item
       ? {
         ...original.item,
-        _id: String(original.item._id ?? ''),
+        id: String(original.item.id ?? ''),
       }
       : undefined,
   };

@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/pop
 import { useAuthors } from "@/hooks/data/useAuthor";
 import { useDebounce } from "@/hooks/ui/useDebounce";
 
-type Author = { _id: string; name: string };
+type Author = { id: string; name: string };
 
 type AuthorsComboboxProps = {
     value: string[];
@@ -41,7 +41,7 @@ export function AuthorsCombobox({
     // Cache all seen authors to ensure selected items can always be displayed
     const [authorMap, setAuthorMap] = useState<Map<string, Author>>(() => {
         const map = new Map<string, Author>();
-        initialAuthors.forEach(a => map.set(a._id, a));
+        initialAuthors.forEach(a => map.set(a.id, a));
         return map;
     });
 
@@ -55,7 +55,7 @@ export function AuthorsCombobox({
             // Update cache map
             setAuthorMap(prev => {
                 const next = new Map(prev);
-                data.data.forEach(a => next.set(a._id, a));
+                data.data.forEach(a => next.set(a.id, a));
                 return next;
             });
 
@@ -63,8 +63,8 @@ export function AuthorsCombobox({
                 setAuthors(data.data);
             } else {
                 setAuthors(prev => {
-                    const prevIds = new Set(prev.map(a => a._id));
-                    const newAuthors = data.data.filter(a => !prevIds.has(a._id));
+                    const prevIds = new Set(prev.map(a => a.id));
+                    const newAuthors = data.data.filter(a => !prevIds.has(a.id));
                     return [...prev, ...newAuthors];
                 });
             }
@@ -84,15 +84,15 @@ export function AuthorsCombobox({
     };
 
     const toggleSelection = (author: Author) => {
-        if (value.includes(author._id)) {
-            onChange(value.filter((id) => id !== author._id));
+        if (value.includes(author.id)) {
+            onChange(value.filter((id) => id !== author.id));
         } else {
-            onChange([...value, author._id]);
+            onChange([...value, author.id]);
         }
     };
 
     const removeSelection = (author: Author) => {
-        onChange(value.filter((id) => id !== author._id));
+        onChange(value.filter((id) => id !== author.id));
     };
 
     return (
@@ -111,7 +111,7 @@ export function AuthorsCombobox({
                                 value.map((authorId) => {
                                     const author = authorMap.get(authorId);
                                     return author ? (
-                                        <Badge key={author._id} variant="outline" className="rounded-sm">
+                                        <Badge key={author.id} variant="outline" className="rounded-sm">
                                             {author.name}
                                             <Button
                                                 variant="ghost"
@@ -152,12 +152,12 @@ export function AuthorsCombobox({
                             <CommandGroup>
                                 {authors.map((author) => (
                                     <CommandItem
-                                        key={author._id}
-                                        value={author._id}
+                                        key={author.id}
+                                        value={author.id}
                                         onSelect={() => toggleSelection(author)}
                                     >
                                         <span className="truncate">{author.name}</span>
-                                        {value.includes(author._id) && (
+                                        {value.includes(author.id) && (
                                             <CheckIcon size={16} className="ml-auto" />
                                         )}
                                     </CommandItem>

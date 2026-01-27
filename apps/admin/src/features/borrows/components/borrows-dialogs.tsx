@@ -45,7 +45,7 @@ export function BorrowsDialogs() {
                         onOpenChange={() => setOpen('extend')}
                         onSubmit={async (data) => {
                             toast.promise(
-                                extendBorrowMut.mutateAsync({ id: currentRow!._id!, ...data }),
+                                extendBorrowMut.mutateAsync({ id: currentRow!.id!, ...data }),
                                 {
                                     loading: 'Extending borrow...',
                                     success: () => {
@@ -60,7 +60,7 @@ export function BorrowsDialogs() {
                     />
 
                     <BorrowsMutateDialog
-                        key={`borrow-update-${currentRow._id}`}
+                        key={`borrow-update-${currentRow.id}`}
                         open={open === 'update'}
                         onOpenChange={() => {
                             setOpen('update');
@@ -71,7 +71,7 @@ export function BorrowsDialogs() {
                         initialData={currentRow}
                         onSubmit={async (data) => {
                             toast.promise(
-                                updateBorrowMut.mutateAsync({ id: currentRow._id!, data }),
+                                updateBorrowMut.mutateAsync({ id: currentRow.id!, data }),
                                 {
                                     loading: 'Updating borrow...',
                                     success: () => {
@@ -97,7 +97,7 @@ export function BorrowsDialogs() {
                         }}
                         handleConfirm={async () => {
                             toast.promise(
-                                deleteBorrowMut.mutateAsync(currentRow._id!),
+                                deleteBorrowMut.mutateAsync(currentRow.id!),
                                 {
                                     loading: 'Deleting borrow...',
                                     success: () => {
@@ -111,10 +111,10 @@ export function BorrowsDialogs() {
                             );
                         }}
                         className='max-w-md'
-                        title={`Delete this borrow: ${currentRow._id} ?`}
+                        title={`Delete this borrow: ${currentRow.id} ?`}
                         desc={
                             <>
-                                You are about to delete a borrow with the ID <strong>{currentRow._id}</strong>.<br />
+                                You are about to delete a borrow with the ID <strong>{currentRow.id}</strong>.<br />
                                 This action cannot be undone.
                             </>
                         }

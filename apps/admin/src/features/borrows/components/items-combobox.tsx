@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/pop
 import { useBooks } from "@/hooks/data/useBook";
 import { useDebounce } from "@/hooks/ui/useDebounce";
 
-type Item = { _id: string; title: string; };
+type Item = { id: string; title: string; };
 
 type ItemComboboxProps = {
     value: string;
@@ -44,8 +44,8 @@ export function ItemCombobox({ value, onChange, error }: ItemComboboxProps) {
             setItems(data?.data ?? []);
         } else if (data?.data) {
             setItems(prev => {
-                const prevIds = new Set(prev.map(a => a._id));
-                const newItems = data.data.filter(a => !prevIds.has(a._id));
+                const prevIds = new Set(prev.map(a => a.id));
+                const newItems = data.data.filter(a => !prevIds.has(a.id));
                 return [...prev, ...newItems];
             });
         }
@@ -77,7 +77,7 @@ export function ItemCombobox({ value, onChange, error }: ItemComboboxProps) {
         );
     }, [items]);
 
-    const selectedItem = items.find(i => i._id === value);
+    const selectedItem = items.find(i => i.id === value);
 
     return (
         <div className="w-full">
@@ -112,15 +112,15 @@ export function ItemCombobox({ value, onChange, error }: ItemComboboxProps) {
                                     <CommandGroup heading={group}>
                                         {groupItems.map(item => (
                                             <CommandItem
-                                                key={item._id}
-                                                value={item._id}
+                                                key={item.id}
+                                                value={item.id}
                                                 onSelect={() => {
-                                                    onChange(item._id);
+                                                    onChange(item.id);
                                                     setOpen(false);
                                                 }}
                                             >
                                                 {item.title}
-                                                {value === item._id && <CheckIcon size={16} className="ml-auto" />}
+                                                {value === item.id && <CheckIcon size={16} className="ml-auto" />}
                                             </CommandItem>
                                         ))}
                                     </CommandGroup>

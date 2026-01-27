@@ -84,7 +84,7 @@ export const BookApi = {
 //         items = items.filter((item) => {
 //           // Lấy danh sách category IDs từ book (chỉ dùng trường 'categories')
 //           const categoryIdsFromItem: string[] = Array.isArray((item as any).categories)
-//             ? (item as any).categories.map((c: any) => String(c._id ?? c.id ?? c))
+//             ? (item as any).categories.map((c: any) => String(c.id ?? c.id ?? c))
 //             : [];
 
 //           // Nếu book không có category nào, trả về false
@@ -134,22 +134,22 @@ export const BookApi = {
 //     };
 //   },
 //   findById: async (id: string): Promise<Book | null> => {
-//     const book = mockBooks.find((book) => book._id === id) || null;
+//     const book = mockBooks.find((book) => book.id === id) || null;
 //     return new Promise((resolve) => setTimeout(() => resolve(book), 200));
 //   },
 //   create: async (data: Partial<Book>): Promise<Book | null> => {
-//     const newBook: Book = { _id: Date.now().toString(), ...data } as Book;
+//     const newBook: Book = { id: Date.now().toString(), ...data } as Book;
 //     mockBooks.push(newBook);
 //     return new Promise((resolve) => setTimeout(() => resolve(newBook), 200));
 //   },
 //   update: async (id: string, data: Partial<Book>): Promise<Book | null> => {
-//     const index = mockBooks.findIndex((book) => book._id === id);
+//     const index = mockBooks.findIndex((book) => book.id === id);
 //     if (index === -1) return null;
 //     mockBooks[index] = { ...mockBooks[index], ...data };
 //     return new Promise((resolve) => setTimeout(() => resolve(mockBooks[index]), 200));
 //   },
 //   delete: async (id: string): Promise<boolean> => {
-//     const index = mockBooks.findIndex((book) => book._id === id);
+//     const index = mockBooks.findIndex((book) => book.id === id);
 //     if (index === -1) return false;
 //     mockBooks.splice(index, 1);
 //     return new Promise((resolve) => setTimeout(() => resolve(true), 200));

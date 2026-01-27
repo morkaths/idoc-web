@@ -42,7 +42,7 @@ export function CategoriesDialogs() {
       {currentRow && (
         <>
           <CategoriesMutateDialog
-            key={`category-update-${currentRow._id}`}
+            key={`category-update-${currentRow.id}`}
             open={open === 'update'}
             onOpenChange={() => {
               setOpen('update');
@@ -53,7 +53,7 @@ export function CategoriesDialogs() {
             initialData={currentRow}
             onSubmit={async (data) => {
               toast.promise(
-                updateCategoryMut.mutateAsync({ id: currentRow._id!, data }),
+                updateCategoryMut.mutateAsync({ id: currentRow.id!, data }),
                 {
                   loading: 'Updating category...',
                   success: () => {
@@ -79,7 +79,7 @@ export function CategoriesDialogs() {
             }}
             handleConfirm={() => {
               toast.promise(
-                deleteCategoryMut.mutateAsync(currentRow._id!),
+                deleteCategoryMut.mutateAsync(currentRow.id!),
                 {
                   loading: 'Deleting category...',
                   success: () => {
@@ -93,10 +93,10 @@ export function CategoriesDialogs() {
               );
             }}
             className='max-w-md'
-            title={`Delete this category: ${currentRow.translations?.[0]?.name || currentRow._id} ?`}
+            title={`Delete this category: ${currentRow.translations?.[0]?.name || currentRow.id} ?`}
             desc={
               <>
-                You are about to delete a category with the ID <strong>{currentRow._id}</strong>.<br />
+                You are about to delete a category with the ID <strong>{currentRow.id}</strong>.<br />
                 This action cannot be undone.
               </>
             }

@@ -41,7 +41,7 @@ export function AuthorsDialogs() {
       {currentRow && (
         <>
           <AuthorsMutateDialog
-            key={`author-update-${currentRow._id}`}
+            key={`author-update-${currentRow.id}`}
             open={open === 'update'}
             onOpenChange={() => {
               setOpen('update');
@@ -52,7 +52,7 @@ export function AuthorsDialogs() {
             initialData={currentRow}
             onSubmit={async (data) => {
               toast.promise(
-                updateAuthorMut.mutateAsync({ id: currentRow._id!, data }),
+                updateAuthorMut.mutateAsync({ id: currentRow.id!, data }),
                 {
                   loading: 'Updating author...',
                   success: () => {
@@ -78,7 +78,7 @@ export function AuthorsDialogs() {
             }}
             handleConfirm={() => {
               toast.promise(
-                deleteAuthorMut.mutateAsync(currentRow._id!),
+                deleteAuthorMut.mutateAsync(currentRow.id!),
                 {
                   loading: 'Deleting author...',
                   success: () => {
@@ -91,10 +91,10 @@ export function AuthorsDialogs() {
               );
             }}
             className='max-w-md'
-            title={`Delete this author: ${currentRow.name || currentRow._id} ?`}
+            title={`Delete this author: ${currentRow.name || currentRow.id} ?`}
             desc={
               <>
-                You are about to delete an author with the ID <strong>{currentRow._id}</strong>.<br />
+                You are about to delete an author with the ID <strong>{currentRow.id}</strong>.<br />
                 This action cannot be undone.
               </>
             }
