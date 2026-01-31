@@ -1,138 +1,116 @@
-import { type ColumnDef } from '@tanstack/react-table'
-import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
-import { DataTableColumnHeader } from '@/components/data-table'
-import { LongText } from '@/components/long-text'
-import { callTypes, roles } from '../data/data'
-import { type User } from '../data/schema'
-import { DataTableRowActions } from './data-table-row-actions'
+import { type ColumnDef } from '@tanstack/react-table';
+import { RoleCode, UserStatus, type User } from '@/types';
+import { Checkbox } from '@repo/ui/components/checkbox';
+import { DataTableColumnHeader } from '@/components/data-table';
+import Highlight from '@/components/highlight';
+import { UsersTableRowActions } from './users-table-row-actions';
+import { BriefcaseBusiness, ShieldCheck, User2, UserCog } from 'lucide-react';
+import { Badge } from '@repo/ui/components/badge';
 
 export const usersColumns: ColumnDef<User>[] = [
   {
     id: 'select',
+    enableSorting: false,
+    enableHiding: false,
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label='Select all'
-        className='translate-y-[2px]'
+        className='translate-y-0.5'
       />
     ),
-    meta: {
-      className: cn('max-md:sticky start-0 z-10 rounded-tl-[inherit]'),
-    },
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label='Select row'
-        className='translate-y-[2px]'
+        className='translate-y-0.5'
       />
     ),
-    enableSorting: false,
-    enableHiding: false,
   },
   {
     accessorKey: 'username',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Username' />
-    ),
-    cell: ({ row }) => (
-      <LongText className='max-w-36 ps-3'>{row.getValue('username')}</LongText>
-    ),
-    meta: {
-      className: cn(
-        'drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.1)] dark:drop-shadow-[0_1px_2px_rgb(255_255_255_/_0.1)]',
-        'ps-0.5 max-md:sticky start-6 @4xl/content:table-cell @4xl/content:drop-shadow-none'
-      ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Username' />,
+    cell: ({ row, table }) => {
+      const username = String(row.getValue('username') ?? '');
+      const query = String(table.getState().globalFilter ?? '');
+      return (
+        <div className='max-w-32 truncate font-medium'>
+          <Highlight text={username} query={query} />
+        </div>
+      );
     },
-    enableHiding: false,
-  },
-  {
-    id: 'fullName',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Name' />
-    ),
-    cell: ({ row }) => {
-      const { firstName, lastName } = row.original
-      const fullName = `${firstName} ${lastName}`
-      return <LongText className='max-w-36'>{fullName}</LongText>
-    },
-    meta: { className: 'w-36' },
   },
   {
     accessorKey: 'email',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Email' />
-    ),
-    cell: ({ row }) => (
-      <div className='w-fit ps-2 text-nowrap'>{row.getValue('email')}</div>
-    ),
-  },
-  {
-    accessorKey: 'phoneNumber',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phone Number' />
-    ),
-    cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
-    enableSorting: false,
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Email' />,
+    cell: ({ row, table }) => {
+      const email = row.original.email ?? '';
+      const query = String(table.getState().globalFilter ?? '');
+      return (
+        <div className='max-w-48 truncate'>
+          <Highlight text={email} query={query} />
+        </div>
+      );
+    },
   },
   {
     accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Status' />,
     cell: ({ row }) => {
-      const { status } = row.original
-      const badgeColor = callTypes.get(status)
+      const status = row.original.status;
+      let label = 'Inactive';
+      let className = 'bg-gray-100 text-gray-500 border border-gray-200';
+      if (status === UserStatus.Active) {
+        label = 'Active';
+        className = 'bg-green-100 text-green-700 border border-green-200';
+      } else if (status === UserStatus.Banned) {
+        label = 'Banned';
+        className = 'bg-red-100 text-red-700 border border-red-200';
+      }
       return (
-        <div className='flex space-x-2'>
-          <Badge variant='outline' className={cn('capitalize', badgeColor)}>
-            {row.getValue('status')}
-          </Badge>
-        </div>
-      )
+        <span className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${className}`}>
+          {label}
+        </span>
+      );
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
-    enableHiding: false,
-    enableSorting: false,
   },
   {
-    accessorKey: 'role',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Role' />
-    ),
+    accessorKey: 'roles',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Role' />,
     cell: ({ row }) => {
-      const { role } = row.original
-      const userType = roles.find(({ value }) => value === role)
-
-      if (!userType) {
-        return null
-      }
-
+      const roles = row.original.roles ?? [];
+      const maxShow = 2;
       return (
-        <div className='flex items-center gap-x-2'>
-          {userType.icon && (
-            <userType.icon size={16} className='text-muted-foreground' />
-          )}
-          <span className='text-sm capitalize'>{row.getValue('role')}</span>
+        <div className='max-w-65 overflow-x-auto'>
+          <div className='flex items-center gap-1 whitespace-nowrap'>
+            {roles.slice(0, maxShow).map((role) => {
+              let icon = <User2 className="w-3.5 h-3.5 mr-1" />;
+              if (role.code === RoleCode.Admin) icon = <ShieldCheck className="w-3.5 h-3.5 mr-1" />;
+              else if (role.code === RoleCode.Manager) icon = <BriefcaseBusiness className="w-3.5 h-3.5 mr-1" />;
+              else if (role.code === RoleCode.Staff) icon = <UserCog className="w-3.5 h-3.5 mr-1" />;
+              return (
+                <Badge key={role.id} variant='outline' className='text-xs flex items-center'>
+                  {icon}
+                  {role.name}
+                </Badge>
+              );
+            })}
+            {roles.length > maxShow && (
+              <Badge variant='outline' className='text-xs'>
+                +{roles.length - maxShow}
+              </Badge>
+            )}
+          </div>
         </div>
-      )
+      );
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
-    enableSorting: false,
-    enableHiding: false,
   },
   {
     id: 'actions',
-    cell: DataTableRowActions,
+    cell: ({ row }) => <UsersTableRowActions row={row} />,
   },
-]
+];

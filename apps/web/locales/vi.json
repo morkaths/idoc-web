@@ -1,0 +1,271 @@
+{
+  "common": {
+    "actions": {
+      "save": "Lưu",
+      "cancel": "Hủy",
+      "confirm": "Xác nhận",
+      "delete": "Xóa",
+      "edit": "Chỉnh sửa",
+      "create": "Tạo mới",
+      "update": "Cập nhật",
+      "close": "Đóng",
+      "search": "Tìm kiếm..."
+    },
+    "states": {
+      "loading": "Đang tải...",
+      "redirecting": "Đang chuyển hướng...",
+      "error": "Lỗi",
+      "success": "Thành công",
+      "noData": "Không tìm thấy dữ liệu"
+    }
+  },
+  "theme": {
+    "title": "Cài đặt giao diện",
+    "description": "Tùy chỉnh bố cục và hiển thị theo ý thích.",
+    "reset": "Đặt lại mặc định",
+    "mode": {
+      "title": "Giao diện",
+      "light": "Sáng",
+      "dark": "Tối",
+      "system": "Hệ thống"
+    },
+    "font": {
+      "title": "Phông chữ",
+      "placeholder": "Chọn phông chữ"
+    },
+    "radius": {
+      "title": "Bo góc"
+    },
+    "color": {
+      "title": "Màu sắc",
+      "placeholder": "Chọn màu sắc",
+      "random": "Ngẫu nhiên"
+    }
+  },
+  "navigation": {
+    "home": "Trang chủ",
+    "search": "Tìm kiếm",
+    "catalog": {
+      "label": "Danh mục",
+      "discover": {
+        "title": "Khám phá",
+        "description": "Khám phá các bộ sưu tập và đề xuất được chọn lọc dành riêng cho bạn."
+      },
+      "newArrivals": {
+        "title": "Mới cập nhật",
+        "description": "Những cuốn sách mới nhất được thêm vào bộ sưu tập tuần này."
+      },
+      "popular": {
+        "title": "Phổ biến",
+        "description": "Sách được mượn nhiều nhất và được đánh giá cao bởi cộng đồng."
+      },
+      "categories": {
+        "title": "Thể loại",
+        "description": "Duyệt theo Khoa học, Viễn tưởng, Lịch sử, Kỹ năng sống và hơn thế nữa."
+      }
+    },
+    "authors": {
+      "label": "Tác giả",
+      "featured": {
+        "title": "Nổi bật",
+        "description": "Tiêu điểm về các nhà văn đoạt giải và kiệt tác của họ."
+      },
+      "directory": {
+        "title": "Danh bạ",
+        "description": "Khám phá tiểu sử và thư mục sách của tất cả các tác giả."
+      }
+    },
+    "library": {
+      "label": "Thư viện",
+      "borrowed": {
+        "title": "Đang mượn",
+        "description": "Sách bạn đang mượn từ thư viện."
+      },
+      "wishlist": {
+        "title": "Danh sách mong muốn",
+        "description": "Sách bạn đã lưu để mượn trong tương lai."
+      },
+      "history": {
+        "title": "Lịch sử",
+        "description": "Lịch sử mượn trả và tương tác của bạn với thư viện."
+      }
+    },
+    "user": {
+      "signIn": "Đăng nhập",
+      "signUp": "Đăng ký",
+      "signOut": "Đăng xuất",
+      "upgrade": "Nâng cấp lên Pro",
+      "profile": "Hồ sơ",
+      "billings": "Thanh toán",
+      "settings": "Cài đặt"
+    }
+  },
+  "setting": {
+    "personal": {
+      "title": "Thông tin cá nhân",
+      "description": "Cập nhật thông tin hồ sơ của bạn.",
+      "form": {
+        "fullname": {
+          "label": "Họ và tên",
+          "placeholder": "Nhập họ và tên của bạn",
+          "validation": {
+            "fullnameRequired": "Vui lòng nhập họ và tên",
+            "fullnameLength": "Họ và tên phải có ít nhất 3 ký tự"
+          }
+        },
+        "email": {
+          "label": "Địa chỉ Email",
+          "placeholder": "name@example.com",
+          "validation": {
+            "emailRequired": "Vui lòng nhập địa chỉ email",
+            "invalidEmail": "Vui lòng nhập một địa chỉ email hợp lệ"
+          }
+        },
+        "password": {
+          "label": "Mật khẩu",
+          "placeholder": "••••••••",
+          "validation": {
+            "passwordRequired": "Vui lòng nhập mật khẩu",
+            "passwordMin": "Mật khẩu phải có ít nhất {min} ký tự"
+          }
+        },
+        "confirmPassword": {
+          "label": "Xác nhận mật khẩu",
+          "placeholder": "••••••••",
+          "validation": {
+            "passwordRequired": "Vui lòng xác nhận mật khẩu",
+            "passwordsNotMatch": "Mật khẩu không khớp"
+          }
+        },
+        "birthday": {
+          "label": "Ngày sinh",
+          "validation": {
+            "birthdayRequired": "Vui lòng nhập ngày sinh của bạn"
+          }
+        },
+        "location": {
+          "label": "Địa điểm",
+          "placeholder": "ví dụ: Hà Nội, Việt Nam",
+          "validation": {
+            "locationRequired": "Vui lòng nhập địa điểm của bạn"
+          }
+        },
+        "bio": {
+          "label": "Giới thiệu",
+          "placeholder": "Giới thiệu đôi chút về bản thân...",
+          "validation": {
+            "bioRequired": "Vui lòng nhập giới thiệu bản thân"
+          }
+        }
+      }
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Chào mừng trở lại",
+      "description": "Nhập thông tin của bạn để truy cập tài khoản",
+      "submit": "Đăng nhập",
+      "or": "Hoặc tiếp tục với",
+      "footer": "Chưa có tài khoản?",
+      "terms": "Bằng cách nhấp vào đăng nhập, bạn đồng ý với",
+      "tos": "Điều khoản dịch vụ",
+      "and": "và",
+      "privacy": "Chính sách bảo mật"
+    },
+    "signUp": {
+      "title": "Tạo tài khoản",
+      "description": "Tham gia cộng đồng yêu sách của chúng tôi",
+      "submit": "Tạo tài khoản",
+      "footer": "Đã có tài khoản? Đăng nhập",
+      "terms": "Bằng cách tạo tài khoản, bạn đồng ý với",
+      "tos": "Điều khoản dịch vụ",
+      "and": "và",
+      "privacy": "Chính sách bảo mật"
+    },
+    "signOut": {
+      "title": "Đăng xuất",
+      "description": "Bạn có chắc chắn muốn đăng xuất? Bạn sẽ cần đăng nhập lại để truy cập tài khoản của mình.",
+      "submit": "Đăng xuất"
+    },
+    "forgotPassword": {
+      "title": "Quên mật khẩu",
+      "description": "Nhập email của bạn để đặt lại mật khẩu",
+      "submit": "Đặt lại mật khẩu",
+      "footer": "Chưa có tài khoản? Đăng ký"
+    },
+    "form": {
+      "email": {
+        "label": "Địa chỉ Email",
+        "placeholder": "name@example.com",
+        "validation": {
+          "emailRequired": "Vui lòng nhập email",
+          "invalidEmail": "Địa chỉ email không hợp lệ"
+        }
+      },
+      "username": {
+        "label": "Tên đăng nhập",
+        "placeholder": "ten_cua_ban",
+        "validation": {
+          "usernameRequired": "Vui lòng nhập tên đăng nhập",
+          "usernameLength": "Tên đăng nhập phải có ít nhất 3 ký tự"
+        }
+      },
+      "password": {
+        "label": "Mật khẩu",
+        "placeholder": "••••••••",
+        "validation": {
+          "passwordRequired": "Vui lòng nhập mật khẩu",
+          "passwordMin": "Mật khẩu phải có ít nhất {min} ký tự"
+        }
+      },
+      "confirmPassword": {
+        "label": "Xác nhận mật khẩu",
+        "placeholder": "••••••••",
+        "validation": {
+          "passwordRequired": "Vui lòng xác nhận mật khẩu",
+          "passwordsNotMatch": "Mật khẩu xác nhận không khớp"
+        }
+      },
+      "messages": {
+        "loadingSignIn": "Đang đăng nhập...",
+        "loadingGoogleSignIn": "Đang đăng nhập với Google...",
+        "loadingSignUp": "Đang tạo tài khoản...",
+        "loadingSignOut": "Đang đăng xuất...",
+        "loadingForgotPassword": "Đang đặt lại mật khẩu...",
+        "successSignIn": "Chào mừng trở lại! Bạn đã đăng nhập thành công.",
+        "successGoogleSignIn": "Đăng nhập bằng Google thành công.",
+        "successSignUp": "Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.",
+        "successSignOut": "Đăng xuất thành công!",
+        "successForgotPassword": "Đặt lại mật khẩu thành công! Vui lòng đăng nhập để tiếp tục.",
+        "errorSignIn": "Email hoặc mật khẩu không chính xác",
+        "errorGoogleSignIn": "Lỗi khi đăng nhập bằng Google.",
+        "errorSignUp": "Lỗi khi tạo tài khoản.",
+        "errorSignOut": "Lỗi khi đăng xuất.",
+        "errorForgotPassword": "Lỗi khi đặt lại mật khẩu."
+      }
+    }
+  },
+  "error": {
+    "actions": {
+      "backToHome": "Về trang chủ",
+      "goBack": "Quay lại",
+      "learnMore": "Tìm hiểu thêm"
+    },
+    "401": {
+      "title": "Truy cập trái phép",
+      "description": "Vui lòng đăng nhập với thông tin xác thực phù hợp <br /> để truy cập tài nguyên này."
+    },
+    "403": {
+      "title": "Truy cập bị từ chối",
+      "description": "Bạn không có quyền truy cập vào tài nguyên này."
+    },
+    "404": {
+      "title": "Không tìm thấy trang",
+      "description": "Trang bạn đang tìm kiếm có thể đã bị xóa, đổi tên hoặc tạm thời không khả dụng."
+    },
+    "503": {
+      "title": "Website đang bảo trì!",
+      "description": "Trang web hiện không khả dụng. <br /> Vui lòng thử lại sau."
+    }
+  }
+}

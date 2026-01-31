@@ -1,0 +1,271 @@
+{
+  "common": {
+    "actions": {
+      "save": "保存",
+      "cancel": "キャンセル",
+      "confirm": "確認",
+      "delete": "削除",
+      "edit": "編集",
+      "create": "作成",
+      "update": "更新",
+      "close": "閉じる",
+      "search": "検索..."
+    },
+    "states": {
+      "loading": "読み込み中...",
+      "redirecting": "リダイレクト中...",
+      "error": "エラー",
+      "success": "成功",
+      "noData": "データが見つかりません"
+    }
+  },
+  "theme": {
+    "title": "テーマ設定",
+    "description": "レイアウトと表示をカスタマイズします。",
+    "reset": "デフォルトに戻す",
+    "mode": {
+      "title": "モード",
+      "light": "ライト",
+      "dark": "ダーク",
+      "system": "システム"
+    },
+    "font": {
+      "title": "フォント",
+      "placeholder": "フォントを選択"
+    },
+    "radius": {
+      "title": "角丸"
+    },
+    "color": {
+      "title": "色",
+      "placeholder": "色を選択",
+      "random": "ランダム"
+    }
+  },
+  "navigation": {
+    "home": "ホーム",
+    "search": "検索",
+    "catalog": {
+      "label": "カタログ",
+      "discover": {
+        "title": "発見",
+        "description": "あなたのために選ばれたコレクションとおすすめを探索しましょう。"
+      },
+      "newArrivals": {
+        "title": "新着",
+        "description": "今週コレクションに追加された最新の書籍。"
+      },
+      "popular": {
+        "title": "人気",
+        "description": "コミュニティで最も借りられている高評価の書籍。"
+      },
+      "categories": {
+        "title": "カテゴリー",
+        "description": "科学、フィクション、歴史、自己啓発などから閲覧できます。"
+      }
+    },
+    "authors": {
+      "label": "著者",
+      "featured": {
+        "title": "注目",
+        "description": "受賞作家とその傑作にスポットライトを当てます。"
+      },
+      "directory": {
+        "title": "ディレクトリ",
+        "description": "すべての著者の経歴と著書を探索しましょう。"
+      }
+    },
+    "library": {
+      "label": "ライブラリ",
+      "borrowed": {
+        "title": "借用中",
+        "description": "現在図書館から借りている書籍。"
+      },
+      "wishlist": {
+        "title": "ウィッシュリスト",
+        "description": "将来借りるために保存した書籍。"
+      },
+      "history": {
+        "title": "履歴",
+        "description": "借用履歴と図書館とのやり取り。"
+      }
+    },
+    "user": {
+      "signIn": "サインイン",
+      "signUp": "サインアップ",
+      "signOut": "サインアウト",
+      "upgrade": "Proにアップグレード",
+      "profile": "プロフィール",
+      "billings": "請求",
+      "settings": "設定"
+    }
+  },
+  "setting": {
+    "personal": {
+      "title": "個人情報",
+      "description": "プロフィール情報を更新します。",
+      "form": {
+        "fullname": {
+          "label": "氏名",
+          "placeholder": "あなたの氏名",
+          "validation": {
+            "fullnameRequired": "氏名を入力してください",
+            "fullnameLength": "氏名は3文字以上である必要があります"
+          }
+        },
+        "email": {
+          "label": "メールアドレス",
+          "placeholder": "name@example.com",
+          "validation": {
+            "emailRequired": "メールアドレスを入力してください",
+            "invalidEmail": "有効なメールアドレスを入力してください"
+          }
+        },
+        "password": {
+          "label": "パスワード",
+          "placeholder": "••••••••",
+          "validation": {
+            "passwordRequired": "パスワードを入力してください",
+            "passwordMin": "パスワードは少なくとも {min} 文字である必要があります"
+          }
+        },
+        "confirmPassword": {
+          "label": "パスワード（確認）",
+          "placeholder": "••••••••",
+          "validation": {
+            "passwordRequired": "パスワードを確認してください",
+            "passwordsNotMatch": "パスワードが一致しません"
+          }
+        },
+        "birthday": {
+          "label": "生年月日",
+          "validation": {
+            "birthdayRequired": "生年月日を入力してください"
+          }
+        },
+        "location": {
+          "label": "場所",
+          "placeholder": "例：東京、日本",
+          "validation": {
+            "locationRequired": "場所を入力してください"
+          }
+        },
+        "bio": {
+          "label": "自己紹介",
+          "placeholder": "あなた自身について少し教えてください...",
+          "validation": {
+            "bioRequired": "自己紹介を入力してください"
+          }
+        }
+      }
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "おかえりなさい",
+      "description": "アカウントにアクセスするために情報を入力してください",
+      "submit": "サインイン",
+      "or": "または次で続行",
+      "footer": "アカウントをお持ちでないですか？",
+      "terms": "サインインをクリックすることで、当社の",
+      "tos": "利用規約",
+      "and": "および",
+      "privacy": "プライバシーポリシー"
+    },
+    "signUp": {
+      "title": "アカウント作成",
+      "description": "読書愛好家のコミュニティに参加しましょう",
+      "submit": "アカウントを作成",
+      "footer": "すでにアカウントをお持ちですか？ サインイン",
+      "terms": "アカウントを作成することで、当社の",
+      "tos": "利用規約",
+      "and": "および",
+      "privacy": "プライバシーポリシーに同意したことになります"
+    },
+    "signOut": {
+      "title": "サインアウト",
+      "description": "本当にサインアウトしますか？ アカウントにアクセスするには再度サインインする必要があります。",
+      "submit": "サインアウト"
+    },
+    "forgotPassword": {
+      "title": "パスワードをお忘れですか",
+      "description": "メールアドレスを入力してパスワードをリセットしてください",
+      "submit": "パスワードをリセット",
+      "footer": "アカウントをお持ちでないですか？ サインアップ"
+    },
+    "form": {
+      "email": {
+        "label": "メールアドレス",
+        "placeholder": "name@example.com",
+        "validation": {
+          "emailRequired": "メールアドレスを入力してください",
+          "invalidEmail": "有効なメールアドレスではありません"
+        }
+      },
+      "username": {
+        "label": "ユーザー名",
+        "placeholder": "ユーザー名",
+        "validation": {
+          "usernameRequired": "ユーザー名を入力してください",
+          "usernameLength": "ユーザー名は3文字以上である必要があります"
+        }
+      },
+      "password": {
+        "label": "パスワード",
+        "placeholder": "••••••••",
+        "validation": {
+          "passwordRequired": "パスワードを入力してください",
+          "passwordMin": "パスワードは少なくとも {min} 文字である必要があります"
+        }
+      },
+      "confirmPassword": {
+        "label": "パスワード（確認）",
+        "placeholder": "••••••••",
+        "validation": {
+          "passwordRequired": "パスワードを確認してください",
+          "passwordsNotMatch": "確認用パスワードが一致しません"
+        }
+      },
+      "messages": {
+        "loadingSignIn": "サインイン中...",
+        "loadingGoogleSignIn": "Googleでサインイン中...",
+        "loadingSignUp": "アカウント作成中...",
+        "loadingSignOut": "サインアウト中...",
+        "loadingForgotPassword": "パスワードリセット中...",
+        "successSignIn": "おかえりなさい！ サインインに成功しました。",
+        "successGoogleSignIn": "Googleでのサインインに成功しました。",
+        "successSignUp": "登録成功！ 続行するにはサインインしてください。",
+        "successSignOut": "サインアウトしました！",
+        "successForgotPassword": "パスワードのリセットに成功しました！ 続行するにはサインインしてください。",
+        "errorSignIn": "メールアドレスまたはパスワードが正しくありません",
+        "errorGoogleSignIn": "Googleでのサインイン中にエラーが発生しました。",
+        "errorSignUp": "アカウント作成中にエラーが発生しました。",
+        "errorSignOut": "サインアウト中にエラーが発生しました。",
+        "errorForgotPassword": "パスワードのリセット中にエラーが発生しました。"
+      }
+    }
+  },
+  "error": {
+    "actions": {
+      "backToHome": "ホームに戻る",
+      "goBack": "戻る",
+      "learnMore": "詳細を見る"
+    },
+    "401": {
+      "title": "不正なアクセス",
+      "description": "このリソースにアクセスするには、適切な資格情報で<br />ログインしてください。"
+    },
+    "403": {
+      "title": "アクセス拒否",
+      "description": "このリソースにアクセスする権限がありません。"
+    },
+    "404": {
+      "title": "ページが見つかりません",
+      "description": "お探しのページは削除されたか、名前が変更されたか、一時的に利用できない可能性があります。"
+    },
+    "503": {
+      "title": "ウェブサイトはメンテナンス中です！",
+      "description": "現在サイトを利用できません。<br />後でもう一度お試しください。"
+    }
+  }
+}

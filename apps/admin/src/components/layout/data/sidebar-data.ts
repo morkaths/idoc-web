@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   Monitor,
   Bug,
-  ListTodo,
   FileX,
   HelpCircle,
   Lock,
@@ -16,15 +15,17 @@ import {
   UserCog,
   UserX,
   Users,
-  MessagesSquare,
   ShieldCheck,
   AudioWaveform,
   Command,
   GalleryVerticalEnd,
   Library,
-} from 'lucide-react'
-import { ClerkLogo } from '@/assets/clerk-logo'
-import { type SidebarData } from '../types'
+  Tag,
+  UserPen,
+  Bookmark
+} from 'lucide-react';
+import { ClerkLogo } from '@/assets/clerk-logo';
+import { type SidebarData } from '../types';
 
 export const sidebarData: SidebarData = {
   user: {
@@ -87,25 +88,34 @@ export const sidebarData: SidebarData = {
           icon: Library,
         },
         {
-          title: 'Tasks',
-          url: '/tasks',
-          icon: ListTodo,
+          title: 'Categories',
+          url: '/categories',
+          icon: Tag,
         },
         {
-          title: 'Apps',
-          url: '/apps',
-          icon: Package,
+          title: 'Authors',
+          url: '/authors',
+          icon: UserPen,
         },
         {
-          title: 'Chats',
-          url: '/chats',
-          badge: '3',
-          icon: MessagesSquare,
+          title: 'Borrows',
+          url: '/borrows',
+          icon: Bookmark,
         },
         {
           title: 'Users',
           url: '/users',
           icon: Users,
+        },
+        {
+          title: 'Roles',
+          url: '/roles',
+          icon: ShieldCheck,
+        },
+        {
+          title: 'Apps',
+          url: '/apps',
+          icon: Package,
         },
       ],
     },
@@ -213,4 +223,4 @@ export const sidebarData: SidebarData = {
       ],
     },
   ],
-}
+};

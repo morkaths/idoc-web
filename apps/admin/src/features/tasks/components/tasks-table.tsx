@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { getRouteApi } from '@tanstack/react-router'
+import { useEffect, useState } from 'react';
+import { getRouteApi } from '@tanstack/react-router';
 import {
   type SortingState,
   type VisibilityState,
@@ -11,9 +11,9 @@ import {
   // getPaginationRowModel,
   // getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table'
-import { cn } from '@/lib/utils'
-import { useTableUrlState } from '@/hooks/ui/useTableUrlState'
+} from '@tanstack/react-table';
+import { cn } from '@/lib/utils';
+import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
   Table,
   TableBody,
@@ -21,24 +21,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { priorities, statuses } from '../data/data'
-import { type Task } from '../data/schema'
-import { DataTableBulkActions } from './data-table-bulk-actions'
-import { tasksColumns as columns } from './tasks-columns'
+} from '@repo/ui/components/table';
+import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
+import { priorities, statuses } from '../data/data';
+import { type Task } from '../data/schema';
+import { DataTableBulkActions } from './data-table-bulk-actions';
+import { tasksColumns as columns } from './tasks-columns';
 
-const route = getRouteApi('/_authenticated/tasks/')
+const route = getRouteApi('/_authenticated/tasks/');
 
 type DataTableProps = {
-  data: Task[]
-}
+  data: Task[];
+};
 
 export function TasksTable({ data }: DataTableProps) {
   // Local UI-only states
-  const [rowSelection, setRowSelection] = useState({})
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({});
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   // Local state management for table (uncomment to use local-only state, not synced with URL)
   // const [globalFilter, onGlobalFilterChange] = useState('')
@@ -63,7 +63,7 @@ export function TasksTable({ data }: DataTableProps) {
       { columnId: 'status', searchKey: 'status', type: 'array' },
       { columnId: 'priority', searchKey: 'priority', type: 'array' },
     ],
-  })
+  });
 
   const page =
     typeof (pagination as any).page === 'number'
@@ -100,12 +100,12 @@ export function TasksTable({ data }: DataTableProps) {
     onPaginationChange,
     onGlobalFilterChange,
     onColumnFiltersChange,
-  })
+  });
 
-  const pageCount = table.getPageCount()
+  const pageCount = table.getPageCount();
   useEffect(() => {
-    ensurePageInRange(pageCount)
-  }, [pageCount, ensurePageInRange])
+    ensurePageInRange(pageCount);
+  }, [pageCount, ensurePageInRange]);
 
   return (
     <div
@@ -147,12 +147,9 @@ export function TasksTable({ data }: DataTableProps) {
                     >
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -160,10 +157,7 @@ export function TasksTable({ data }: DataTableProps) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
@@ -172,20 +166,14 @@ export function TasksTable({ data }: DataTableProps) {
                         cell.column.columnDef.meta?.tdClassName
                       )}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
+                <TableCell colSpan={columns.length} className='h-24 text-center'>
                   No results.
                 </TableCell>
               </TableRow>
@@ -196,5 +184,5 @@ export function TasksTable({ data }: DataTableProps) {
       <DataTablePagination table={table} className='mt-auto' />
       <DataTableBulkActions table={table} />
     </div>
-  )
+  );
 }

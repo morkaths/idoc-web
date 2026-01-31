@@ -1,8 +1,8 @@
-import { Logo } from '@/assets/logo'
-import { cn } from '@/lib/utils'
-import dashboardDark from './assets/dashboard-dark.png'
-import dashboardLight from './assets/dashboard-light.png'
-import { UserAuthForm } from './components/user-auth-form'
+import { Logo } from '@/assets/logo';
+import { cn } from '@/lib/utils';
+import dashboardDark from './assets/dashboard-dark.png';
+import dashboardLight from './assets/dashboard-light.png';
+import { UserAuthForm } from './components/user-auth-form';
 
 export function SignIn2() {
   return (
@@ -25,17 +25,11 @@ export function SignIn2() {
           <UserAuthForm />
           <p className='text-muted-foreground px-8 text-center text-sm'>
             By clicking sign in, you agree to our{' '}
-            <a
-              href='/terms'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <a href='/terms' className='hover:text-primary underline underline-offset-4'>
               Terms of Service
             </a>{' '}
             and{' '}
-            <a
-              href='/privacy'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <a href='/privacy' className='hover:text-primary underline underline-offset-4'>
               Privacy Policy
             </a>
             .
@@ -65,5 +59,5 @@ export function SignIn2() {
         />
       </div>
     </div>
-  )
+  );
 }

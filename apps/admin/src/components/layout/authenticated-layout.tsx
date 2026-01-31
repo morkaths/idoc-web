@@ -1,24 +1,24 @@
-import { Outlet } from '@tanstack/react-router'
-import { getCookie } from '@/lib/cookies'
-import { cn } from '@/lib/utils'
-import { LayoutProvider, useLayout } from '@/context/layout-provider'
-import { SearchProvider } from '@/context/search-provider'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/layout/app-sidebar'
-import { SkipToMain } from '@/components/skip-to-main'
-import { Header } from './header'
-import { Search } from '../search'
-import { ThemeSwitch } from '../theme-switch'
-import { ConfigDrawer } from '../config-drawer'
-import { ProfileDropdown } from '../profile-dropdown'
-import { Main } from './main'
+import { Outlet } from '@tanstack/react-router';
+import { getCookie } from '@/lib/cookies';
+import { cn } from '@/lib/utils';
+import { LayoutProvider, useLayout } from '@/context/layout-provider';
+import { SearchProvider } from '@/context/search-provider';
+import { SidebarInset, SidebarProvider } from '@repo/ui/components/sidebar';
+import { AppSidebar } from '@/components/layout/app-sidebar';
+import { SkipToMain } from '@/components/skip-to-main';
+import { ConfigDrawer } from './config-drawer';
+import { ProfileDropdown } from './profile-dropdown';
+import { Search } from './search';
+import { ThemeSwitch } from './theme-switch';
+import { Header } from './header';
+import { Main } from './main';
 
 type AuthenticatedLayoutProps = {
-  children?: React.ReactNode
-}
+  children?: React.ReactNode;
+};
 
 export function AuthenticatedLayoutWrapper({ children }: AuthenticatedLayoutProps) {
-  const defaultOpen = getCookie('sidebar_state') !== 'false'
+  const defaultOpen = getCookie('sidebar_state') !== 'false';
   return (
     <SearchProvider>
       <LayoutProvider>
@@ -44,7 +44,7 @@ export function AuthenticatedLayoutWrapper({ children }: AuthenticatedLayoutProp
         </SidebarProvider>
       </LayoutProvider>
     </SearchProvider>
-  )
+  );
 }
 
 /**
@@ -52,14 +52,14 @@ export function AuthenticatedLayoutWrapper({ children }: AuthenticatedLayoutProp
  * Must be rendered inside Providers so useLayout() is valid.
  */
 function InnerLayout({ children }: AuthenticatedLayoutProps) {
-  const { headerFixed, mainFixed } = useLayout()
+  const { headerFixed, mainFixed } = useLayout();
 
   return (
     <>
       {/* ===== Top Heading ===== */}
       <Header fixed={headerFixed}>
         <Search />
-        <div className="ms-auto flex items-center space-x-4">
+        <div className='ms-auto flex items-center space-x-4'>
           <ThemeSwitch />
           <ConfigDrawer />
           <ProfileDropdown />
@@ -67,18 +67,17 @@ function InnerLayout({ children }: AuthenticatedLayoutProps) {
       </Header>
 
       {/* ===== Content ===== */}
-      <Main className="flex flex-1 flex-col" fixed={mainFixed}>
+      <Main className='flex flex-1 flex-col' fixed={mainFixed}>
         {children ?? <Outlet />}
       </Main>
     </>
-  )
+  );
 }
-
 
 export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   return (
     <AuthenticatedLayoutWrapper>
       <InnerLayout>{children}</InnerLayout>
     </AuthenticatedLayoutWrapper>
-  )
+  );
 }

@@ -1,35 +1,58 @@
-/**
- * Centralized env access for both Vite (browser) and Node (server)
- * - Use VITE_ prefix for client-side build-time vars
- * - Prefer ENV.* throughout the app to avoid direct import.meta.env usage
- */
-const raw =
-  typeof process !== 'undefined' && (process as any).env
-    ? (process as any).env
-    : (import.meta.env as Record<string, any>);
+import { z } from 'zod';
 
-// Normalized flags
-export const DEV = raw.VITE_MODE === 'development';
-export const PROD = !DEV;
+const envSchema = z.object({
+  VITE_MODE: z.enum(['development', 'production']).default('development'),
+  VITE_PORT: z.string().default('3001'),
+  VITE_BASE_URL: z.string().default('http://localhost:3001/admin'),
+  VITE_API_URL: z.string().default('http://localhost:8000/api'),
+  VITE_API_KEY: z.string().optional(),
+  VITE_TOKEN_COOKIE_KEY: z.string().default('authtoken'),
+  VITE_USER_COOKIE_KEY: z.string().default('authuser'),
+});
 
-export const BASE_URL: string = (raw.VITE_BASE_URL ?? 'http://localhost:5173') as string;
-
-export const API_URL: string = (raw.VITE_API_URL ?? 'http://localhost:8000/api') as string;
-
-export const API_KEY: string | undefined = (raw.VITE_API_KEY ?? undefined) as string | undefined;
-
-export function getEnv(key: string, fallback?: string): string | undefined {
-  return (raw[key] as string | undefined) ?? fallback
-}
-
-const ENV = {
-  raw,
-  DEV,
-  PROD,
-  BASE_URL,
-  API_URL,
-  API_KEY,
-  getEnv,
+// Safely get environment variables
+const getEnv = () => {
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env;
+  }
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env;
+  }
+  return {};
 };
 
-export default ENV;
+const parsed = envSchema.safeParse(getEnv());
+
+if (!parsed.success) {
+  console.error('[.ENV] Invalid Environment Variables:');
+  const formattedError = parsed.error.format();
+  Object.entries(formattedError).forEach(([key, value]) => {
+    if (key !== '_errors' && value && '_errors' in value) {
+      console.error(`   [${key}]: ${value._errors.join(', ')}`);
+    }
+  });
+  if (typeof process !== 'undefined' && process.exit) {
+    process.exit(1);
+  } else {
+    throw new Error('Invalid Environment Variables');
+  }
+}
+
+const _env = parsed.data;
+export const env = {
+  app: {
+    mode: _env.VITE_MODE,
+    port: _env.VITE_PORT,
+    url: _env.VITE_BASE_URL,
+  },
+  api: {
+    url: _env.VITE_API_URL,
+    key: _env.VITE_API_KEY,
+  },
+  cookie: {
+    token: _env.VITE_TOKEN_COOKIE_KEY,
+    user: _env.VITE_USER_COOKIE_KEY,
+  },
+};
+
+export default env;

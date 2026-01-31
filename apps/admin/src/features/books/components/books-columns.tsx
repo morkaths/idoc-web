@@ -1,10 +1,36 @@
-import { type ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
-import { DataTableColumnHeader } from '@/components/data-table'
-import type { Book } from '@/types'
-import { BooksTableRowActions } from './books-table-row-actions'
-import Highlight from '@/components/highlight'
+import { type ColumnDef } from '@tanstack/react-table';
+import type { Book } from '@/types';
+import { Badge } from '@repo/ui/components/badge';
+import { Checkbox } from '@repo/ui/components/checkbox';
+import { DataTableColumnHeader } from '@/components/data-table';
+import Highlight from '@/components/highlight';
+import { BooksTableRowActions } from './books-table-row-actions';
+import { useState } from 'react';
+
+import { ImageOff } from 'lucide-react';
+
+const BookCoverCell = ({ src, title }: { src?: string; title: string }) => {
+  const [error, setError] = useState(false);
+
+  if (!src || error) {
+    return (
+      <div className='bg-muted/20 text-muted-foreground flex h-15 w-10 items-center justify-center rounded-md border'>
+        <ImageOff className="h-4 w-4 opacity-50" />
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={title}
+      className='h-15 w-10 rounded object-cover border'
+      style={{ borderRadius: 'var(--radius-img)' }}
+      loading='lazy'
+      onError={() => setError(true)}
+    />
+  );
+};
 
 export const booksColumns: ColumnDef<Book>[] = [
   {
@@ -14,8 +40,7 @@ export const booksColumns: ColumnDef<Book>[] = [
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label='Select all'
@@ -37,13 +62,13 @@ export const booksColumns: ColumnDef<Book>[] = [
     enableSorting: false,
     enableHiding: false,
     cell: ({ row, table }) => {
-      const isbn = String(row.getValue('isbn') ?? '')
-      const query = String(table.getState().globalFilter ?? '')
+      const isbn = String(row.getValue('isbn') ?? '');
+      const query = String(table.getState().globalFilter ?? '');
       return (
         <div className='max-w-26 truncate sm:max-w-72 md:max-w-124'>
           <Highlight text={isbn} query={query} />
         </div>
-      )
+      );
     },
   },
   {
@@ -52,21 +77,9 @@ export const booksColumns: ColumnDef<Book>[] = [
     enableSorting: false,
     enableHiding: true,
     cell: ({ row }) => {
-      const src = (row.getValue('coverUrl') ?? row.original.coverUrl) as string | undefined
-      const title = String(row.getValue('title') ?? '')
-      return src ? (
-        <img
-          src={src}
-          alt={title}
-          className='w-12 h-16 object-cover rounded'
-          style={{ borderRadius: 'var(--radius-img)' }}
-          loading='lazy'
-        />
-      ) : (
-        <div className='w-12 h-16 bg-muted/20 rounded-md flex items-center justify-center text-xs text-muted-foreground'>
-          No image
-        </div>
-      )
+      const src = (row.getValue('coverUrl') ?? row.original.coverUrl) as string | undefined;
+      const title = String(row.getValue('title') ?? '');
+      return <BookCoverCell src={src} title={title} />;
     },
   },
   {
@@ -74,31 +87,52 @@ export const booksColumns: ColumnDef<Book>[] = [
     header: ({ column }) => <DataTableColumnHeader column={column} title='Title' />,
     meta: { className: 'ps-1', tdClassName: 'ps-4' },
     cell: ({ row, table }) => {
-      const title = row.getValue('title') as string
-      const query = String(table.getState().globalFilter ?? '')
-      const authors = Array.isArray(row.original.authors) ? row.original.authors : []
-      const authorsText = authors.length ? authors.map(a => a.name).join(', ') : ''
+      const title = row.getValue('title') as string;
+      const query = String(table.getState().globalFilter ?? '');
+      const authors = Array.isArray(row.original.authors) ? row.original.authors : [];
+      const authorsText = authors.length ? authors.map((a) => a.name).join(', ') : 'Unknown author';
       return (
         <div className='flex flex-col'>
-          <span className='truncate font-medium max-w-32 sm:max-w-72 md:max-w-124'>
+          <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-124'>
             <Highlight text={title} query={query} />
           </span>
-          <small className='text-muted-foreground truncate max-w-32 sm:max-w-72 md:max-w-124'>
+          <small className='text-muted-foreground max-w-32 truncate sm:max-w-72 md:max-w-124'>
             <Highlight text={authorsText} query={query} />
           </small>
         </div>
-      )
+      );
     },
   },
   {
-    accessorKey: 'publishedDate',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Published' />,
-    meta: { className: 'ps-1', tdClassName: 'ps-4' },
+    accessorKey: 'slug',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Slug' />,
+    cell: ({ row, table }) => {
+      const slug = String(row.getValue('slug') ?? '');
+      const query = String(table.getState().globalFilter ?? '');
+      return (
+        <span className='max-w-32 truncate sm:max-w-60 md:max-w-100'>
+          <Highlight text={slug} query={query} />
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: 'publisher',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Publish' />,
     cell: ({ row }) => {
-      const d = row.getValue('publishedDate') as string | Date | undefined
-      if (!d) return null
-      const date = d instanceof Date ? d : new Date(String(d))
-      return <div>{isNaN(date.getTime()) ? '' : date.toLocaleDateString()}</div>
+      const publisher = row.getValue('publisher') as string | undefined;
+      const d = row.original.publishedDate as string | Date | undefined;
+      const date = d ? (d instanceof Date ? d : new Date(String(d))) : null;
+      return (
+        <div className="flex flex-col">
+          <span className='max-w-32 truncate sm:max-w-50 md:max-w-70'>
+            {publisher || '-'}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}
+          </span>
+        </div>
+      );
     },
   },
   {
@@ -107,8 +141,8 @@ export const booksColumns: ColumnDef<Book>[] = [
     meta: { className: 'ps-1', tdClassName: 'ps-4' },
     enableHiding: true,
     cell: ({ row }) => {
-      const p = row.getValue('price') as number | undefined
-      return <div>{p == null ? '-' : `${p.toLocaleString()} $`}</div>
+      const p = row.getValue('price') as number | undefined;
+      return <div>{p == null ? '-' : `${p.toLocaleString()} $`}</div>;
     },
   },
   // {
@@ -147,12 +181,12 @@ export const booksColumns: ColumnDef<Book>[] = [
     meta: { className: 'ps-1', tdClassName: 'ps-4' },
     enableHiding: true,
     cell: ({ row }) => {
-      const lang = row.getValue('language') as string
+      const lang = row.getValue('language') as string;
       return (
         <div className='flex items-center justify-center'>
           <span className={`fi fi-${String(lang).toLowerCase()}`} aria-hidden />
         </div>
-      )
+      );
     },
   },
   {
@@ -161,11 +195,11 @@ export const booksColumns: ColumnDef<Book>[] = [
     meta: { className: 'ps-1' },
     enableSorting: false,
     cell: ({ row }) => {
-      const cats = row.getValue('categories') as { slug?: string }[] | undefined
-      if (!Array.isArray(cats) || cats.length === 0) return null
+      const cats = row.getValue('categories') as { slug?: string }[] | undefined;
+      if (!Array.isArray(cats) || cats.length === 0) return null;
       return (
-        <div className="max-w-[260px] overflow-x-auto">
-          <div className='flex gap-1 items-center whitespace-nowrap'>
+        <div className='max-w-65 overflow-x-auto'>
+          <div className='flex items-center gap-1 whitespace-nowrap'>
             {cats.slice(0, 2).map((c, i) => (
               <Badge key={i} variant='outline' className='text-xs'>
                 {c?.slug ?? '-'}
@@ -178,11 +212,11 @@ export const booksColumns: ColumnDef<Book>[] = [
             )}
           </div>
         </div>
-      )
+      );
     },
   },
   {
     id: 'actions',
     cell: ({ row }) => <BooksTableRowActions row={row} />,
   },
-]
+];

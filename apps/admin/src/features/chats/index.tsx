@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { Fragment } from 'react/jsx-runtime'
-import { format } from 'date-fns'
+import { useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
+import { format } from 'date-fns';
 import {
   ArrowLeft,
   MoreVertical,
@@ -13,55 +13,49 @@ import {
   Send,
   Video,
   MessagesSquare,
-} from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { NewChat } from './components/new-chat'
-import { type ChatUser, type Convo } from './data/chat-types'
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
+import { Button } from '@repo/ui/components/button';
+import { ScrollArea } from '@repo/ui/components/scroll-area';
+import { Separator } from '@repo/ui/components/separator';
+import { ConfigDrawer } from '@/components/layout/config-drawer';
+import { Header } from '@/components/layout/header';
+import { Main } from '@/components/layout/main';
+import { ProfileDropdown } from '@/components/layout/profile-dropdown';
+import { Search } from '@/components/layout/search';
+import { ThemeSwitch } from '@/components/layout/theme-switch';
+import { NewChat } from './components/new-chat';
+import { type ChatUser, type Convo } from './data/chat-types';
 // Fake Data
-import { conversations } from './data/convo.json'
+import { conversations } from './data/convo.json';
 
 export function Chats() {
-  const [search, setSearch] = useState('')
-  const [selectedUser, setSelectedUser] = useState<ChatUser | null>(null)
-  const [mobileSelectedUser, setMobileSelectedUser] = useState<ChatUser | null>(
-    null
-  )
-  const [createConversationDialogOpened, setCreateConversationDialog] =
-    useState(false)
+  const [search, setSearch] = useState('');
+  const [selectedUser, setSelectedUser] = useState<ChatUser | null>(null);
+  const [mobileSelectedUser, setMobileSelectedUser] = useState<ChatUser | null>(null);
+  const [createConversationDialogOpened, setCreateConversationDialog] = useState(false);
 
   // Filtered data based on the search query
   const filteredChatList = conversations.filter(({ fullName }) =>
     fullName.toLowerCase().includes(search.trim().toLowerCase())
-  )
+  );
 
-  const currentMessage = selectedUser?.messages.reduce(
-    (acc: Record<string, Convo[]>, obj) => {
-      const key = format(obj.timestamp, 'd MMM, yyyy')
+  const currentMessage = selectedUser?.messages.reduce((acc: Record<string, Convo[]>, obj) => {
+    const key = format(obj.timestamp, 'd MMM, yyyy');
 
-      // Create an array for the category if it doesn't exist
-      if (!acc[key]) {
-        acc[key] = []
-      }
+    // Create an array for the category if it doesn't exist
+    if (!acc[key]) {
+      acc[key] = [];
+    }
 
-      // Push the current object to the array
-      acc[key].push(obj)
+    // Push the current object to the array
+    acc[key].push(obj);
 
-      return acc
-    },
-    {}
-  )
+    return acc;
+  }, {});
 
-  const users = conversations.map(({ messages, ...user }) => user)
+  const users = conversations.map(({ messages, ...user }) => user);
 
   return (
     <>
@@ -116,12 +110,10 @@ export function Chats() {
 
             <ScrollArea className='-mx-3 h-full overflow-scroll p-3'>
               {filteredChatList.map((chatUsr) => {
-                const { id, profile, username, messages, fullName } = chatUsr
-                const lastConvo = messages[0]
+                const { id, profile, username, messages, fullName } = chatUsr;
+                const lastConvo = messages[0];
                 const lastMsg =
-                  lastConvo.sender === 'You'
-                    ? `You: ${lastConvo.message}`
-                    : lastConvo.message
+                  lastConvo.sender === 'You' ? `You: ${lastConvo.message}` : lastConvo.message;
                 return (
                   <Fragment key={id}>
                     <button
@@ -132,8 +124,8 @@ export function Chats() {
                         selectedUser?.id === id && 'sm:bg-muted'
                       )}
                       onClick={() => {
-                        setSelectedUser(chatUsr)
-                        setMobileSelectedUser(chatUsr)
+                        setSelectedUser(chatUsr);
+                        setMobileSelectedUser(chatUsr);
                       }}
                     >
                       <div className='flex gap-2'>
@@ -142,9 +134,7 @@ export function Chats() {
                           <AvatarFallback>{username}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <span className='col-start-2 row-span-2 font-medium'>
-                            {fullName}
-                          </span>
+                          <span className='col-start-2 row-span-2 font-medium'>{fullName}</span>
                           <span className='text-muted-foreground group-hover:text-accent-foreground/90 col-start-2 row-span-2 row-start-2 line-clamp-2 text-ellipsis'>
                             {lastMsg}
                           </span>
@@ -153,7 +143,7 @@ export function Chats() {
                     </button>
                     <Separator className='my-1' />
                   </Fragment>
-                )
+                );
               })}
             </ScrollArea>
           </div>
@@ -180,10 +170,7 @@ export function Chats() {
                   </Button>
                   <div className='flex items-center gap-2 lg:gap-4'>
                     <Avatar className='size-9 lg:size-11'>
-                      <AvatarImage
-                        src={selectedUser.profile}
-                        alt={selectedUser.username}
-                      />
+                      <AvatarImage src={selectedUser.profile} alt={selectedUser.username} />
                       <AvatarFallback>{selectedUser.username}</AvatarFallback>
                     </Avatar>
                     <div>
@@ -245,8 +232,7 @@ export function Chats() {
                                 <span
                                   className={cn(
                                     'text-foreground/75 mt-1 block text-xs font-light italic',
-                                    msg.sender === 'You' &&
-                                      'text-primary-foreground/85 text-end'
+                                    msg.sender === 'You' && 'text-primary-foreground/85 text-end'
                                   )}
                                 >
                                   {format(msg.timestamp, 'h:mm a')}
@@ -262,12 +248,7 @@ export function Chats() {
                 <form className='flex w-full flex-none gap-2'>
                   <div className='border-input bg-card focus-within:ring-ring flex flex-1 items-center gap-2 rounded-md border px-2 py-1 focus-within:ring-1 focus-within:outline-hidden lg:gap-4'>
                     <div className='space-x-1'>
-                      <Button
-                        size='icon'
-                        type='button'
-                        variant='ghost'
-                        className='h-8 rounded-md'
-                      >
+                      <Button size='icon' type='button' variant='ghost' className='h-8 rounded-md'>
                         <Plus size={20} className='stroke-muted-foreground' />
                       </Button>
                       <Button
@@ -276,10 +257,7 @@ export function Chats() {
                         variant='ghost'
                         className='hidden h-8 rounded-md lg:inline-flex'
                       >
-                        <ImagePlus
-                          size={20}
-                          className='stroke-muted-foreground'
-                        />
+                        <ImagePlus size={20} className='stroke-muted-foreground' />
                       </Button>
                       <Button
                         size='icon'
@@ -287,10 +265,7 @@ export function Chats() {
                         variant='ghost'
                         className='hidden h-8 rounded-md lg:inline-flex'
                       >
-                        <Paperclip
-                          size={20}
-                          className='stroke-muted-foreground'
-                        />
+                        <Paperclip size={20} className='stroke-muted-foreground' />
                       </Button>
                     </div>
                     <label className='flex-1'>
@@ -301,11 +276,7 @@ export function Chats() {
                         className='h-8 w-full bg-inherit focus-visible:outline-hidden'
                       />
                     </label>
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      className='hidden sm:inline-flex'
-                    >
+                    <Button variant='ghost' size='icon' className='hidden sm:inline-flex'>
                       <Send size={20} />
                     </Button>
                   </div>
@@ -327,13 +298,9 @@ export function Chats() {
                 </div>
                 <div className='space-y-2 text-center'>
                   <h1 className='text-xl font-semibold'>Your messages</h1>
-                  <p className='text-muted-foreground text-sm'>
-                    Send a message to start a chat.
-                  </p>
+                  <p className='text-muted-foreground text-sm'>Send a message to start a chat.</p>
                 </div>
-                <Button onClick={() => setCreateConversationDialog(true)}>
-                  Send message
-                </Button>
+                <Button onClick={() => setCreateConversationDialog(true)}>Send message</Button>
               </div>
             </div>
           )}
@@ -345,5 +312,5 @@ export function Chats() {
         />
       </Main>
     </>
-  )
+  );
 }

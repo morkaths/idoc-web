@@ -1,11 +1,11 @@
-import { showSubmittedData } from '@/lib/show-submitted-data'
-import { ConfirmDialog } from '@/components/confirm-dialog'
-import { TasksImportDialog } from './tasks-import-dialog'
-import { TasksMutateDrawer } from './tasks-mutate-drawer'
-import { useTasks } from './tasks-provider'
+import { showSubmittedData } from '@/lib/show-submitted-data';
+import { ConfirmDialog } from '@/components/confirm-dialog';
+import { TasksImportDialog } from './tasks-import-dialog';
+import { TasksMutateDrawer } from './tasks-mutate-drawer';
+import { useTasks } from './tasks-provider';
 
 export function TasksDialogs() {
-  const { open, setOpen, currentRow, setCurrentRow } = useTasks()
+  const { open, setOpen, currentRow, setCurrentRow } = useTasks();
   return (
     <>
       <TasksMutateDrawer
@@ -26,10 +26,10 @@ export function TasksDialogs() {
             key={`task-update-${currentRow.id}`}
             open={open === 'update'}
             onOpenChange={() => {
-              setOpen('update')
+              setOpen('update');
               setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
+                setCurrentRow(null);
+              }, 500);
             }}
             currentRow={currentRow}
           />
@@ -39,27 +39,23 @@ export function TasksDialogs() {
             destructive
             open={open === 'delete'}
             onOpenChange={() => {
-              setOpen('delete')
+              setOpen('delete');
               setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
+                setCurrentRow(null);
+              }, 500);
             }}
             handleConfirm={() => {
-              setOpen(null)
+              setOpen(null);
               setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
-              showSubmittedData(
-                currentRow,
-                'The following task has been deleted:'
-              )
+                setCurrentRow(null);
+              }, 500);
+              showSubmittedData(currentRow, 'The following task has been deleted:');
             }}
             className='max-w-md'
             title={`Delete this task: ${currentRow.id} ?`}
             desc={
               <>
-                You are about to delete a task with the ID{' '}
-                <strong>{currentRow.id}</strong>. <br />
+                You are about to delete a task with the ID <strong>{currentRow.id}</strong>. <br />
                 This action cannot be undone.
               </>
             }
@@ -68,5 +64,5 @@ export function TasksDialogs() {
         </>
       )}
     </>
-  )
+  );
 }

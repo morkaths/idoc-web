@@ -1,10 +1,10 @@
-import { type SVGProps } from 'react'
-import { cn } from '@/lib/utils'
-import { type Direction } from '@/context/direction-provider'
+import { type SVGProps } from 'react';
+import { cn } from '@/lib/utils';
+import { type Direction } from '@/context/direction-provider';
 
 type IconDirProps = SVGProps<SVGSVGElement> & {
-  dir: Direction
-}
+  dir: Direction;
+};
 
 export function IconDir({ dir, className, ...props }: IconDirProps) {
   return (
@@ -12,7 +12,7 @@ export function IconDir({ dir, className, ...props }: IconDirProps) {
       data-name={`icon-dir-${dir}`}
       xmlns='http://www.w3.org/2000/svg'
       viewBox='0 0 79.86 51.14'
-      className={cn(dir === 'rtl' && 'rotate-y-180', className)}
+      className={cn(dir === 'rtl' && '-scale-x-100', className)}
       {...props}
     >
       <path
@@ -45,12 +45,7 @@ export function IconDir({ dir, className, ...props }: IconDirProps) {
       />
       <g strokeLinecap='round' strokeMiterlimit={10}>
         <circle cx={7.51} cy={7.4} r={2.54} opacity={0.8} />
-        <path
-          fill='none'
-          opacity={0.8}
-          strokeWidth='2px'
-          d='M12.06 6.14L17.78 6.14'
-        />
+        <path fill='none' opacity={0.8} strokeWidth='2px' d='M12.06 6.14L17.78 6.14' />
         <path fill='none' opacity={0.6} d='M11.85 8.79L16.91 8.79' />
       </g>
       <path
@@ -106,5 +101,5 @@ export function IconDir({ dir, className, ...props }: IconDirProps) {
         strokeMiterlimit={10}
       />
     </svg>
-  )
+  );
 }

@@ -1,26 +1,26 @@
-import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import { type Row } from '@tanstack/react-table'
-import { Trash2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { type Row } from '@tanstack/react-table';
+import { BookSchema } from '@/types/schema';
+import { Trash2 } from 'lucide-react';
+import { Button } from '@repo/ui/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { BookSchema } from '@/types/schema'
-import { useBooksContext } from './books-provider'
+} from '@repo/ui/components/dropdown-menu';
+import { useBooksContext } from './books-provider';
 
 type BooksTableRowActionsProps<TData> = {
-  row: Row<TData>
-}
+  row: Row<TData>;
+};
 
 export function BooksTableRowActions<TData>({ row }: BooksTableRowActionsProps<TData>) {
-  const book = BookSchema.parse(row.original)
-  const ctx = useBooksContext()
-  if (!ctx) throw new Error('BooksTableRowActions must be used inside BooksProvider')
-  const { setOpen, setCurrentRow } = ctx
+  const book = BookSchema.parse(row.original);
+  const ctx = useBooksContext();
+  if (!ctx) throw new Error('BooksTableRowActions must be used inside BooksProvider');
+  const { setOpen, setCurrentRow } = ctx;
 
   return (
     <DropdownMenu modal={false}>
@@ -34,8 +34,8 @@ export function BooksTableRowActions<TData>({ row }: BooksTableRowActionsProps<T
       <DropdownMenuContent align='end' className='w-40'>
         <DropdownMenuItem
           onClick={() => {
-            setCurrentRow(book)
-            setOpen('update')
+            setCurrentRow(book);
+            setOpen('update');
           }}
         >
           Edit
@@ -43,8 +43,8 @@ export function BooksTableRowActions<TData>({ row }: BooksTableRowActionsProps<T
 
         <DropdownMenuItem
           onClick={() => {
-            setCurrentRow(book)
-            setOpen('import')
+            setCurrentRow(book);
+            setOpen('import');
           }}
         >
           Make a copy
@@ -54,8 +54,8 @@ export function BooksTableRowActions<TData>({ row }: BooksTableRowActionsProps<T
 
         <DropdownMenuItem
           onClick={() => {
-            setCurrentRow(book)
-            setOpen('delete')
+            setCurrentRow(book);
+            setOpen('delete');
           }}
         >
           Delete
@@ -65,7 +65,7 @@ export function BooksTableRowActions<TData>({ row }: BooksTableRowActionsProps<T
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
 
-export default BooksTableRowActions
+export default BooksTableRowActions;

@@ -1,9 +1,9 @@
-import { Download, Plus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { useBooksContext } from './books-provider'
+import { Download, Plus } from 'lucide-react';
+import { Button } from '@repo/ui/components/button';
+import { useBooksContext } from './books-provider';
 
 export function BooksPrimaryButtons() {
-  const { setOpen } = useBooksContext()
+  const { setOpen } = useBooksContext();
   return (
     <div className='flex gap-2'>
       <Button variant='outline' className='space-x-1' onClick={() => setOpen('import')}>
@@ -14,5 +14,5 @@ export function BooksPrimaryButtons() {
         <span>Create</span> <Plus size={18} />
       </Button>
     </div>
-  )
+  );
 }

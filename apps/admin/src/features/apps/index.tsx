@@ -1,86 +1,72 @@
-import { type ChangeEvent, useState } from 'react'
-import { getRouteApi } from '@tanstack/react-router'
-import { SlidersHorizontal, ArrowUpAZ, ArrowDownAZ } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { type ChangeEvent, useState } from 'react';
+import { getRouteApi } from '@tanstack/react-router';
+import { SlidersHorizontal, ArrowUpAZ, ArrowDownAZ } from 'lucide-react';
+import { Button } from '@repo/ui/components/button';
+import { Input } from '@repo/ui/components/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { apps } from './data/apps'
+} from '@repo/ui/components/select';
+import { Separator } from '@repo/ui/components/separator';
+import { apps } from './data/apps';
 
-const route = getRouteApi('/_authenticated/apps/')
+const route = getRouteApi('/_authenticated/apps/');
 
-type AppType = 'all' | 'connected' | 'notConnected'
+type AppType = 'all' | 'connected' | 'notConnected';
 
 const appText = new Map<AppType, string>([
   ['all', 'All Apps'],
   ['connected', 'Connected'],
   ['notConnected', 'Not Connected'],
-])
+]);
 
 export function Apps() {
-  const {
-    filter = '',
-    type = 'all',
-    sort: initSort = 'asc',
-  } = route.useSearch()
-  const navigate = route.useNavigate()
+  const { filter = '', type = 'all', sort: initSort = 'asc' } = route.useSearch();
+  const navigate = route.useNavigate();
 
-  const [sort, setSort] = useState(initSort)
-  const [appType, setAppType] = useState(type)
-  const [searchTerm, setSearchTerm] = useState(filter)
+  const [sort, setSort] = useState(initSort);
+  const [appType, setAppType] = useState(type);
+  const [searchTerm, setSearchTerm] = useState(filter);
 
   const filteredApps = apps
-    .sort((a, b) =>
-      sort === 'asc'
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    )
+    .sort((a, b) => (sort === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)))
     .filter((app) =>
-      appType === 'connected'
-        ? app.connected
-        : appType === 'notConnected'
-          ? !app.connected
-          : true
+      appType === 'connected' ? app.connected : appType === 'notConnected' ? !app.connected : true
     )
-    .filter((app) => app.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter((app) => app.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
+    setSearchTerm(e.target.value);
     navigate({
       search: (prev) => ({
         ...prev,
         filter: e.target.value || undefined,
       }),
-    })
-  }
+    });
+  };
 
   const handleTypeChange = (value: AppType) => {
-    setAppType(value)
+    setAppType(value);
     navigate({
       search: (prev) => ({
         ...prev,
         type: value === 'all' ? undefined : value,
       }),
-    })
-  }
+    });
+  };
 
   const handleSortChange = (sort: 'asc' | 'desc') => {
-    setSort(sort)
-    navigate({ search: (prev) => ({ ...prev, sort }) })
-  }
+    setSort(sort);
+    navigate({ search: (prev) => ({ ...prev, sort }) });
+  };
 
   return (
     <>
       <div>
-        <h1 className='text-2xl font-bold tracking-tight'>
-          App Integrations
-        </h1>
+        <h1 className='text-2xl font-bold tracking-tight'>App Integrations</h1>
         <p className='text-muted-foreground'>
           Here&apos;s a list of your apps for the integration!
         </p>
@@ -90,7 +76,7 @@ export function Apps() {
         <div className='flex flex-col gap-4 sm:my-4 sm:flex-row'>
           <Input
             placeholder='Filter apps...'
-            className='h-9 w-40 lg:w-[250px]'
+            className='h-9 w-40 lg:w-62.5'
             value={searchTerm}
             onChange={handleSearch}
           />
@@ -131,20 +117,15 @@ export function Apps() {
       <Separator className='shadow-sm' />
       <ul className='faded-bottom no-scrollbar grid gap-4 overflow-auto pt-4 pb-16 md:grid-cols-2 lg:grid-cols-3'>
         {filteredApps.map((app) => (
-          <li
-            key={app.name}
-            className='rounded-lg border p-4 hover:shadow-md'
-          >
+          <li key={app.name} className='rounded-lg border p-4 hover:shadow-md'>
             <div className='mb-8 flex items-center justify-between'>
-              <div
-                className={`bg-muted flex size-10 items-center justify-center rounded-lg p-2`}
-              >
+              <div className={`bg-muted flex size-10 items-center justify-center rounded-lg p-2`}>
                 {app.logo}
               </div>
               <Button
                 variant={app.connected ? 'secondary' : 'outline'}
                 size='sm'
-                className={app.connected ? "opacity-75 cursor-default" : ""}
+                className={app.connected ? 'cursor-default opacity-75' : ''}
               >
                 {app.connected ? 'Connected' : 'Connect'}
               </Button>
@@ -157,5 +138,5 @@ export function Apps() {
         ))}
       </ul>
     </>
-  )
+  );
 }

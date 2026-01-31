@@ -1,27 +1,27 @@
-import type { Table } from '@tanstack/react-table'
-import DataTableBulkActions from '@/components/data-table-bulk-actions'
-import { useQueryClient } from '@tanstack/react-query'
-import { useDeleteBook } from '@/hooks/data/useBook'
-import type { Book } from '@/types'
+import { useQueryClient } from '@tanstack/react-query';
+import type { Table } from '@tanstack/react-table';
+import type { Book } from '@/types';
+import { useDeleteBook } from '@/hooks/data/useBook';
+import DataTableBulkActions from '@/components/data-table/data-table-bulk-actions';
 
 type Props = {
-  table: Table<Book>
-}
+  table: Table<Book>;
+};
 
 export function BooksTableBulkActions({ table }: Props) {
-  const qc = useQueryClient()
-  const deleteMut = useDeleteBook()
+  const qc = useQueryClient();
+  const deleteMut = useDeleteBook();
 
   return (
     <DataTableBulkActions
       table={table}
       entityName='book'
       onBulkDelete={async (items) => {
-        await Promise.all(items.map((it) => deleteMut.mutateAsync((it as any)._id)))
-        await qc.invalidateQueries({ queryKey: ['books'] })
+        await Promise.all(items.map((it) => deleteMut.mutateAsync(it.id)));
+        await qc.invalidateQueries({ queryKey: ['books'] });
       }}
     />
-  )
+  );
 }
 
-export default BooksTableBulkActions
+export default BooksTableBulkActions;

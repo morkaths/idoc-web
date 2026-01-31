@@ -1,4 +1,4 @@
-import { useSearch } from '@tanstack/react-router'
+import { Link, useSearch } from '@tanstack/react-router';
 import {
   Card,
   CardContent,
@@ -6,12 +6,12 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { AuthLayout } from '../auth-layout'
-import { UserAuthForm } from './components/user-auth-form'
+} from '@repo/ui/components/card';
+import { AuthLayout } from '../auth-layout';
+import { UserAuthForm } from './components/user-auth-form';
 
 export function SignIn() {
-  const { redirect } = useSearch({ from: '/(auth)/sign-in' })
+  const { redirect } = useSearch({ from: '/(auth)/sign-in' });
 
   return (
     <AuthLayout>
@@ -26,20 +26,23 @@ export function SignIn() {
         <CardContent>
           <UserAuthForm redirectTo={redirect} />
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex flex-col gap-2">
+          <p className='text-muted-foreground text-center text-sm'>
+            Don't have an account?{' '}
+            <Link
+              to='/sign-up'
+              className='hover:text-primary underline underline-offset-4 font-medium'
+            >
+              Sign up
+            </Link>
+          </p>
           <p className='text-muted-foreground px-8 text-center text-sm'>
             By clicking sign in, you agree to our{' '}
-            <a
-              href='/terms'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <a href='/terms' className='hover:text-primary underline underline-offset-4'>
               Terms of Service
             </a>{' '}
             and{' '}
-            <a
-              href='/privacy'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <a href='/privacy' className='hover:text-primary underline underline-offset-4'>
               Privacy Policy
             </a>
             .
@@ -47,5 +50,5 @@ export function SignIn() {
         </CardFooter>
       </Card>
     </AuthLayout>
-  )
+  );
 }

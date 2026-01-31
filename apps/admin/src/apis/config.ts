@@ -1,90 +1,97 @@
+import qs from 'qs';
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
-import type { ApiResponse } from '@/types';
 import { API_CONFIG } from '@/config/api';
-import { API_KEY } from '@/config/env';
-import { getCookie } from '@/lib/cookies';
+import env from '@/config/env';
+import type { ApiResponse } from '@/types';
+import { useAuthStore } from '@/stores/auth-store';
+import { toast } from 'sonner';
 
-// ────────────────────────────────────────────────────────────────────────────────
-// API Instances
-// ────────────────────────────────────────────────────────────────────────────────
 type ApiMode = 'public' | 'private';
 
-/**
- * Create an Axios instance
- * @param baseURL - Base URL for the service
- * @param withCredentials - Whether to send cookies with requests
- * @returns AxiosInstance
- */
-function createApiInstance(withCredentials = false) {
-  const instance = axios.create({
-    baseURL: API_CONFIG.baseURL,
-    timeout: API_CONFIG.timeout,
-    withCredentials
-  });
-
+function attachInterceptors(instance: AxiosInstance, withCredentials: boolean) {
   instance.interceptors.request.use((config) => {
     config.headers = config.headers || {};
-    config.headers['x-api-key'] = API_KEY;
+    config.headers['x-api-key'] = env.api.key;
     if (withCredentials) {
-      const token = getCookie('authToken');
-      if (token) config.headers['Authorization'] = `Bearer ${token}`;
+      const { auth } = useAuthStore.getState();
+      const accessToken = auth.token?.accessToken;
+      if (accessToken) {
+        config.headers['Authorization'] = `Bearer ${accessToken}`;
+      }
     }
     return config;
   });
-  
+
   instance.interceptors.response.use(
     (res) => res,
-    (error) => Promise.reject({
-      success: false,
-      message: error.response?.data?.message,
-      statusCode: error.response?.status || 500
-    })
+    async (error) => {
+      const originalRequest = error.config;
+      if (
+        error?.response?.status === 401 &&
+        !originalRequest._retry
+      ) {
+        originalRequest._retry = true;
+        const { auth } = useAuthStore.getState();
+        const refreshed = await auth.refresh();
+        if (refreshed) {
+          originalRequest.headers.Authorization = `Bearer ${useAuthStore.getState().auth.token?.accessToken}`;
+          return instance.request(originalRequest);
+        } else {
+          await auth.logout();
+          toast.error('Session expired. Please log in again.');
+        }
+      }
+      return Promise.reject({
+        success: false,
+        message: error?.response?.data?.message ?? error?.message,
+        statusCode: error?.response?.status ?? 500,
+      });
+    }
   );
+}
 
+function createApiInstance(withCredentials = false): AxiosInstance {
+  const instance = axios.create({
+    baseURL: API_CONFIG.baseURL,
+    timeout: API_CONFIG.timeout,
+    withCredentials,
+    paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
+  });
+  attachInterceptors(instance, withCredentials);
   return instance;
 }
 
-/**
- * Get the appropriate Axios instance based on service and mode
- * @param mode - Request mode (public/private)
- * @returns AxiosInstance
- */
 function getApiInstance(mode: ApiMode): AxiosInstance {
   return createApiInstance(mode === 'private');
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// Common Helpers
-// ────────────────────────────────────────────────────────────────────────────────
-
-/**
- * Handle API errors
- * @param error - Error object
- * @returns ApiResponse with error details
- */
-function handleError(error: any): ApiResponse<any> {
+function handleError<T>(error: unknown): ApiResponse<T> {
+  if (axios.isAxiosError(error)) {
+    return {
+      success: false,
+      message: error.response?.data?.message ?? error.message,
+      statusCode: error.response?.status ?? 500,
+    };
+  }
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    const err = error as { message?: string; statusCode?: number };
+    return {
+      success: false,
+      message: err.message,
+      statusCode: err.statusCode ?? 500,
+    };
+  }
   return {
     success: false,
-    message: error.response?.data?.message,
-    statusCode: error.response?.status || 500
+    message: 'Unknown error',
+    statusCode: 500,
   };
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// API Methods
-// ────────────────────────────────────────────────────────────────────────────────
-/**
- * Options for API requests
- */
-type ApiOptions = Omit<AxiosRequestConfig, 'method' | 'url' | 'baseURL'> & { mode?: ApiMode };
+type ApiOptions = Omit<AxiosRequestConfig, 'method' | 'url' | 'baseURL'> & {
+  mode?: ApiMode;
+};
 
-/**
- * Make an API request
- * @param method - HTTP method (GET, POST, PUT, DELETE)
- * @param url - Endpoint URL
- * @param options - Additional Axios request options (headers, params, data, etc.)
- * @returns Promise resolving to ApiResponse<T>
- */
 async function apiRequest<T>(
   method: AxiosRequestConfig['method'],
   url: string,
@@ -96,64 +103,18 @@ async function apiRequest<T>(
     const response = await api.request<ApiResponse<T>>({
       method,
       url,
-      ...axiosOptions
+      ...axiosOptions,
     });
     return response.data;
-  } catch (error: any) {
-    return handleError(error);
+  } catch (error) {
+    return handleError<T>(error);
   }
 }
 
-/**
- * Make a GET request
- * @param url - Endpoint URL
- * @param options - Additional Axios request options (headers, params, etc.)
- * @returns Promise resolving to ApiResponse<T>
- */
-const apiGet = <T>(url: string, options?: ApiOptions) =>
-  apiRequest<T>('get', url, options);
+const apiGet = <T>(url: string, options?: ApiOptions) => apiRequest<T>('get', url, options);
+const apiPost = <T>(url: string, options?: ApiOptions) => apiRequest<T>('post', url, options);
+const apiPut = <T>(url: string, options?: ApiOptions) => apiRequest<T>('put', url, options);
+const apiPatch = <T>(url: string, options?: ApiOptions) => apiRequest<T>('patch', url, options);
+const apiDelete = <T>(url: string, options?: ApiOptions) => apiRequest<T>('delete', url, options);
 
-/**
- * Make a POST request
- * @param url - Endpoint URL
- * @param options - Additional Axios request options (headers, data, etc.)
- * @returns Promise resolving to ApiResponse<T>
- */
-const apiPost = <T>(url: string, options?: ApiOptions) =>
-  apiRequest<T>('post', url, options);
-
-/**
- * Make a PUT request
- * @param url - Endpoint URL
- * @param options - Additional Axios request options (headers, data, etc.)
- * @returns - Promise resolving to ApiResponse<T>
- */
-const apiPut = <T>(url: string, options?: ApiOptions) =>
-  apiRequest<T>('put', url, options);
-
-/**
- * Make a PATCH request
- * @param url - Endpoint URL
- * @param options - Additional Axios request options (headers, data, etc.)
- * @returns - Promise resolving to ApiResponse<T>
- */
-const apiPatch = <T>(url: string, options?: ApiOptions) =>
-  apiRequest<T>('patch', url, options);
-
-/**
- * Make a DELETE request
- * @param url - Endpoint URL
- * @param options - Additional Axios request options (headers, params, etc.)
- * @returns - Promise resolving to ApiResponse<T>
- */
-const apiDelete = <T>(url: string, options?: ApiOptions) =>
-  apiRequest<T>('delete', url, options);
-
-export {
-  apiRequest,
-  apiGet,
-  apiPost,
-  apiPut,
-  apiPatch,
-  apiDelete
-};
+export { apiRequest, apiGet, apiPost, apiPut, apiPatch, apiDelete };

@@ -1,0 +1,122 @@
+import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
+import { BookApi } from '@/apis';
+import type { Book, FindParams, Pagination } from '@/types';
+import { BookmarkApi } from '@/apis/bookmark.api';
+import { useSession } from "next-auth/react";
+import { useMemo } from 'react';
+
+type BookResponse = { data: Book[]; pagination?: Pagination };
+
+export const useBooks = (
+  params: FindParams = {},
+  options?: Omit<UseQueryOptions<BookResponse, Error, BookResponse, any[]>, 'queryKey' | 'queryFn'>
+) => {
+  const { data: session, status } = useSession();
+
+  // 1. Fetch books (independent of auth status)
+  const booksQuery = useQuery<BookResponse, Error, BookResponse, any[]>({
+    queryKey: ['books', params],
+    queryFn: () => BookApi.find(params),
+    enabled: true,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000,
+    ...options
+  });
+
+  // 2. Fetch bookmark status (dependent on books and auth)
+  // Memoize and sort bookIds to ensure stable query key
+  const bookIds = useMemo(() => {
+    if (!booksQuery.data?.data) return [];
+    return booksQuery.data.data.map(b => b.id).sort();
+  }, [booksQuery.data]);
+
+  const userId = session?.user?.id;
+
+  const bookmarksQuery = useQuery({
+    queryKey: ['bookmarks', 'status', bookIds, userId],
+    queryFn: () => BookmarkApi.status(bookIds),
+    enabled: bookIds.length > 0 && status === 'authenticated' && !!userId,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  // 3. Merge data
+  const books = booksQuery.data?.data?.map(book => ({
+    ...book,
+    bookmarkId: bookmarksQuery.data?.[book.id] || undefined
+  })) || [];
+
+  return {
+    ...booksQuery,
+    data: {
+      data: books,
+      pagination: booksQuery.data?.pagination,
+    }
+  };
+};
+
+export const useBook = (id: string) => {
+  const { data: session, status } = useSession();
+
+  // 1. Fetch book details
+  const bookQuery = useQuery({
+    queryKey: ['books', id],
+    queryFn: () => BookApi.findById(id),
+    enabled: !!id,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  // 2. Fetch bookmark status
+  const userId = session?.user?.id;
+  const bookmarksQuery = useQuery({
+    queryKey: ['bookmarks', 'status', id, userId],
+    queryFn: () => BookmarkApi.status([id]),
+    enabled: !!id && status === 'authenticated' && !!bookQuery.data,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // 3. Merge data
+  const book = bookQuery.data ? {
+    ...bookQuery.data,
+    bookmarkId: bookmarksQuery.data?.[id] || undefined
+  } : null;
+
+  return {
+    ...bookQuery,
+    data: book,
+  };
+};
+
+export const useCreateBook = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (newBook: Partial<Book>) => BookApi.create(newBook),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['books'] });
+    },
+  });
+};
+
+export const useUpdateBook = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Book> }) => BookApi.update(id, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['books', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['books'] });
+    },
+  });
+};
+
+export const useDeleteBook = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => BookApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['books'] });
+    },
+  });
+};
