@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { toast } from 'sonner';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 interface SignOutDialogProps {
   open: boolean;
@@ -12,18 +13,19 @@ interface SignOutDialogProps {
 
 export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const router = useRouter();
+  const { t, keys } = useLocale('auth');
 
   const handleSignOut = () => {
     toast.promise(
       signOut({ redirect: false }),
       {
-        loading: 'Signing out...',
+        loading: t(keys.form.messages.loadingSignOut),
         success: () => {
           const currentPath = location.href;
           router.replace('/sign-in?redirect=' + encodeURIComponent(currentPath));
-          return 'Signed out successfully!';
+          return t(keys.form.messages.successSignOut);
         },
-        error: (err) => `Error: ${err.message}`,
+        error: () => t(keys.form.messages.errorSignOut),
       }
     );
   };
@@ -32,9 +34,9 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title='Sign out'
-      desc='Are you sure you want to sign out? You will need to sign in again to access your account.'
-      confirmText='Sign out'
+      title={t(keys.signOut.title)}
+      desc={t(keys.signOut.description)}
+      confirmText={t(keys.signOut.submit)}
       destructive
       handleConfirm={handleSignOut}
       className='sm:max-w-sm'

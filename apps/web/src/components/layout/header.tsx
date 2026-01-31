@@ -4,16 +4,18 @@ import { useScroll } from "@/hooks/ui/useScroll";
 import { Logo } from "@/components/layout/logo";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./navbar";
-import { NavComponents } from "./data/nav-data";
+import { useNavData } from "./data/nav-data";
 import { Search } from "./search";
 import { AppSidebar } from "./sidebar";
 import { ThemeSwitch } from "./theme-switch";
 import { ProfileDropdown } from "./profile-dropdown";
 import { ConfigDrawer } from "./config-drawer";
+import { LocaleSwitch } from "./locale-switch";
 
 export function Header() {
 	const scrolled = useScroll(10);
 	const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+	const navItems = useNavData();
 
 	React.useEffect(() => {
 		if (mobileMenuOpen) {
@@ -49,7 +51,7 @@ export function Header() {
 				</div>
 
 				<div className="hidden lg:flex items-center gap-1">
-					<Navbar items={NavComponents} />
+					<Navbar items={navItems} />
 				</div>
 
 				{/* Right actions */}
@@ -62,6 +64,7 @@ export function Header() {
 					<div className="flex items-center lg:hidden">
 						<AppSidebar isOpen={mobileMenuOpen} setIsOpen={setMobileMenuOpen} />
 					</div>
+					<LocaleSwitch />
 					<ThemeSwitch />
 					<ConfigDrawer />
 					<ProfileDropdown />

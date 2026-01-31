@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Settings, Sparkles } from 'lucide-react';
 import useDialogState from '@/hooks/ui/useDialogState';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import {
@@ -16,21 +16,23 @@ import { SignOutDialog } from '@/components/sign-out-dialog';
 import { useSession } from "next-auth/react";
 import { useResponsive } from '@/hooks/ui/useResponsive';
 import type { User } from "@/types/schema";
+import { useLocale } from '@/hooks/ui/useLocale';
 
 export function NavUser() {
   const { data: session } = useSession();
   const user = session?.user as User;
   const { isMobile } = useResponsive();
   const [open, setOpen] = useDialogState();
+  const { t, keys } = useLocale('navigation');
 
   if (!user) {
     return (
       <div className="flex gap-2">
         <Button asChild variant="default">
-          <Link href="/sign-in">Sign in</Link>
+          <Link href="/sign-in">{t(keys.user.signIn)}</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href="/sign-up">Sign up</Link>
+          <Link href="/sign-up">{t(keys.user.signUp)}</Link>
         </Button>
       </div>
     );
@@ -77,34 +79,34 @@ export function NavUser() {
           <DropdownMenuGroup>
             <DropdownMenuItem>
               <Sparkles />
-              Upgrade to Pro
+              {t(keys.user.upgrade)}
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href='/settings/account'>
+              <Link href='/profile'>
                 <BadgeCheck />
-                Account
+                {t(keys.user.profile)}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href='/billings'>
+                <CreditCard />
+                {t(keys.user.billings)}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href='/settings'>
-                <CreditCard />
-                Billing
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href='/settings/notifications'>
-                <Bell />
-                Notifications
+                <Settings />
+                {t(keys.user.settings)}
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
             <LogOut />
-            Sign out
+            {t(keys.user.signOut)}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

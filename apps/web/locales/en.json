@@ -1,0 +1,271 @@
+{
+  "common": {
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "delete": "Delete",
+      "edit": "Edit",
+      "create": "Create",
+      "update": "Update",
+      "close": "Close",
+      "search": "Search..."
+    },
+    "states": {
+      "loading": "Loading...",
+      "redirecting": "Redirecting...",
+      "error": "Error",
+      "success": "Success",
+      "noData": "No data found"
+    }
+  },
+  "theme": {
+    "title": "Theme Settings",
+    "description": "Customize the specific layout and visualization.",
+    "reset": "Reset Preferences",
+    "mode": {
+      "title": "Mode",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "font": {
+      "title": "Font",
+      "placeholder": "Select a font"
+    },
+    "radius": {
+      "title": "Radius"
+    },
+    "color": {
+      "title": "Color",
+      "placeholder": "Select a color",
+      "random": "Random"
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "search": "Search",
+    "catalog": {
+      "label": "Catalog",
+      "discover": {
+        "title": "Discover",
+        "description": "Explore curated collections and recommendations tailored for you."
+      },
+      "newArrivals": {
+        "title": "New Arrivals",
+        "description": "The latest additions to our collection this week."
+      },
+      "popular": {
+        "title": "Popular",
+        "description": "Most borrowed and highly rated books by our community."
+      },
+      "categories": {
+        "title": "Categories",
+        "description": "Browse by Science, Fiction, History, Self-help, and more."
+      }
+    },
+    "authors": {
+      "label": "Authors",
+      "featured": {
+        "title": "Featured",
+        "description": "Spotlight on award-winning writers and their masterpieces."
+      },
+      "directory": {
+        "title": "Directory",
+        "description": "Explore biographies and bibliographies of all authors."
+      }
+    },
+    "library": {
+      "label": "Library",
+      "borrowed": {
+        "title": "Borrowed",
+        "description": "Books you have currently borrowed from the library."
+      },
+      "wishlist": {
+        "title": "Wish List",
+        "description": "Books you have added to your wish list for future borrowing."
+      },
+      "history": {
+        "title": "History",
+        "description": "Your borrowing history and past interactions with the library."
+      }
+    },
+    "user": {
+      "signIn": "Sign In",
+      "signUp": "Sign Up",
+      "signOut": "Sign Out",
+      "upgrade": "Upgrade to Pro",
+      "profile": "Profile",
+      "billings": "Billings",
+      "settings": "Settings"
+    }
+  },
+  "setting": {
+    "personal": {
+      "title": "Profile Information",
+      "description": "Update your profile information.",
+      "form": {
+        "fullname": {
+          "label": "Full name",
+          "placeholder": "your full name",
+          "validation": {
+            "fullnameRequired": "Please enter your full name",
+            "fullnameLength": "Full name must be at least 3 characters long"
+          }
+        },
+        "email": {
+          "label": "Email Address",
+          "placeholder": "name@example.com",
+          "validation": {
+            "emailRequired": "Please enter your email address",
+            "invalidEmail": "Please enter a valid email address"
+          }
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "••••••••",
+          "validation": {
+            "passwordRequired": "Please enter your password",
+            "passwordMin": "Password must be at least {min} characters"
+          }
+        },
+        "confirmPassword": {
+          "label": "Confirm Password",
+          "placeholder": "••••••••",
+          "validation": {
+            "passwordRequired": "Please confirm your password",
+            "passwordsNotMatch": "Passwords do not match"
+          }
+        },
+        "birthday": {
+          "label": "Date of Birth",
+          "validation": {
+            "birthdayRequired": "Please enter your date of birth"
+          }
+        },
+        "location": {
+          "label": "Location",
+          "placeholder": "e.g. San Francisco, CA",
+          "validation": {
+            "locationRequired": "Please enter your location"
+          }
+        },
+        "bio": {
+          "label": "Bio",
+          "placeholder": "Tell us about yourself...",
+          "validation": {
+            "bioRequired": "Please enter your bio"
+          }
+        }
+      }
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Welcome Back",
+      "description": "Enter your credentials to access your account",
+      "submit": "Sign in",
+      "or": "Or continue with",
+      "footer": "Don't have an account?",
+      "terms": "By clicking sign in, you agree to our",
+      "tos": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy"
+    },
+    "signUp": {
+      "title": "Create an Account",
+      "description": "Join our community of book lovers",
+      "submit": "Create Account",
+      "footer": "Already have an account? Sign In",
+      "terms": "By creating an account, you agree to our",
+      "tos": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy"
+    },
+    "signOut": {
+      "title": "Sign Out",
+      "description": "Are you sure you want to sign out? You will need to sign in again to access your account.",
+      "submit": "Sign Out"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "description": "Enter your email to reset your password",
+      "submit": "Reset Password",
+      "footer": "Don't have an account? Sign Up"
+    },
+    "form": {
+      "email": {
+        "label": "Email Address",
+        "placeholder": "name@example.com",
+        "validation": {
+          "emailRequired": "Please enter your email address",
+          "invalidEmail": "Please enter a valid email address"
+        }
+      },
+      "username": {
+        "label": "Username",
+        "placeholder": "your username",
+        "validation": {
+          "usernameRequired": "Please enter your username",
+          "usernameLength": "Username must be at least 3 characters long"
+        }
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "••••••••",
+        "validation": {
+          "passwordRequired": "Please enter your password",
+          "passwordMin": "Password must be at least {min} characters"
+        }
+      },
+      "confirmPassword": {
+        "label": "Confirm Password",
+        "placeholder": "••••••••",
+        "validation": {
+          "passwordRequired": "Please confirm your password",
+          "passwordsNotMatch": "Passwords do not match"
+        }
+      },
+      "messages": {
+        "loadingSignIn": "Signing in...",
+        "loadingGoogleSignIn": "Signing in with Google...",
+        "loadingSignUp": "Creating account...",
+        "loadingSignOut": "Signing out...",
+        "loadingForgotPassword": "Resetting password...",
+        "successSignIn": "Welcome back! You have signed in successfully.",
+        "successGoogleSignIn": "Signed in with Google successfully.",
+        "successSignUp": "Account created! Please sign in to continue.",
+        "successSignOut": "Signed out successfully!",
+        "successForgotPassword": "Password reset successfully! Please sign in to continue.",
+        "errorSignIn": "Invalid email or password",
+        "errorGoogleSignIn": "Error signing in with Google.",
+        "errorSignUp": "Error creating account.",
+        "errorSignOut": "Error signing out.",
+        "errorForgotPassword": "Error resetting password."
+      }
+    }
+  },
+  "error": {
+    "actions": {
+      "backToHome": "Back to Home",
+      "goBack": "Go Back",
+      "learnMore": "Learn more"
+    },
+    "401": {
+      "title": "Unauthorized Access",
+      "description": "Please log in with the appropriate credentials <br /> to access this resource."
+    },
+    "403": {
+      "title": "Forbidden Access",
+      "description": "You do not have permission to access this resource."
+    },
+    "404": {
+      "title": "Page Not Found",
+      "description": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable."
+    },
+    "503": {
+      "title": "Website is under maintenance!",
+      "description": "The site is not available at the moment. <br /> Please try again later."
+    }
+  }
+}

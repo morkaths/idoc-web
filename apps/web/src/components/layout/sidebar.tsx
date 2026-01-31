@@ -11,13 +11,14 @@ import { Button } from "@repo/ui/components/button";
 import { LayoutPanelLeft, Command } from "lucide-react";
 import Link from "next/link";
 import { NavbarMobile } from "./navbar-mobile";
-import { NavComponents } from "./data/nav-data";
+import { useNavData } from "./data/nav-data";
 import { Search } from "./search";
 import { NavUser } from "./nav-user";
 import { useEffect, useState } from "react";
 
 export function AppSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (v: boolean) => void }) {
   const [isMounted, setIsMounted] = useState(false);
+  const navItems = useNavData();
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setIsMounted(true); }, []);
   if (!isMounted) return null;
@@ -48,7 +49,7 @@ export function AppSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: 
             <Search />
           </div>
           <div className="flex flex-col gap-2.5 p-4 pt-0">
-            <NavbarMobile items={NavComponents} onNavigate={() => setIsOpen(false)} />
+            <NavbarMobile items={navItems} onNavigate={() => setIsOpen(false)} />
           </div>
         </div>
         <SheetFooter className="flex-col sm:flex-col justify-center items-center w-full px-2 pb-4 border-t border-border mt-auto">

@@ -1,19 +1,113 @@
-/**
- * List of available font names (visit the url `/settings/appearance`).
- * This array is used to generate dynamic font classes (e.g., `font-inter`, `font-manrope`).
- *
- * 📝 How to Add a New Font (Tailwind v4+):
- * 1. Add the font name here.
- * 2. Update the `<link>` tag in 'index.html' to include the new font from Google Fonts (or any other source).
- * 3. Add the new font family to 'index.css' using the `@theme inline` and `font-family` CSS variable.
- *
- * Example:
- * fonts.ts           → Add 'roboto' to this array.
- * index.html         → Add Google Fonts link for Roboto.
- * index.css          → Add the new font in the CSS, e.g.:
- *   @theme inline {
- *      // ... other font families
- *      --font-roboto: 'Roboto', var(--font-sans);
- *   }
- */
-export const fonts = ['inter', 'manrope', 'system'] as const;
+import {
+    Public_Sans,
+    Inter,
+    Manrope,
+    Roboto,
+    Open_Sans,
+    Lato,
+    Poppins,
+    Montserrat,
+    Raleway,
+    Work_Sans,
+    DM_Sans,
+    Outfit,
+    Nunito
+} from 'next/font/google';
+
+// Cấu hình các font chữ
+const publicSans = Public_Sans({
+    subsets: ['vietnamese', 'latin'],
+    display: 'swap',
+    variable: '--font-public-sans',
+});
+
+const inter = Inter({
+    subsets: ['vietnamese', 'latin'],
+    display: 'swap',
+    variable: '--font-inter',
+});
+
+const manrope = Manrope({
+    subsets: ['vietnamese', 'latin'],
+    display: 'swap',
+    variable: '--font-manrope',
+});
+
+const roboto = Roboto({
+    subsets: ['vietnamese', 'latin'],
+    weight: ['400', '500', '700'],
+    display: 'swap',
+    variable: '--font-roboto',
+});
+
+const openSans = Open_Sans({
+    subsets: ['vietnamese', 'latin'],
+    display: 'swap',
+    variable: '--font-open-sans',
+});
+
+const lato = Lato({
+    subsets: ['latin'],
+    weight: ['400', '700'],
+    display: 'swap',
+    variable: '--font-lato',
+});
+
+const poppins = Poppins({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700'],
+    display: 'swap',
+    variable: '--font-poppins',
+});
+
+const montserrat = Montserrat({
+    subsets: ['vietnamese', 'latin'],
+    display: 'swap',
+    variable: '--font-montserrat',
+});
+
+const raleway = Raleway({
+    subsets: ['vietnamese', 'latin'],
+    display: 'swap',
+    variable: '--font-raleway',
+});
+
+const workSans = Work_Sans({
+    subsets: ['vietnamese', 'latin'],
+    display: 'swap',
+    variable: '--font-work-sans',
+});
+
+const dmSans = DM_Sans({
+    subsets: ['latin', 'latin-ext'],
+    display: 'swap',
+    variable: '--font-dm-sans',
+});
+
+const outfit = Outfit({
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-outfit',
+});
+
+const nunito = Nunito({
+    subsets: ['vietnamese', 'latin'],
+    display: 'swap',
+    variable: '--font-nunito',
+});
+
+export const fontVariables = [
+    publicSans,
+    inter,
+    manrope,
+    roboto,
+    openSans,
+    lato,
+    poppins,
+    montserrat,
+    raleway,
+    workSans,
+    dmSans,
+    outfit,
+    nunito
+].map(font => font.variable).join(" ");

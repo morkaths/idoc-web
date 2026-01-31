@@ -19,9 +19,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/select';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 export function ConfigDrawer() {
   const { resetTheme, setRadius, setFont } = useTheme();
+  const { t, keys } = useLocale('theme');
 
   const handleReset = () => {
     resetTheme();
@@ -44,12 +46,12 @@ export function ConfigDrawer() {
       </SheetTrigger>
       <SheetContent className='flex w-[400px] flex-col gap-0 p-0 sm:w-[540px]'>
         <SheetHeader className='p-4 pb-2 text-start'>
-          <SheetTitle>Theme Settings</SheetTitle>
+          <SheetTitle>{t(keys.title)}</SheetTitle>
           <SheetDescription id='config-drawer-description'>
-            Customize the specific layout and visualization.
+            {t(keys.description)}
           </SheetDescription>
         </SheetHeader>
-        
+
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           <ModeConfig />
           <FontConfig />
@@ -64,7 +66,7 @@ export function ConfigDrawer() {
             aria-label='Reset all settings to default values'
             className="w-full"
           >
-            Reset Preferences
+            {t(keys.reset)}
           </Button>
         </SheetFooter>
       </SheetContent>
@@ -103,10 +105,11 @@ function SectionTitle({
 
 function ModeConfig() {
   const { mode, setMode } = useTheme();
+  const { t, keys } = useLocale('theme');
 
   return (
     <div>
-      <SectionTitle title='Mode' />
+      <SectionTitle title={t(keys.mode.title)} />
       <div className="grid grid-cols-2 gap-2">
         <Button
           variant={mode === 'light' ? 'default' : 'outline'}
@@ -115,7 +118,7 @@ function ModeConfig() {
           className="w-full justify-center gap-2"
         >
           <Sun className="size-4" />
-          Light
+          {t(keys.mode.light)}
         </Button>
         <Button
           variant={mode === 'dark' ? 'default' : 'outline'}
@@ -124,7 +127,7 @@ function ModeConfig() {
           className="w-full justify-center gap-2"
         >
           <Moon className="size-4" />
-          Dark
+          {t(keys.mode.dark)}
         </Button>
       </div>
     </div>
@@ -132,25 +135,27 @@ function ModeConfig() {
 }
 
 function FontConfig() {
-  const { font, setFont, availableFonts } = useTheme();
+  const { font, setFont } = useTheme();
+  const { availableFonts } = themeConfig;
+  const { t, keys } = useLocale('theme');
 
   return (
     <div>
       <SectionTitle
-        title='Font'
+        title={t(keys.font.title)}
         showReset={font !== themeConfig.defaults.font}
         onReset={() => setFont(themeConfig.defaults.font)}
       />
       <Select value={font} onValueChange={setFont}>
         <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a font" />
+          <SelectValue placeholder={t(keys.font.placeholder)} />
         </SelectTrigger>
         <SelectContent>
-            {availableFonts.map((f) => (
-                <SelectItem key={f.value} value={f.value}>
-                    <span style={{ fontFamily: f.value }}>{f.label}</span>
-                </SelectItem>
-            ))}
+          {availableFonts.map((f) => (
+            <SelectItem key={f.value} value={f.value}>
+              <span style={{ fontFamily: f.value }}>{f.label}</span>
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>
@@ -160,11 +165,12 @@ function FontConfig() {
 
 function RadiusConfig() {
   const { radius, setRadius } = useTheme();
+  const { t, keys } = useLocale('theme');
 
   return (
     <div>
       <SectionTitle
-        title='Radius'
+        title={t(keys.radius.title)}
         showReset={radius !== themeConfig.defaults.radius}
         onReset={() => setRadius(themeConfig.defaults.radius)}
       />
@@ -187,6 +193,7 @@ function RadiusConfig() {
 
 function ColorConfig() {
   const { color, setColor, availableColors, resolvedMode } = useTheme();
+  const { t, keys } = useLocale('theme');
 
   const handleRandom = () => {
     const randomIndex = Math.floor(Math.random() * availableColors.length);
@@ -195,52 +202,52 @@ function ColorConfig() {
       setColor(randomColor);
     }
   };
-  
+
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <SectionTitle title='Color' className='mb-0' />
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <SectionTitle title={t(keys.color.title)} className='mb-0' />
+        <Button
+          variant="outline"
+          size="sm"
           onClick={handleRandom}
           className="h-7 text-xs gap-1.5"
         >
           <Dices className="size-3.5" />
-          Random
+          {t(keys.color.random)}
         </Button>
       </div>
-      
+
       <Select value={color} onValueChange={setColor}>
         <SelectTrigger className="w-full">
-           <SelectValue placeholder="Select a color">
-             {themeColors[color] && (
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center -space-x-1.5">
-                    {[
-                      themeColors[color].styles[resolvedMode].primary,
-                      themeColors[color].styles[resolvedMode].secondary,
-                      themeColors[color].styles[resolvedMode].accent,
-                      themeColors[color].styles[resolvedMode].card,
-                    ].map((col, idx) => (
-                      <div 
-                        key={idx}
-                        className="h-3.5 w-3.5 rounded-full ring-1 ring-border shadow-sm z-10" 
-                        style={{ backgroundColor: col }} 
-                      />
-                    ))}
-                  </div>
-                  <span className="font-medium">{themeColors[color].label}</span>
+          <SelectValue placeholder={t(keys.color.placeholder)}>
+            {themeColors[color] && (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center -space-x-1.5">
+                  {[
+                    themeColors[color].styles[resolvedMode].primary,
+                    themeColors[color].styles[resolvedMode].secondary,
+                    themeColors[color].styles[resolvedMode].accent,
+                    themeColors[color].styles[resolvedMode].card,
+                  ].map((col, idx) => (
+                    <div
+                      key={idx}
+                      className="h-3.5 w-3.5 rounded-full ring-1 ring-border shadow-sm z-10"
+                      style={{ backgroundColor: col }}
+                    />
+                  ))}
                 </div>
-             )}
-           </SelectValue>
+                <span className="font-medium">{themeColors[color].label}</span>
+              </div>
+            )}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {availableColors.map((key) => {
             const config = themeColors[key];
             if (!config) return null;
             const colors = config.styles[resolvedMode];
-            
+
             return (
               <SelectItem key={key} value={key}>
                 <div className="flex items-center gap-3">
@@ -251,10 +258,10 @@ function ColorConfig() {
                       colors.accent,
                       colors.card,
                     ].map((col, idx) => (
-                      <div 
+                      <div
                         key={idx}
-                        className="h-3.5 w-3.5 rounded-full ring-1 ring-border shadow-sm z-10" 
-                        style={{ backgroundColor: col }} 
+                        className="h-3.5 w-3.5 rounded-full ring-1 ring-border shadow-sm z-10"
+                        style={{ backgroundColor: col }}
                       />
                     ))}
                   </div>
@@ -268,4 +275,3 @@ function ColorConfig() {
     </div>
   );
 }
-
