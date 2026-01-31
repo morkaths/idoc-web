@@ -33,7 +33,10 @@ export function CategoriesCombobox({
         page,
         query: debouncedQuery,
     }), [page, debouncedQuery]);
-    const { data, isLoading } = useCategories(categoryParams);
+
+    // FETCH DATA
+    const shouldFetch = open || value.length > 0;
+    const { data, isLoading } = useCategories(categoryParams, { enabled: shouldFetch });
     const [categories, setCategories] = useState<Category[]>([]);
     const pagination = Array.isArray(data?.pagination) ? data.pagination[0] : data?.pagination;
     const total = pagination?.total ?? 0;

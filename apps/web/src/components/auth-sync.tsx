@@ -14,6 +14,9 @@ export function AuthSync() {
 
     useEffect(() => {
         setAccessToken(session?.accessToken ?? null);
+    }, [session?.accessToken]);
+
+    useEffect(() => {
         const login = searchParams.get('login');
         if (session && login) {
             toast.success(`Welcome back, ${session.user?.email}!`);

@@ -1,5 +1,5 @@
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '@repo/ui/components/select';
-import { LANGUAGE_OPTIONS } from '@/types';
+import { LANGUAGE } from '@/types';
 
 export function LanguageSelect({
   value,
@@ -14,15 +14,15 @@ export function LanguageSelect({
   name?: string;
   disabledValues?: string[];
 }) {
-  const selected = LANGUAGE_OPTIONS.find(opt => opt.value === value);
+  const selected = LANGUAGE.find(opt => opt.value === value);
 
   return (
     <Select value={value} onValueChange={onChange} name={name}>
-      <SelectTrigger id={id} className="w-36">
+      <SelectTrigger id={id} className="w-full">
         {selected ? (
-          <span className="flex items-center gap-2">
-            <span className={`fi fi-${selected.value}`} />
-            {selected.label}
+          <span className="flex items-center gap-2 min-w-0 flex-1 text-left">
+            <span className={`fi fi-${selected.value} shrink-0`} />
+            <span className="truncate">{selected.label}</span>
           </span>
         ) : (
           <span className="text-muted-foreground">Select language</span>
@@ -30,15 +30,15 @@ export function LanguageSelect({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {LANGUAGE_OPTIONS.map(opt => (
+          {LANGUAGE.map(opt => (
             <SelectItem
               key={opt.value}
               value={opt.value}
               disabled={disabledValues.includes(opt.value)}
             >
-              <span className="flex items-center gap-2">
-                <span className={`fi fi-${opt.value}`} />
-                {opt.label}
+              <span className="flex items-center gap-2 min-w-0 flex-1 text-left">
+                <span className={`fi fi-${opt.value} shrink-0`} />
+                <span className="truncate">{opt.label}</span>
               </span>
             </SelectItem>
           ))}

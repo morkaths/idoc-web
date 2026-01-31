@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
+import { UserStatus } from '@/types/enum';
 import { useBorrowsContext } from './borrows-provider';
 
 type BorrowsTableRowActionsProps<TData> = {
@@ -27,7 +28,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
         id: String(original.borrower.id ?? ''),
         status: typeof original.borrower.status === 'number'
           ? original.borrower.status
-          : 1,
+          : UserStatus.Active,
         password: typeof original.borrower.password === 'string'
           ? original.borrower.password
           : '',

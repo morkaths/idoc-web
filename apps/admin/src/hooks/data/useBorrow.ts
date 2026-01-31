@@ -1,9 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { BorrowApi } from '@/apis/borrow.api';
-import type { Borrow, FindParams } from '@/types';
+import type { Borrow, FindParams, Pagination } from '@/types';
 
-export const useBorrows = (params: FindParams = {}) => {
-  return useQuery({
+type BorrowResponse = { data: Borrow[]; pagination?: Pagination };
+
+export const useBorrows = (
+  params: FindParams = {},
+  options?: Omit<UseQueryOptions<BorrowResponse, Error, BorrowResponse, any[]>, 'queryKey' | 'queryFn'>
+) => {
+  return useQuery<BorrowResponse, Error, BorrowResponse, any[]>({
     queryKey: ['borrows', params],
     queryFn: async () => {
       const res = await BorrowApi.find(params);
@@ -16,11 +21,15 @@ export const useBorrows = (params: FindParams = {}) => {
       data: data.data,
       pagination: data.pagination,
     }),
+    ...options,
   });
 };
 
-export const useBorrowHistory = (params: FindParams = {}) => {
-  return useQuery({
+export const useBorrowHistory = (
+  params: FindParams = {},
+  options?: Omit<UseQueryOptions<BorrowResponse, Error, BorrowResponse, any[]>, 'queryKey' | 'queryFn'>
+) => {
+  return useQuery<BorrowResponse, Error, BorrowResponse, any[]>({
     queryKey: ['borrows', 'history', params],
     queryFn: async () => {
       const res = await BorrowApi.history(params);
@@ -33,6 +42,7 @@ export const useBorrowHistory = (params: FindParams = {}) => {
       data: data.data,
       pagination: data.pagination,
     }),
+    ...options,
   });
 };
 

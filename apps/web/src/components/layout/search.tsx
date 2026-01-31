@@ -28,7 +28,7 @@ export function Search({ className = '', placeholder = 'Search' }: SearchProps) 
         size={16}
       />
       <span className='ms-4'>{placeholder}</span>
-      <Kbd className='pointer-events-none absolute end-[0.3rem] top-1/2 -translate-y-1/2 h-5 items-center gap-1 opacity-100 select-none sm:flex'>
+      <Kbd className='pointer-events-none absolute end-[0.3rem] top-1/2 -translate-y-1/2 h-5 items-center justify-center gap-1 opacity-100 select-none sm:flex'>
         <span className='text-xs'>⌘</span>K
       </Kbd>
     </Button>

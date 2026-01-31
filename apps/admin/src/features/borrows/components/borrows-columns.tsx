@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table';
-import type { Borrow } from '@/types';
+import { BorrowStatus, type Borrow } from '@/types';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
@@ -176,13 +176,13 @@ export const borrowsColumns: ColumnDef<Borrow>[] = [
       const status = row.getValue('status') as string;
       let color: 'default' | 'destructive' | 'outline' = 'default';
       switch (status) {
-        case 'active':
+        case BorrowStatus.Active:
           color = 'default';
           break;
-        case 'overdue':
+        case BorrowStatus.Overdue:
           color = 'destructive';
           break;
-        case 'returned':
+        case BorrowStatus.Returned:
           color = 'outline';
           break;
         default:

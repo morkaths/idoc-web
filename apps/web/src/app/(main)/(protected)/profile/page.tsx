@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
-import { ProfileContent } from "./_components/profile-content";
-import ProfileHeader from "./_components/profile-header";
 
 export const metadata: Metadata = {
   title: "Profile",
-  description: "Manage your account settings",
+  description: "Your profile",
 };
 
 export default function ProfilePage() {
     return (
         <div className="mx-auto max-w-4xl space-y-6 px-4 py-10">
-            <ProfileHeader />
-            <ProfileContent />
         </div>
     );
 }

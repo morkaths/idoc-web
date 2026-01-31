@@ -13,8 +13,9 @@ export const dateOrString = z.preprocess((val) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 // AUTH TYPES: Xử lý người dùng, vai trò và quyền
 // ═══════════════════════════════════════════════════════════════════════════════
+
 export const PermissionSchema = z.object({
-  id: z.union([z.string(), z.number()]),
+  id: z.string(),
   code: z.string(),
   name: z.string(),
   createdAt: dateOrString,
@@ -23,7 +24,7 @@ export const PermissionSchema = z.object({
 });
 
 export const RoleSchema = z.object({
-  id: z.union([z.string(), z.number()]),
+  id: z.string(),
   code: z.string(),
   name: z.string(),
   permissions: z.array(PermissionSchema).optional(),
@@ -34,7 +35,7 @@ export const RoleSchema = z.object({
 });
 
 export const UserSchema = z.object({
-  id: z.union([z.string(), z.number()]),
+  id: z.string(),
   email: z.string().email(),
   username: z.string(),
   password: z.string().optional(),
@@ -47,8 +48,8 @@ export const UserSchema = z.object({
 });
 
 export const LinkedAccountSchema = z.object({
-  id: z.union([z.string(), z.number()]),
-  userId: z.union([z.string(), z.number()]),
+  id: z.string(),
+  userId: z.string(),
   provider: z.string(),
   providerId: z.string(),
   linkedAt: dateOrString,
@@ -62,66 +63,83 @@ export type LinkedAccount = z.infer<typeof LinkedAccountSchema>;
 // ═══════════════════════════════════════════════════════════════════════════════
 // USER TYPES: Xử lý hồ sơ và cài đặt người dùng
 // ═══════════════════════════════════════════════════════════════════════════════
+
 export const ProfileSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  fullName: z.string().optional(),
-  birthday: dateOrString,
-  avatar: z.string().optional(),
-  bio: z.string().optional(),
-  location: z.string().optional(),
-  updatedAt: dateOrString,
-});
-
-const ThemeSchema = z
-  .object({
-    mode: z.enum(['light', 'dark', 'system']).optional(),
-    layout: z.enum(['vertical', 'horizontal']).optional(),
-    language: z.string().optional(),
-  })
-  .optional();
-
-const NotificationsSchema = z
-  .object({
-    email: z.boolean().optional(),
-    sms: z.boolean().optional(),
-  })
-  .optional();
-
-export const SettingsSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  theme: ThemeSchema,
-  notifications: NotificationsSchema,
-  updatedAt: dateOrString,
+    id: z.string(),
+    userId: z.string(),
+    fullName: z.string().min(2).max(100).trim().optional(),
+    birthday: dateOrString,
+    avatar: z.string().url().optional().or(z.literal('')),
+    bio: z.string().max(500).trim().optional(),
+    location: z.string().max(500).trim().optional(),
+    updatedAt: dateOrString,
 });
 
 export type Profile = z.infer<typeof ProfileSchema>;
-export type Settings = z.infer<typeof SettingsSchema>;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INTERACTION TYPES: Xử lý tương tác
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const BookmarkSchema = z.object({
+  id: z.string(),
+  userId: z.string().trim(),
+  itemId: z.string().trim(),
+  collectionId: z.string().optional(),
+  createdAt: dateOrString,
+  updatedAt: dateOrString,
+});
+
+export const CollectionSchema = z.object({
+  id: z.string(),
+  userId: z.string().trim(),
+  name: z.string().trim().min(1).max(100),
+  description: z.string().trim().max(500).optional(),
+  itemCount: z.number().int().min(0).optional(),
+  isPublic: z.boolean().optional(),
+  createdAt: dateOrString,
+  updatedAt: dateOrString,
+});
+
+export const ReviewSchema = z.object({
+  id: z.string(),
+  userId: z.string().trim(),
+  itemId: z.string().trim(),
+  rating: z.number().min(0).max(5),
+  content: z.string().trim().max(2000).optional(),
+  isHidden: z.boolean().optional(),
+  createdAt: dateOrString,
+  updatedAt: dateOrString,
+});
+
+export type Bookmark = z.infer<typeof BookmarkSchema>;
+export type Collection = z.infer<typeof CollectionSchema>;
+export type Review = z.infer<typeof ReviewSchema>;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // DOCUMENT TYPES: Xử lý tài liệu, sách và tác giả
 // ═══════════════════════════════════════════════════════════════════════════════
+
 export const AuthorSchema = z.object({
   id: z.string(),
-  name: z.string(),
-  avatarUrl: z.string().optional(),
+  name: z.string().trim().min(1).max(100),
+  avatarUrl: z.string().url().trim().optional().or(z.literal('')),
   birthDate: dateOrString,
-  nationality: z.string().optional(),
-  bio: z.string().optional(),
+  nationality: z.string().trim().max(100).optional(),
+  bio: z.string().trim().max(1000).optional(),
   createdAt: dateOrString,
   updatedAt: dateOrString,
 });
 
 export const CategorySchema = z.object({
   id: z.string(),
-  slug: z.string().optional(),
+  slug: z.string().trim().min(1).max(100).optional(),
   parentId: z.string().nullable().optional(),
   translations: z.array(
     z.object({
-      lang: z.string(),
-      name: z.string(),
-      description: z.string().optional(),
+      lang: z.string().min(2).max(5),
+      name: z.string().trim().min(1).max(100),
+      description: z.string().trim().max(500).optional(),
       createdAt: dateOrString,
       updatedAt: dateOrString,
     })
@@ -133,28 +151,31 @@ export const CategorySchema = z.object({
 
 export const BookSchema = z.object({
   id: z.string(),
-  title: z.string(),
-  subtitle: z.string().optional(),
-  description: z.string().optional(),
-  slug: z.string().optional(),
-  publisher: z.string().optional(),
+  title: z.string().trim().min(1).max(255),
+  slug: z.string().trim().max(255).optional(),
+  description: z.string().trim().max(5000).optional(),
+  publisher: z.string().trim().max(255).optional(),
   publishedDate: dateOrString,
-  edition: z.string().optional(),
-  isbn: z.string().optional(),
-  language: z.string().optional(),
-  pages: z.number().int().optional(),
-  price: z.number().optional(),
-  stock: z.number().int().optional(),
-  coverUrl: z.string().optional(),
-  fileKey: z.string().optional(),
-  tags: z.array(z.string()).optional(),
+  edition: z.string().trim().max(50).optional(),
+  isbn: z.string().trim().max(20).optional(),
+  language: z.string().trim().min(2).max(10).optional(),
+  pages: z.number().int().min(0).optional(),
+  price: z.number().min(0).optional(),
+  stock: z.number().int().min(0).optional(),
+  coverUrl: z.string().trim().url().optional().or(z.literal('')),
+  fileKey: z.string().trim().optional(),
+  tags: z.array(z.string().trim()).optional(),
+  updatedBy: z.string().trim().optional(),
   createdAt: dateOrString,
   updatedAt: dateOrString,
-  updatedBy: z.string().optional(),
   authorIds: z.array(z.string()).optional(),
   categoryIds: z.array(z.string()).optional(),
   authors: z.array(AuthorSchema).optional(),
   categories: z.array(CategorySchema).optional(),
+  rating: z.number().min(0).max(5).optional(),
+  totalReviews: z.number().int().min(0).optional(),
+  reviews: z.array(ReviewSchema).optional(),
+  bookmarkId: z.string().optional(),
 });
 
 export type Author = z.infer<typeof AuthorSchema>;
@@ -182,24 +203,71 @@ export type FileMeta = z.infer<typeof FileMetaSchema>;
 // ═══════════════════════════════════════════════════════════════════════════════
 // BORROW TYPES: Xử lý mượn sách
 // ═══════════════════════════════════════════════════════════════════════════════
+
 export const BorrowSchema = z.object({
-    id: z.string(),
-    userId: z.string(),
-    borrower: UserSchema.optional(),
-    itemId: z.string(),
-    item: BookSchema.optional(),
-    renewals: z.array(z.object({
-        renewedAt: dateOrString,
-        oldExpireTime: dateOrString,
-        newExpireTime: dateOrString
-    })),
-    borrowTime: dateOrString,
-    expireTime: dateOrString,
-    returnTime: dateOrString.optional(),
-    note: z.string().optional(),
-    status: z.string(),
-    createdAt: dateOrString,
-    updatedAt: dateOrString,
+  id: z.string(),
+  userId: z.string().trim(),
+  borrower: UserSchema.optional(),
+  itemId: z.string(),
+  item: BookSchema.optional(),
+  renewals: z.array(z.object({
+    renewedAt: dateOrString,
+    oldExpireTime: dateOrString,
+    newExpireTime: dateOrString
+  })),
+  borrowTime: dateOrString,
+  expireTime: dateOrString,
+  returnTime: dateOrString.optional(),
+  note: z.string().trim().optional(),
+  status: z.enum(['active', 'returned', 'overdue', 'cancelled']),
+  createdAt: dateOrString,
+  updatedAt: dateOrString,
 });
 
 export type Borrow = z.infer<typeof BorrowSchema>;
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STATISTIC TYPES: Thống kê và báo cáo
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const OverallStatisticSchema = z.object({
+  totalBorrows: z.number().int(),
+  totalReturns: z.number().int(),
+  totalOverdue: z.number().int(),
+});
+
+export const DailyStatisticSchema = z.object({
+  date: dateOrString,
+  totalBorrows: z.number().int(),
+  totalReturns: z.number().int(),
+  totalOverdue: z.number().int(),
+});
+
+export const DayOfWeekStatisticSchema = z.object({
+  dayOfWeek: z.string(),
+  totalBorrows: z.number().int(),
+});
+
+export const BookStatisticSchema = z.object({
+  bookId: z.string(),
+  totalBorrows: z.number().int(),
+});
+
+export const CategoryStatisticSchema = z.object({
+  categoryId: z.string(),
+  totalBorrows: z.number().int(),
+});
+
+export const UserStatisticSchema = z.object({
+  userId: z.string(),
+  totalBorrows: z.number().int(),
+  lastActiveDate: dateOrString,
+});
+
+export type OverallStatistic = z.infer<typeof OverallStatisticSchema>;
+export type DailyStatistic = z.infer<typeof DailyStatisticSchema>;
+export type DayOfWeekStatistic = z.infer<typeof DayOfWeekStatisticSchema>;
+export type BookStatistic = z.infer<typeof BookStatisticSchema>;
+export type CategoryStatistic = z.infer<typeof CategoryStatisticSchema>;
+export type UserStatistic = z.infer<typeof UserStatisticSchema>;

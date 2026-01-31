@@ -59,7 +59,7 @@ export function CategoriesMutateDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-100">
+            <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>{initialData?.id ? "Edit Category" : "Add Category"}</DialogTitle>
                     <DialogDescription>
@@ -110,23 +110,25 @@ export function CategoriesMutateDialog({
                                     <div key={field.id} className="relative border p-4 rounded space-y-2 bg-muted/40">
                                         {/* Nút xoá bản dịch */}
                                         {fields.length > 1 && (
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                className="absolute top-2 right-2"
-                                                onClick={() => remove(idx)}
-                                                tabIndex={-1}
-                                            >
-                                                <X size={16} />
-                                            </Button>
+                                            <div className="flex justify-end">
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="absolute top-2 right-2"
+                                                    onClick={() => remove(idx)}
+                                                    tabIndex={-1}
+                                                >
+                                                    <X size={16} />
+                                                </Button>
+                                            </div>
                                         )}
 
                                         <FormField
                                             control={form.control}
                                             name={`translations.${idx}.lang`}
                                             render={({ field }) => (
-                                                <div className="flex items-center gap-3">
+                                                <div className="grid gap-3">
                                                     <FormLabel htmlFor={`translations.${idx}.lang`} className="whitespace-nowrap">Language</FormLabel>
                                                     <FormControl>
                                                         <LanguageSelect

@@ -20,15 +20,23 @@ import {
   FormLabel,
   FormMessage,
 } from '@repo/ui/components/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/select';
 import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
-import { type Role, type User } from '@/types';
+import { UserStatus, type Role, type User } from '@/types';
 import { RolesCombobox } from './roles-combobox';
 
 const UserFormSchema = z
   .object({
     username: z.string().min(1, 'Username is required.'),
     email: z.string().min(1, 'Email is required.').email('Invalid email address.'),
+    status: z.number().int(),
     roles: z.array(z.string()).min(1, 'Select at least one role'),
     password: z.string().optional().or(z.literal('')),
     confirmPassword: z.string().optional().or(z.literal('')),
@@ -64,6 +72,7 @@ export function UsersMutateDialog({
     defaultValues: {
       username: initialData?.username ?? '',
       email: initialData?.email ?? '',
+      status: initialData?.status ?? UserStatus.Active,
       roles: initialData?.roles?.map((role) => String(role.id)) ?? [],
       password: '',
       confirmPassword: '',
@@ -72,7 +81,7 @@ export function UsersMutateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-lg'>
+      <DialogContent className='sm:max-w-lg max-h-[90vh] overflow-y-auto'>
         <DialogHeader className='text-start'>
           <DialogTitle>{initialData?.id ? 'Edit User' : 'Add User'}</DialogTitle>
           <DialogDescription>
@@ -87,13 +96,21 @@ export function UsersMutateDialog({
           <form
             id='user-form'
             onSubmit={form.handleSubmit((data) => {
-              onSubmit({
+              const payload: Partial<User> = {
                 ...initialData,
                 username: data.username,
                 email: data.email,
+                status: data.status,
                 roleIds: data.roles,
-                ...(data.password ? { password: data.password } : {}),
-              });
+              };
+
+              if (data.password) {
+                payload.password = data.password;
+              } else {
+                delete payload.password;
+              }
+
+              onSubmit(payload);
               onOpenChange(false);
               form.reset();
             })}
@@ -121,6 +138,32 @@ export function UsersMutateDialog({
                   <FormControl>
                     <Input id="email" placeholder="john.doe@gmail.com" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </div>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <div className="grid gap-3">
+                  <FormLabel htmlFor="status">Status</FormLabel>
+                  <Select
+                    onValueChange={(val) => field.onChange(Number(val))}
+                    value={field.value.toString()}
+                    defaultValue={field.value.toString()}
+                  >
+                    <FormControl>
+                      <SelectTrigger id="status" className="w-full">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={UserStatus.Active.toString()}>Active</SelectItem>
+                      <SelectItem value={UserStatus.Inactive.toString()}>Inactive</SelectItem>
+                      <SelectItem value={UserStatus.Banned.toString()}>Banned</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </div>
               )}

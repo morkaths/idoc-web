@@ -19,9 +19,10 @@ type UserComboboxProps = {
     value: string;
     onChange: (userId: string) => void;
     error?: string;
+    initialUser?: User;
 };
 
-export function UserCombobox({ value, onChange, error }: UserComboboxProps) {
+export function UserCombobox({ value, onChange, error, initialUser }: UserComboboxProps) {
     const id = useId();
     const [open, setOpen] = useState(false);
     const [page, setPage] = useState(1);
@@ -31,23 +32,42 @@ export function UserCombobox({ value, onChange, error }: UserComboboxProps) {
         page,
         query: debouncedQuery,
     }), [page, debouncedQuery]);
-    const { data, isLoading } = useUsers(params);
+
+
+    // FETCH DATA
+    const shouldFetch = open || !!value;
+    const { data, isLoading } = useUsers(params, { enabled: shouldFetch });
     const [users, setUsers] = useState<User[]>([]);
+    // Cache all seen users to ensure selected items can always be displayed
+    const [userMap, setUserMap] = useState<Map<string, User>>(() => {
+        const map = new Map<string, User>();
+        if (initialUser) map.set(initialUser.id, initialUser);
+        return map;
+    });
+
     const pagination = Array.isArray(data?.pagination) ? data.pagination[0] : data?.pagination;
     const total = pagination?.total ?? 0;
     const limited = pagination?.limit ?? 10;
     const hasMore = page * limited < total;
 
     useEffect(() => {
-        if (page === 1) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setUsers(data?.data ?? []);
-        } else if (data?.data) {
-            setUsers(prev => {
-                const prevIds = new Set(prev.map(a => a.id));
-                const newUsers = data.data.filter(a => !prevIds.has(a.id));
-                return [...prev, ...newUsers];
+        if (data?.data) {
+            // Update cache map
+            setUserMap(prev => {
+                const next = new Map(prev);
+                data.data.forEach(u => next.set(u.id, u));
+                return next;
             });
+
+            if (page === 1) {
+                setUsers(data.data);
+            } else {
+                setUsers(prev => {
+                    const prevIds = new Set(prev.map(a => a.id));
+                    const newUsers = data.data.filter(a => !prevIds.has(a.id));
+                    return [...prev, ...newUsers];
+                });
+            }
         }
     }, [data, page]);
 
@@ -78,10 +98,10 @@ export function UserCombobox({ value, onChange, error }: UserComboboxProps) {
         );
     }, [users]);
 
-    const selectedUser = users.find(u => String(u.id) === String(value));
+    const selectedUser = userMap.get(value);
 
     return (
-        <div className="w-full space-y-2">
+        <div className="w-full space-y-2 min-w-0">
             <Popover modal={true} open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
@@ -92,10 +112,10 @@ export function UserCombobox({ value, onChange, error }: UserComboboxProps) {
                         className="w-full justify-between"
                     >
                         {selectedUser ? (
-                            <span>
+                            <div className="flex-1 text-left truncate min-w-0">
                                 <span className="font-medium">{selectedUser.username}</span>
                                 <span className="text-xs text-muted-foreground"> ({selectedUser.email})</span>
-                            </span>
+                            </div>
                         ) : (
                             <span className="text-muted-foreground">Select user</span>
                         )}
@@ -103,7 +123,7 @@ export function UserCombobox({ value, onChange, error }: UserComboboxProps) {
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full min-w-(--radix-popper-anchor-width) p-0" align="start">
-                    <Command>
+                    <Command shouldFilter={false}>
                         <CommandInput
                             placeholder="Search user..."
                             value={query}

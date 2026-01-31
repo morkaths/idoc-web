@@ -1,9 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { FileApi } from '@/apis/file.api';
-import type { FindParams } from '@/types';
+import type { FindParams, Pagination } from '@/types';
 
-export const useFiles = (params: FindParams = {}) => {
-    return useQuery({
+type FileResponse = { data: any[]; pagination?: Pagination }; // File type is not imported, using any[] for data temporarily or inferring
+
+export const useFiles = (
+    params: FindParams = {},
+    options?: Omit<UseQueryOptions<FileResponse, Error, FileResponse, any[]>, 'queryKey' | 'queryFn'>
+) => {
+    return useQuery<FileResponse, Error, FileResponse, any[]>({
         queryKey: ['files', params],
         queryFn: async () => {
             const res = await FileApi.find(params);
@@ -16,6 +21,7 @@ export const useFiles = (params: FindParams = {}) => {
             data: data.data,
             pagination: data.pagination,
         }),
+        ...options,
     });
 };
 

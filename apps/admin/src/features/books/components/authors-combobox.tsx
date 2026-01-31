@@ -36,7 +36,10 @@ export function AuthorsCombobox({
         page,
         query: debouncedQuery,
     }), [page, debouncedQuery]);
-    const { data, isLoading } = useAuthors(params);
+
+    // FETCH DATA
+    const shouldFetch = open || value.length > 0;
+    const { data, isLoading } = useAuthors(params, { enabled: shouldFetch });
     const [authors, setAuthors] = useState<Author[]>([]);
     // Cache all seen authors to ensure selected items can always be displayed
     const [authorMap, setAuthorMap] = useState<Map<string, Author>>(() => {

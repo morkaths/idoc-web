@@ -1,9 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
-import type { Book, FindParams } from '@/types';
+import type { Book, FindParams, Pagination } from '@/types';
 
-export const useBooks = (params: FindParams = {}) => {
-  return useQuery({
+type BookResponse = { data: Book[]; pagination?: Pagination };
+
+export const useBooks = (
+  params: FindParams = {},
+  options?: Omit<UseQueryOptions<BookResponse, Error, BookResponse, any[]>, 'queryKey' | 'queryFn'>
+) => {
+  return useQuery<BookResponse, Error, BookResponse, any[]>({
     queryKey: ['books', params],
     queryFn: async () => {
       const res = await BookApi.find(params);
@@ -16,6 +21,7 @@ export const useBooks = (params: FindParams = {}) => {
       data: data.data,
       pagination: data.pagination,
     }),
+    ...options,
   });
 };
 

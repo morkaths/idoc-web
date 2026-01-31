@@ -6,7 +6,7 @@ import { AccountTab } from "./account-tab";
 import { SecurityTab } from "./security-tab";
 import { NotificationsTab } from "./notifications-tab";
 
-export function ProfileContent() {
+export function SettingContent() {
     return (
         <Tabs defaultValue="personal" className="space-y-6">
             <TabsList className="grid w-full grid-cols-4">

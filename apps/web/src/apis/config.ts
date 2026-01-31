@@ -15,14 +15,14 @@ export const setAccessToken = (token: string | null) => {
   currentAccessToken = token;
 };
 
+export const getAccessToken = () => currentAccessToken;
+
 function attachInterceptors(instance: AxiosInstance, withCredentials: boolean) {
   instance.interceptors.request.use(async (config) => {
     config.headers = config.headers || {};
     config.headers['x-api-key'] = env.api.key;
-    if (withCredentials) {
-      if (typeof window !== 'undefined' && currentAccessToken) {
-        config.headers['Authorization'] = `Bearer ${currentAccessToken}`;
-      }
+    if (typeof window !== 'undefined' && currentAccessToken) {
+      config.headers['Authorization'] = `Bearer ${currentAccessToken}`;
     }
     return config;
   }, (error) => Promise.reject(error));
@@ -46,8 +46,18 @@ function attachInterceptors(instance: AxiosInstance, withCredentials: boolean) {
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
             return instance.request(originalRequest);
           } else {
-            await signOut({ callbackUrl: '/sign-in' });
-            toast.error('Session expired. Please log in again.');
+            // Token refresh failed or same invalid token
+            setAccessToken(null);
+
+            if (!withCredentials) {
+              // For public requests, just retry without token (guest mode)
+              delete originalRequest.headers.Authorization;
+              return instance.request(originalRequest);
+            } else {
+              // For private requests, force logout
+              await signOut({ callbackUrl: '/sign-in' });
+              toast.error('Session expired. Please log in again.');
+            }
           }
         }
       }

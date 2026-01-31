@@ -58,7 +58,7 @@ export function RolesMutateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-lg'>
+      <DialogContent className='sm:max-w-lg max-h-[90vh] overflow-y-auto'>
         <DialogHeader className='text-start'>
           <DialogTitle>{initialData?.id ? 'Edit Role' : 'Add Role'}</DialogTitle>
           <DialogDescription>

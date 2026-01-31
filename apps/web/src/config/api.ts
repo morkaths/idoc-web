@@ -85,7 +85,29 @@ export const API_CONFIG = {
       delete: (id: string) => `/borrows/${id}`,
       extend: (id: string) => `/borrows/${id}/extend`,
       return: (id: string) => `/borrows/${id}/return`,
-    }
+    },
+    bookmark: {
+      find: '/bookmarks',
+      findById: (id: string) => `/bookmarks/${id}`,
+      status: '/bookmarks/status',
+      create: '/bookmarks',
+      update: (id: string) => `/bookmarks/${id}`,
+      delete: (id: string) => `/bookmarks/${id}`,
+    },
+    collection: {
+      find: '/collections',
+      findById: (id: string) => `/collections/${id}`,
+      create: '/collections',
+      update: (id: string) => `/collections/${id}`,
+      delete: (id: string) => `/collections/${id}`,
+    },
+    review: {
+      find: '/reviews',
+      findById: (id: string) => `/reviews/${id}`,
+      create: '/reviews',
+      update: (id: string) => `/reviews/${id}`,
+      delete: (id: string) => `/reviews/${id}`,
+    },
   },
 };
 

@@ -30,7 +30,10 @@ export function UserCombobox({ value, onChange, error }: UserComboboxProps) {
         page,
         query: debouncedQuery,
     }), [page, debouncedQuery]);
-    const { data, isLoading } = useUsers(params);
+
+    // FETCH DATA
+    const shouldFetch = open || !!value;
+    const { data, isLoading } = useUsers(params, { enabled: shouldFetch });
     const [users, setUsers] = useState<User[]>([]);
     const pagination = Array.isArray(data?.pagination) ? data.pagination[0] : data?.pagination;
     const total = pagination?.total ?? 0;

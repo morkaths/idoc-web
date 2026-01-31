@@ -35,9 +35,12 @@ export function CategoriesCombobox({
         page,
         query: debouncedQuery,
     }), [page, debouncedQuery]);
-    const { data, isLoading } = useCategories(categoryParams);
+
+    // FETCH DATA
+    const shouldFetch = open || value.length > 0;
+    const { data, isLoading } = useCategories(categoryParams, { enabled: shouldFetch });
     const [categories, setCategories] = useState<Category[]>([]);
-     // Cache all seen categories to ensure selected items can always be displayed
+    // Cache all seen categories to ensure selected items can always be displayed
     const [categoryMap, setCategoryMap] = useState<Map<string, Category>>(() => {
         const map = new Map<string, Category>();
         initialCategories.forEach(c => map.set(c.id, c));
@@ -51,7 +54,7 @@ export function CategoriesCombobox({
 
     useEffect(() => {
         if (data?.data) {
-             // Update cache map
+            // Update cache map
             setCategoryMap(prev => {
                 const next = new Map(prev);
                 data.data.forEach(c => next.set(c.id, c));
@@ -137,7 +140,7 @@ export function CategoriesCombobox({
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
-                    <Command>
+                    <Command shouldFilter={false}>
                         <CommandInput
                             placeholder="Search category..."
                             value={query}

@@ -1,9 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { RoleApi } from '@/apis/role.api';
-import type { Role, FindParams } from '@/types';
+import type { Role, FindParams, Pagination } from '@/types';
 
-export const useRoles = (params: FindParams = {}) => {
-  return useQuery({
+type RoleResponse = { data: Role[]; pagination?: Pagination };
+
+export const useRoles = (
+  params: FindParams = {},
+  options?: Omit<UseQueryOptions<RoleResponse, Error, RoleResponse, any[]>, 'queryKey' | 'queryFn'>
+) => {
+  return useQuery<RoleResponse, Error, RoleResponse, any[]>({
     queryKey: ['roles', params],
     queryFn: async () => {
       const res = await RoleApi.find(params);
@@ -16,6 +21,7 @@ export const useRoles = (params: FindParams = {}) => {
       data: data.data,
       pagination: data.pagination,
     }),
+    ...options,
   });
 };
 

@@ -74,7 +74,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               }
             }}
           >
-            View file
+            View
             <span className="ml-auto"><Eye /></span>
           </DropdownMenuItem>
           <DropdownMenuItem

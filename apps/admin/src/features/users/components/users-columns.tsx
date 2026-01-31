@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table';
-import type { User } from '@/types';
+import { RoleCode, UserStatus, type User } from '@/types';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
@@ -64,10 +64,10 @@ export const usersColumns: ColumnDef<User>[] = [
       const status = row.original.status;
       let label = 'Inactive';
       let className = 'bg-gray-100 text-gray-500 border border-gray-200';
-      if (status === 1) {
+      if (status === UserStatus.Active) {
         label = 'Active';
         className = 'bg-green-100 text-green-700 border border-green-200';
-      } else if (status === -1) {
+      } else if (status === UserStatus.Banned) {
         label = 'Banned';
         className = 'bg-red-100 text-red-700 border border-red-200';
       }
@@ -89,9 +89,9 @@ export const usersColumns: ColumnDef<User>[] = [
           <div className='flex items-center gap-1 whitespace-nowrap'>
             {roles.slice(0, maxShow).map((role) => {
               let icon = <User2 className="w-3.5 h-3.5 mr-1" />;
-              if (role.code === 'admin') icon = <ShieldCheck className="w-3.5 h-3.5 mr-1" />;
-              else if (role.code === 'manager') icon = <BriefcaseBusiness className="w-3.5 h-3.5 mr-1" />;
-              else if (role.code === 'staff') icon = <UserCog className="w-3.5 h-3.5 mr-1" />;
+              if (role.code === RoleCode.Admin) icon = <ShieldCheck className="w-3.5 h-3.5 mr-1" />;
+              else if (role.code === RoleCode.Manager) icon = <BriefcaseBusiness className="w-3.5 h-3.5 mr-1" />;
+              else if (role.code === RoleCode.Staff) icon = <UserCog className="w-3.5 h-3.5 mr-1" />;
               return (
                 <Badge key={role.id} variant='outline' className='text-xs flex items-center'>
                   {icon}

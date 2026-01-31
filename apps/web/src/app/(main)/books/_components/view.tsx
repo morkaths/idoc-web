@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@repo/ui/components/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "@repo/ui/components/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@repo/ui/components/tabs";
@@ -22,6 +22,8 @@ export function BooksView() {
       sortOrder: params.sortOrder ?? "desc",
     });
   };
+
+  const activeFilter = useMemo(() => ({ ...filter, ...sort }), [filter, sort]);
 
   return (
     <main className="container py-8 flex gap-8">
@@ -91,7 +93,7 @@ export function BooksView() {
         </div>
 
         {/* Danh sách sách */}
-        <BookView filter={{ ...filter, ...sort }} view={view} />
+        <BookView filter={activeFilter} view={view} />
       </section>
     </main>
   );

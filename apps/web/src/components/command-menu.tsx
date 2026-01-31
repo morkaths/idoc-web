@@ -27,8 +27,8 @@ export function CommandMenu() {
     page: 1,
     limit: 5,
   }
-  const { data: booksData } = useBooks(params);
-  const { data: authorsData } = useAuthors(params);
+  const { data: booksData } = useBooks(params, { enabled: open });
+  const { data: authorsData } = useAuthors(params, { enabled: open });
 
   const runCommand = React.useCallback(
     (command: () => unknown) => {

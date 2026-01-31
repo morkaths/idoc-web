@@ -21,6 +21,8 @@ import { UserCombobox } from './users-combobox';
 import { ItemCombobox } from './items-combobox';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@repo/ui/components/select';
 
+import { BorrowStatus } from "@/types/enum";
+
 const BorrowFormSchema = z.object({
     userId: z.string().min(1, "User ID is required"),
     itemId: z.string().min(1, "Item ID is required"),
@@ -57,7 +59,7 @@ export function BorrowsMutateDialog({
 
     return (
         <Dialog modal={true} open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-100 max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{initialData?.id ? "Edit Borrow" : "Add Borrow"}</DialogTitle>
                     <DialogDescription>
@@ -90,6 +92,7 @@ export function BorrowsMutateDialog({
                                         value={field.value}
                                         onChange={field.onChange}
                                         error={fieldState.error?.message}
+                                        initialUser={initialData?.borrower}
                                     />
                                 </div>
                             )}
@@ -104,6 +107,7 @@ export function BorrowsMutateDialog({
                                         value={field.value}
                                         onChange={field.onChange}
                                         error={fieldState.error?.message}
+                                        initialItem={initialData?.item}
                                     />
                                 </div>
                             )}
@@ -138,9 +142,9 @@ export function BorrowsMutateDialog({
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    <SelectItem value="active">Active</SelectItem>
-                                                    <SelectItem value="returned">Returned</SelectItem>
-                                                    <SelectItem value="overdue">Overdue</SelectItem>
+                                                    <SelectItem value={BorrowStatus.Active}>Active</SelectItem>
+                                                    <SelectItem value={BorrowStatus.Returned}>Returned</SelectItem>
+                                                    <SelectItem value={BorrowStatus.Overdue}>Overdue</SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>

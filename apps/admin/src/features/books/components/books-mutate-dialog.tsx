@@ -109,7 +109,7 @@ export function BooksMutateDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-200 max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{initialData?.id ? "Edit Book" : "Add Book"}</DialogTitle>
                     <DialogDescription>

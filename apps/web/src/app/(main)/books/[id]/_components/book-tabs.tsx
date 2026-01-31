@@ -1,9 +1,9 @@
 import { BookGridItems } from "@/components/book/book-grid-items";
-import { useBooks } from "@/hooks/data/useBook";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
 import { ReactNode } from "react";
 import { Book } from "@/types";
 import { formatDate } from "@/utils/date";
+import { RecommendedBooks } from "./recommended-books";
 
 interface TabItem {
     name: string;
@@ -12,13 +12,10 @@ interface TabItem {
 }
 
 export function BookTabs({ book }: { book?: Book }) {
-    const { data: recommendedBooksData, isLoading, error } = useBooks();
-    const recommendedBooks = recommendedBooksData?.data || [];
-
     const tabs: TabItem[] = [
-        { 
-            name: 'Info', 
-            value: 'info', 
+        {
+            name: 'Info',
+            value: 'info',
             content: (
                 <div className="bg-card/30 rounded-xl p-6 mt-4 border border-gray-100 dark:border-zinc-800">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -52,7 +49,7 @@ export function BookTabs({ book }: { book?: Book }) {
                         </div>
                     </div>
                 </div>
-            ) 
+            )
         },
         {
             name: 'Reviews',
@@ -67,11 +64,7 @@ export function BookTabs({ book }: { book?: Book }) {
         {
             name: 'Recommendations',
             value: 'recommendations',
-            content: (
-                <div className="mt-4">
-                    <BookGridItems data={recommendedBooks} loading={isLoading} error={error?.message} />
-                </div>
-            )
+            content: <RecommendedBooks />
         },
         {
             name: 'Tags',

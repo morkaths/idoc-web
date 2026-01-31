@@ -1,9 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { ProfileApi } from '@/apis';
-import type { Profile, FindParams } from '@/types';
+import type { Profile, FindParams, Pagination } from '@/types';
 
-export const useProfiles = (params: FindParams = {}) => {
-    return useQuery({
+type ProfileResponse = { data: Profile[]; pagination?: Pagination };
+
+export const useProfiles = (
+    params: FindParams = {},
+    options?: Omit<UseQueryOptions<ProfileResponse, Error, ProfileResponse, any[]>, 'queryKey' | 'queryFn'>
+) => {
+    return useQuery<ProfileResponse, Error, ProfileResponse, any[]>({
         queryKey: ['profiles', params],
         queryFn: async () => {
             const res = await ProfileApi.find(params);
@@ -16,6 +21,7 @@ export const useProfiles = (params: FindParams = {}) => {
             data: data.data,
             pagination: data.pagination,
         }),
+        ...options,
     });
 };
 

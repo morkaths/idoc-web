@@ -19,9 +19,10 @@ type ItemComboboxProps = {
     value: string;
     onChange: (itemId: string) => void;
     error?: string;
+    initialItem?: Item;
 };
 
-export function ItemCombobox({ value, onChange, error }: ItemComboboxProps) {
+export function ItemCombobox({ value, onChange, error, initialItem }: ItemComboboxProps) {
     const id = useId();
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState("");
@@ -31,23 +32,40 @@ export function ItemCombobox({ value, onChange, error }: ItemComboboxProps) {
         page,
         query: debouncedQuery,
     }), [page, debouncedQuery]);
-    const { data, isLoading } = useBooks(params);
+    const shouldFetch = open || !!value;
+    const { data, isLoading } = useBooks(params, { enabled: shouldFetch }); // Ensure enabled logic is added if not present in hook, but assuming consistency. Note: original code didn't have enabled logic in useBooks call which is inefficient, adding it.
     const [items, setItems] = useState<Item[]>([]);
+
+    // Cache all seen items
+    const [itemMap, setItemMap] = useState<Map<string, Item>>(() => {
+        const map = new Map<string, Item>();
+        if (initialItem) map.set(initialItem.id, initialItem);
+        return map;
+    });
+
     const pagination = Array.isArray(data?.pagination) ? data.pagination[0] : data?.pagination;
     const total = pagination?.total ?? 0;
     const limited = pagination?.limit ?? 10;
     const hasMore = page * limited < total;
 
     useEffect(() => {
-        if (page === 1) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setItems(data?.data ?? []);
-        } else if (data?.data) {
-            setItems(prev => {
-                const prevIds = new Set(prev.map(a => a.id));
-                const newItems = data.data.filter(a => !prevIds.has(a.id));
-                return [...prev, ...newItems];
+        if (data?.data) {
+            // Update cache map
+            setItemMap(prev => {
+                const next = new Map(prev);
+                data.data.forEach(i => next.set(i.id, i));
+                return next;
             });
+
+            if (page === 1) {
+                setItems(data.data);
+            } else {
+                setItems(prev => {
+                    const prevIds = new Set(prev.map(a => a.id));
+                    const newItems = data.data.filter(a => !prevIds.has(a.id));
+                    return [...prev, ...newItems];
+                });
+            }
         }
     }, [data, page]);
 
@@ -77,10 +95,10 @@ export function ItemCombobox({ value, onChange, error }: ItemComboboxProps) {
         );
     }, [items]);
 
-    const selectedItem = items.find(i => i.id === value);
+    const selectedItem = itemMap.get(value);
 
     return (
-        <div className="w-full">
+        <div className="w-full space-y-2 min-w-0">
             <Popover modal={true} open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
@@ -91,7 +109,7 @@ export function ItemCombobox({ value, onChange, error }: ItemComboboxProps) {
                         className="w-full justify-between"
                     >
                         {selectedItem ? (
-                            <span className="truncate">{selectedItem.title}</span>
+                            <div className="flex-1 text-left truncate min-w-0">{selectedItem.title}</div>
                         ) : (
                             <span className="text-muted-foreground">Select item</span>
                         )}
@@ -99,7 +117,7 @@ export function ItemCombobox({ value, onChange, error }: ItemComboboxProps) {
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full min-w-(--radix-popper-anchor-width) p-0" align="start">
-                    <Command>
+                    <Command shouldFilter={false}>
                         <CommandInput
                             placeholder="Search item..."
                             value={query}

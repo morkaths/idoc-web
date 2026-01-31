@@ -8,7 +8,7 @@ import { Camera, Calendar, Mail, MapPin } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useProfile } from "@/hooks/data/useProfile";
 
-export default function ProfileHeader() {
+export default function SettingHeader() {
     const { data: session } = useSession();
     const user = session?.user;
     const { data: profile } = useProfile(user?.id?.toString() ?? '');
