@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import useHotkeys from '@/hooks/ui/useHotkeys';
-import { CommandMenu } from '@/components/command-menu';
+import { SearchDialog } from '@/components/layout/search-dialog';
 
 type SearchContextType = {
   open: boolean;
@@ -34,7 +34,7 @@ export function SearchProvider({ children }: SearchProviderProps) {
   return (
     <SearchContext.Provider value={{ open, setOpen }}>
       {children}
-      <CommandMenu />
+      <SearchDialog />
     </SearchContext.Provider>
   );
 }

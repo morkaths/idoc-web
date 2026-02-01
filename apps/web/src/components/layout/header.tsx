@@ -56,13 +56,18 @@ export function Header() {
 
 				{/* Right actions */}
 				<div className="flex items-center gap-2">
-					{/* Search */}
-					<div className="hidden sm:flex w-40 xl:w-50 max-w-sm md:max-w-md lg:max-w-lg">
-						<Search />
-					</div>
 					{/* Mobile */}
 					<div className="flex items-center lg:hidden">
 						<AppSidebar isOpen={mobileMenuOpen} setIsOpen={setMobileMenuOpen} />
+					</div>
+					{/* Search */}
+					<div className="flex w-full items-center gap-2">
+						<div className="flex xl:hidden">
+							<Search variant="icon" />
+						</div>
+						<div className="hidden xl:flex w-50 max-w-sm">
+							<Search />
+						</div>
 					</div>
 					<LocaleSwitch />
 					<ThemeSwitch />

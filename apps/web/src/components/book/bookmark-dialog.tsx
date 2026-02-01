@@ -1,27 +1,53 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@repo/ui/components/dialog';
 import { Button } from '@repo/ui/components/button';
 import { useCollections, useCreateCollection } from '@/hooks/data/useCollection';
+import { useCreateBookmark } from '@/hooks/data/useBookmark';
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { Input } from '@repo/ui/components/input';
 import { ScrollArea } from '@repo/ui/components/scroll-area';
 import { toast } from 'sonner';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 type BookmarkDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSelectCollection: (collectionId?: string) => void;
+    bookId: string | undefined;
 };
 
 export function BookmarkDialog({
     open,
     onOpenChange,
-    onSelectCollection,
+    bookId,
 }: BookmarkDialogProps) {
+    const { t, keys } = useLocale('books');
     const { data: collections, isLoading } = useCollections({ limit: 50 }, { enabled: open });
     const [newCollectionName, setNewCollectionName] = useState('');
     const [isCreating, setIsCreating] = useState(false);
+
     const { mutate: createCollection } = useCreateCollection();
+    const { mutate: createBookmark } = useCreateBookmark();
+
+    const handleSelectCollection = (collectionId?: string) => {
+        if (!bookId) return;
+
+        createBookmark(
+            {
+                itemId: bookId,
+                collectionId,
+            },
+            {
+                onSuccess: () => {
+                    onOpenChange(false);
+                    toast.success(t(keys.view.bookmark.success));
+                },
+                onError: (error) => {
+                    console.error("Failed to bookmark:", error);
+                    toast.error(t(keys.view.bookmark.error));
+                }
+            }
+        );
+    };
 
     const handleCreateCollection = () => {
         if (!newCollectionName.trim()) return;
@@ -31,7 +57,7 @@ export function BookmarkDialog({
             {
                 onSuccess: (data) => {
                     if (data) {
-                        onSelectCollection(data.id);
+                        handleSelectCollection(data.id);
                         setNewCollectionName('');
                         setIsCreating(false);
                     } else {
@@ -49,14 +75,14 @@ export function BookmarkDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Bookmark Book</DialogTitle>
+                    <DialogTitle>{t(keys.view.bookmark.title)}</DialogTitle>
                 </DialogHeader>
 
                 <div className="flex flex-col gap-4 mt-2">
                     <div className="flex flex-col gap-4 mt-2">
                         <Button
                             className="w-full justify-start"
-                            onClick={() => onSelectCollection(undefined)}
+                            onClick={() => handleSelectCollection(undefined)}
                         >
                             <Icon icon="mdi:bookmark-outline" className="mr-2 h-4 w-4" />
                             Save to Reading List
@@ -84,7 +110,7 @@ export function BookmarkDialog({
                                                 key={collection.id}
                                                 variant="ghost"
                                                 className="justify-start font-normal w-full"
-                                                onClick={() => onSelectCollection(collection.id)}
+                                                onClick={() => handleSelectCollection(collection.id)}
                                             >
                                                 <Icon icon="mdi:folder-outline" className="mr-2 h-4 w-4 text-muted-foreground" />
                                                 <span className="truncate">{collection.name}</span>
@@ -97,7 +123,7 @@ export function BookmarkDialog({
                                 </ScrollArea>
                             ) : !isCreating && (
                                 <div className="flex flex-col items-center justify-center py-2 text-center text-muted-foreground">
-                                    <p className="text-xs">No collections found.</p>
+                                    <p className="text-xs">{t(keys.view.collection.empty)}</p>
                                 </div>
                             )}
 

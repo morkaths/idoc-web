@@ -51,9 +51,9 @@
         "title": "発見",
         "description": "あなたのために選ばれたコレクションとおすすめを探索しましょう。"
       },
-      "newArrivals": {
-        "title": "新着",
-        "description": "今週コレクションに追加された最新の書籍。"
+      "all": {
+        "title": "すべての書籍",
+        "description": "私たちの豊富な書籍コレクションをご覧ください。"
       },
       "popular": {
         "title": "人気",
@@ -70,24 +70,20 @@
         "title": "注目",
         "description": "受賞作家とその傑作にスポットライトを当てます。"
       },
-      "directory": {
-        "title": "ディレクトリ",
-        "description": "すべての著者の経歴と著書を探索しましょう。"
+      "all": {
+        "title": "すべての著者",
+        "description": "コレクション内のすべての著者を閲覧します。"
       }
     },
     "library": {
       "label": "ライブラリ",
-      "borrowed": {
-        "title": "借用中",
-        "description": "現在図書館から借りている書籍。"
+      "all": {
+        "title": "マイライブラリ",
+        "description": "図書館の活動と借りている本の概要。"
       },
       "wishlist": {
         "title": "ウィッシュリスト",
         "description": "将来借りるために保存した書籍。"
-      },
-      "history": {
-        "title": "履歴",
-        "description": "借用履歴と図書館とのやり取り。"
       }
     },
     "user": {
@@ -266,6 +262,66 @@
     "503": {
       "title": "ウェブサイトはメンテナンス中です！",
       "description": "現在サイトを利用できません。<br />後でもう一度お試しください。"
+    }
+  },
+  "books": {
+    "sidebar": {
+      "title": "探索",
+      "actions": {
+        "reset": "リセット",
+        "submit": "適用"
+      },
+      "tabs": {
+        "filter": "フィルター",
+        "sort": "並び替え"
+      },
+      "filter": {
+        "search": {
+          "label": "検索",
+          "placeholder": "タイトル、ISBNで検索..."
+        },
+        "categories": {
+          "label": "カテゴリー",
+          "placeholder": "カテゴリーを選択...",
+          "searchPlaceholder": "カテゴリーを検索...",
+          "empty": "カテゴリーが見つかりません。",
+          "loading": "カテゴリーを読み込み中..."
+        }
+      },
+      "sort": {
+        "label": "並び替え",
+        "direction": "順序",
+        "fields": {
+          "title": "タイトル",
+          "createdAt": "作成日",
+          "updatedAt": "更新日",
+          "publishedYear": "出版年",
+          "price": "価格",
+          "pages": "ページ数"
+        },
+        "order": {
+          "asc": "昇順",
+          "desc": "降順"
+        }
+      }
+    },
+    "view": {
+      "author": "不明な著者",
+      "description": "説明はありません。",
+      "empty": {
+        "title": "書籍が見つかりません",
+        "description": "検索条件に一致する結果が見つかりませんでした。フィルターやキーワードを変更してみてください。"
+      },
+      "bookmark": {
+        "title": "ブックマーク",
+        "error": "ブックマークに失敗しました。もう一度お試しください。",
+        "success": "コレクションに追加されました",
+        "removed": "コレクションから削除されました"
+      },
+      "collection": {
+        "empty": "コレクションが見つかりません。",
+        "description": "検索条件に一致するコレクションが見つかりませんでした。フィルターやキーワードを変更してみてください。"
+      }
     }
   }
 }

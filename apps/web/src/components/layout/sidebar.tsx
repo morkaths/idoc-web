@@ -45,9 +45,6 @@ export function AppSidebar({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: 
               </Link>
             </SheetTitle>
           </SheetHeader>
-          <div className="px-4 pb-3">
-            <Search />
-          </div>
           <div className="flex flex-col gap-2.5 p-4 pt-0">
             <NavbarMobile items={navItems} onNavigate={() => setIsOpen(false)} />
           </div>

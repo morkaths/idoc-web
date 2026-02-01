@@ -10,8 +10,10 @@ import BookSort from "./book-sort";
 import { FindParams } from "@/types";
 import { ArrowDownAZ, FilterIcon, LayoutGrid, List, SlidersHorizontal, Sparkles } from "lucide-react";
 import { BookView } from "./book-view";
+import { useLocale } from '@/hooks/ui/useLocale';
 
 export function BooksView() {
+  const { t, keys } = useLocale('books');
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filter, setFilter] = useState<Partial<FindParams>>({});
   const [sort, setSort] = useState<{ sortBy: string; sortOrder: "desc" | "asc" }>({ sortBy: "createdAt", sortOrder: "desc" });
@@ -32,7 +34,7 @@ export function BooksView() {
         <Card className="p-4 mb-4">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-4 h-4" />
-            <span className="font-semibold">Discover</span>
+            <span className="font-semibold">{t(keys.sidebar.title)}</span>
           </div>
           <FilterTabs
             filter={filter}
@@ -59,7 +61,7 @@ export function BooksView() {
                 <SheetTitle className="mb-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="w-4 h-4" />
-                    <span className="font-semibold">Discover</span>
+                    <span className="font-semibold">{t(keys.sidebar.title)}</span>
                   </div>
                 </SheetTitle>
                 <FilterTabs
@@ -112,6 +114,7 @@ function FilterTabs({
   setSort: (params: { sortBy?: string; sortOrder?: "desc" | "asc" }) => void;
   defaultValue?: string;
 }) {
+  const { t, keys } = useLocale('books');
   return (
     <Tabs defaultValue={defaultValue} className="w-full">
       <TabsList className="w-full mb-4 bg-background gap-1 border p-1">
@@ -120,14 +123,14 @@ function FilterTabs({
           className="flex-1 data-[state=active]:bg-primary dark:data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:border-transparent"
         >
           <FilterIcon className="w-4 h-4" />
-          Filter
+          {t(keys.sidebar.tabs.filter)}
         </TabsTrigger>
         <TabsTrigger
           value="sort"
           className="flex-1 data-[state=active]:bg-primary dark:data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:border-transparent"
         >
           <ArrowDownAZ className="w-4 h-4" />
-          Sort
+          {t(keys.sidebar.tabs.sort)}
         </TabsTrigger>
       </TabsList>
       <TabsContent value="filter">

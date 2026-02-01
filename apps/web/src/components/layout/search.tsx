@@ -8,10 +8,25 @@ type SearchProps = {
   className?: string;
   type?: React.HTMLInputTypeAttribute;
   placeholder?: string;
+  variant?: 'default' | 'icon';
 };
 
-export function Search({ className = '', placeholder = 'Search' }: SearchProps) {
+export function Search({ className = '', placeholder = 'Search', variant = 'default' }: SearchProps) {
   const { setOpen } = useSearch();
+
+  if (variant === 'icon') {
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        className={cn('rounded-md border', className)}
+        onClick={() => setOpen(true)}
+      >
+        <SearchIcon size={18} />
+      </Button>
+    );
+  }
+
   return (
     <Button
       variant='outline'

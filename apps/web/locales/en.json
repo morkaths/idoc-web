@@ -47,13 +47,13 @@
     "search": "Search",
     "catalog": {
       "label": "Catalog",
+      "all": {
+        "title": "All Books",
+        "description": "Browse through our extensive collection of books."
+      },
       "discover": {
         "title": "Discover",
         "description": "Explore curated collections and recommendations tailored for you."
-      },
-      "newArrivals": {
-        "title": "New Arrivals",
-        "description": "The latest additions to our collection this week."
       },
       "popular": {
         "title": "Popular",
@@ -70,24 +70,20 @@
         "title": "Featured",
         "description": "Spotlight on award-winning writers and their masterpieces."
       },
-      "directory": {
-        "title": "Directory",
-        "description": "Explore biographies and bibliographies of all authors."
+      "all": {
+        "title": "All Authors",
+        "description": "Browse all authors in our collection."
       }
     },
     "library": {
       "label": "Library",
-      "borrowed": {
-        "title": "Borrowed",
-        "description": "Books you have currently borrowed from the library."
+      "all": {
+        "title": "My Library",
+        "description": "Overview of your library activity and borrowed books."
       },
       "wishlist": {
         "title": "Wish List",
         "description": "Books you have added to your wish list for future borrowing."
-      },
-      "history": {
-        "title": "History",
-        "description": "Your borrowing history and past interactions with the library."
       }
     },
     "user": {
@@ -266,6 +262,66 @@
     "503": {
       "title": "Website is under maintenance!",
       "description": "The site is not available at the moment. <br /> Please try again later."
+    }
+  },
+  "books": {
+    "sidebar": {
+      "title": "Discover",
+      "actions": {
+        "reset": "Reset",
+        "submit": "Apply"
+      },
+      "tabs": {
+        "filter": "Filter",
+        "sort": "Sort"
+      },
+      "filter": {
+        "search": {
+          "label": "Search",
+          "placeholder": "Search by title, ISBN..."
+        },
+        "categories": {
+          "label": "Categories",
+          "placeholder": "Select categories...",
+          "searchPlaceholder": "Search categories...",
+          "empty": "No categories found.",
+          "loading": "Loading categories..."
+        }
+      },
+      "sort": {
+        "label": "Sort by",
+        "direction": "Order",
+        "fields": {
+          "title": "Title",
+          "createdAt": "Created At",
+          "updatedAt": "Updated At",
+          "publishedYear": "Published Year",
+          "price": "Price",
+          "pages": "Pages"
+        },
+        "order": {
+          "asc": "Ascending",
+          "desc": "Descending"
+        }
+      }
+    },
+    "view": {
+      "author": "Unknown Author",
+      "description": "No description available.",
+      "empty": {
+        "title": "No books found",
+        "description": "We couldn't find any results matching your search criteria. Please try changing your filters or keywords."
+      },
+      "bookmark": {
+        "title": "Bookmark Book",
+        "error": "Failed to bookmark book. Please try again.",
+        "success": "Book added to your collection",
+        "removed": "Book removed from your collection"
+      },
+      "collection": {
+        "empty": "No collections found.",
+        "description": "We couldn't find any collections matching your search criteria. Please try changing your filters or keywords."
+      }
     }
   }
 }

@@ -18,7 +18,7 @@ import { useDebounce } from '@/hooks/ui/useDebounce';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 
-export function CommandMenu() {
+export function SearchDialog() {
   const router = useRouter();
   const { open, setOpen } = useSearch();
   const [query, setQuery] = React.useState("");

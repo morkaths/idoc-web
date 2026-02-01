@@ -12,15 +12,7 @@ import {
     FormMessage,
 } from "@repo/ui/components/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui/components/select";
-
-const SORT_FIELDS = [
-    { value: "title", label: "Title" },
-    { value: "createdAt", label: "Created At" },
-    { value: "updatedAt", label: "Updated At" },
-    { value: "publishedYear", label: "Published Year" },
-    { value: "price", label: "Price" },
-    { value: "pages", label: "Pages" },
-];
+import { useLocale } from '@/hooks/ui/useLocale';
 
 const SortSchema = z.object({
     sortBy: z.string().default("createdAt").optional(),
@@ -40,6 +32,7 @@ export default function BookSort({
     onSort,
     onReset,
 }: BookSortProps) {
+    const { t, keys } = useLocale('books');
     const form = useForm<SortForm>({
         resolver: zodResolver(SortSchema),
         defaultValues: {
@@ -48,6 +41,15 @@ export default function BookSort({
             ...sort,
         },
     });
+
+    const SORT_OPTIONS = [
+        { value: "title", label: t(keys.sidebar.sort.fields.title) },
+        { value: "createdAt", label: t(keys.sidebar.sort.fields.createdAt) },
+        { value: "updatedAt", label: t(keys.sidebar.sort.fields.updatedAt) },
+        { value: "publishedYear", label: t(keys.sidebar.sort.fields.publishedYear) },
+        { value: "price", label: t(keys.sidebar.sort.fields.price) },
+        { value: "pages", label: t(keys.sidebar.sort.fields.pages) },
+    ];
 
     return (
         <Form {...form}>
@@ -63,7 +65,7 @@ export default function BookSort({
                     name="sortBy"
                     render={({ field }) => (
                         <div className="grid gap-3">
-                            <FormLabel htmlFor="sortBy">Sort by</FormLabel>
+                            <FormLabel htmlFor="sortBy">{t(keys.sidebar.sort.label)}</FormLabel>
                             <FormControl>
                                 <Select
                                     value={field.value}
@@ -73,7 +75,7 @@ export default function BookSort({
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {SORT_FIELDS.map((col) => (
+                                        {SORT_OPTIONS.map((col) => (
                                             <SelectItem key={col.value} value={col.value}>
                                                 {col.label}
                                             </SelectItem>
@@ -91,7 +93,7 @@ export default function BookSort({
                     name="sortOrder"
                     render={({ field }) => (
                         <div className="grid gap-3">
-                            <FormLabel htmlFor="sortOrder">Order</FormLabel>
+                            <FormLabel htmlFor="sortOrder">{t(keys.sidebar.sort.direction)}</FormLabel>
                             <FormControl>
                                 <Select
                                     value={field.value}
@@ -101,8 +103,8 @@ export default function BookSort({
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="desc">Descending</SelectItem>
-                                        <SelectItem value="asc">Ascending</SelectItem>
+                                        <SelectItem value="desc">{t(keys.sidebar.sort.order.desc)}</SelectItem>
+                                        <SelectItem value="asc">{t(keys.sidebar.sort.order.asc)}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </FormControl>
@@ -113,14 +115,14 @@ export default function BookSort({
                 {/* Reset & Submit */}
                 <div className="flex gap-2">
                     <Button variant="outline" type="button" className="flex-1" onClick={() => { form.reset(); onReset(); }}>
-                        Reset
+                        {t(keys.sidebar.actions.reset)}
                     </Button>
                     <Button
                         type="submit"
                         className="flex-1"
                         disabled={form.formState.isSubmitting}
                     >
-                        Apply
+                        {t(keys.sidebar.actions.submit)}
                     </Button>
                 </div>
             </form>

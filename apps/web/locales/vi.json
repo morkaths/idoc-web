@@ -47,13 +47,13 @@
     "search": "Tìm kiếm",
     "catalog": {
       "label": "Danh mục",
+      "all": {
+        "title": "Tất cả sách",
+        "description": "Duyệt qua toàn bộ bộ sưu tập sách của chúng tôi."
+      },
       "discover": {
         "title": "Khám phá",
         "description": "Khám phá các bộ sưu tập và đề xuất được chọn lọc dành riêng cho bạn."
-      },
-      "newArrivals": {
-        "title": "Mới cập nhật",
-        "description": "Những cuốn sách mới nhất được thêm vào bộ sưu tập tuần này."
       },
       "popular": {
         "title": "Phổ biến",
@@ -70,24 +70,20 @@
         "title": "Nổi bật",
         "description": "Tiêu điểm về các nhà văn đoạt giải và kiệt tác của họ."
       },
-      "directory": {
-        "title": "Danh bạ",
-        "description": "Khám phá tiểu sử và thư mục sách của tất cả các tác giả."
+      "all": {
+        "title": "Tất cả tác giả",
+        "description": "Duyệt qua tất cả các tác giả trong bộ sưu tập của chúng tôi."
       }
     },
     "library": {
       "label": "Thư viện",
-      "borrowed": {
-        "title": "Đang mượn",
-        "description": "Sách bạn đang mượn từ thư viện."
+      "all": {
+        "title": "Thư viện của tôi",
+        "description": "Tổng quan về hoạt động thư viện và sách đang mượn."
       },
       "wishlist": {
         "title": "Danh sách mong muốn",
         "description": "Sách bạn đã lưu để mượn trong tương lai."
-      },
-      "history": {
-        "title": "Lịch sử",
-        "description": "Lịch sử mượn trả và tương tác của bạn với thư viện."
       }
     },
     "user": {
@@ -204,7 +200,7 @@
       },
       "username": {
         "label": "Tên đăng nhập",
-        "placeholder": "ten_cua_ban",
+        "placeholder": "username",
         "validation": {
           "usernameRequired": "Vui lòng nhập tên đăng nhập",
           "usernameLength": "Tên đăng nhập phải có ít nhất 3 ký tự"
@@ -266,6 +262,66 @@
     "503": {
       "title": "Website đang bảo trì!",
       "description": "Trang web hiện không khả dụng. <br /> Vui lòng thử lại sau."
+    }
+  },
+  "books": {
+    "sidebar": {
+      "title": "Khám phá",
+      "actions": {
+        "reset": "Đặt lại",
+        "submit": "Áp dụng"
+      },
+      "tabs": {
+        "filter": "Bộ lọc",
+        "sort": "Sắp xếp"
+      },
+      "filter": {
+        "search": {
+          "label": "Tìm kiếm",
+          "placeholder": "Tìm kiếm theo tiêu đề, ISBN..."
+        },
+        "categories": {
+          "label": "Thể loại",
+          "placeholder": "Chọn thể loại...",
+          "searchPlaceholder": "Tìm kiếm thể loại...",
+          "empty": "Không tìm thấy thể loại.",
+          "loading": "Đang tải thể loại..."
+        }
+      },
+      "sort": {
+        "label": "Sắp xếp theo",
+        "direction": "Thứ tự",
+        "fields": {
+          "title": "Tiêu đề",
+          "createdAt": "Ngày tạo",
+          "updatedAt": "Ngày cập nhật",
+          "publishedYear": "Năm xuất bản",
+          "price": "Giá",
+          "pages": "Số trang"
+        },
+        "order": {
+          "asc": "Tăng dần",
+          "desc": "Giảm dần"
+        }
+      }
+    },
+    "view": {
+      "author": "Tác giả ẩn danh",
+      "description": "Không có mô tả.",
+      "empty": {
+        "title": "Không tìm thấy sách",
+        "description": "Chúng tôi không tìm thấy kết quả nào phù hợp với tiêu chí tìm kiếm của bạn. Vui lòng thử thay đổi bộ lọc hoặc từ khóa."
+      },
+      "bookmark": {
+        "title": "Đánh dấu sách",
+        "error": "Không thể đánh dấu sách. Vui lòng thử lại.",
+        "success": "Đã thêm sách vào bộ sưu tập",
+        "removed": "Đã xóa sách khỏi bộ sưu tập"
+      },
+      "collection": {
+        "empty": "Không tìm thấy bộ sưu tập.",
+        "description": "Chúng tôi không tìm thấy bộ sưu tập nào phù hợp với tiêu chí tìm kiếm của bạn. Vui lòng thử thay đổi bộ lọc hoặc từ khóa."
+      }
     }
   }
 }

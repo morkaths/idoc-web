@@ -1,6 +1,9 @@
 "use client";
+
 import Link from 'next/link';
+import { useLocale as useNextLocale } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { LogInIcon } from 'lucide-react';
 import useDialogState from '@/hooks/ui/useDialogState';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import { Button } from '@repo/ui/components/button';
@@ -20,6 +23,7 @@ import type { User } from "@/types/schema";
 import { useLocale } from '@/hooks/ui/useLocale';
 
 export function ProfileDropdown() {
+  const locale = useNextLocale();
   const { data: session } = useSession();
   const user = session?.user as User;
   const [open, setOpen] = useDialogState();
@@ -38,11 +42,11 @@ export function ProfileDropdown() {
   if (!user) {
     return (
       <div className="flex gap-2">
-        <Button asChild variant="outline">
-          <Link href="/sign-in">{t(keys.user.signIn)}</Link>
-        </Button>
         <Button asChild variant="default">
-          <Link href="/sign-up">{t(keys.user.signUp)}</Link>
+          <Link href={`/${locale}/sign-in`}>
+            <LogInIcon className="h-4 w-4" />
+            {t(keys.user.signIn)}
+          </Link>
         </Button>
       </div>
     );

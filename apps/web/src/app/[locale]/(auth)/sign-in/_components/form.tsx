@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useSession } from "next-auth/react";
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,7 +11,6 @@ import { Loader2, LogIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { IconFacebook, IconGmail } from '@/assets/brand-icons';
 import { handleGoogleLogin, handleCredentialsLogin } from '@/actions/auth';
-import { useLocale, KEYS } from '@/hooks/ui/useLocale';
 import { cn } from '@/lib/utils';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -23,7 +23,7 @@ import {
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
-import { useSession } from "next-auth/react";
+import { useLocale, KEYS } from '@/hooks/ui/useLocale';
 
 const formSchema = z.object({
   email: z.string()
@@ -43,7 +43,7 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { update } = useSession();
-  const { t, tCommon, keys } = useLocale('auth');
+  const { t, keys } = useLocale('auth');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

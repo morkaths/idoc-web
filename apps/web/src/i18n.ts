@@ -12,8 +12,6 @@ export default getRequestConfig(async ({ locale: incomingLocale }) => {
         ? incomingLocale
         : defaultLocale;
 
-    console.log(`[i18n] Loading config for locale: ${locale} (Incoming: ${incomingLocale})`);
-
     return {
         locale: locale as Locale,
         messages: (await import(`../locales/${locale}.json`)).default,

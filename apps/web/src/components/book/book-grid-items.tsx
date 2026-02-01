@@ -6,6 +6,8 @@ import paths from "@/config/path";
 import { Skeleton } from "@repo/ui/components/skeleton";
 import { SearchX } from "lucide-react";
 import { BookGridItem } from "./book-grid-item";
+import { useLocale } from '@/hooks/ui/useLocale';
+import { BookmarkProvider } from "./bookmark-provider";
 
 interface BookGridItemsProps {
     data?: Book[];
@@ -21,6 +23,7 @@ export function BookGridItems({
     className = "",
 }: BookGridItemsProps) {
     const router = useRouter();
+    const { t, keys } = useLocale('books');
 
     if (loading) {
         return (
@@ -73,24 +76,26 @@ export function BookGridItems({
                     <SearchX className="w-12 h-12 text-primary opacity-40" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-zinc-100 mb-2">
-                    Không tìm thấy sách nào
+                    {t(keys.view.empty.title)}
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 text-center max-w-sm text-sm">
-                    Chúng tôi không tìm thấy kết quả phù hợp với tiêu chí tìm kiếm của bạn. Hãy thử thay đổi bộ lọc hoặc từ khóa nhé.
+                    {t(keys.view.empty.description)}
                 </p>
             </div>
         );
     }
 
     return (
-        <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 justify-items-center items-start ${className}`}>
-            {data.map((book) => (
-                <BookGridItem
-                    key={book.id}
-                    book={book}
-                    onClick={() => router.push(paths.book(book.id))}
-                />
-            ))}
-        </div>
+        <BookmarkProvider>
+            <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 justify-items-center items-start ${className}`}>
+                {data.map((book) => (
+                    <BookGridItem
+                        key={book.id}
+                        book={book}
+                        onClick={() => router.push(paths.book(book.id))}
+                    />
+                ))}
+            </div>
+        </BookmarkProvider>
     );
 }

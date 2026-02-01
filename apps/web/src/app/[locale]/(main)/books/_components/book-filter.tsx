@@ -14,6 +14,7 @@ import {
 } from "@repo/ui/components/form";
 import { Input } from "@repo/ui/components/input";
 import { FindParams } from "@/types";
+import { useLocale } from '@/hooks/ui/useLocale';
 
 const FilterSchema = z.object({
     search: z.string().optional(),
@@ -33,6 +34,7 @@ export default function BookFilter({
     onFilter,
     onReset,
 }: BookFilterProps) {
+    const { t, keys } = useLocale('books');
     const form = useForm<FilterForm>({
         resolver: zodResolver(FilterSchema),
         defaultValues: {
@@ -61,9 +63,9 @@ export default function BookFilter({
                     name="search"
                     render={({ field }) => (
                         <div className="grid gap-3">
-                            <FormLabel htmlFor="search">Search</FormLabel>
+                            <FormLabel htmlFor="search">{t(keys.sidebar.filter.search.label)}</FormLabel>
                             <FormControl>
-                                <Input id="search" placeholder="Search books..." {...field} />
+                                <Input id="search" placeholder={t(keys.sidebar.filter.search.placeholder)} {...field} />
                             </FormControl>
                             <FormMessage />
                         </div>
@@ -75,7 +77,7 @@ export default function BookFilter({
                     name="categoryIds"
                     render={({ field }) => (
                         <div className="grid gap-3">
-                            <FormLabel htmlFor="categoryIds">Categories</FormLabel>
+                            <FormLabel htmlFor="categoryIds">{t(keys.sidebar.filter.categories.label)}</FormLabel>
                             <FormControl>
                                 <CategoriesCombobox
                                     value={field.value || []}
@@ -89,14 +91,14 @@ export default function BookFilter({
                 {/* Reset & Submit */}
                 <div className="flex gap-2">
                     <Button variant="outline" type="button" className="flex-1" onClick={() => { form.reset(); onReset(); }}>
-                        Reset
+                        {t(keys.sidebar.actions.reset)}
                     </Button>
                     <Button
                         type="submit"
                         className="flex-1"
                         disabled={form.formState.isSubmitting}
                     >
-                        Apply
+                        {t(keys.sidebar.actions.submit)}
                     </Button>
                 </div>
             </form>

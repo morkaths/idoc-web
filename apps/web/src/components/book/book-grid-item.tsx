@@ -2,8 +2,11 @@ import { Icon } from '@iconify/react';
 import { Book } from "@/types";
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { useCreateBookmark, useDeleteBookmark } from "@/hooks/data/useBookmark";
-import { BookmarkDialog } from './bookmark-dialog';
+import { useDeleteBookmark } from "@/hooks/data/useBookmark";
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
+import { useLocale } from '@/hooks/ui/useLocale';
+import { useBookmarkContext } from './bookmark-provider';
 
 type BookGridItemProps = {
   book: Book;
@@ -14,14 +17,15 @@ export function BookGridItem({
   book,
   onClick,
 }: BookGridItemProps) {
+  const { t, keys } = useLocale('books');
   const [imageError, setImageError] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(book.bookmarkId);
   const isBookmarked = !!bookmarkId;
 
-  const [showBookmarkDialog, setShowBookmarkDialog] = useState(false);
+  const { setOpen, setCurrentBook } = useBookmarkContext();
+  const { mutate: deleteBookmark, isPending: isDeleting } = useDeleteBookmark();
 
-  const { mutate: createBookmark } = useCreateBookmark();
-  const { mutate: deleteBookmark } = useDeleteBookmark();
+  const isLoading = isDeleting;
 
   // Sync state with props
   useEffect(() => {
@@ -30,43 +34,27 @@ export function BookGridItem({
 
   const handleToggleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isLoading) return;
+
     if (isBookmarked) {
       if (bookmarkId) {
         deleteBookmark(bookmarkId, {
           onSuccess: () => {
             setBookmarkId(undefined);
+            toast.success(t(keys.view.bookmark.removed));
           },
           onError: (error) => {
             console.error("Failed to unbookmark:", error);
+            toast.error(t(keys.view.bookmark.error));
           }
         });
       } else {
         console.warn("Cannot unbookmark: Missing bookmark ID");
       }
     } else {
-      setShowBookmarkDialog(true);
+      setCurrentBook(book);
+      setOpen(true);
     }
-  };
-
-  const handleSelectCollection = (collectionId?: string) => {
-    createBookmark(
-      {
-        itemId: book.id,
-        collectionId: collectionId,
-      },
-      {
-        onSuccess: (data: any) => {
-          // Assuming data is the created bookmark object
-          if (data && data.id) {
-            setBookmarkId(data.id);
-          }
-          setShowBookmarkDialog(false);
-        },
-        onError: (error) => {
-          console.error("Failed to bookmark:", error);
-        }
-      }
-    );
   };
 
   return (
@@ -124,7 +112,7 @@ export function BookGridItem({
                 </span>
               ))
             ) : (
-              "Unknown Author"
+              t(keys.view.author)
             )}
           </div>
 
@@ -147,26 +135,25 @@ export function BookGridItem({
 
             <button
               onClick={handleToggleBookmark}
+              disabled={isLoading}
               className={`transition-colors p-1 ${isBookmarked
                 ? "text-primary hover:text-primary/80"
                 : "text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-zinc-200"
-                }`}
+                } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <Icon
-                icon={isBookmarked ? "mdi:bookmark" : "mdi:bookmark-outline"}
-                width={20}
-                height={20}
-              />
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin text-primary" />
+              ) : (
+                <Icon
+                  icon={isBookmarked ? "mdi:bookmark" : "mdi:bookmark-outline"}
+                  width={20}
+                  height={20}
+                />
+              )}
             </button>
           </div>
         </div>
       </div>
-
-      <BookmarkDialog
-        open={showBookmarkDialog}
-        onOpenChange={setShowBookmarkDialog}
-        onSelectCollection={handleSelectCollection}
-      />
     </>
   );
 }

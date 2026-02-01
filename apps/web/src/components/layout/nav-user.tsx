@@ -1,5 +1,7 @@
 import Link from 'next/link';
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Settings, Sparkles } from 'lucide-react';
+import { useLocale as useNextLocale } from 'next-intl';
+import { LogInIcon, UserPlus } from 'lucide-react';
+import { BadgeCheck, ChevronsUpDown, CreditCard, LogOut, Settings, Sparkles } from 'lucide-react';
 import useDialogState from '@/hooks/ui/useDialogState';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import {
@@ -19,6 +21,7 @@ import type { User } from "@/types/schema";
 import { useLocale } from '@/hooks/ui/useLocale';
 
 export function NavUser() {
+  const locale = useNextLocale();
   const { data: session } = useSession();
   const user = session?.user as User;
   const { isMobile } = useResponsive();
@@ -29,10 +32,16 @@ export function NavUser() {
     return (
       <div className="flex gap-2">
         <Button asChild variant="default">
-          <Link href="/sign-in">{t(keys.user.signIn)}</Link>
+          <Link href={`/${locale}/sign-in`}>
+            <LogInIcon className="h-4 w-4" />
+            {t(keys.user.signIn)}
+          </Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href="/sign-up">{t(keys.user.signUp)}</Link>
+          <Link href={`/${locale}/sign-up`}>
+            <UserPlus className="h-4 w-4" />
+            {t(keys.user.signUp)}
+          </Link>
         </Button>
       </div>
     );
