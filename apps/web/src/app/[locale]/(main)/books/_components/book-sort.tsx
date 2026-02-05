@@ -36,9 +36,8 @@ export default function BookSort({
     const form = useForm<SortForm>({
         resolver: zodResolver(SortSchema),
         defaultValues: {
-            sortBy: "createdAt",
-            sortOrder: "desc",
-            ...sort,
+            sortBy: sort?.sortBy || "createdAt",
+            sortOrder: sort?.sortOrder || "desc",
         },
     });
 
@@ -114,7 +113,10 @@ export default function BookSort({
                 />
                 {/* Reset & Submit */}
                 <div className="flex gap-2">
-                    <Button variant="outline" type="button" className="flex-1" onClick={() => { form.reset(); onReset(); }}>
+                    <Button variant="outline" type="button" className="flex-1" onClick={() => {
+                        form.reset({ sortBy: "createdAt", sortOrder: "desc" });
+                        onReset();
+                    }}>
                         {t(keys.sidebar.actions.reset)}
                     </Button>
                     <Button

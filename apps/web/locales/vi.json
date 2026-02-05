@@ -9,7 +9,28 @@
       "create": "Tạo mới",
       "update": "Cập nhật",
       "close": "Đóng",
-      "search": "Tìm kiếm..."
+      "search": "Tìm kiếm...",
+      "next": "Tiếp theo",
+      "previous": "Trước đó",
+      "view": "Hiển thị",
+      "toggleColumns": "Ẩn/hiện cột"
+    },
+    "table": {
+      "asc": "Tăng dần",
+      "desc": "Giảm dần",
+      "hide": "Ẩn cột",
+      "selected": "đã chọn",
+      "actions": {
+        "clear": "Bỏ chọn"
+      },
+      "confirmByTyping": "Nhập \"{word}\" để xác nhận:",
+      "typeToConfirm": "Nhập từ khóa để xác nhận.",
+      "warning": "Cảnh báo!",
+      "operationRisk": "Hãy cẩn thận, thao tác này không thể hoàn tác.",
+      "actionSucceeded": "{action} {count} {entity} thành công!",
+      "actionFailed": "Thao tác {action} thất bại!",
+      "defaultConfirmTitle": "{action} {count} {entity}",
+      "defaultConfirmDesc": "Bạn có chắc chắn muốn {action} các {entity} đã chọn không?"
     },
     "states": {
       "loading": "Đang tải...",
@@ -17,6 +38,15 @@
       "error": "Lỗi",
       "success": "Thành công",
       "noData": "Không tìm thấy dữ liệu"
+    },
+    "pagination": {
+      "rowsPerPage": "Số hàng mỗi trang",
+      "of": "trên",
+      "page": "Trang",
+      "first": "Trang đầu",
+      "last": "Trang cuối",
+      "next": "Trang sau",
+      "previous": "Trang trước"
     }
   },
   "theme": {
@@ -321,6 +351,148 @@
       "collection": {
         "empty": "Không tìm thấy bộ sưu tập.",
         "description": "Chúng tôi không tìm thấy bộ sưu tập nào phù hợp với tiêu chí tìm kiếm của bạn. Vui lòng thử thay đổi bộ lọc hoặc từ khóa."
+      }
+    }
+  },
+  "library": {
+    "title": "Thư viện của tôi",
+    "description": "Quản lý sách đang mượn và xem lại lịch sử mượn sách cá nhân.",
+    "tabs": {
+      "books": "Danh sách sách",
+      "borrows": "Danh sách mượn"
+    },
+    "search": {
+      "placeholder": "Tìm kiếm bản mượn..."
+    },
+    "table": {
+      "entity": "bản mượn",
+      "columns": {
+        "cover": "Ảnh bìa",
+        "item": "Vật phẩm",
+        "renewals": "Số lần gia hạn",
+        "borrowTime": "Ngày mượn",
+        "expireTime": "Ngày hết hạn",
+        "returnTime": "Ngày trả",
+        "status": "Trạng thái"
+      },
+      "states": {
+        "active": "Đang mượn",
+        "overdue": "Quá hạn",
+        "returned": "Đã trả"
+      },
+      "actions": {
+        "view": {
+          "label": "Xem",
+          "loading": "Đang chuyển hướng..."
+        },
+        "extend": {
+          "label": "Gia hạn",
+          "title": "Gia hạn bản mượn",
+          "description": "Chọn thêm số ngày hoặc ngày hết hạn mới cho bản mượn này.",
+          "loading": "Đang gia hạn bản mượn...",
+          "success": "Gia hạn bản mượn thành công!",
+          "error": "Gia hạn thất bại. Vui lòng thử lại.",
+          "fields": {
+            "borrowDate": "Ngày mượn",
+            "extraDays": "Số ngày gia hạn",
+            "borrowRange": "Khoảng thời gian mượn",
+            "note": "Ghi chú",
+            "placeholder": "Số ngày cần gia hạn",
+            "error": "Ngày hết hạn mới phải cách ngày hết hạn hiện tại ít nhất 1 ngày."
+          }
+        },
+        "review": {
+          "label": "Đánh giá",
+          "create": {
+            "success": "Đánh giá bản mượn thành công!",
+            "error": "Lỗi khi đánh giá. Vui lòng thử lại sau."
+          },
+          "update": {
+            "success": "Cập nhật đánh giá thành công!",
+            "error": "Lỗi khi cập nhật đánh giá. Vui lòng thử lại sau."
+          }
+        },
+        "return": {
+          "label": "Trả",
+          "title": "Trả bản mượn này: {borrowId}?",
+          "loading": "Đang thực hiện trả bản mượn...",
+          "success": "Trả bản mượn thành công!",
+          "error": "Lỗi khi trả bản mượn. Vui lòng thử lại sau.",
+          "confirm": "Bản mượn sau đã được trả:",
+          "confirmDesc": "Bạn có chắc chắn muốn trả cuốn sách <strong>{title}</strong> không?<br></br>Thao tác này không thể hoàn tác."
+        },
+        "history": {
+          "label": "Lịch sử",
+          "title": "Lịch sử mượn",
+          "description": "Dòng thời gian các sự kiện cho bản mượn này.",
+          "unknownTitle": "Tiêu đề không xác định",
+          "unknownAuthor": "Tác giả không xác định",
+          "noCategory": "Không có danh mục",
+          "loading": "Đang tải lịch sử bản mượn...",
+          "success": "Tải lịch sử thành công!",
+          "error": "Lỗi khi tải lịch sử. Vui lòng thử lại sau.",
+          "timeline": {
+            "borrowed": {
+              "title": "Đã mượn",
+              "content": "Người dùng <strong>{username}</strong> đã mượn <strong>{title}</strong>."
+            },
+            "renewal": {
+              "title": "Gia hạn lần {index}",
+              "content": "Hạn trả mới: <strong>{date}</strong>."
+            },
+            "returned": {
+              "title": "Đã trả",
+              "content": "Vật phẩm đã được trả lại."
+            },
+            "overdue": {
+              "title": "Quá hạn",
+              "content": "Vật phẩm đã quá hạn từ ngày <strong>{date}</strong>."
+            },
+            "due": {
+              "title": "Hạn trả",
+              "content": "Hạn trả vật phẩm: <strong>{date}</strong>."
+            },
+            "unknown": "Không rõ ngày"
+          }
+        }
+      },
+      "bulkActions": {
+        "return": {
+          "label": "Trả",
+          "tooltip": "Trả các bản mượn đã chọn",
+          "confirmDesc": "Bạn có chắc chắn muốn trả các bản mượn đã chọn không?"
+        },
+        "export": {
+          "label": "Xuất dữ liệu",
+          "tooltip": "Xuất các bản mượn đã chọn",
+          "confirmDesc": "Bạn có chắc chắn muốn xuất dữ liệu các bản mượn đã chọn không?"
+        }
+      }
+    },
+    "review": {
+      "create": "Đánh giá sách",
+      "update": "Cập nhật đánh giá",
+      "title": "Đánh giá bản mượn",
+      "description": "Chia sẻ cảm nghĩ của bạn về \"{title}\".",
+      "fallback": "Chia sẻ cảm nghĩ của bạn về cuốn sách này.",
+      "rating": {
+        "label": "Đánh giá của bạn",
+        "error": "Vui lòng chọn mức đánh giá!",
+        "value": {
+          "excellent": "Rất tốt!",
+          "good": "Tốt!",
+          "neutral": "Bình thường!",
+          "poor": "Kém!",
+          "terrible": "Rất tệ!"
+        }
+      },
+      "content": {
+        "label": "Nội dung đánh giá",
+        "placeholder": "Bạn thích hay không thích điều gì ở cuốn sách này?"
+      },
+      "actions": {
+        "submit": "Gửi đánh giá",
+        "update": "Cập nhật"
       }
     }
   }

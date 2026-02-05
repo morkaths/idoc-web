@@ -9,7 +9,29 @@
       "create": "Create",
       "update": "Update",
       "close": "Close",
-      "search": "Search..."
+      "select": "Select",
+      "search": "Search...",
+      "next": "Next",
+      "previous": "Previous",
+      "view": "View",
+      "toggleColumns": "Toggle columns"
+    },
+    "table": {
+      "asc": "Asc",
+      "desc": "Desc",
+      "hide": "Hide",
+      "selected": "selected",
+      "actions": {
+        "clear": "Clear selection"
+      },
+      "confirmByTyping": "Confirm by typing \"{word}\":",
+      "typeToConfirm": "Type keyword to confirm.",
+      "warning": "Warning!",
+      "operationRisk": "Please be careful, this operation cannot be rolled back.",
+      "actionSucceeded": "{action} {count} {entity} successfully!",
+      "actionFailed": "{action} failed!",
+      "defaultConfirmTitle": "{action} {count} {entity}",
+      "defaultConfirmDesc": "Are you sure you want to {action} the selected {entity}?"
     },
     "states": {
       "loading": "Loading...",
@@ -17,6 +39,15 @@
       "error": "Error",
       "success": "Success",
       "noData": "No data found"
+    },
+    "pagination": {
+      "rowsPerPage": "Rows per page",
+      "of": "of",
+      "page": "Page",
+      "first": "First page",
+      "last": "Last page",
+      "next": "Next page",
+      "previous": "Previous page"
     }
   },
   "theme": {
@@ -321,6 +352,179 @@
       "collection": {
         "empty": "No collections found.",
         "description": "We couldn't find any collections matching your search criteria. Please try changing your filters or keywords."
+      }
+    }
+  },
+  "book": {
+    "title": "Book Details",
+    "description": "View book details and manage your collection.",
+    "tabs": {
+      "info": {
+        "label": "Info",
+        "description": "View book details and manage your collection."
+      },
+      "reviews": {
+        "label": "Reviews",
+        "description": "View book reviews and manage your collection."
+      },
+      "recommendations": {
+        "label": "Recommendations",
+        "description": "View book recommendations and manage your collection."
+      },
+      "similar": {
+        "label": "Similar",
+        "description": "View similar books and manage your collection."
+      },
+      "tags": {
+        "label": "Tags",
+        "description": "View book tags and manage your collection."
+      }
+    },
+    "actions": {
+      "backToHome": "Back to Home",
+      "goBack": "Go Back",
+      "learnMore": "Learn more"
+    }
+  },
+  "library": {
+    "title": "My Library",
+    "description": "Manage your borrowed books and explore your personal library history.",
+    "tabs": {
+      "books": "Book List",
+      "borrows": "Borrow List"
+    },
+    "search": {
+      "placeholder": "Search borrows..."
+    },
+    "table": {
+      "entity": "borrow",
+      "columns": {
+        "cover": "Cover",
+        "item": "Item",
+        "renewals": "Renewals",
+        "borrowTime": "Borrow Date",
+        "expireTime": "Expire Date",
+        "returnTime": "Return Date",
+        "status": "Status"
+      },
+      "states": {
+        "active": "Active",
+        "overdue": "Overdue",
+        "returned": "Returned"
+      },
+      "actions": {
+        "view": {
+          "label": "View",
+          "loading": "Redirecting..."
+        },
+        "extend": {
+          "label": "Extend",
+          "title": "Extend Borrow",
+          "description": "Choose extra days or pick a new expire date for this borrow.",
+          "loading": "Extending borrow...",
+          "success": "Borrow extended successfully!",
+          "error": "Failed to extend borrow. Please try again.",
+          "fields": {
+            "borrowDate": "Borrow Date",
+            "extraDays": "Extra Days",
+            "borrowRange": "Borrow Range",
+            "note": "Note",
+            "placeholder": "Number of days to extend",
+            "error": "Expire date must be at least 1 day after current expire date."
+          }
+        },
+        "review": {
+          "label": "Review",
+          "create": {
+            "success": "Borrow reviewed successfully!",
+            "error": "Failed to review borrow. Please try again."
+          },
+          "update": {
+            "success": "Borrow reviewed successfully!",
+            "error": "Failed to review borrow. Please try again."
+          }
+        },
+        "return": {
+          "label": "Return",
+          "title": "Return this borrow: {borrowId}?",
+          "loading": "Returning borrow...",
+          "success": "Borrow returned successfully!",
+          "error": "Failed to return borrow. Please try again.",
+          "confirm": "The following borrow has been returned:",
+          "confirmDesc": "Are you sure you want to return <strong>{title}</strong>?<br></br>This action cannot be undone."
+        },
+        "history": {
+          "label": "History",
+          "title": "Borrow History",
+          "description": "Timeline of events for this borrow record.",
+          "unknownTitle": "Unknown Title",
+          "unknownAuthor": "Unknown Author",
+          "noCategory": "No Category",
+          "loading": "Loading borrow history...",
+          "success": "Borrow history loaded successfully!",
+          "error": "Failed to load borrow history. Please try again.",
+          "timeline": {
+            "borrowed": {
+              "title": "Borrowed",
+              "content": "User <strong>{username}</strong> borrowed <strong>{title}</strong>."
+            },
+            "renewal": {
+              "title": "Renewal #{index}",
+              "content": "Extended until <strong>{date}</strong>."
+            },
+            "returned": {
+              "title": "Returned",
+              "content": "Item was returned."
+            },
+            "overdue": {
+              "title": "Overdue",
+              "content": "Item is overdue since <strong>{date}</strong>."
+            },
+            "due": {
+              "title": "Due Date",
+              "content": "Item is due on <strong>{date}</strong>."
+            },
+            "unknown": "Unknown Date"
+          }
+        }
+      },
+      "bulkActions": {
+        "return": {
+          "label": "Return",
+          "tooltip": "Return selected borrows",
+          "confirmDesc": "Are you sure you want to return the selected borrows?"
+        },
+        "export": {
+          "label": "Export",
+          "tooltip": "Export selected borrows",
+          "confirmDesc": "Are you sure you want to export the selected borrows?"
+        }
+      }
+    },
+    "review": {
+      "create": "Review Book",
+      "update": "Update Review",
+      "title": "Review Borrow",
+      "description": "Share your thoughts on \"{title}\".",
+      "fallback": "Share your thoughts on this book.",
+      "rating": {
+        "label": "Your Rating",
+        "error": "Please select a rating!",
+        "value": {
+          "excellent": "Excellent!",
+          "good": "Good!",
+          "neutral": "Neutral!",
+          "poor": "Poor!",
+          "terrible": "Terrible!"
+        }
+      },
+      "content": {
+        "label": "Review Content",
+        "placeholder": "What did you like or dislike about this book?"
+      },
+      "actions": {
+        "submit": "Submit Review",
+        "update": "Update Review"
       }
     }
   }

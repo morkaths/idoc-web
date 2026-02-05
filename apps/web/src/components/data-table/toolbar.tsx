@@ -6,6 +6,7 @@ import { DataTableFacetedFilter } from './faceted-filter';
 import { DataTableViewOptions } from './view-options';
 import { useDebounce } from '@/hooks/ui/useDebounce';
 import { useEffect, useState } from 'react';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 type DataTableToolbarProps<TData> = {
   table: Table<TData>;
@@ -24,10 +25,12 @@ type DataTableToolbarProps<TData> = {
 
 export function DataTableToolbar<TData>({
   table,
-  searchPlaceholder = 'Filter...',
+  searchPlaceholder,
   searchKey,
   filters = [],
 }: DataTableToolbarProps<TData>) {
+  const { t, keys } = useLocale('common');
+  const defaultPlaceholder = t(keys.actions.search);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
   const isFiltered = table.getState().columnFilters.length > 0 || table.getState().globalFilter;
@@ -44,7 +47,7 @@ export function DataTableToolbar<TData>({
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
         <Input
-          placeholder={searchPlaceholder}
+          placeholder={searchPlaceholder || defaultPlaceholder}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           className='h-8 w-37.5 lg:w-62.5'
@@ -73,7 +76,7 @@ export function DataTableToolbar<TData>({
             }}
             className='h-8 px-2 lg:px-3'
           >
-            Reset
+            {t(keys.actions.cancel)}
             <Cross2Icon className='ms-2 h-4 w-4' />
           </Button>
         )}

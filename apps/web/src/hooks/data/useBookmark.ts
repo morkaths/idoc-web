@@ -64,3 +64,11 @@ export const useDeleteBookmark = () => {
         },
     });
 };
+export const useBookmarkStatus = (itemIds: string[]) => {
+    return useQuery({
+        queryKey: ['bookmarks', 'status', itemIds],
+        queryFn: () => BookmarkApi.status(itemIds),
+        enabled: itemIds.length > 0,
+        staleTime: 5 * 60 * 1000,
+    });
+};

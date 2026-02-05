@@ -1,11 +1,10 @@
 import { API_CONFIG } from '@/config/api';
 import type { Bookmark, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
-import { getAccessToken } from './config';
+import { ApiClient, getAccessToken } from './config';
 
 export const BookmarkApi = {
     find: async (params?: FindParams): Promise<{ data: Bookmark[]; pagination?: Pagination }> => {
-        const response = await ApiRequest.apiGet<Bookmark[]>(
+        const response = await ApiClient.get<Bookmark[]>(
             API_CONFIG.endpoints.bookmark.find,
             { mode: 'public', params }
         );
@@ -16,7 +15,7 @@ export const BookmarkApi = {
     },
 
     findById: async (id: string): Promise<Bookmark | null> => {
-        const response = await ApiRequest.apiGet<Bookmark>(
+        const response = await ApiClient.get<Bookmark>(
             API_CONFIG.endpoints.bookmark.findById(id),
             { mode: 'public' }
         );
@@ -27,7 +26,7 @@ export const BookmarkApi = {
     status: async (itemIds: string[]): Promise<Record<string, string | null>> => {
         if (!getAccessToken()) return {};
 
-        const response = await ApiRequest.apiPost<Record<string, string | null>>(
+        const response = await ApiClient.post<Record<string, string | null>>(
             API_CONFIG.endpoints.bookmark.status,
             { mode: 'public', data: { itemIds } }
         );
@@ -36,7 +35,7 @@ export const BookmarkApi = {
     },
 
     create: async (data: Partial<Bookmark>): Promise<Bookmark | null> => {
-        const response = await ApiRequest.apiPost<Bookmark>(
+        const response = await ApiClient.post<Bookmark>(
             API_CONFIG.endpoints.bookmark.create,
             { mode: 'private', data }
         );
@@ -45,7 +44,7 @@ export const BookmarkApi = {
     },
 
     update: async (id: string, data: Partial<Bookmark>): Promise<Bookmark | null> => {
-        const response = await ApiRequest.apiPatch<Bookmark>(
+        const response = await ApiClient.patch<Bookmark>(
             API_CONFIG.endpoints.bookmark.update(id),
             { mode: 'private', data }
         );
@@ -54,7 +53,7 @@ export const BookmarkApi = {
     },
 
     delete: async (id: string): Promise<boolean> => {
-        const response = await ApiRequest.apiDelete<null>(
+        const response = await ApiClient.delete<null>(
             API_CONFIG.endpoints.bookmark.delete(id),
             { mode: 'private' }
         );

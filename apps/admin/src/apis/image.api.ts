@@ -1,12 +1,12 @@
 import { API_CONFIG } from '@/config/api';
-import * as ApiRequest from './config';
+import { ApiClient } from './config';
 
 export const ImageApi = {
     upload: async (file: File, folder: string): Promise<string> => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('folder', folder);
-        const response = await ApiRequest.apiPost<{ url: string }>(
+        const response = await ApiClient.post<{ url: string }>(
             API_CONFIG.endpoints.image.upload,
             {
                 mode: 'private',
@@ -19,7 +19,7 @@ export const ImageApi = {
     },
 
     delete: async (url: string): Promise<boolean> => {
-        const response = await ApiRequest.apiDelete<null>(
+        const response = await ApiClient.delete<null>(
             API_CONFIG.endpoints.image.delete,
             { mode: 'private', data: { url } }
         );

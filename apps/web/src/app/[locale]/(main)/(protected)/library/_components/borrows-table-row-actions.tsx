@@ -1,7 +1,7 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type Row } from '@tanstack/react-table';
 import { type Borrow, BorrowSchema } from '@/types/schema';
-import { Clock, Eye, Undo2, History } from 'lucide-react';
+import { Clock, Eye, Undo2, History, Star } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
   DropdownMenu,
@@ -12,12 +12,14 @@ import {
 } from '@repo/ui/components/dropdown-menu';
 import { useBorrowsContext } from './borrows-provider';
 import { useRouter } from 'next/navigation';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 type BorrowsTableRowActionsProps<TData> = {
   row: Row<TData>;
 };
 
 export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsProps<TData>) {
+  const { t, keys } = useLocale('library');
   const original = row.original as unknown as Borrow;
   const safeBorrow = {
     ...original,
@@ -74,8 +76,17 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               }
             }}
           >
-            View
+            {t(keys.table.actions.view.label)}
             <span className="ml-auto"><Eye /></span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(borrow);
+              setOpen('review');
+            }}
+          >
+            {t(keys.table.actions.review.label)}
+            <span className="ml-auto"><Star size={16} /></span>
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
@@ -83,7 +94,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               setOpen('history');
             }}
           >
-            History
+            {t(keys.table.actions.history.label)}
             <span className="ml-auto"><History size={16} /></span>
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -92,7 +103,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               setOpen('extend');
             }}
           >
-            Extend
+            {t(keys.table.actions.extend.label)}
             <span className='ml-auto'>
               <Clock size={16} />
             </span>
@@ -101,12 +112,13 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
           <DropdownMenuSeparator />
 
           <DropdownMenuItem
+            className="text-destructive focus:text-destructive"
             onClick={() => {
               setCurrentRow(borrow);
               setOpen('return');
             }}
           >
-            Return
+            {t(keys.table.actions.return.label)}
             <span className='ml-auto'>
               <Undo2 size={16} />
             </span>

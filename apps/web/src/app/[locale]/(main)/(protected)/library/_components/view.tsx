@@ -6,18 +6,20 @@ import { BorrowsProvider } from "./borrows-provider";
 import { BorrowsPrimaryButtons } from "./borrows-primary-buttons";
 import { BorrowsTable } from "./borrows-table";
 import { BorrowsDialogs } from "./borrows-dialogs";
+import { useLocale } from '@/hooks/ui/useLocale';
 
 export function LibraryView() {
+  const { t, keys } = useLocale('library');
   return (
     <main className="container py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">My Library</h1>
-        <p className="text-muted-foreground">Manage your borrowed books and explore your personal library history.</p>
+        <h1 className="text-2xl font-bold mb-2">{t(keys.title)}</h1>
+        <p className="text-muted-foreground">{t(keys.description)}</p>
       </div>
       <Tabs defaultValue="books" className="w-full">
         <TabsList className="mb-6">
-          <TabsTrigger value="books">Book List</TabsTrigger>
-          <TabsTrigger value="borrows">Borrow List</TabsTrigger>
+          <TabsTrigger value="books">{t(keys.tabs.books)}</TabsTrigger>
+          <TabsTrigger value="borrows">{t(keys.tabs.borrows)}</TabsTrigger>
         </TabsList>
         <TabsContent value="books">
           <BookGridView filter={{}} />

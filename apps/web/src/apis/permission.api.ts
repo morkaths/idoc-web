@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
 import type { Permission, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
+import { ApiClient } from './config';
 
 export const PermissionApi = {
   find: async (params?: FindParams): Promise<{ data: Permission[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<Permission[]>(
+    const response = await ApiClient.get<Permission[]>(
       API_CONFIG.endpoints.permission.find,
       { params }
     );
@@ -15,7 +15,7 @@ export const PermissionApi = {
   },
 
   findById: async (id: string): Promise<Permission | null> => {
-    const response = await ApiRequest.apiGet<Permission>(
+    const response = await ApiClient.get<Permission>(
       API_CONFIG.endpoints.permission.findById(id)
     );
     if (response.success && response.data) return response.data;
@@ -23,7 +23,7 @@ export const PermissionApi = {
   },
 
   create: async (data: Partial<Permission>): Promise<Permission | null> => {
-    const response = await ApiRequest.apiPost<Permission>(
+    const response = await ApiClient.post<Permission>(
       API_CONFIG.endpoints.permission.create,
       { data }
     );
@@ -32,7 +32,7 @@ export const PermissionApi = {
   },
 
   update: async (id: string, data: Partial<Permission>): Promise<Permission | null> => {
-    const response = await ApiRequest.apiPatch<Permission>(
+    const response = await ApiClient.patch<Permission>(
       API_CONFIG.endpoints.permission.update(id),
       { data }
     );
@@ -41,7 +41,7 @@ export const PermissionApi = {
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const response = await ApiRequest.apiDelete<null>(
+    const response = await ApiClient.delete<null>(
       API_CONFIG.endpoints.permission.delete(id)
     );
     return response.success;

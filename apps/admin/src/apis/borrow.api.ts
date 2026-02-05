@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
 import type { Borrow, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
+import { ApiClient } from './config';
 
 export const BorrowApi = {
   find: async (params?: FindParams): Promise<{ data: Borrow[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<Borrow[]>(
+    const response = await ApiClient.get<Borrow[]>(
       API_CONFIG.endpoints.borrow.find,
       { mode: 'public', params }
     );
@@ -15,7 +15,7 @@ export const BorrowApi = {
   },
 
   history: async (params?: FindParams): Promise<{ data: Borrow[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<Borrow[]>(
+    const response = await ApiClient.get<Borrow[]>(
       API_CONFIG.endpoints.borrow.history,
       { mode: 'private', params }
     );
@@ -26,7 +26,7 @@ export const BorrowApi = {
   },
 
   findById: async (id: string): Promise<Borrow | null> => {
-    const response = await ApiRequest.apiGet<Borrow>(
+    const response = await ApiClient.get<Borrow>(
       API_CONFIG.endpoints.borrow.findById(id),
       { mode: 'public' }
     );
@@ -35,7 +35,7 @@ export const BorrowApi = {
   },
 
   create: async (data: Partial<Borrow>): Promise<Borrow | null> => {
-    const response = await ApiRequest.apiPost<Borrow>(
+    const response = await ApiClient.post<Borrow>(
       API_CONFIG.endpoints.borrow.create,
       { mode: 'private', data }
     );
@@ -44,7 +44,7 @@ export const BorrowApi = {
   },
 
   update: async (id: string, data: Partial<Borrow>): Promise<Borrow | null> => {
-    const response = await ApiRequest.apiPatch<Borrow>(
+    const response = await ApiClient.patch<Borrow>(
       API_CONFIG.endpoints.borrow.update(id),
       { mode: 'private', data }
     );
@@ -53,7 +53,7 @@ export const BorrowApi = {
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const response = await ApiRequest.apiDelete<null>(
+    const response = await ApiClient.delete<null>(
       API_CONFIG.endpoints.borrow.delete(id),
       { mode: 'private' }
     );
@@ -61,7 +61,7 @@ export const BorrowApi = {
   },
 
   extend: async (id: string, extraDays: number, note?: string): Promise<Borrow | null> => {
-    const response = await ApiRequest.apiPut<Borrow>(
+    const response = await ApiClient.put<Borrow>(
       API_CONFIG.endpoints.borrow.extend(id),
       { mode: 'private', data: { extraDays, note } }
     );
@@ -70,7 +70,7 @@ export const BorrowApi = {
   },
 
   return: async (id: string): Promise<Borrow | null> => {
-    const response = await ApiRequest.apiPut<Borrow>(
+    const response = await ApiClient.put<Borrow>(
       API_CONFIG.endpoints.borrow.return(id),
       { mode: 'private' }
     );

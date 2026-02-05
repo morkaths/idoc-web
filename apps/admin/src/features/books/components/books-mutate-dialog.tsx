@@ -20,6 +20,7 @@ import { Label } from "@repo/ui/components/label";
 import { AuthorsCombobox } from "./authors-combobox";
 import { Textarea } from "@repo/ui/components/textarea";
 import { CategoriesCombobox } from "./categories-combobox";
+import { LanguageSelect } from "./language-select";
 import { ImageUpload } from '@/components/form/image-upload';
 import { FileUpload } from '@/components/form/file-upload';
 import { useUploadFile, useConfirmFile, useFile, useDeleteFile } from "@/hooks/data/useFile";
@@ -31,7 +32,6 @@ import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/c
 
 const BookFormSchema = z.object({
     title: z.string().min(1, "Title is required"),
-    subtitle: z.string().optional(),
     description: z.string().optional(),
     slug: z.string().regex(/^[a-z0-9-]+$/, "Slug must be lowercase, no spaces or special characters").optional(),
     publisher: z.string().optional(),
@@ -80,7 +80,6 @@ export function BooksMutateDialog({
         resolver: zodResolver(BookFormSchema),
         defaultValues: {
             title: initialData?.title ?? "",
-            subtitle: initialData?.subtitle ?? "",
             description: initialData?.description ?? "",
             slug: initialData?.slug ?? "",
             publisher: initialData?.publisher ?? "",
@@ -188,33 +187,7 @@ export function BooksMutateDialog({
                                         </div>
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
-                                    name="subtitle"
-                                    render={({ field }) => (
-                                        <div className="grid gap-3">
-                                            <FormLabel htmlFor="subtitle">Subtitle</FormLabel>
-                                            <FormControl>
-                                                <Input id="subtitle" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </div>
-                                    )}
-                                />
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <FormField
-                                        control={form.control}
-                                        name="isbn"
-                                        render={({ field }) => (
-                                            <div className="grid gap-3">
-                                                <FormLabel htmlFor="isbn">ISBN</FormLabel>
-                                                <FormControl>
-                                                    <Input id="isbn" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </div>
-                                        )}
-                                    />
                                     <FormField
                                         control={form.control}
                                         name="slug"
@@ -228,7 +201,37 @@ export function BooksMutateDialog({
                                             </div>
                                         )}
                                     />
+                                    <FormField
+                                        control={form.control}
+                                        name="isbn"
+                                        render={({ field }) => (
+                                            <div className="grid gap-3">
+                                                <FormLabel htmlFor="isbn">ISBN</FormLabel>
+                                                <FormControl>
+                                                    <Input id="isbn" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </div>
+                                        )}
+                                    />
                                 </div>
+                                <FormField
+                                    control={form.control}
+                                    name="language"
+                                    render={({ field }) => (
+                                        <div className="grid gap-3">
+                                            <FormLabel htmlFor="language">Language</FormLabel>
+                                            <FormControl>
+                                                <LanguageSelect
+                                                    id="language"
+                                                    value={field.value || ""}
+                                                    onChange={field.onChange}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </div>
+                                    )}
+                                />
                             </div>
                         </div>
                         {/* Các trường dài để bên dưới full width */}
@@ -263,33 +266,20 @@ export function BooksMutateDialog({
                                     </div>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name="edition"
-                                render={({ field }) => (
-                                    <div className="grid gap-3">
-                                        <FormLabel htmlFor="edition">Edition</FormLabel>
-                                        <FormControl>
-                                            <Input id="edition" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </div>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="language"
-                                render={({ field }) => (
-                                    <div className="grid gap-3">
-                                        <FormLabel htmlFor="language">Language</FormLabel>
-                                        <FormControl>
-                                            <Input id="language" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </div>
-                                )}
-                            />
                         </div>
+                        <FormField
+                            control={form.control}
+                            name="edition"
+                            render={({ field }) => (
+                                <div className="grid gap-3 mb-3">
+                                    <FormLabel htmlFor="edition">Edition</FormLabel>
+                                    <FormControl>
+                                        <Input id="edition" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </div>
+                            )}
+                        />
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                             <FormField
                                 control={form.control}

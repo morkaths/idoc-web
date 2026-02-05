@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
 import type { AuthenticationResponse, User } from '../types';
-import * as ApiRequest from './config';
+import { ApiClient } from './config';
 
 export const AuthApi = {
   login: async (data: { identifier: string; password: string }): Promise<AuthenticationResponse | null> => {
-    const response = await ApiRequest.apiPost<AuthenticationResponse>(
+    const response = await ApiClient.post<AuthenticationResponse>(
       API_CONFIG.endpoints.auth.login,
       { mode: 'public', data }
     );
@@ -12,7 +12,7 @@ export const AuthApi = {
   },
 
   register: async (data: Partial<User>): Promise<AuthenticationResponse | null> => {
-    const response = await ApiRequest.apiPost<AuthenticationResponse>(
+    const response = await ApiClient.post<AuthenticationResponse>(
       API_CONFIG.endpoints.auth.register,
       { mode: 'public', data }
     );
@@ -20,7 +20,7 @@ export const AuthApi = {
   },
 
   verify: async (data: { token: string }): Promise<User | null> => {
-    const response = await ApiRequest.apiPost<User>(
+    const response = await ApiClient.post<User>(
       API_CONFIG.endpoints.auth.verify,
       { mode: 'public', data }
     );
@@ -28,7 +28,7 @@ export const AuthApi = {
   },
 
   refresh: async (refreshToken: string): Promise<AuthenticationResponse | null> => {
-    const response = await ApiRequest.apiPost<AuthenticationResponse>(
+    const response = await ApiClient.post<AuthenticationResponse>(
       API_CONFIG.endpoints.auth.refresh,
       { mode: 'public', data: { refreshToken } }
     );
@@ -36,7 +36,7 @@ export const AuthApi = {
   },
 
   logout: async (): Promise<boolean> => {
-    const response = await ApiRequest.apiPost<{ success: boolean }>(
+    const response = await ApiClient.post<{ success: boolean }>(
       API_CONFIG.endpoints.auth.logout,
       { mode: 'private' }
     );
@@ -44,7 +44,7 @@ export const AuthApi = {
   },
 
   update: async (data: Partial<User>): Promise<User | null> => {
-    const response = await ApiRequest.apiPatch<User>(
+    const response = await ApiClient.patch<User>(
       API_CONFIG.endpoints.auth.update,
       { mode: 'private', data }
     );

@@ -97,13 +97,22 @@ export function BookListItem({ book, onClick, className }: BookListItemProps) {
           {book.title}
         </h3>
 
-        <div className="flex items-center gap-2 mb-3">
-          <div className="text-sm text-gray-500 dark:text-gray-400 underline decoration-gray-300 dark:decoration-gray-600 underline-offset-2 hover:text-primary hover:decoration-primary dark:hover:text-primary dark:hover:decoration-primary transition-all mb-2 line-clamp-1 text-left">
-            {book.authors?.length ? book.authors.map(a => a.name).join(", ") : t(keys.view.author)}
-          </div>
+        <div className="text-sm text-muted-foreground mb-2 line-clamp-1 text-left" title={book.authors?.map(a => a.name).join(", ")}>
+          {book.authors?.length ? (
+            book.authors.map((a, i) => (
+              <span key={i}>
+                <span className="underline decoration-gray-300 dark:decoration-gray-600 underline-offset-2 hover:text-primary hover:decoration-primary transition-colors">
+                  {a.name}
+                </span>
+                {i < (book.authors?.length || 0) - 1 && ", "}
+              </span>
+            ))
+          ) : (
+            t(keys.view.author)
+          )}
         </div>
 
-        <p className="text-sm text-muted-foreground dark:text-gray-400 line-clamp-2 max-w-2xl text-left leading-relaxed">
+        <p className="text-sm text-muted-foreground dark:text-gray-400 line-clamp-2 max-w-2xl text-left leading-relaxed" title={book.description}>
           {book.description || t(keys.view.description)}
         </p>
 

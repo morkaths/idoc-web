@@ -35,14 +35,22 @@ export default function BookFilter({
     onReset,
 }: BookFilterProps) {
     const { t, keys } = useLocale('books');
+
+    // Normalize categoryIds
+    const normalizedCategoryIds = Array.isArray(filter?.categoryIds)
+        ? filter.categoryIds
+        : filter?.categoryIds
+            ? [filter.categoryIds as string]
+            : [];
+
     const form = useForm<FilterForm>({
         resolver: zodResolver(FilterSchema),
         defaultValues: {
-            search: "",
-            categoryIds: [],
-            ...filter,
+            search: filter?.query || "",
+            categoryIds: normalizedCategoryIds,
         },
     });
+
 
     return (
         <Form {...form}>
@@ -90,7 +98,10 @@ export default function BookFilter({
                 />
                 {/* Reset & Submit */}
                 <div className="flex gap-2">
-                    <Button variant="outline" type="button" className="flex-1" onClick={() => { form.reset(); onReset(); }}>
+                    <Button variant="outline" type="button" className="flex-1" onClick={() => {
+                        form.reset({ search: "", categoryIds: [] });
+                        onReset();
+                    }}>
                         {t(keys.sidebar.actions.reset)}
                     </Button>
                     <Button

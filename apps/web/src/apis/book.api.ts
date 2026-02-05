@@ -1,11 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-// import { mockBooks } from '@/mocks';
 import type { Book, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
+import { ApiClient } from './config';
 
 export const BookApi = {
   find: async (params?: FindParams): Promise<{ data: Book[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<Book[]>(
+    const response = await ApiClient.get<Book[]>(
       API_CONFIG.endpoints.book.find,
       { mode: 'public', params }
     );
@@ -16,7 +15,7 @@ export const BookApi = {
   },
 
   findById: async (id: string): Promise<Book | null> => {
-    const response = await ApiRequest.apiGet<Book>(
+    const response = await ApiClient.get<Book>(
       API_CONFIG.endpoints.book.findById(id),
       { mode: 'public' }
     );
@@ -25,7 +24,7 @@ export const BookApi = {
   },
 
   create: async (data: Partial<Book>): Promise<Book | null> => {
-    const response = await ApiRequest.apiPost<Book>(
+    const response = await ApiClient.post<Book>(
       API_CONFIG.endpoints.book.create,
       { mode: 'private', data: data }
     );
@@ -34,7 +33,7 @@ export const BookApi = {
   },
 
   update: async (id: string, data: Partial<Book>): Promise<Book | null> => {
-    const response = await ApiRequest.apiPatch<Book>(
+    const response = await ApiClient.patch<Book>(
       API_CONFIG.endpoints.book.update(id),
       { mode: 'private', data: data }
     );
@@ -43,7 +42,7 @@ export const BookApi = {
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const response = await ApiRequest.apiDelete<null>(
+    const response = await ApiClient.delete<null>(
       API_CONFIG.endpoints.book.delete(id),
       { mode: 'private' }
     );

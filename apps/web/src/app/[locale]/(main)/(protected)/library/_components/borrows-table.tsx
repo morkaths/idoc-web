@@ -21,10 +21,13 @@ import {
   TableRow,
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
-import { borrowsColumns as columns } from './borrows-columns';
+import { borrowsColumns } from './borrows-columns';
+import { KEYS, useLocale } from '@/hooks/ui/useLocale';
 import BorrowsTableBulkActions from './borrows-table-bulk-actions';
 
 export function BorrowsTable() {
+  const { t, keys } = useLocale('library');
+  const columns = useMemo(() => borrowsColumns(t, keys), [t, keys]);
   const router = useRouter();
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -120,7 +123,7 @@ export function BorrowsTable() {
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Search borrows...'
+        searchPlaceholder={t(keys.search.placeholder)}
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>
@@ -157,7 +160,7 @@ export function BorrowsTable() {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  {isBorrowsFetching ? 'Loading...' : 'No results.'}
+                  {isBorrowsFetching ? t(KEYS.common.states.loading) : t(KEYS.common.states.noData)}
                 </TableCell>
               </TableRow>
             )}

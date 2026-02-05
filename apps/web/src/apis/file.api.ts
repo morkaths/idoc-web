@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { API_CONFIG } from '@/config/api';
-import * as ApiRequest from './config';
+import { ApiClient } from './config';
 import type { FileMeta, FindParams, Pagination } from '@/types';
 
 export const FileApi = {
     find: async (params?: FindParams): Promise<{ data: FileMeta[]; pagination?: Pagination }> => {
-        const response = await ApiRequest.apiGet<FileMeta[]>(
+        const response = await ApiClient.get<FileMeta[]>(
             API_CONFIG.endpoints.file.find,
             { mode: 'private', params }
         );
@@ -16,7 +16,7 @@ export const FileApi = {
     },
 
     findByUser: async (params?: FindParams): Promise<{ data: FileMeta[]; pagination?: Pagination }> => {
-        const response = await ApiRequest.apiGet<FileMeta[]>(
+        const response = await ApiClient.get<FileMeta[]>(
             API_CONFIG.endpoints.file.findByUser,
             { mode: 'private', params }
         );
@@ -27,7 +27,7 @@ export const FileApi = {
     },
 
     findByKey: async (key: string): Promise<FileMeta> => {
-        const response = await ApiRequest.apiGet<FileMeta>(
+        const response = await ApiClient.get<FileMeta>(
             API_CONFIG.endpoints.file.findByKey(key),
             { mode: 'private' }
         );
@@ -36,7 +36,7 @@ export const FileApi = {
     },
 
     getUploadUrl: async (filename: string, type: string, folder?: string): Promise<{ url: string; key: string }> => {
-        const response = await ApiRequest.apiPost<{ url: string; key: string }>(
+        const response = await ApiClient.post<{ url: string; key: string }>(
             API_CONFIG.endpoints.file.upload,
             {
                 mode: 'private',
@@ -64,7 +64,7 @@ export const FileApi = {
     },
 
     confirm: async (key: string): Promise<FileMeta> => {
-        const response = await ApiRequest.apiPost<FileMeta>(
+        const response = await ApiClient.post<FileMeta>(
             API_CONFIG.endpoints.file.confirm,
             {
                 mode: 'private',
@@ -76,7 +76,7 @@ export const FileApi = {
     },
 
     download: async (key: string): Promise<Blob> => {
-        const response = await ApiRequest.apiGet(
+        const response = await ApiClient.get(
             API_CONFIG.endpoints.file.download(key),
             { mode: 'private', responseType: 'blob' }
         );
@@ -84,7 +84,7 @@ export const FileApi = {
     },
 
     delete: async (key: string): Promise<boolean> => {
-        const response = await ApiRequest.apiDelete<null>(
+        const response = await ApiClient.delete<null>(
             API_CONFIG.endpoints.file.delete(key),
             { mode: 'private' }
         );

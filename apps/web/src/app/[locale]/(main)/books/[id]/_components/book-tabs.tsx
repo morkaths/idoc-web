@@ -1,9 +1,12 @@
+"use client";
+
 import { BookGridItems } from "@/components/book/book-grid-items";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Book } from "@/types";
 import { formatDate } from "@/utils/date";
-import { RecommendedBooks } from "./recommended-books";
+import { BookRecommended } from "./book-recommended";
+import { BookReviews } from "./book-reviews";
 
 interface TabItem {
     name: string;
@@ -12,6 +15,8 @@ interface TabItem {
 }
 
 export function BookTabs({ book }: { book?: Book }) {
+    const [activeTab, setActiveTab] = useState('info');
+
     const tabs: TabItem[] = [
         {
             name: 'Info',
@@ -54,17 +59,12 @@ export function BookTabs({ book }: { book?: Book }) {
         {
             name: 'Reviews',
             value: 'reviews',
-            content: (
-                <div className="border border-dashed border-gray-600 rounded-xl p-8 text-center text-base text-gray-200 mt-4">
-                    <div className="font-semibold mb-2">Be the first to share your thoughts!</div>
-                    <div className="text-sm text-gray-400">Click here to share your experience.</div>
-                </div>
-            )
+            content: <BookReviews bookId={book?.id} rating={book?.rating} totalReviews={book?.totalReviews} />
         },
         {
             name: 'Recommendations',
             value: 'recommendations',
-            content: <RecommendedBooks />
+            content: <BookRecommended enabled={activeTab === 'recommendations'} />
         },
         {
             name: 'Tags',
@@ -83,7 +83,7 @@ export function BookTabs({ book }: { book?: Book }) {
     ];
 
     return (
-        <Tabs defaultValue="info" className="w-full gap-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full gap-4">
             <TabsList className="bg-background gap-1 border p-1 w-fit mx-auto flex justify-center">
                 {tabs.map((tab) => (
                     <TabsTrigger

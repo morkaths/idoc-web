@@ -5,11 +5,12 @@ import { type Borrow } from "@/types/schema";
 import { format } from "date-fns";
 import { Badge } from "@repo/ui/components/badge";
 import { Calendar, Check, Clock, AlertCircle, Play } from "lucide-react";
+import { useLocale } from "@/hooks/ui/useLocale";
 
 type TimelineEntry = {
     date: string;
-    title: string;
-    content: string;
+    title: React.ReactNode;
+    content: React.ReactNode;
     type: 'create' | 'renew' | 'return' | 'due' | 'overdue';
 };
 
@@ -19,14 +20,24 @@ interface BorrowTimelineProps {
 }
 
 export const BorrowTimeline = ({ borrow, className }: BorrowTimelineProps) => {
+    const { t, keys } = useLocale('library');
     const timelineData: TimelineEntry[] = [];
+
+    const richRenderer = {
+        strong: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
+        span: (chunks: React.ReactNode) => <span>{chunks}</span>
+    };
 
     // Created
     if (borrow.createdAt) {
         timelineData.push({
             date: format(new Date(borrow.createdAt), "PPP"),
-            title: "Borrowed",
-            content: `User <strong>${borrow.borrower?.username || borrow.userId}</strong> borrowed <strong>${borrow.item?.title || borrow.itemId}</strong>.`,
+            title: t(keys.table.actions.history.timeline.borrowed.title),
+            content: t.rich(keys.table.actions.history.timeline.borrowed.content, {
+                username: borrow.borrower?.username || borrow.userId,
+                title: borrow.item?.title || borrow.itemId,
+                ...richRenderer
+            }),
             type: 'create',
         });
     }
@@ -36,9 +47,12 @@ export const BorrowTimeline = ({ borrow, className }: BorrowTimelineProps) => {
         borrow.renewals.forEach((renewal, index) => {
             const date = renewal.renewedAt ? new Date(renewal.renewedAt) : null;
             timelineData.push({
-                date: date ? format(date, "PPP") : "Unknown Date",
-                title: `Renewal #${index + 1}`,
-                content: `Extended until <strong>${renewal.newExpireTime ? format(new Date(renewal.newExpireTime), "PPP") : '...'}</strong>.`,
+                date: date ? format(date, "PPP") : t(keys.table.actions.history.timeline.unknown),
+                title: t(keys.table.actions.history.timeline.renewal.title, { index: index + 1 }),
+                content: t.rich(keys.table.actions.history.timeline.renewal.content, {
+                    date: renewal.newExpireTime ? format(new Date(renewal.newExpireTime), "PPP") : '...',
+                    ...richRenderer
+                }),
                 type: 'renew',
             });
         });
@@ -48,19 +62,36 @@ export const BorrowTimeline = ({ borrow, className }: BorrowTimelineProps) => {
     if (borrow.returnTime) {
         timelineData.push({
             date: format(new Date(borrow.returnTime), "PPP"),
-            title: "Returned",
-            content: `Item was returned.`,
+            title: t(keys.table.actions.history.timeline.returned.title),
+            content: t(keys.table.actions.history.timeline.returned.content),
             type: 'return',
         });
     } else if (borrow.expireTime) {
         const expireDate = new Date(borrow.expireTime);
         const isOverdue = expireDate < new Date();
-        timelineData.push({
-            date: format(expireDate, "PPP"),
-            title: isOverdue ? "Overdue" : "Due Date",
-            content: isOverdue ? `<span class="text-destructive">Item is overdue since ${format(expireDate, "PPP")}.</span>` : `Item is due on ${format(expireDate, "PPP")}.`,
-            type: isOverdue ? 'overdue' : 'due',
-        });
+        const dateStr = format(expireDate, "PPP");
+
+        if (isOverdue) {
+            timelineData.push({
+                date: dateStr,
+                title: t(keys.table.actions.history.timeline.overdue.title),
+                content: t.rich(keys.table.actions.history.timeline.overdue.content, {
+                    date: dateStr,
+                    ...richRenderer
+                }),
+                type: 'overdue',
+            });
+        } else {
+            timelineData.push({
+                date: dateStr,
+                title: t(keys.table.actions.history.timeline.due.title),
+                content: t.rich(keys.table.actions.history.timeline.due.content, {
+                    date: dateStr,
+                    ...richRenderer
+                }),
+                type: 'due',
+            });
+        }
     }
 
     const getIcon = (type: TimelineEntry['type']) => {
@@ -104,19 +135,18 @@ export const BorrowTimeline = ({ borrow, className }: BorrowTimelineProps) => {
                             </span>
                             <div className="flex flex-col gap-2">
                                 <div className="flex items-center justify-between gap-2">
-                                    <h3 className="flex items-center text-base font-semibold text-foreground">
-                                        <Badge variant={getBadgeVariant(entry.type)} className="text-sm font-normal">
+                                    <h3 className="flex items-center text-sm font-semibold text-foreground">
+                                        <Badge variant={getBadgeVariant(entry.type)} className="text-xs font-normal">
                                             {entry.title}
                                         </Badge>
                                     </h3>
-                                    <time className="text-xs font-normal leading-none text-muted-foreground whitespace-nowrap">
+                                    <time className="text-[10px] font-normal leading-none text-muted-foreground whitespace-nowrap">
                                         {entry.date}
                                     </time>
                                 </div>
-                                <div
-                                    className="text-sm text-foreground/80 dark:prose-invert"
-                                    dangerouslySetInnerHTML={{ __html: entry.content }}
-                                />
+                                <div className="text-sm text-foreground/80">
+                                    {entry.content}
+                                </div>
                             </div>
                         </div>
                     );

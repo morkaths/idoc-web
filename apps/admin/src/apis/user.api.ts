@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
 import type { User, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
+import { ApiClient } from './config';
 
 export const UserApi = {
   find: async (params?: FindParams): Promise<{ data: User[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<User[]>(
+    const response = await ApiClient.get<User[]>(
       API_CONFIG.endpoints.user.find,
       { params }
     );
@@ -15,7 +15,7 @@ export const UserApi = {
   },
 
   findById: async (id: string): Promise<User | null> => {
-    const response = await ApiRequest.apiGet<User>(
+    const response = await ApiClient.get<User>(
       API_CONFIG.endpoints.user.findById(id)
     );
     if (response.success && response.data) return response.data;
@@ -23,7 +23,7 @@ export const UserApi = {
   },
 
   create: async (data: Partial<User>): Promise<User | null> => {
-    const response = await ApiRequest.apiPost<User>(
+    const response = await ApiClient.post<User>(
       API_CONFIG.endpoints.user.create,
       { data }
     );
@@ -32,7 +32,7 @@ export const UserApi = {
   },
 
   update: async (id: string, data: Partial<User>): Promise<User | null> => {
-    const response = await ApiRequest.apiPatch<User>(
+    const response = await ApiClient.patch<User>(
       API_CONFIG.endpoints.user.update(id),
       { data }
     );
@@ -41,7 +41,7 @@ export const UserApi = {
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const response = await ApiRequest.apiDelete<null>(
+    const response = await ApiClient.delete<null>(
       API_CONFIG.endpoints.user.delete(id)
     );
     return response.success;

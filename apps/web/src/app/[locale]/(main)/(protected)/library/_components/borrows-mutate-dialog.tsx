@@ -25,7 +25,7 @@ const BorrowFormSchema = z.object({
     userId: z.string().min(1, "User ID is required"),
     itemId: z.string().min(1, "Item ID is required"),
     expireTime: z.union([z.date(), z.string(), z.number()]).refine(val => !!val, { message: "Expire time is required" }),
-    status: z.string().optional(),
+    status: z.enum(['active', 'returned', 'overdue', 'cancelled']).optional(),
     note: z.string().optional(),
 });
 type BorrowForm = z.infer<typeof BorrowFormSchema>;
@@ -49,7 +49,7 @@ export function BorrowsMutateDialog({
             userId: initialData?.userId ?? "",
             itemId: initialData?.itemId ?? "",
             expireTime: initialData?.expireTime ? new Date(initialData.expireTime) : undefined,
-            status: initialData?.status ?? "",
+            status: initialData?.status,
             note: initialData?.note ?? "",
         },
     });

@@ -1,8 +1,8 @@
 "use client";
 
-import { BookListItems } from "@/components/book/book-list-items";
-import Pagination from "@/components/pagination";
 import { Book, Pagination as PaginationType } from "@/types";
+import { BookListItems } from "@/components/book/book-list-items";
+import { Pagination } from "@/components/pagination";
 
 export function BookListView({
   data = [],

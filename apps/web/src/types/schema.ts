@@ -65,14 +65,14 @@ export type LinkedAccount = z.infer<typeof LinkedAccountSchema>;
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export const ProfileSchema = z.object({
-    id: z.string(),
-    userId: z.string(),
-    fullName: z.string().min(2).max(100).trim().optional(),
-    birthday: dateOrString,
-    avatar: z.string().url().optional().or(z.literal('')),
-    bio: z.string().max(500).trim().optional(),
-    location: z.string().max(500).trim().optional(),
-    updatedAt: dateOrString,
+  id: z.string(),
+  userId: z.string(),
+  fullName: z.string().min(2).max(100).trim().optional(),
+  birthday: dateOrString,
+  avatar: z.string().url().optional().or(z.literal('')),
+  bio: z.string().max(500).trim().optional(),
+  location: z.string().max(500).trim().optional(),
+  updatedAt: dateOrString,
 });
 
 export type Profile = z.infer<typeof ProfileSchema>;
@@ -108,6 +108,7 @@ export const ReviewSchema = z.object({
   rating: z.number().min(0).max(5),
   content: z.string().trim().max(2000).optional(),
   isHidden: z.boolean().optional(),
+  user: UserSchema.optional(),
   createdAt: dateOrString,
   updatedAt: dateOrString,
 });

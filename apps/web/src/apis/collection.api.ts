@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
 import type { Collection, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
+import { ApiClient } from './config';
 
 export const CollectionApi = {
     find: async (params?: FindParams): Promise<{ data: Collection[]; pagination?: Pagination }> => {
-        const response = await ApiRequest.apiGet<Collection[]>(
+        const response = await ApiClient.get<Collection[]>(
             API_CONFIG.endpoints.collection.find,
             { mode: 'public', params }
         );
@@ -15,7 +15,7 @@ export const CollectionApi = {
     },
 
     findById: async (id: string): Promise<Collection | null> => {
-        const response = await ApiRequest.apiGet<Collection>(
+        const response = await ApiClient.get<Collection>(
             API_CONFIG.endpoints.collection.findById(id),
             { mode: 'public' }
         );
@@ -24,7 +24,7 @@ export const CollectionApi = {
     },
 
     create: async (data: Partial<Collection>): Promise<Collection | null> => {
-        const response = await ApiRequest.apiPost<Collection>(
+        const response = await ApiClient.post<Collection>(
             API_CONFIG.endpoints.collection.create,
             { mode: 'private', data }
         );
@@ -33,7 +33,7 @@ export const CollectionApi = {
     },
 
     update: async (id: string, data: Partial<Collection>): Promise<Collection | null> => {
-        const response = await ApiRequest.apiPatch<Collection>(
+        const response = await ApiClient.patch<Collection>(
             API_CONFIG.endpoints.collection.update(id),
             { mode: 'private', data }
         );
@@ -42,7 +42,7 @@ export const CollectionApi = {
     },
 
     delete: async (id: string): Promise<boolean> => {
-        const response = await ApiRequest.apiDelete<null>(
+        const response = await ApiClient.delete<null>(
             API_CONFIG.endpoints.collection.delete(id),
             { mode: 'private' }
         );

@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
 import type { Role, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
+import { ApiClient } from './config';
 
 export const RoleApi = {
   find: async (params?: FindParams): Promise<{ data: Role[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<Role[]>(
+    const response = await ApiClient.get<Role[]>(
       API_CONFIG.endpoints.role.find,
       { params }
     );
@@ -15,7 +15,7 @@ export const RoleApi = {
   },
 
   findById: async (id: string): Promise<Role | null> => {
-    const response = await ApiRequest.apiGet<Role>(
+    const response = await ApiClient.get<Role>(
       API_CONFIG.endpoints.role.findById(id)
     );
     if (response.success && response.data) return response.data;
@@ -23,7 +23,7 @@ export const RoleApi = {
   },
 
   create: async (data: Partial<Role>): Promise<Role | null> => {
-    const response = await ApiRequest.apiPost<Role>(
+    const response = await ApiClient.post<Role>(
       API_CONFIG.endpoints.role.create,
       { data }
     );
@@ -32,7 +32,7 @@ export const RoleApi = {
   },
 
   update: async (id: string, data: Partial<Role>): Promise<Role | null> => {
-    const response = await ApiRequest.apiPatch<Role>(
+    const response = await ApiClient.patch<Role>(
       API_CONFIG.endpoints.role.update(id),
       { data }
     );
@@ -41,7 +41,7 @@ export const RoleApi = {
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const response = await ApiRequest.apiDelete<null>(
+    const response = await ApiClient.delete<null>(
       API_CONFIG.endpoints.role.delete(id)
     );
     return response.success;
