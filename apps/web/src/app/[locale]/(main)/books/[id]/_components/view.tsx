@@ -12,8 +12,9 @@ import { useState } from "react";
 import { BorrowBookDialog } from "./borrow-book-dialog";
 import { toast } from "sonner";
 import { useCreateBorrow } from "@/hooks/data/useBorrow";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Skeleton } from "@repo/ui/components/skeleton";
+import { useLocale } from '@/hooks/ui/useLocale';
 
 interface BookDetailViewProps {
   id: string;
@@ -26,6 +27,7 @@ const CoverImage = ({ title, src }: { title: string, src?: string }) => {
     <div className="relative w-46 sm:w-64 md:w-72 lg:w-80 aspect-[3/4] rounded-xl overflow-hidden border-2 bg-white dark:bg-zinc-800">
       {!imageError && src ? (
         <Image
+          key="image"
           src={src}
           alt={title}
           fill
@@ -34,7 +36,7 @@ const CoverImage = ({ title, src }: { title: string, src?: string }) => {
           onError={() => setImageError(true)}
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center p-6 text-center">
+        <div key="fallback" className="w-full h-full flex items-center justify-center p-6 text-center">
           <span className="font-bold text-lg md:text-xl line-clamp-4 leading-tight opacity-90 break-words w-full">
             {title}
           </span>
@@ -122,6 +124,7 @@ function BookDetailSkeleton() {
 
 function BookDetailError() {
   const router = useRouter();
+  const { t, keys } = useLocale('book');
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6 text-center animate-in fade-in zoom-in duration-300">
@@ -131,17 +134,17 @@ function BookDetailError() {
         </div>
       </div>
       <div className="space-y-2 max-w-md mx-auto">
-        <h2 className="text-2xl font-bold tracking-tight">Không tìm thấy sách</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t(keys.error.title)}</h2>
         <p className="text-muted-foreground">
-          Cuốn sách bạn đang tìm kiếm có thể đã bị xóa, không tồn tại hoặc đường dẫn không chính xác.
+          {t(keys.error.description)}
         </p>
       </div>
       <div className="flex items-center gap-2">
         <Button variant="outline" onClick={() => window.location.reload()}>
-          Tải lại trang
+          {t(keys.error.actions.reload)}
         </Button>
         <Button onClick={() => router.push('/')}>
-          Về trang chủ
+          {t(keys.error.actions.backToHome)}
         </Button>
       </div>
     </div>
@@ -150,14 +153,16 @@ function BookDetailError() {
 
 export function BookDetailView({ id }: BookDetailViewProps) {
   const router = useRouter();
+  const { locale } = useParams() as { locale: string };
+  const { t, keys } = useLocale('book');
   const { data: session } = useSession();
   const user = session?.user;
   const { data: book, isLoading, error } = useBook(id);
   const [openBorrow, setOpenBorrow] = useState(false);
   const createBorrowMut = useCreateBorrow();
 
-  if (isLoading) return <BookDetailSkeleton />;
-  if (error || !book) return <BookDetailError />;
+  if (isLoading) return <BookDetailSkeleton key="skeleton" />;
+  if (error || !book) return <BookDetailError key="error" />;
 
   const handleBorrowClick = () => {
     if (!user) {
@@ -168,15 +173,13 @@ export function BookDetailView({ id }: BookDetailViewProps) {
   };
 
   return (
-    <div className="relative min-h-screen py-10">
+    <div key="content" className="relative min-h-screen py-10">
       {/* Banner */}
       <div className="w-full h-64 md:h-72 lg:h-96 bg-primary/10 dark:bg-primary/10 relative" />
-
       {/* Main content */}
       <div className="relative z-10 max-w-5xl mx-auto -mt-40 flex flex-col md:flex-row gap-8 px-4">
         {/* Book cover */}
         <CoverImage title={book.title} src={book.coverUrl} />
-
         {/* Book info */}
         <div className="flex-1 flex flex-col justify-end">
           <div className="mb-2 text-sm">
@@ -185,16 +188,18 @@ export function BookDetailView({ id }: BookDetailViewProps) {
           <h2 className="text-3xl md:text-4xl font-bold mb-4">{book.title}</h2>
           {/* Categories */}
           <div className="flex flex-wrap gap-2 mb-4">
-            {book.categories?.map((cat) => (
-              <Badge key={cat.id} variant="outline">
-                {cat.translations?.[0]?.name || cat.id}
-              </Badge>
-            ))}
+            {book.categories?.map((cat) => {
+              const translation = cat.translations?.find((t) => t.lang === locale) || cat.translations?.[0];
+              return (
+                <Badge key={cat.id} variant="outline">
+                  {translation?.name || cat.id}
+                </Badge>
+              );
+            })}
           </div>
-          {/* Description */}
           {/* Author */}
           <div className="text-sm text-muted-foreground mb-6">
-            By{" "}
+            {t(keys.by)}{" "}
             {book.authors?.length ? (
               book.authors.map((a, i) => (
                 <span key={i}>
@@ -205,18 +210,18 @@ export function BookDetailView({ id }: BookDetailViewProps) {
                 </span>
               ))
             ) : (
-              "Unknown Author"
+              t(keys.author)
             )}
           </div>
           {/* Actions */}
           <div className="flex gap-2">
             <Button variant="outline">
               <Plus className="w-4 h-4" />
-              Add to list
+              {t(keys.actions.addToCollection)}
             </Button>
             <Button variant="default" onClick={handleBorrowClick}>
               <Bookmark className="w-4 h-4" />
-              Borrow Now
+              {t(keys.actions.borrow)}
             </Button>
             <BorrowBookDialog
               open={openBorrow}
@@ -224,16 +229,17 @@ export function BookDetailView({ id }: BookDetailViewProps) {
               onSubmit={(data) => {
                 toast.promise(
                   createBorrowMut.mutateAsync({
-                    itemId: book.id!,
+                    borrower: user!.id,
+                    item: book.id!,
                     ...data,
                   }),
                   {
-                    loading: 'Creating borrow...',
+                    loading: t(keys.borrow.states.loading),
                     success: () => {
                       setOpenBorrow(false);
-                      return 'Book borrowed successfully!';
+                      return t(keys.borrow.states.success);
                     },
-                    error: (err) => err?.message || 'Failed to borrow book',
+                    error: (err) => err?.message || t(keys.borrow.states.error),
                   }
                 );
               }}
@@ -241,7 +247,7 @@ export function BookDetailView({ id }: BookDetailViewProps) {
           </div>
         </div>
       </div>
-
+      {/* Tabs */}
       <div className="max-w-5xl mx-auto mt-10 px-4">
         <BookTabs book={book} />
       </div>

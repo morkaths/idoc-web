@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from "@/lib/utils";
-import { type Borrow } from "@/types/schema";
+import { type Borrow } from "@/types";
 import { format } from "date-fns";
 import { Badge } from "@repo/ui/components/badge";
 import { Calendar, Check, Clock, AlertCircle, Play } from "lucide-react";
@@ -34,8 +34,8 @@ export const BorrowTimeline = ({ borrow, className }: BorrowTimelineProps) => {
             date: format(new Date(borrow.createdAt), "PPP"),
             title: t(keys.table.actions.history.timeline.borrowed.title),
             content: t.rich(keys.table.actions.history.timeline.borrowed.content, {
-                username: borrow.borrower?.username || borrow.userId,
-                title: borrow.item?.title || borrow.itemId,
+                username: borrow.borrower?.username || borrow.borrower.username,
+                title: borrow.item?.title || borrow.item.title,
                 ...richRenderer
             }),
             type: 'create',

@@ -1,5 +1,5 @@
 import { API_CONFIG } from '@/config/api';
-import type { User, FindParams, Pagination } from '../types';
+import type { User, UserRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const UserApi = {
@@ -22,7 +22,7 @@ export const UserApi = {
     return null;
   },
 
-  create: async (data: Partial<User>): Promise<User | null> => {
+  create: async (data: UserRequest): Promise<User | null> => {
     const response = await ApiClient.post<User>(
       API_CONFIG.endpoints.user.create,
       { data }
@@ -31,7 +31,7 @@ export const UserApi = {
     return null;
   },
 
-  update: async (id: string, data: Partial<User>): Promise<User | null> => {
+  update: async (id: string, data: Partial<UserRequest>): Promise<User | null> => {
     const response = await ApiClient.patch<User>(
       API_CONFIG.endpoints.user.update(id),
       { data }

@@ -65,14 +65,14 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
     toast.promise(
       handleRegister(formData),
       {
-        loading: t(keys.form.messages.loadingSignUp),
+        loading: t(keys.form.states.signUp.loading),
         success: (result) => {
           setIsLoading(false);
           if (result.success) {
             router.replace('/sign-in');
-            return t(keys.form.messages.successSignUp);
+            return t(keys.form.states.signUp.success);
           }
-          throw new Error(result.error || t(keys.form.messages.errorSignUp));
+          throw new Error(result.error || t(keys.form.states.signUp.error));
         },
         error: (err) => {
           setIsLoading(false);
@@ -163,9 +163,9 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
           onClick={() => {
             setIsLoading(true);
             toast.promise(handleGoogleLogin(), {
-              loading: t(keys.form.messages.loadingGoogleSignIn),
-              success: () => t(keys.form.messages.successGoogleSignIn),
-              error: (err) => err.message || t(keys.form.messages.errorGoogleSignIn),
+              loading: t(keys.form.states.googleSignIn.loading),
+              success: () => t(keys.form.states.googleSignIn.success),
+              error: (err) => err.message || t(keys.form.states.googleSignIn.error),
             });
           }}
           >

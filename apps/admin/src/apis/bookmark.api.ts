@@ -1,6 +1,7 @@
+import { useAuthStore } from '@/stores/auth-store';
 import { API_CONFIG } from '@/config/api';
 import type { Bookmark, BookmarkRequest, FindParams, Pagination } from '../types';
-import { ApiClient, getAccessToken } from './config';
+import { ApiClient } from './config';
 
 export const BookmarkApi = {
     find: async (params?: FindParams): Promise<{ data: Bookmark[]; pagination?: Pagination }> => {
@@ -24,11 +25,11 @@ export const BookmarkApi = {
     },
 
     status: async (items: string[]): Promise<Record<string, string | null>> => {
-        if (!getAccessToken()) return {};
-
+        const { auth } = useAuthStore.getState();
+        if (!auth.token) return {};
         const response = await ApiClient.post<Record<string, string | null>>(
             API_CONFIG.endpoints.bookmark.status,
-            { mode: 'public', data: { items } }
+            { mode: 'private', data: { items } }
         );
         if (response.success && response.data) return response.data;
         return {};

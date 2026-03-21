@@ -253,22 +253,32 @@
           "passwordsNotMatch": "Passwords do not match"
         }
       },
-      "messages": {
-        "loadingSignIn": "Signing in...",
-        "loadingGoogleSignIn": "Signing in with Google...",
-        "loadingSignUp": "Creating account...",
-        "loadingSignOut": "Signing out...",
-        "loadingForgotPassword": "Resetting password...",
-        "successSignIn": "Welcome back! You have signed in successfully.",
-        "successGoogleSignIn": "Signed in with Google successfully.",
-        "successSignUp": "Account created! Please sign in to continue.",
-        "successSignOut": "Signed out successfully!",
-        "successForgotPassword": "Password reset successfully! Please sign in to continue.",
-        "errorSignIn": "Invalid email or password",
-        "errorGoogleSignIn": "Error signing in with Google.",
-        "errorSignUp": "Error creating account.",
-        "errorSignOut": "Error signing out.",
-        "errorForgotPassword": "Error resetting password."
+      "states": {
+        "signIn": {
+          "loading": "Signing in...",
+          "success": "Signed in successfully!",
+          "error": "Error signing in."
+        },
+        "googleSignIn": {
+          "loading": "Signing in with Google...",
+          "success": "Signed in with Google successfully!",
+          "error": "Error signing in with Google."
+        },
+        "signUp": {
+          "loading": "Creating account...",
+          "success": "Account created successfully!",
+          "error": "Error creating account."
+        },
+        "signOut": {
+          "loading": "Signing out...",
+          "success": "Signed out successfully!",
+          "error": "Error signing out."
+        },
+        "forgotPassword": {
+          "loading": "Resetting password...",
+          "success": "Password reset successfully!",
+          "error": "Error resetting password."
+        }
       }
     }
   },
@@ -356,34 +366,113 @@
     }
   },
   "book": {
-    "title": "Book Details",
-    "description": "View book details and manage your collection.",
+    "by": "By",
+    "author": "Unknown Author",
+    "actions": {
+      "addToCollection": "Add to Collection",
+      "borrow": "Borrow Now"
+    },
+    "borrow": {
+      "title": "Borrow Book",
+      "description": "Enter the borrow book information below.",
+      "expireTime": {
+        "label": "Expire Time",
+        "placeholder": "Pick expire date"
+      },
+      "note": {
+        "label": "Note",
+        "placeholder": "Note (optional)"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      },
+      "states": {
+        "loading": "Creating borrow request...",
+        "success": "Borrow request created successfully!",
+        "error": "Error creating borrow request."
+      }
+    },
+    "reviews": {
+      "total": "Based on {count} reviews",
+      "error": {
+        "fetch": "Could not load reviews",
+        "tryAgain": "Please try again later"
+      },
+      "empty": {
+        "title": "No reviews yet.",
+        "description": "Be the first to share your creative thoughts."
+      }
+    },
     "tabs": {
       "info": {
         "label": "Info",
-        "description": "View book details and manage your collection."
+        "description": {
+          "label": "Description",
+          "empty": "No description available."
+        },
+        "language": {
+          "label": "Language"
+        },
+        "pages": {
+          "label": "Pages",
+          "page": "page"
+        },
+        "publisher": {
+          "label": "Publisher"
+        },
+        "publishedYear": {
+          "label": "Published Year"
+        }
       },
       "reviews": {
-        "label": "Reviews",
-        "description": "View book reviews and manage your collection."
+        "label": "Reviews"
       },
       "recommendations": {
-        "label": "Recommendations",
-        "description": "View book recommendations and manage your collection."
+        "label": "Recommendations"
       },
       "similar": {
-        "label": "Similar",
-        "description": "View similar books and manage your collection."
+        "label": "Similar"
       },
       "tags": {
         "label": "Tags",
-        "description": "View book tags and manage your collection."
+        "empty": "No tags found.",
+        "description": "We couldn't find any tags matching your search criteria. Please try changing your filters or keywords."
       }
     },
-    "actions": {
-      "backToHome": "Back to Home",
-      "goBack": "Go Back",
-      "learnMore": "Learn more"
+    "error": {
+      "title": "Book not found",
+      "description": "The book you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+      "actions": {
+        "reload": "Reload",
+        "backToHome": "Back to Home"
+      }
+    }
+  },
+  "view": {
+    "unauthenticated": {
+      "title": "You need to be logged in to view this book.",
+      "description": "Please log in to view this book.",
+      "actions": {
+        "login": "Login Now"
+      }
+    },
+    "unauthorized": {
+      "title": "You don't have permission to view this book.",
+      "description": "Please log in to view this book.",
+      "actions": {
+        "goBack": "Go Back"
+      }
+    },
+    "error": {
+      "title": "No title",
+      "book": {
+        "title": "Book not found",
+        "description": "The book you are looking for might have been removed, had its name changed, or is temporarily unavailable."
+      },
+      "actions": {
+        "goBack": "Go Back"
+      }
     }
   },
   "library": {

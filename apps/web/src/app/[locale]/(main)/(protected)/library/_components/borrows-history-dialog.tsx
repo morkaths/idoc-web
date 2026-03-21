@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { type Borrow } from "@/types/schema";
+import { type Borrow } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@repo/ui/components/dialog";
 import { Badge } from "@repo/ui/components/badge";
 import { useParams } from "next/navigation";

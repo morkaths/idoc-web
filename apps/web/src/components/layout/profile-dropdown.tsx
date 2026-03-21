@@ -19,7 +19,7 @@ import {
 } from '@repo/ui/components/dropdown-menu';
 import { SignOutDialog } from '@/components/sign-out-dialog';
 import { useSession } from "next-auth/react";
-import type { User } from "@/types/schema";
+import type { User } from "@/types";
 import { useLocale } from '@/hooks/ui/useLocale';
 
 export function ProfileDropdown() {
@@ -58,8 +58,8 @@ export function ProfileDropdown() {
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
             <Avatar className='h-8 w-8'>
-              <AvatarImage src='' alt={user.username} />
-              <AvatarFallback>{user.username.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+              <AvatarImage src='' alt={user?.username || 'User'} />
+              <AvatarFallback>{user?.username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>

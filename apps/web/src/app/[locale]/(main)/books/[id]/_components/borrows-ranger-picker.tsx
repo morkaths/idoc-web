@@ -6,6 +6,7 @@ import { type DateRange } from "react-day-picker";
 import { Button } from "@repo/ui/components/button";
 import { Calendar } from "@repo/ui/components/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/popover";
+import { useLocale } from '@/hooks/ui/useLocale';
 
 type BorrowRangePickerProps = {
     borrowTime: Date;
@@ -14,6 +15,7 @@ type BorrowRangePickerProps = {
 };
 
 export function BorrowRangePicker({ borrowTime, expireTime, onChange }: BorrowRangePickerProps) {
+    const { t, keys } = useLocale('book');
     const [range, setRange] = useState<DateRange | undefined>(
         expireTime ? { from: borrowTime, to: expireTime } : { from: borrowTime, to: undefined }
     );
@@ -29,7 +31,7 @@ export function BorrowRangePicker({ borrowTime, expireTime, onChange }: BorrowRa
                     <Button variant="outline" id="borrow-range" className="w-full justify-between font-normal">
                         {borrowTime && range?.to
                             ? `${borrowTime.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
-                            : "Pick expire date"}
+                            : t(keys.borrow.expireTime.placeholder)}
                         <ChevronDownIcon />
                     </Button>
                 </PopoverTrigger>

@@ -1,18 +1,19 @@
 "use client";
-import { Button } from "@repo/ui/components/button";
-import dynamic from "next/dynamic";
+
+import { useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useBook } from "@/hooks/data/useBook";
 import { useFile } from "@/hooks/data/useFile";
 import { ArrowLeft, Loader2, FileQuestion, Lock } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useBorrowHistory } from "@/hooks/data/useBorrow";
-import { useMemo } from "react";
+import { useLocale } from '@/hooks/ui/useLocale';
 import { RoleCode } from "@/types";
-
+import { Button } from "@repo/ui/components/button";
 import { FileViewer } from "@/components/viewers/file-viewer";
 
 export default function BookViewPage() {
+    const { t, keys } = useLocale('view');
     const params = useParams() as { id: string };
     const router = useRouter();
     const { data: session, status } = useSession();
@@ -28,7 +29,7 @@ export default function BookViewPage() {
 
     const canView = useMemo(() => {
         if (!session?.user) return false;
-        
+
         // Admin hoặc Manager xem được hết
         const hasPrivilegedRole = session.user.roles?.some(
             (role) => role.code === RoleCode.Admin || role.code === RoleCode.Manager
@@ -48,29 +49,30 @@ export default function BookViewPage() {
             </div>
         );
     }
-    
-    // Nếu chưa đăng nhập -> Hiển thị thông báo yêu cầu đăng nhập
+
+    // If user is not authenticated
     if (status === "unauthenticated") {
-         return (
+        return (
             <div className="container flex h-[calc(100vh-theme(spacing.16))] items-center justify-center p-4">
                 <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-lg border bg-card p-8 text-center shadow-sm">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
                         <Lock className="h-6 w-6 text-muted-foreground" />
                     </div>
                     <div className="space-y-1">
-                        <h3 className="text-lg font-semibold">Yêu cầu đăng nhập</h3>
+                        <h3 className="text-lg font-semibold">{t(keys.unauthenticated.title)}</h3>
                         <p className="text-sm text-center text-muted-foreground text-balance">
-                            Bạn cần đăng nhập để xem nội dung sách này.
+                            {t(keys.unauthenticated.description)}
                         </p>
                     </div>
                     <Button onClick={() => router.push(`/auth/login?callbackUrl=${encodeURIComponent(window.location.href)}`)} className="mt-2">
-                        Đăng nhập ngay
+                        {t(keys.unauthenticated.actions.login)}
                     </Button>
                 </div>
             </div>
         );
     }
 
+    // If user is authenticated but not allowed to view
     if (!canView) {
         return (
             <div className="container flex h-[calc(100vh-theme(spacing.16))] items-center justify-center p-4">
@@ -79,20 +81,21 @@ export default function BookViewPage() {
                         <Lock className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
-                        <h3 className="text-lg font-semibold">Quyền truy cập hạn chế</h3>
+                        <h3 className="text-lg font-semibold">{t(keys.unauthorized.title)}</h3>
                         <p className="text-sm text-center text-muted-foreground text-balance">
-                            Bạn cần phải mượn cuốn sách này trước khi có thể đọc nội dung.
+                            {t(keys.unauthorized.description)}
                         </p>
                     </div>
                     <Button onClick={handleBack} variant="outline" className="mt-2 text-foreground">
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Quay lại
+                        {t(keys.unauthorized.actions.goBack)}
                     </Button>
                 </div>
             </div>
         );
     }
 
+    // If book or file is not found
     if (!book || !book.fileKey || !file || !file.url) {
         return (
             <div className="container flex h-[calc(100vh-theme(spacing.16))] items-center justify-center p-4">
@@ -102,17 +105,15 @@ export default function BookViewPage() {
                     </div>
                     <div className="space-y-1">
                         <h3 className="text-lg font-semibold">
-                            {!book ? "Không tìm thấy sách" : "Không có tài liệu"}
+                            {t(keys.error.book.title)}
                         </h3>
                         <p className="text-sm text-center text-muted-foreground text-balance">
-                            {!book
-                                ? "Sách bạn đang tìm kiếm không tồn tại hoặc đã bị xóa."
-                                : "Cuốn sách này chưa có file tài liệu đính kèm để xem."}
+                            {t(keys.error.book.description)}
                         </p>
                     </div>
                     <Button onClick={handleBack} variant="outline" className="mt-2 text-foreground">
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Quay lại
+                        {t(keys.error.actions.goBack)}
                     </Button>
                 </div>
             </div>
@@ -125,11 +126,11 @@ export default function BookViewPage() {
                 <Button variant="ghost" size="icon" onClick={handleBack}>
                     <ArrowLeft size={20} />
                 </Button>
-                <h1 className="text-xl font-semibold truncate">{book.title || "No title"}</h1>
+                <h1 className="text-xl font-semibold truncate">{book.title || t(keys.error.title)}</h1>
             </div>
 
-            <FileViewer 
-                fileUrl={file.url} 
+            <FileViewer
+                fileUrl={file.url}
                 className="flex-1 w-full border rounded-md overflow-hidden bg-background"
             />
         </main>

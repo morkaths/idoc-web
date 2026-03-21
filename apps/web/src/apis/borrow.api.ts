@@ -1,5 +1,5 @@
 import { API_CONFIG } from '@/config/api';
-import type { Borrow, FindParams, Pagination } from '../types';
+import type { Borrow, BorrowRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const BorrowApi = {
@@ -34,7 +34,7 @@ export const BorrowApi = {
     return null;
   },
 
-  create: async (data: Partial<Borrow>): Promise<Borrow | null> => {
+  create: async (data: BorrowRequest): Promise<Borrow | null> => {
     const response = await ApiClient.post<Borrow>(
       API_CONFIG.endpoints.borrow.create,
       { mode: 'private', data }
@@ -43,7 +43,7 @@ export const BorrowApi = {
     return null;
   },
 
-  update: async (id: string, data: Partial<Borrow>): Promise<Borrow | null> => {
+  update: async (id: string, data: Partial<BorrowRequest>): Promise<Borrow | null> => {
     const response = await ApiClient.patch<Borrow>(
       API_CONFIG.endpoints.borrow.update(id),
       { mode: 'private', data }

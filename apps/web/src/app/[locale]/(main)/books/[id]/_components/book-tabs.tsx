@@ -7,6 +7,7 @@ import { Book } from "@/types";
 import { formatDate } from "@/utils/date";
 import { BookRecommended } from "./book-recommended";
 import { BookReviews } from "./book-reviews";
+import { useLocale } from '@/hooks/ui/useLocale';
 
 interface TabItem {
     name: string;
@@ -15,37 +16,38 @@ interface TabItem {
 }
 
 export function BookTabs({ book }: { book?: Book }) {
+    const { t, keys } = useLocale('book');
     const [activeTab, setActiveTab] = useState('info');
 
     const tabs: TabItem[] = [
         {
-            name: 'Info',
+            name: t(keys.tabs.info.label),
             value: 'info',
             content: (
                 <div className="bg-card/30 rounded-xl p-6 mt-4 border border-gray-100 dark:border-zinc-800">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-2 mb-2">
-                            <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Description</div>
-                            <div className="text-sm leading-relaxed text-muted-foreground">{book?.description || 'No description available'}</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t(keys.tabs.info.description.label)}</div>
+                            <div className="text-sm leading-relaxed text-muted-foreground">{book?.description || t(keys.tabs.info.description.empty)}</div>
                         </div>
                         <div className="space-y-1">
-                            <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Language</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t(keys.tabs.info.language.label)}</div>
                             <div className="text-sm font-medium">{book?.language || 'N/A'}</div>
                         </div>
                         <div className="space-y-1">
-                            <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Pages</div>
-                            <div className="text-sm font-medium">{book?.pages || 'N/A'} pages</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t(keys.tabs.info.pages.label)}</div>
+                            <div className="text-sm font-medium">{book?.pages || 'N/A'} {t(keys.tabs.info.pages.page)}</div>
                         </div>
                         <div className="space-y-1">
                             <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Format</div>
                             <div className="text-sm font-medium">{book?.fileKey?.split('.').pop()?.toUpperCase() || 'N/A'}</div>
                         </div>
                         <div className="space-y-1">
-                            <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Publisher</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t(keys.tabs.info.publisher.label)}</div>
                             <div className="text-sm font-medium">{book?.publisher || 'N/A'}</div>
                         </div>
                         <div className="space-y-1">
-                            <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Published Date</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t(keys.tabs.info.publishedYear.label)}</div>
                             <div className="text-sm font-medium">{book?.publishedDate ? formatDate(book.publishedDate) : 'N/A'}</div>
                         </div>
                         <div className="space-y-1">
@@ -57,27 +59,31 @@ export function BookTabs({ book }: { book?: Book }) {
             )
         },
         {
-            name: 'Reviews',
+            name: t(keys.tabs.reviews.label),
             value: 'reviews',
             content: <BookReviews bookId={book?.id} rating={book?.rating} totalReviews={book?.totalReviews} />
         },
         {
-            name: 'Recommendations',
+            name: t(keys.tabs.recommendations.label),
             value: 'recommendations',
             content: <BookRecommended enabled={activeTab === 'recommendations'} />
         },
         {
-            name: 'Tags',
+            name: t(keys.tabs.similar.label),
+            value: 'similar',
+            content: null
+        },
+        {
+            name: t(keys.tabs.tags.label),
             value: 'tags',
             content: (
                 <div className="border border-dashed border-gray-600 rounded-xl p-8 text-center text-base text-gray-200 mt-4">
-                    <div className="font-semibold mb-2">No tags available</div>
-                    <div className="text-sm text-gray-400">Tags help categorize and find books more easily.</div>
+                    <div className="font-semibold mb-2">{t(keys.tabs.tags.empty)}</div>
+                    <div className="text-sm text-gray-400">{t(keys.tabs.tags.description)}</div>
                 </div>
             )
         },
         { name: 'Credits', value: 'credits', content: null },
-        { name: 'Similar', value: 'similar', content: null },
         { name: 'Images', value: 'images', content: null },
         { name: 'Videos', value: 'videos', content: null },
     ];

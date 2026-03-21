@@ -1,5 +1,5 @@
 import { API_CONFIG } from '@/config/api';
-import type { Category, FindParams, Pagination } from '../types';
+import type { Category, CategoryRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const CategoryApi = {
@@ -23,7 +23,7 @@ export const CategoryApi = {
     return null;
   },
 
-  create: async (data: Partial<Category>): Promise<Category | null> => {
+  create: async (data: CategoryRequest): Promise<Category | null> => {
     const response = await ApiClient.post<Category>(
       API_CONFIG.endpoints.category.create,
       { mode: 'private', data, }
@@ -32,7 +32,7 @@ export const CategoryApi = {
     return null;
   },
 
-  update: async (id: string, data: Partial<Category>): Promise<Category | null> => {
+  update: async (id: string, data: Partial<CategoryRequest>): Promise<Category | null> => {
     const response = await ApiClient.patch<Category>(
       API_CONFIG.endpoints.category.update(id),
       { mode: 'private', data, }

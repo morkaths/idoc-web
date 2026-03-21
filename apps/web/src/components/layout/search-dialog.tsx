@@ -95,7 +95,7 @@ export function SearchDialog() {
                 >
                   <Avatar className="w-7 h-7 mr-2">
                     <AvatarImage
-                      src={author.avatarUrl || ""}
+                      src={author.avatar || ""}
                       alt={author.name}
                       className="object-cover"
                     />

@@ -1,5 +1,5 @@
 import { API_CONFIG } from '@/config/api';
-import type { Book, FindParams, Pagination } from '../types';
+import type { BookRequest, Book, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const BookApi = {
@@ -23,7 +23,7 @@ export const BookApi = {
     return null;
   },
 
-  create: async (data: Partial<Book>): Promise<Book | null> => {
+  create: async (data: BookRequest): Promise<Book | null> => {
     const response = await ApiClient.post<Book>(
       API_CONFIG.endpoints.book.create,
       { mode: 'private', data: data }
@@ -32,7 +32,7 @@ export const BookApi = {
     return null;
   },
 
-  update: async (id: string, data: Partial<Book>): Promise<Book | null> => {
+  update: async (id: string, data: Partial<BookRequest>): Promise<Book | null> => {
     const response = await ApiClient.patch<Book>(
       API_CONFIG.endpoints.book.update(id),
       { mode: 'private', data: data }

@@ -37,33 +37,57 @@ export class ApiClient {
       return config;
     });
 
-    instance.interceptors.response.use(
-      (res) => res,
-      async (error) => {
-        const originalRequest = error.config;
-        if (
-          error?.response?.status === 401 &&
-          !originalRequest._retry
-        ) {
-          originalRequest._retry = true;
-          const { auth } = useAuthStore.getState();
-          const refreshed = await auth.refresh();
-          if (refreshed) {
-            const newToken = useAuthStore.getState().auth.token?.accessToken;
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-            return instance.request(originalRequest);
-          } else {
+    if (withCredentials) {
+      instance.interceptors.response.use(
+        (res) => res,
+        async (error) => {
+          const originalRequest = error.config;
+          // Check if it's a 401 and we haven't retried yet and it's not a refresh request itself
+          if (
+            error?.response?.status === 401 &&
+            !originalRequest._retry &&
+            !originalRequest.url?.includes('refresh')
+          ) {
+            const { auth } = useAuthStore.getState();
+            const refreshToken = auth.token?.refreshToken;
+
+            if (refreshToken) {
+              originalRequest._retry = true;
+              const refreshed = await auth.refresh();
+              if (refreshed) {
+                const newToken = useAuthStore.getState().auth.token?.accessToken;
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                return instance.request(originalRequest);
+              }
+            }
+
+            // If no refresh token or refresh failed, logout and redirect
             await auth.logout();
-            toast.error('Session expired. Please log in again.');
+            // Don't toast if we are already going to sign-in
+            if (!window.location.pathname.includes('sign-in')) {
+              toast.error('Session expired. Please log in again.');
+            }
           }
+          return Promise.reject({
+            success: false,
+            message: error?.response?.data?.message ?? error?.message,
+            statusCode: error?.response?.status ?? 500,
+          });
         }
-        return Promise.reject({
-          success: false,
-          message: error?.response?.data?.message ?? error?.message,
-          statusCode: error?.response?.status ?? 500,
-        });
-      }
-    );
+      );
+    } else {
+      // For public instance, just reject errors normally
+      instance.interceptors.response.use(
+        (res) => res,
+        (error) => {
+          return Promise.reject({
+            success: false,
+            message: error?.response?.data?.message ?? error?.message,
+            statusCode: error?.response?.status ?? 500,
+          });
+        }
+      );
+    }
 
     return instance;
   }

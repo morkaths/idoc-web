@@ -29,18 +29,13 @@ import {
 } from '@repo/ui/components/select';
 import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
-import { UserStatus, type Role, type User } from '@/types';
+import { UserRequest, UserRequestSchema, UserStatus, type Role, type User } from '@/types';
 import { RolesCombobox } from './roles-combobox';
 
-const UserFormSchema = z
-  .object({
-    username: z.string().min(1, 'Username is required.'),
-    email: z.string().min(1, 'Email is required.').email('Invalid email address.'),
-    status: z.number().int(),
-    roles: z.array(z.string()).min(1, 'Select at least one role'),
-    password: z.string().optional().or(z.literal('')),
-    confirmPassword: z.string().optional().or(z.literal('')),
-  })
+const UserFormSchema = UserRequestSchema.extend({
+  password: z.string().optional().or(z.literal('')),
+  confirmPassword: z.string().optional().or(z.literal('')),
+})
   .refine(
     (data) => !data.password || data.password.length >= 6,
     { message: 'Password must be at least 6 characters long.', path: ['password'] }
@@ -56,7 +51,7 @@ type UsersMutateDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialData?: Partial<User>;
-  onSubmit: (data: Partial<User>) => void;
+  onSubmit: (data: UserRequest) => void;
   roles: Role[];
 };
 
@@ -96,17 +91,13 @@ export function UsersMutateDialog({
           <form
             id='user-form'
             onSubmit={form.handleSubmit((data) => {
-              const payload: Partial<User> = {
-                ...initialData,
-                username: data.username,
-                email: data.email,
-                status: data.status,
-                roleIds: data.roles,
+              const { confirmPassword, ...rest } = data;
+              const payload: UserRequest = {
+                ...rest,
+                id: initialData?.id,
               };
 
-              if (data.password) {
-                payload.password = data.password;
-              } else {
+              if (!payload.password) {
                 delete payload.password;
               }
 
@@ -150,8 +141,8 @@ export function UsersMutateDialog({
                   <FormLabel htmlFor="status">Status</FormLabel>
                   <Select
                     onValueChange={(val) => field.onChange(Number(val))}
-                    value={field.value.toString()}
-                    defaultValue={field.value.toString()}
+                    value={field.value?.toString() ?? ''}
+                    defaultValue={field.value?.toString() ?? ''}
                   >
                     <FormControl>
                       <SelectTrigger id="status" className="w-full">
@@ -175,7 +166,11 @@ export function UsersMutateDialog({
                 <div className="grid gap-3">
                   <FormLabel htmlFor="roles">Roles</FormLabel>
                   <RolesCombobox
-                    roles={roles.map(r => ({ ...r, id: String(r.id) }))}
+                    roles={roles.map(r => ({
+                      id: String(r.id),
+                      code: r.code ?? '',
+                      name: r.name ?? ''
+                    }))}
                     value={field.value || []}
                     onChange={field.onChange}
                   />

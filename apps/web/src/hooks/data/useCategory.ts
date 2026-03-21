@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { CategoryApi } from '@/apis';
-import type { FindParams, Category, Pagination } from '@/types';
+import type { FindParams, Category, Pagination, CategoryRequest } from '@/types';
 
 type CategoryResponse = { data: Category[]; pagination?: Pagination };
 
@@ -34,7 +34,7 @@ export const useCategory = (id: string) => {
 export const useCreateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (newCategory: Partial<Category>) => CategoryApi.create(newCategory),
+    mutationFn: (data: CategoryRequest) => CategoryApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
     },
@@ -44,7 +44,7 @@ export const useCreateCategory = () => {
 export const useUpdateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Category> }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<CategoryRequest> }) =>
       CategoryApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['categories', variables.id] });

@@ -17,7 +17,7 @@ import { Button } from '@repo/ui/components/button';
 import { SignOutDialog } from '@/components/sign-out-dialog';
 import { useSession } from "next-auth/react";
 import { useResponsive } from '@/hooks/ui/useResponsive';
-import type { User } from "@/types/schema";
+import type { User } from "@/types";
 import { useLocale } from '@/hooks/ui/useLocale';
 
 export function NavUser() {

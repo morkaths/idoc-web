@@ -11,7 +11,6 @@ import {
 } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
 import { useBooks } from '@/hooks/data/useBook';
-// import { useCategories } from '@/hooks/data/useCategory';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
   Table,

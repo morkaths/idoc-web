@@ -1,4 +1,3 @@
-// ...existing code...
 import React, { useState } from 'react';
 import type { Book } from '@/types';
 import useDialogState from '@/hooks/ui/useDialogState';

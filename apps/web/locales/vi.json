@@ -9,6 +9,7 @@
       "create": "Tạo mới",
       "update": "Cập nhật",
       "close": "Đóng",
+      "select": "Chọn",
       "search": "Tìm kiếm...",
       "next": "Tiếp theo",
       "previous": "Trước đó",
@@ -33,7 +34,7 @@
       "defaultConfirmDesc": "Bạn có chắc chắn muốn {action} các {entity} đã chọn không?"
     },
     "states": {
-      "loading": "Đang tải...",
+      "loading": "Đng tải...",
       "redirecting": "Đang chuyển hướng...",
       "error": "Lỗi",
       "success": "Thành công",
@@ -252,22 +253,32 @@
           "passwordsNotMatch": "Mật khẩu xác nhận không khớp"
         }
       },
-      "messages": {
-        "loadingSignIn": "Đang đăng nhập...",
-        "loadingGoogleSignIn": "Đang đăng nhập với Google...",
-        "loadingSignUp": "Đang tạo tài khoản...",
-        "loadingSignOut": "Đang đăng xuất...",
-        "loadingForgotPassword": "Đang đặt lại mật khẩu...",
-        "successSignIn": "Chào mừng trở lại! Bạn đã đăng nhập thành công.",
-        "successGoogleSignIn": "Đăng nhập bằng Google thành công.",
-        "successSignUp": "Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.",
-        "successSignOut": "Đăng xuất thành công!",
-        "successForgotPassword": "Đặt lại mật khẩu thành công! Vui lòng đăng nhập để tiếp tục.",
-        "errorSignIn": "Email hoặc mật khẩu không chính xác",
-        "errorGoogleSignIn": "Lỗi khi đăng nhập bằng Google.",
-        "errorSignUp": "Lỗi khi tạo tài khoản.",
-        "errorSignOut": "Lỗi khi đăng xuất.",
-        "errorForgotPassword": "Lỗi khi đặt lại mật khẩu."
+      "states": {
+        "signIn": {
+          "loading": "Đang đăng nhập...",
+          "success": "Đăng nhập thành công!",
+          "error": "Lỗi đăng nhập."
+        },
+        "googleSignIn": {
+          "loading": "Đang đăng nhập bằng Google...",
+          "success": "Đăng nhập bằng Google thành công!",
+          "error": "Lỗi đăng nhập bằng Google."
+        },
+        "signUp": {
+          "loading": "Đang tạo tài khoản...",
+          "success": "Tạo tài khoản thành công!",
+          "error": "Lỗi tạo tài khoản."
+        },
+        "signOut": {
+          "loading": "Đang đăng xuất...",
+          "success": "Đăng xuất thành công!",
+          "error": "Lỗi đăng xuất."
+        },
+        "forgotPassword": {
+          "loading": "Đang đặt lại mật khẩu...",
+          "success": "Đặt lại mật khẩu thành công!",
+          "error": "Lỗi đặt lại mật khẩu."
+        }
       }
     }
   },
@@ -354,6 +365,116 @@
       }
     }
   },
+  "book": {
+    "by": "Bởi",
+    "author": "Tác giả ẩn danh",
+    "actions": {
+      "addToCollection": "Thêm vào bộ sưu tập",
+      "borrow": "Mượn ngay"
+    },
+    "borrow": {
+      "title": "Mượn sách",
+      "description": "Nhập thông tin mượn sách bên dưới.",
+      "expireTime": {
+        "label": "Ngày hết hạn",
+        "placeholder": "Chọn ngày hết hạn"
+      },
+      "note": {
+        "label": "Ghi chú",
+        "placeholder": "Ghi chú (không bắt buộc)"
+      },
+      "actions": {
+        "cancel": "Hủy",
+        "confirm": "Xác nhận"
+      },
+      "states": {
+        "loading": "Đang tạo yêu cầu mượn...",
+        "success": "Yêu cầu mượn được tạo thành công!",
+        "error": "Lỗi khi tạo yêu cầu mượn."
+      }
+    },
+    "reviews": {
+      "total": "Dựa trên {count} đánh giá",
+      "error": {
+        "fetch": "Không thể tải đánh giá",
+        "tryAgain": "Vui lòng thử lại sau"
+      },
+      "empty": {
+        "title": "Chưa có đánh giá nào.",
+        "description": "Hãy là người đầu tiên chia sẻ cảm nghĩ sáng tạo của bạn."
+      }
+    },
+    "tabs": {
+      "info": {
+        "label": "Thông tin",
+        "description": {
+          "label": "Mô tả",
+          "empty": "Không có mô tả."
+        },
+        "language": {
+          "label": "Ngôn ngữ"
+        },
+        "pages": {
+          "label": "Số trang",
+          "page": "trang"
+        },
+        "publisher": {
+          "label": "Nhà xuất bản"
+        },
+        "publishedYear": {
+          "label": "Năm xuất bản"
+        }
+      },
+      "reviews": {
+        "label": "Đánh giá"
+      },
+      "recommendations": {
+        "label": "Gợi ý"
+      },
+      "similar": {
+        "label": "Sách tương tự"
+      },
+      "tags": {
+        "label": "Thẻ",
+        "empty": "Không tìm thấy thẻ.",
+        "description": "Chúng tôi không tìm thấy thẻ nào phù hợp với tiêu chí tìm kiếm của bạn. Vui lòng thử thay đổi bộ lọc hoặc từ khóa."
+      }
+    },
+    "error": {
+      "title": "Không tìm thấy sách",
+      "description": "Cuốn sách bạn đang tìm kiếm có thể đã bị xóa, đổi tên hoặc tạm thời không khả dụng.",
+      "actions": {
+        "reload": "Tải lại",
+        "backToHome": "Về trang chủ"
+      }
+    }
+  },
+  "view": {
+    "unauthenticated": {
+      "title": "Yêu cầu đăng nhập",
+      "description": "Bạn cần đăng nhập để xem nội dung sách này.",
+      "actions": {
+        "login": "Đăng nhập ngay"
+      }
+    },
+    "unauthorized": {
+      "title": "Quyền truy cập hạn chế",
+      "description": "Bạn cần phải mượn cuốn sách này trước khi có thể đọc nội dung.",
+      "actions": {
+        "goBack": "Quay lại"
+      }
+    },
+    "error": {
+      "title": "Không có tiêu đề",
+      "book": {
+        "title": "Không tìm thấy tài liệu",
+        "description": "Tài liệu bạn đang tìm kiếm không tồn tại hoặc chưa được đính kèm."
+      },
+      "actions": {
+        "goBack": "Quay lại"
+      }
+    }
+  },
   "library": {
     "title": "Thư viện của tôi",
     "description": "Quản lý sách đang mượn và xem lại lịch sử mượn sách cá nhân.",
@@ -369,7 +490,7 @@
       "columns": {
         "cover": "Ảnh bìa",
         "item": "Vật phẩm",
-        "renewals": "Số lần gia hạn",
+        "renewals": "Gia hạn",
         "borrowTime": "Ngày mượn",
         "expireTime": "Ngày hết hạn",
         "returnTime": "Ngày trả",
@@ -389,37 +510,37 @@
           "label": "Gia hạn",
           "title": "Gia hạn bản mượn",
           "description": "Chọn thêm số ngày hoặc ngày hết hạn mới cho bản mượn này.",
-          "loading": "Đang gia hạn bản mượn...",
-          "success": "Gia hạn bản mượn thành công!",
+          "loading": "Đang gia hạn...",
+          "success": "Gia hạn thành công!",
           "error": "Gia hạn thất bại. Vui lòng thử lại.",
           "fields": {
             "borrowDate": "Ngày mượn",
-            "extraDays": "Số ngày gia hạn",
-            "borrowRange": "Khoảng thời gian mượn",
+            "extraDays": "Số ngày thêm",
+            "borrowRange": "Khoảng mượn",
             "note": "Ghi chú",
             "placeholder": "Số ngày cần gia hạn",
-            "error": "Ngày hết hạn mới phải cách ngày hết hạn hiện tại ít nhất 1 ngày."
+            "error": "Ngày hết hạn mới phải sau ngày hết hạn hiện tại ít nhất 1 ngày."
           }
         },
         "review": {
           "label": "Đánh giá",
           "create": {
-            "success": "Đánh giá bản mượn thành công!",
-            "error": "Lỗi khi đánh giá. Vui lòng thử lại sau."
+            "success": "Đánh giá thành công!",
+            "error": "Lỗi khi đánh giá. Vui lòng thử lại."
           },
           "update": {
             "success": "Cập nhật đánh giá thành công!",
-            "error": "Lỗi khi cập nhật đánh giá. Vui lòng thử lại sau."
+            "error": "Lỗi khi cập nhật đánh giá. Vui lòng thử lại."
           }
         },
         "return": {
           "label": "Trả",
           "title": "Trả bản mượn này: {borrowId}?",
-          "loading": "Đang thực hiện trả bản mượn...",
-          "success": "Trả bản mượn thành công!",
-          "error": "Lỗi khi trả bản mượn. Vui lòng thử lại sau.",
+          "loading": "Đang thực hiện trả...",
+          "success": "Trả sách thành công!",
+          "error": "Lỗi khi trả sách. Vui lòng thử lại.",
           "confirm": "Bản mượn sau đã được trả:",
-          "confirmDesc": "Bạn có chắc chắn muốn trả cuốn sách <strong>{title}</strong> không?<br></br>Thao tác này không thể hoàn tác."
+          "confirmDesc": "Bạn có chắc chắn muốn trả <strong>{title}</strong>?<br></br>Thao tác này không thể hoàn tác."
         },
         "history": {
           "label": "Lịch sử",
@@ -428,31 +549,31 @@
           "unknownTitle": "Tiêu đề không xác định",
           "unknownAuthor": "Tác giả không xác định",
           "noCategory": "Không có danh mục",
-          "loading": "Đang tải lịch sử bản mượn...",
+          "loading": "Đang tải lịch sử...",
           "success": "Tải lịch sử thành công!",
-          "error": "Lỗi khi tải lịch sử. Vui lòng thử lại sau.",
+          "error": "Lỗi khi tải lịch sử. Vui lòng thử lại.",
           "timeline": {
             "borrowed": {
               "title": "Đã mượn",
               "content": "Người dùng <strong>{username}</strong> đã mượn <strong>{title}</strong>."
             },
             "renewal": {
-              "title": "Gia hạn lần {index}",
+              "title": "Gia hạn #{index}",
               "content": "Hạn trả mới: <strong>{date}</strong>."
             },
             "returned": {
               "title": "Đã trả",
-              "content": "Vật phẩm đã được trả lại."
+              "content": "Sách đã được trả."
             },
             "overdue": {
               "title": "Quá hạn",
-              "content": "Vật phẩm đã quá hạn từ ngày <strong>{date}</strong>."
+              "content": "Đã quá hạn từ ngày <strong>{date}</strong>."
             },
             "due": {
               "title": "Hạn trả",
-              "content": "Hạn trả vật phẩm: <strong>{date}</strong>."
+              "content": "Hạn trả là ngày <strong>{date}</strong>."
             },
-            "unknown": "Không rõ ngày"
+            "unknown": "Ngày không xác định"
           }
         }
       },
@@ -460,12 +581,12 @@
         "return": {
           "label": "Trả",
           "tooltip": "Trả các bản mượn đã chọn",
-          "confirmDesc": "Bạn có chắc chắn muốn trả các bản mượn đã chọn không?"
+          "confirmDesc": "Bạn có chắc muốn trả các bản mượn đã chọn?"
         },
         "export": {
-          "label": "Xuất dữ liệu",
+          "label": "Xuất",
           "tooltip": "Xuất các bản mượn đã chọn",
-          "confirmDesc": "Bạn có chắc chắn muốn xuất dữ liệu các bản mượn đã chọn không?"
+          "confirmDesc": "Bạn có chắc muốn xuất các bản mượn đã chọn?"
         }
       }
     },
@@ -473,26 +594,26 @@
       "create": "Đánh giá sách",
       "update": "Cập nhật đánh giá",
       "title": "Đánh giá bản mượn",
-      "description": "Chia sẻ cảm nghĩ của bạn về \"{title}\".",
-      "fallback": "Chia sẻ cảm nghĩ của bạn về cuốn sách này.",
+      "description": "Chia sẻ cảm nghĩ về \"{title}\".",
+      "fallback": "Chia sẻ cảm nghĩ về cuốn sách này.",
       "rating": {
         "label": "Đánh giá của bạn",
         "error": "Vui lòng chọn mức đánh giá!",
         "value": {
-          "excellent": "Rất tốt!",
+          "excellent": "Tuyệt vời!",
           "good": "Tốt!",
           "neutral": "Bình thường!",
-          "poor": "Kém!",
+          "poor": "Tệ!",
           "terrible": "Rất tệ!"
         }
       },
       "content": {
         "label": "Nội dung đánh giá",
-        "placeholder": "Bạn thích hay không thích điều gì ở cuốn sách này?"
+        "placeholder": "Điều bạn thích hoặc không thích ở cuốn sách này?"
       },
       "actions": {
         "submit": "Gửi đánh giá",
-        "update": "Cập nhật"
+        "update": "Cập nhật đánh giá"
       }
     }
   }

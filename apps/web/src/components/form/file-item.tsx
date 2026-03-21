@@ -1,4 +1,4 @@
-import type { FileMeta } from "@/types/schema";
+import type { FileMeta } from "@/types";
 import { FileArchive, FileCode, FilePlay, FileText, Sheet, Trash2 } from "lucide-react";
 
 export function FileItem({

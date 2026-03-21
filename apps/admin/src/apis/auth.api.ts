@@ -1,5 +1,5 @@
 import { API_CONFIG } from '@/config/api';
-import type { AuthenticationResponse, User } from '../types';
+import type { AuthenticationResponse, User, UserRequest } from '../types';
 import { ApiClient } from './config';
 
 export const AuthApi = {
@@ -11,7 +11,7 @@ export const AuthApi = {
     return (response.success && response.data) ? response.data : null;
   },
 
-  register: async (data: Partial<User>): Promise<AuthenticationResponse | null> => {
+  register: async (data: Partial<UserRequest>): Promise<AuthenticationResponse | null> => {
     const response = await ApiClient.post<AuthenticationResponse>(
       API_CONFIG.endpoints.auth.register,
       { mode: 'public', data }

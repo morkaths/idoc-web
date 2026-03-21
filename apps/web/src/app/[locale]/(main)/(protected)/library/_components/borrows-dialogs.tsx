@@ -96,7 +96,11 @@ export function BorrowsDialogs() {
                                     .then(onSuccess)
                                     .catch(onError);
                             } else {
-                                await createReviewMut.mutateAsync({ itemId: currentRow.itemId, ...payload })
+                                await createReviewMut.mutateAsync({ 
+                                    item: currentRow.item.id,
+                                    user: currentRow.borrower.id,
+                                    ...payload 
+                                })
                                     .then(onSuccess)
                                     .catch(onError);
                             }

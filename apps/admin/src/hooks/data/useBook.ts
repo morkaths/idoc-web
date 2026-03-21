@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
-import type { Book, FindParams, Pagination } from '@/types';
+import type { Book, BookRequest, FindParams, Pagination } from '@/types';
 
 type BookResponse = { data: Book[]; pagination?: Pagination };
 
@@ -8,37 +8,44 @@ export const useBooks = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<BookResponse, Error, BookResponse, any[]>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<BookResponse, Error, BookResponse, any[]>({
+  const booksQuery = useQuery<BookResponse, Error, BookResponse, any[]>({
     queryKey: ['books', params],
-    queryFn: async () => {
-      const res = await BookApi.find(params);
-      return res;
-    },
+    queryFn: () => BookApi.find(params),
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
-    ...options,
+    ...options
   });
+
+  return {
+    ...booksQuery,
+    data: {
+      data: booksQuery.data?.data || [],
+      pagination: booksQuery.data?.pagination,
+    }
+  };
 };
 
 export const useBook = (id: string) => {
-  return useQuery({
+  // 1. Fetch book details
+  const bookQuery = useQuery({
     queryKey: ['books', id],
     queryFn: () => BookApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
   });
+
+  return {
+    ...bookQuery,
+    data: bookQuery.data || null,
+  };
 };
 
 export const useCreateBook = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (newBook: Partial<Book>) => BookApi.create(newBook),
+    mutationFn: (data: BookRequest) => BookApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['books'] });
     },
@@ -49,7 +56,7 @@ export const useUpdateBook = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Book> }) => BookApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<BookRequest> }) => BookApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['books', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['books'] });

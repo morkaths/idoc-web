@@ -1,5 +1,5 @@
 import { API_CONFIG } from '@/config/api';
-import type { Role, FindParams, Pagination } from '../types';
+import type { Role, RoleRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const RoleApi = {
@@ -22,7 +22,7 @@ export const RoleApi = {
     return null;
   },
 
-  create: async (data: Partial<Role>): Promise<Role | null> => {
+  create: async (data: RoleRequest): Promise<Role | null> => {
     const response = await ApiClient.post<Role>(
       API_CONFIG.endpoints.role.create,
       { data }
@@ -31,7 +31,7 @@ export const RoleApi = {
     return null;
   },
 
-  update: async (id: string, data: Partial<Role>): Promise<Role | null> => {
+  update: async (id: string, data: Partial<RoleRequest>): Promise<Role | null> => {
     const response = await ApiClient.patch<Role>(
       API_CONFIG.endpoints.role.update(id),
       { data }

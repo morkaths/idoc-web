@@ -35,7 +35,7 @@ export const useCreateReview = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (newReview: ReviewRequest) => ReviewApi.create(newReview),
+        mutationFn: (data: ReviewRequest) => ReviewApi.create(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['reviews'] });
         },

@@ -48,18 +48,18 @@ export const authorsColumns: ColumnDef<Author>[] = [
         header: ({ column }) => <DataTableColumnHeader column={column} title='Avatar' />,
         enableSorting: false,
         cell: ({ row }) => {
-            const avatarUrl = row.original.avatarUrl;
+            const avatarUrl = row.original.avatar;
             const name = row.original.name;
             return <AuthorAvatar src={avatarUrl} name={name} />;
         },
     },
     {
-        accessorKey: 'birthDate',
+        accessorKey: 'dob',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Birth Date' />,
         cell: ({ row }) => {
-            const birthDate = row.original.birthDate;
-            return birthDate ? (
-                <span>{typeof birthDate === 'string' ? new Date(birthDate).toLocaleDateString() : birthDate.toLocaleDateString()}</span>
+            const dob = row.original.dob;
+            return dob ? (
+                <span>{typeof dob === 'string' ? new Date(dob).toLocaleDateString() : dob.toLocaleDateString()}</span>
             ) : null;
         },
     },
@@ -76,20 +76,6 @@ export const authorsColumns: ColumnDef<Author>[] = [
             );
         },
     },
-    // {
-    //     accessorKey: 'bio',
-    //     header: ({ column }) => <DataTableColumnHeader column={column} title='Bio' />,
-    //     enableSorting: false,
-    //     cell: ({ row, table }) => {
-    //         const bio = row.original.bio ?? '';
-    //         const query = String(table.getState().globalFilter ?? '');
-    //         return (
-    //             <div className='max-w-70 truncate text-xs text-muted-foreground'>
-    //                 <Highlight text={bio} query={query} />
-    //             </div>
-    //         );
-    //     },
-    // },
     {
         id: 'actions',
         cell: ({ row }) => <AuthorsTableRowActions row={row} />,

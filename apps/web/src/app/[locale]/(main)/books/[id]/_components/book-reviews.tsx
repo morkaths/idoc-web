@@ -6,6 +6,7 @@ import { useReviews } from '@/hooks/data/useReview';
 import { Avatar, AvatarFallback } from '@repo/ui/components/avatar';
 import { formatDate } from '@/utils/date';
 import { Pagination } from '@/components/pagination';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 interface BookReviewsProps {
     bookId?: string;
@@ -14,6 +15,7 @@ interface BookReviewsProps {
 }
 
 export function BookReviews({ bookId, rating = 0, totalReviews = 0 }: BookReviewsProps) {
+    const { t, keys } = useLocale('book');
     const [page, setPage] = useState(1);
     const { data, isLoading, isError } = useReviews({ itemId: bookId, page }, { enabled: !!bookId });
     const reviews = data?.data || [];
@@ -25,8 +27,8 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0 }: BookReview
 
     return (
         <div className="space-y-8 mt-4">
-            {/* Tóm tắt */}
             <div className="grid gap-8 md:grid-cols-[250px_1fr]">
+                {/* Reviews summary */}
                 <div className="space-y-6">
                     <div className="bg-card rounded-xl p-6 border text-center space-y-2 h-fit sticky top-4">
                         <div className="text-5xl font-bold tracking-tighter text-foreground">{rating?.toFixed(1) || 0}</div>
@@ -38,12 +40,11 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0 }: BookReview
                                 />
                             ))}
                         </div>
-                        <div className="text-sm text-muted-foreground pt-1">Based on {totalReviews || 0} reviews</div>
+                        <div className="text-sm text-muted-foreground pt-1">{t(keys.reviews.total, { count: totalReviews || 0 })}</div>
                     </div>
                 </div>
-
+                {/* Reviews list */}
                 <div className="space-y-6">
-                    {/* Danh sách đánh giá */}
                     {(isLoading) ? (
                         <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border-2 border-dashed rounded-xl">
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -51,10 +52,16 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0 }: BookReview
                     ) : (isError) ? (
                         <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border-2 border-dashed rounded-xl bg-destructive/5 border-destructive/20 text-destructive">
                             <MessageSquare className="w-12 h-12 mb-3 opacity-50" />
-                            <p className="text-lg font-medium">Không thể tải đánh giá</p>
-                            <p className="text-sm opacity-80">Vui lòng thử lại sau</p>
+                            <p className="text-lg font-medium">{t(keys.reviews.error.fetch)}</p>
+                            <p className="text-sm opacity-80">{t(keys.reviews.error.tryAgain)}</p>
                         </div>
-                    ) : (reviews.length > 0) ? (
+                    ) : (reviews.length === 0) ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border-2 border-dashed rounded-xl">
+                            <MessageSquare className="w-12 h-12 mb-3 opacity-20" />
+                            <p className="text-lg font-medium">{t(keys.reviews.empty.title)}</p>
+                            <p className="text-sm">{t(keys.reviews.empty.description)}</p>
+                        </div>
+                    ) : (
                         <div className="space-y-4">
                             <div className="space-y-4">
                                 {reviews.map((review) => (
@@ -90,12 +97,6 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0 }: BookReview
                             {pagination && (
                                 <Pagination pagination={pagination} onPageChange={handlePageChange} />
                             )}
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border-2 border-dashed rounded-xl">
-                            <MessageSquare className="w-12 h-12 mb-3 opacity-20" />
-                            <p className="text-lg font-medium">No reviews yet</p>
-                            <p className="text-sm">Be the first to share your creative thoughts</p>
                         </div>
                     )}
                 </div>

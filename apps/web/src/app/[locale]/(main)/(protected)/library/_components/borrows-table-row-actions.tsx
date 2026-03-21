@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type Row } from '@tanstack/react-table';
-import { type Borrow, BorrowSchema } from '@/types/schema';
+import { type Borrow } from '@/types';
 import { Clock, Eye, Undo2, History, Star } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -33,7 +33,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
           : 1,
         password: typeof original.borrower.password === 'string'
           ? original.borrower.password
-          : '', // chuyển null/undefined thành chuỗi rỗng
+          : '',
         roles: Array.isArray(original.borrower.roles)
           ? original.borrower.roles.map(role => ({
             ...role,
@@ -51,7 +51,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
       }
       : undefined,
   };
-  const borrow = BorrowSchema.parse(safeBorrow);
+  const borrow = safeBorrow as Borrow;
   const ctx = useBorrowsContext();
   if (!ctx) throw new Error('BorrowsTableRowActions must be used inside BorrowsProvider');
   const { setOpen, setCurrentRow } = ctx;

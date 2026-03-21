@@ -11,8 +11,7 @@ import {
     CommandList,
 } from "@repo/ui/components/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/popover";
-
-type Role = { id: string; code: string; name: string };
+import { Role } from "@/types";
 
 type RolesComboboxProps = {
     roles: Role[];

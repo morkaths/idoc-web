@@ -6,12 +6,12 @@ import { Badge } from "@repo/ui/components/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/components/avatar";
 import { Camera, Calendar, Mail, MapPin } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useProfile } from "@/hooks/data/useProfile";
+import { useUser } from "@/hooks/data/useUser";
 
 export default function SettingHeader() {
     const { data: session } = useSession();
     const user = session?.user;
-    const { data: profile } = useProfile(user?.id?.toString() ?? '');
+    const { data: profile } = useUser(user?.id?.toString() ?? '');
 
     if (!user) return null;
 
@@ -21,7 +21,7 @@ export default function SettingHeader() {
                 <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
                     <div className="relative">
                         <Avatar className="h-24 w-24">
-                            <AvatarImage src={profile?.avatar || ''} alt={user.username || 'User'} />
+                            <AvatarImage src={profile?.profile?.avatar || ''} alt={user.username || 'User'} />
                             <AvatarFallback className="text-2xl">
                                 {(user.username || user.email || 'U').charAt(0).toUpperCase()}
                             </AvatarFallback>
@@ -47,11 +47,11 @@ export default function SettingHeader() {
                         <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
                             <div className="flex items-center gap-1">
                                 <Calendar className="size-4" />
-                                {profile?.birthday ? new Date(profile.birthday).toLocaleDateString() : 'N/A'}
+                                {profile?.profile?.dob ? new Date(profile.profile.dob).toLocaleDateString() : 'N/A'}
                             </div>
                             <div className="flex items-center gap-1">
                                 <MapPin className="size-4" />
-                                {profile?.location ? profile.location : 'N/A'}
+                                {profile?.profile?.address ? profile.profile.address : 'N/A'}
                             </div>
                         </div>
                     </div>

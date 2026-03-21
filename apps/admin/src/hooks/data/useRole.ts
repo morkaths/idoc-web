@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { RoleApi } from '@/apis/role.api';
-import type { Role, FindParams, Pagination } from '@/types';
+import type { Role, RoleRequest, FindParams, Pagination } from '@/types';
 
 type RoleResponse = { data: Role[]; pagination?: Pagination };
 
@@ -38,7 +38,7 @@ export const useCreateRole = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (newRole: Partial<Role>) => RoleApi.create(newRole),
+    mutationFn: (data: RoleRequest) => RoleApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roles'] });
     },
@@ -49,7 +49,7 @@ export const useUpdateRole = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Role> }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<RoleRequest> }) =>
       RoleApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['roles', variables.id] });

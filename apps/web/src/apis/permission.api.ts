@@ -1,5 +1,5 @@
 import { API_CONFIG } from '@/config/api';
-import type { Permission, FindParams, Pagination } from '../types';
+import type { Permission, PermissionRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const PermissionApi = {
@@ -22,7 +22,7 @@ export const PermissionApi = {
     return null;
   },
 
-  create: async (data: Partial<Permission>): Promise<Permission | null> => {
+  create: async (data: PermissionRequest): Promise<Permission | null> => {
     const response = await ApiClient.post<Permission>(
       API_CONFIG.endpoints.permission.create,
       { data }
@@ -31,7 +31,7 @@ export const PermissionApi = {
     return null;
   },
 
-  update: async (id: string, data: Partial<Permission>): Promise<Permission | null> => {
+  update: async (id: string, data: Partial<PermissionRequest>): Promise<Permission | null> => {
     const response = await ApiClient.patch<Permission>(
       API_CONFIG.endpoints.permission.update(id),
       { data }

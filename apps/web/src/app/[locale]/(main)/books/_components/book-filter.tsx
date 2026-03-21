@@ -18,7 +18,7 @@ import { useLocale } from '@/hooks/ui/useLocale';
 
 const FilterSchema = z.object({
     search: z.string().optional(),
-    categoryIds: z.array(z.string()).optional(),
+    categories: z.array(z.string()).optional(),
 });
 
 type FilterForm = z.infer<typeof FilterSchema>;
@@ -36,18 +36,17 @@ export default function BookFilter({
 }: BookFilterProps) {
     const { t, keys } = useLocale('books');
 
-    // Normalize categoryIds
-    const normalizedCategoryIds = Array.isArray(filter?.categoryIds)
-        ? filter.categoryIds
-        : filter?.categoryIds
-            ? [filter.categoryIds as string]
+    const normalizedCategories = Array.isArray(filter?.categories)
+        ? filter.categories
+        : filter?.categories
+            ? [filter.categories as string]
             : [];
 
     const form = useForm<FilterForm>({
         resolver: zodResolver(FilterSchema),
         defaultValues: {
             search: filter?.query || "",
-            categoryIds: normalizedCategoryIds,
+            categories: normalizedCategories,
         },
     });
 
@@ -58,7 +57,7 @@ export default function BookFilter({
                 onSubmit={form.handleSubmit(async (data) => {
                     const params: FindParams = {
                         query: data.search,
-                        categoryIds: data.categoryIds,
+                        categories: data.categories,
                     };
                     onFilter(params);
 
@@ -82,10 +81,10 @@ export default function BookFilter({
                 {/* Categories (multi-select) */}
                 <FormField
                     control={form.control}
-                    name="categoryIds"
+                    name="categories"
                     render={({ field }) => (
                         <div className="grid gap-3">
-                            <FormLabel htmlFor="categoryIds">{t(keys.sidebar.filter.categories.label)}</FormLabel>
+                            <FormLabel htmlFor="categories">{t(keys.sidebar.filter.categories.label)}</FormLabel>
                             <FormControl>
                                 <CategoriesCombobox
                                     value={field.value || []}
@@ -99,7 +98,7 @@ export default function BookFilter({
                 {/* Reset & Submit */}
                 <div className="flex gap-2">
                     <Button variant="outline" type="button" className="flex-1" onClick={() => {
-                        form.reset({ search: "", categoryIds: [] });
+                        form.reset({ search: "", categories: [] });
                         onReset();
                     }}>
                         {t(keys.sidebar.actions.reset)}

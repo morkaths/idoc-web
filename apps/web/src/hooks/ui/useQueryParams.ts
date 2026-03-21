@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import type { FindParams } from '@/types/api';
+import type { FindParams } from '@/types';
 
 /**
  * Custom hook để quản lý URL query parameters theo chuẩn FindParams
@@ -27,7 +27,6 @@ export function useQueryParams() {
         if (query) result.query = query;
         if (sortBy && sortOrder) result.sorts = [{ [sortBy]: sortOrder }];
 
-        // Dynamic fields (categoryIds, authorIds, etc.)
         searchParams.forEach((value, key) => {
             if (!['page', 'limit', 'query', 'sortBy', 'sortOrder'].includes(key)) {
                 result[key] = value.includes(',') ? value.split(',').filter(Boolean) : value;

@@ -16,7 +16,7 @@ import { useLocale } from '@/hooks/ui/useLocale';
 // Types
 interface FilterState extends Partial<FindParams> {
   query?: string;
-  categoryIds?: string[];
+  categories?: string[];
 }
 
 interface SortState {
@@ -27,7 +27,7 @@ interface SortState {
 // Helper: Parse URL params
 const parseFilter = (p: URLSearchParams): FilterState => ({
   query: p.get('query') || undefined,
-  categoryIds: p.get('categoryIds')?.split(',').filter(Boolean),
+  categories: p.get('categories')?.split(',').filter(Boolean),
 });
 
 const parseSort = (p: URLSearchParams): SortState => ({
@@ -52,7 +52,7 @@ export function BooksView() {
   useEffect(() => {
     const p = new URLSearchParams();
     if (filter.query) p.set('query', filter.query);
-    if (filter.categoryIds?.length) p.set('categoryIds', filter.categoryIds.join(','));
+    if (filter.categories?.length) p.set('categories', filter.categories.join(','));
     if (sort.sortBy !== 'createdAt') p.set('sortBy', sort.sortBy);
     if (sort.sortOrder !== 'desc') p.set('sortOrder', sort.sortOrder);
     p.set('page', '1');
@@ -63,7 +63,7 @@ export function BooksView() {
   const handleSetFilter = useCallback((f: Partial<FindParams>) => {
     setFilter({
       query: (f.query as string) || undefined,
-      categoryIds: Array.isArray(f.categoryIds) ? f.categoryIds : undefined,
+      categories: Array.isArray(f.categories) ? f.categories : undefined,
     });
   }, []);
 

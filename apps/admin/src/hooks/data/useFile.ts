@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { FileApi } from '@/apis/file.api';
-import type { FindParams, Pagination } from '@/types';
+import type { FileMeta, FindParams, Pagination } from '@/types';
 
-type FileResponse = { data: any[]; pagination?: Pagination }; // File type might not be exported in admin types yet, verify later
+type FileResponse = { data: FileMeta[]; pagination?: Pagination };
 
 export const useFiles = (
     params: FindParams = {},

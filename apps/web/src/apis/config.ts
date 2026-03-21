@@ -139,26 +139,34 @@ export class ApiClient {
   }
 
   private static handleError(error: any): ApiResponse<any> {
+    const timestamp = new Date().toISOString();
+    
     // Logic from original handleError
-    if (axios.isAxiosError(error)) {
+    if (axios.isAxiosError(error) && error.response?.data) {
+      const serverResponse = error.response.data;
       return {
         success: false,
-        message: error.response?.data?.message ?? error.message,
-        status: error.response?.status ?? 500, // mapped statusCode to status to match reference interface
-      } as any; // Cast to any to avoid strict type conflict if ApiResponse definition differs slightly
+        message: serverResponse.message || error.message,
+        status: serverResponse.status ?? error.response?.status ?? 500,
+        timestamp: serverResponse.timestamp || timestamp,
+        errors: serverResponse.errors,
+      } as any;
     }
     if (typeof error === 'object' && error !== null && 'message' in error) {
-      const err = error as { message?: string; statusCode?: number; status?: number };
+      const err = error as { message?: string; statusCode?: number; status?: number; timestamp?: string; errors?: string[] };
       return {
         success: false,
         message: err.message,
         status: err.status ?? err.statusCode ?? 500,
+        timestamp: err.timestamp || timestamp,
+        errors: err.errors,
       } as any;
     }
     return {
       success: false,
       message: 'Unknown error',
       status: 500,
+      timestamp,
     } as any;
   }
 
@@ -177,9 +185,6 @@ export class ApiClient {
       });
       return response.data;
     } catch (error: any) {
-      // The interceptor rejects with the formatted error object, so we might just return it
-      // OR standard try/catch might catch untransformed errors.
-      // Let's safe guard.
       if (error.success === false) return error;
       return ApiClient.handleError(error);
     }

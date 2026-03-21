@@ -11,7 +11,7 @@ import {
     DialogClose,
 } from '@repo/ui/components/dialog';
 import { useReviews } from '@/hooks/data/useReview';
-import type { Borrow, Review } from '@/types/schema';
+import type { Borrow, Review } from '@/types';
 import { Textarea } from '@repo/ui/components/textarea';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
@@ -45,8 +45,13 @@ export function ReviewMutateDialog({
 
     // Fetch existing review
     const { data: reviewsData } = useReviews(
-        { userId: session?.user?.id, itemId: borrow.itemId },
-        { enabled: !!session?.user?.id && !!borrow.itemId && open }
+        {
+            filters: [
+                { field: 'user', value: session?.user?.id },
+                { field: 'item', value: borrow.item?.id }
+            ]
+        },
+        { enabled: !!session?.user?.id && !!borrow.item?.id && open }
     );
     const existingReview = reviewsData?.data?.[0];
 

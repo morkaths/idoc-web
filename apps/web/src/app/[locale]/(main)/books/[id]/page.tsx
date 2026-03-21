@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const book = await BookApi.findById(id);
     if (!book) {
       return {
-        title: "Sách không tồn tại",
+        title: "Book not found",
       };
     }
     return {
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
   } catch (error) {
     return {
-      title: "Chi tiết sách",
+      title: "Error",
     };
   }
 }

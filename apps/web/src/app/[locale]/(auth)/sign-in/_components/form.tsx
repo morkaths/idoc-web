@@ -62,7 +62,7 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
     toast.promise(
       handleCredentialsLogin(formData),
       {
-        loading: t(keys.form.messages.loadingSignIn),
+        loading: t(keys.form.states.signIn.loading),
         success: async (result) => {
           setIsLoading(false);
           if (result.success) {
@@ -70,9 +70,9 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
             router.refresh();
             const targetPath = redirectTo || '/?login=success';
             router.replace(targetPath);
-            return t(keys.form.messages.successSignIn);
+            return t(keys.form.states.signIn.success);
           }
-          throw new Error(result.error || t(keys.form.messages.errorSignIn));
+          throw new Error(result.error || t(keys.form.states.signIn.error));
         },
         error: (err) => {
           setIsLoading(false);
@@ -147,9 +147,9 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
             onClick={() => {
               setIsLoading(true);
               toast.promise(handleGoogleLogin(), {
-                loading: t(keys.form.messages.loadingGoogleSignIn),
-                success: () => t(keys.form.messages.successGoogleSignIn),
-                error: (err) => err.message || t(keys.form.messages.errorGoogleSignIn),
+                loading: t(keys.form.states.googleSignIn.loading),
+                success: () => t(keys.form.states.googleSignIn.success),
+                error: (err) => err.message || t(keys.form.states.googleSignIn.error),
               });
             }}
           >

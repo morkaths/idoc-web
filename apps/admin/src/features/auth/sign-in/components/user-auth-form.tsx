@@ -21,9 +21,7 @@ import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
 
 const formSchema = z.object({
-  email: z.email({
-    error: (iss) => (iss.input === '' ? 'Please enter your email' : undefined),
-  }),
+  email: z.string().email('Please enter a valid email address'),
   password: z
     .string()
     .min(1, 'Please enter your password')

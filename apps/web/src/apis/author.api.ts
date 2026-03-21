@@ -1,5 +1,5 @@
 import { API_CONFIG } from '@/config/api';
-import type { Author, FindParams, Pagination } from '../types';
+import type { Author, AuthorRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const AuthorApi = {
@@ -23,7 +23,7 @@ export const AuthorApi = {
     return null;
   },
 
-  create: async (data: Partial<Author>): Promise<Author | null> => {
+  create: async (data: AuthorRequest): Promise<Author | null> => {
     const response = await ApiClient.post<Author>(
       API_CONFIG.endpoints.author.create,
       { mode: 'private', data }
@@ -32,7 +32,7 @@ export const AuthorApi = {
     return null;
   },
 
-  update: async (id: string, data: Partial<Author>): Promise<Author | null> => {
+  update: async (id: string, data: Partial<AuthorRequest>): Promise<Author | null> => {
     const response = await ApiClient.patch<Author>(
       API_CONFIG.endpoints.author.update(id),
       { mode: 'private', data }

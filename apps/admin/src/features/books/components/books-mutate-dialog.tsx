@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Book } from "@/types/schema";
+import { BookRequestSchema, type Book, type BookRequest } from "@/types";
 import { Button } from "@repo/ui/components/button";
 import {
     Dialog,
@@ -30,36 +29,11 @@ import { useUploadImage } from '@/hooks/data/useImage';
 import { FileItem } from '@/components/form/file-item';
 import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/components/form';
 
-const BookFormSchema = z.object({
-    title: z.string().min(1, "Title is required"),
-    description: z.string().optional(),
-    slug: z.string().regex(/^[a-z0-9-]+$/, "Slug must be lowercase, no spaces or special characters").optional(),
-    publisher: z.string().optional(),
-    publishedDate: z.union([z.date(), z.string(), z.number()]).optional(),
-    edition: z.string().optional(),
-    isbn: z.string()
-        .transform(val => val.replace(/[-\s]/g, ""))
-        .refine(val => val.length === 10 || val.length === 13, {
-            message: "ISBN must be 10 or 13 digits",
-        })
-        .optional(),
-    language: z.string().optional(),
-    pages: z.number().int().min(0, "Pages must be at least 0").optional(),
-    price: z.number().min(0, "Price must be at least 0").optional(),
-    stock: z.number().int().min(0, "Stock must be at least 0").optional(),
-    coverUrl: z.string().optional(),
-    fileKey: z.string().optional(),
-    tags: z.array(z.string()).optional(),
-    authors: z.array(z.string()).optional(),
-    categories: z.array(z.string()).optional(),
-});
-type BookForm = z.infer<typeof BookFormSchema>;
-
 type BooksMutateDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     initialData?: Partial<Book>;
-    onSubmit: (data: Partial<Book>) => void;
+    onSubmit: (data: BookRequest) => void;
 };
 
 export function BooksMutateDialog({
@@ -76,8 +50,8 @@ export function BooksMutateDialog({
     const deleteFile = useDeleteFile();
     const { data: fileMeta } = useFile(initialData?.fileKey || "");
 
-    const form = useForm<BookForm>({
-        resolver: zodResolver(BookFormSchema),
+    const form = useForm<BookRequest>({
+        resolver: zodResolver(BookRequestSchema),
         defaultValues: {
             title: initialData?.title ?? "",
             description: initialData?.description ?? "",
@@ -146,15 +120,10 @@ export function BooksMutateDialog({
                             }
 
                             onSubmit({
-                                ...initialData,
                                 ...data,
-                                publishedDate: data.publishedDate ? new Date(data.publishedDate) : undefined,
-                                coverUrl: coverUrl,
-                                fileKey: fileKey,
-                                authorIds: data.authors,
-                                categoryIds: data.categories,
-                                authors: undefined,
-                                categories: undefined,
+                                id: initialData?.id,
+                                coverUrl,
+                                fileKey,
                             });
                             onOpenChange(false);
                             form.reset();
@@ -344,6 +313,7 @@ export function BooksMutateDialog({
                                         <Textarea
                                             id="tags"
                                             {...field}
+                                            value={Array.isArray(field.value) ? field.value.join(', ') : (field.value || '')}
                                             onChange={e => field.onChange(
                                                 e.target.value
                                                     .split(",")
