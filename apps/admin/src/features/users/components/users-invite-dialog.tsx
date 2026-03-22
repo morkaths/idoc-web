@@ -98,7 +98,6 @@ export function UsersInviteDialog({
                     roles={roles}
                     value={field.value || []}
                     onChange={field.onChange}
-                    placeholder="Select roles..."
                   />
                   <FormMessage />
                 </FormItem>

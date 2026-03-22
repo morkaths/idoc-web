@@ -1,6 +1,6 @@
-export * from './api';
 export * from './enum';
-export * from './schema';
+export * from './request';
+export * from './response';
 
 // ───────────────────────────────────────────────────────────────────────────────
 // COMMON TYPE: Các kiểu dữ liệu chung dùng trong toàn bộ hệ thống

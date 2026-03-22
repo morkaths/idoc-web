@@ -1,6 +1,6 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Category } from "@/types/schema";
+import { CategoryRequestSchema, type Category, type CategoryRequest } from "@/types";
 import { Button } from "@repo/ui/components/button";
 import {
     Dialog,
@@ -12,28 +12,15 @@ import {
     DialogTitle,
 } from "@repo/ui/components/dialog";
 import { Input } from "@repo/ui/components/input";
-import { z } from "zod";
 import { X } from "lucide-react";
 import { LanguageSelect } from "./language-select";
 import { Form, FormControl, FormField, FormLabel, FormMessage } from "@repo/ui/components/form";
-
-const CategoryFormSchema = z.object({
-    slug: z.string().min(1, "Slug is required"),
-    translations: z.array(
-        z.object({
-            lang: z.string().min(1, "Language is required"),
-            name: z.string().min(1, "Name is required"),
-            description: z.string().optional(),
-        })
-    ).min(1, "At least one translation is required"),
-});
-type CategoryForm = z.infer<typeof CategoryFormSchema>;
 
 type CategoriesMutateDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     initialData?: Partial<Category>;
-    onSubmit: (data: Partial<Category>) => void;
+    onSubmit: (data: CategoryRequest) => void;
 };
 
 export function CategoriesMutateDialog({
@@ -42,11 +29,15 @@ export function CategoriesMutateDialog({
     initialData,
     onSubmit,
 }: CategoriesMutateDialogProps) {
-    const form = useForm<CategoryForm>({
-        resolver: zodResolver(CategoryFormSchema),
+    const form = useForm<CategoryRequest>({
+        resolver: zodResolver(CategoryRequestSchema),
         defaultValues: {
             slug: initialData?.slug ?? "",
-            translations: initialData?.translations ?? [
+            translations: initialData?.translations?.map(t => ({
+                lang: t.lang,
+                name: t.name,
+                description: t.description ?? ""
+            })) ?? [
                 { lang: "vn", name: "", description: "" }
             ],
         },
@@ -72,8 +63,8 @@ export function CategoriesMutateDialog({
                     <form
                         onSubmit={form.handleSubmit((data) => {
                             onSubmit({
-                                ...initialData,
                                 ...data,
+                                id: initialData?.id,
                             });
                             onOpenChange(false);
                             form.reset();
@@ -132,7 +123,7 @@ export function CategoriesMutateDialog({
                                                     <FormLabel htmlFor={`translations.${idx}.lang`} className="whitespace-nowrap">Language</FormLabel>
                                                     <FormControl>
                                                         <LanguageSelect
-                                                            value={field.value}
+                                                            value={field.value ?? ''}
                                                             onChange={field.onChange}
                                                             id={`translations.${idx}.lang`}
                                                             name={field.name}

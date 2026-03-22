@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { Permission, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
+import type { Permission, PermissionRequest, FindParams, Pagination } from '../types';
+import { ApiClient } from './config';
 
 export const PermissionApi = {
   find: async (params?: FindParams): Promise<{ data: Permission[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<Permission[]>(
+    const response = await ApiClient.get<Permission[]>(
       API_CONFIG.endpoints.permission.find,
       { params }
     );
@@ -14,34 +14,34 @@ export const PermissionApi = {
     };
   },
 
-  findById: async (id: string): Promise<Permission | null> => {
-    const response = await ApiRequest.apiGet<Permission>(
+  findById: async (id: string): Promise<Permission> => {
+    const response = await ApiClient.get<Permission>(
       API_CONFIG.endpoints.permission.findById(id)
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Permission not found');
   },
 
-  create: async (data: Partial<Permission>): Promise<Permission | null> => {
-    const response = await ApiRequest.apiPost<Permission>(
+  create: async (data: PermissionRequest): Promise<Permission> => {
+    const response = await ApiClient.post<Permission>(
       API_CONFIG.endpoints.permission.create,
       { data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to create permission');
   },
 
-  update: async (id: string, data: Partial<Permission>): Promise<Permission | null> => {
-    const response = await ApiRequest.apiPatch<Permission>(
+  update: async (id: string, data: Partial<PermissionRequest>): Promise<Permission> => {
+    const response = await ApiClient.patch<Permission>(
       API_CONFIG.endpoints.permission.update(id),
       { data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to update permission');
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const response = await ApiRequest.apiDelete<null>(
+    const response = await ApiClient.delete<null>(
       API_CONFIG.endpoints.permission.delete(id)
     );
     return response.success;

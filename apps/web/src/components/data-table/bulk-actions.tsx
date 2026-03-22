@@ -6,6 +6,7 @@ import { Badge } from '@repo/ui/components/badge';
 import { Button } from '@repo/ui/components/button';
 import { Separator } from '@repo/ui/components/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@repo/ui/components/tooltip';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>;
@@ -28,6 +29,7 @@ export function DataTableBulkActions<TData>({
   entityName,
   children,
 }: DataTableBulkActionsProps<TData>): React.ReactNode | null {
+  const { t, keys } = useLocale('common');
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedCount = selectedRows.length;
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -36,7 +38,7 @@ export function DataTableBulkActions<TData>({
   // Announce selection changes to screen readers
   useEffect(() => {
     if (selectedCount > 0) {
-      const message = `${selectedCount} ${entityName}${selectedCount > 1 ? 's' : ''} selected. Bulk actions toolbar is available.`;
+      const message = `${selectedCount} ${entityName} ${t(keys.table.selected)}.`;
 
       // Use queueMicrotask to defer state update and avoid cascading renders
       queueMicrotask(() => {
@@ -47,7 +49,7 @@ export function DataTableBulkActions<TData>({
       const timer = setTimeout(() => setAnnouncement(''), 3000);
       return () => clearTimeout(timer);
     }
-  }, [selectedCount, entityName]);
+  }, [selectedCount, entityName, t, keys]);
 
   const handleClearSelection = () => {
     table.resetRowSelection();
@@ -127,7 +129,7 @@ export function DataTableBulkActions<TData>({
       <div
         ref={toolbarRef}
         role='toolbar'
-        aria-label={`Bulk actions for ${selectedCount} selected ${entityName}${selectedCount > 1 ? 's' : ''}`}
+        aria-label={`${selectedCount} ${entityName} ${t(keys.table.selected)}`}
         aria-describedby='bulk-actions-description'
         tabIndex={-1}
         onKeyDown={handleKeyDown}
@@ -152,15 +154,15 @@ export function DataTableBulkActions<TData>({
                 size='icon'
                 onClick={handleClearSelection}
                 className='size-6 rounded-full'
-                aria-label='Clear selection'
-                title='Clear selection (Escape)'
+                aria-label={t(keys.table.actions.clear)}
+                title={`${t(keys.table.actions.clear)} (Escape)`}
               >
                 <X />
-                <span className='sr-only'>Clear selection</span>
+                <span className='sr-only'>{t(keys.table.actions.clear)}</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Clear selection (Escape)</p>
+              <p>{t(keys.table.actions.clear)} (Escape)</p>
             </TooltipContent>
           </Tooltip>
 
@@ -170,15 +172,14 @@ export function DataTableBulkActions<TData>({
             <Badge
               variant='default'
               className='min-w-8 rounded-lg'
-              aria-label={`${selectedCount} selected`}
+              aria-label={`${selectedCount} ${t(keys.table.selected)}`}
             >
               {selectedCount}
             </Badge>{' '}
             <span className='hidden sm:inline'>
               {entityName}
-              {selectedCount > 1 ? 's' : ''}
             </span>{' '}
-            selected
+            {t(keys.table.selected)}
           </div>
 
           <Separator className='h-5' orientation='vertical' aria-hidden='true' />

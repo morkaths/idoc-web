@@ -1,9 +1,8 @@
 'use client';
 
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Borrow } from "@/types/schema";
+import { BorrowRequestSchema, type Borrow, type BorrowRequest } from "@/types";
 import { Button } from "@repo/ui/components/button";
 import {
     Dialog,
@@ -21,20 +20,11 @@ import { UserCombobox } from './users-combobox';
 import { ItemCombobox } from './items-combobox';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@repo/ui/components/select';
 
-const BorrowFormSchema = z.object({
-    userId: z.string().min(1, "User ID is required"),
-    itemId: z.string().min(1, "Item ID is required"),
-    expireTime: z.union([z.date(), z.string(), z.number()]).refine(val => !!val, { message: "Expire time is required" }),
-    status: z.string().optional(),
-    note: z.string().optional(),
-});
-type BorrowForm = z.infer<typeof BorrowFormSchema>;
-
 type BorrowsMutateDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     initialData?: Partial<Borrow>;
-    onSubmit: (data: Partial<Borrow>) => void;
+    onSubmit: (data: Partial<BorrowRequest>) => void;
 };
 
 export function BorrowsMutateDialog({
@@ -43,13 +33,13 @@ export function BorrowsMutateDialog({
     initialData,
     onSubmit,
 }: BorrowsMutateDialogProps) {
-    const form = useForm<BorrowForm>({
-        resolver: zodResolver(BorrowFormSchema),
+    const form = useForm<BorrowRequest>({
+        resolver: zodResolver(BorrowRequestSchema),
         defaultValues: {
-            userId: initialData?.userId ?? "",
-            itemId: initialData?.itemId ?? "",
+            borrower: initialData?.borrower?.id ?? "",
+            item: initialData?.item?.id ?? "",
             expireTime: initialData?.expireTime ? new Date(initialData.expireTime) : undefined,
-            status: initialData?.status ?? "",
+            status: initialData?.status,
             note: initialData?.note ?? "",
         },
     });
@@ -69,7 +59,7 @@ export function BorrowsMutateDialog({
                     <form
                         onSubmit={form.handleSubmit(async (data) => {
                             onSubmit({
-                                ...initialData,
+                                id: initialData?.id,
                                 ...data,
                                 expireTime: data.expireTime ? new Date(data.expireTime) : undefined,
                             });
@@ -81,10 +71,10 @@ export function BorrowsMutateDialog({
 
                         <FormField
                             control={form.control}
-                            name="userId"
+                            name="borrower"
                             render={({ field, fieldState }) => (
                                 <div className="grid gap-3">
-                                    <FormLabel htmlFor="userId">User</FormLabel>
+                                    <FormLabel htmlFor="borrower">User</FormLabel>
                                     <UserCombobox
                                         value={field.value}
                                         onChange={field.onChange}
@@ -95,10 +85,10 @@ export function BorrowsMutateDialog({
                         />
                         <FormField
                             control={form.control}
-                            name="itemId"
+                            name="item"
                             render={({ field, fieldState }) => (
                                 <div className="grid gap-3">
-                                    <FormLabel htmlFor="itemId">Item</FormLabel>
+                                    <FormLabel htmlFor="item">Item</FormLabel>
                                     <ItemCombobox
                                         value={field.value}
                                         onChange={field.onChange}

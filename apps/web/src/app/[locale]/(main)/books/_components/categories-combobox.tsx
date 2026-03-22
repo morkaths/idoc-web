@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/pop
 import type { Category } from "@/types";
 import { useDebounce } from "@/hooks/ui/useDebounce";
 import { useCategories } from "@/hooks/data/useCategory";
+import { useLocale } from '@/hooks/ui/useLocale';
 
 type CategoriesComboboxProps = {
     value: string[];
@@ -25,6 +26,7 @@ export function CategoriesCombobox({
     onChange,
 }: CategoriesComboboxProps) {
     const id = useId();
+    const { t, keys } = useLocale('books');
     const [open, setOpen] = useState(false);
     const [page, setPage] = useState(1);
     const [query, setQuery] = useState("");
@@ -116,7 +118,7 @@ export function CategoriesCombobox({
                                     ) : null;
                                 })
                             ) : (
-                                <span className="text-muted-foreground">Select categories...</span>
+                                <span className="text-muted-foreground">{t(keys.sidebar.filter.categories.placeholder)}</span>
                             )}
                         </div>
                         <ChevronsUpDownIcon className="text-muted-foreground/80 shrink-0" aria-hidden="true" />
@@ -125,7 +127,7 @@ export function CategoriesCombobox({
                 <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
                     <Command>
                         <CommandInput
-                            placeholder="Search category..."
+                            placeholder={t(keys.sidebar.filter.categories.searchPlaceholder)}
                             value={query}
                             onValueChange={handleSearch}
                         />
@@ -133,7 +135,7 @@ export function CategoriesCombobox({
                             className="max-h-60 overflow-y-auto"
                             onScroll={handleScroll}
                         >
-                            <CommandEmpty>No category found.</CommandEmpty>
+                            <CommandEmpty>{t(keys.sidebar.filter.categories.empty)}</CommandEmpty>
                             <CommandGroup>
                                 {categories.map((category) => (
                                     <CommandItem
@@ -147,7 +149,7 @@ export function CategoriesCombobox({
                                         )}
                                     </CommandItem>
                                 ))}
-                                {isLoading && page > 1 && <div className="p-2 text-center text-xs">Loading more...</div>}
+                                {isLoading && page > 1 && <div className="p-2 text-center text-xs">{t(keys.sidebar.filter.categories.loading)}</div>}
                             </CommandGroup>
                         </CommandList>
                     </Command>

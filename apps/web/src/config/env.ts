@@ -40,11 +40,7 @@ if (!parsed.success) {
   });
 
   if (isServer) {
-    if (typeof process !== 'undefined' && process.exit) {
-      process.exit(1);
-    } else {
-      throw new Error('Invalid Environment Variables');
-    }
+    throw new Error('Invalid Environment Variables');
   }
 }
 

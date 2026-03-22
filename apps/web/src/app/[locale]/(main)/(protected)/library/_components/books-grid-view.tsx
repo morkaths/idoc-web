@@ -2,9 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { BookGridItems } from "@/components/book/book-grid-items";
-import Pagination from "@/components/pagination";
+import { Pagination } from "@/components/pagination";
 import { useBorrowHistory } from "@/hooks/data/useBorrow";
 import { Book, FindParams } from "@/types";
+
+import { useBookmarkStatus } from "@/hooks/data/useBookmark";
 
 export default function BookGridView({ filter }: { filter: Partial<FindParams> }) {
     const [page, setPage] = useState(1);
@@ -21,10 +23,21 @@ export default function BookGridView({ filter }: { filter: Partial<FindParams> }
             });
     }, [data]);
 
+    const bookIds = useMemo(() => books.map(b => b.id), [books]);
+    const { data: bookmarkStatus } = useBookmarkStatus(bookIds);
+
+    const booksWithStatus = useMemo(() => {
+        if (!bookmarkStatus) return books;
+        return books.map(book => ({
+            ...book,
+            bookmarkId: bookmarkStatus[book.id] ?? book.bookmarkId
+        }));
+    }, [books, bookmarkStatus]);
+
     return (
         <div className="space-y-6">
             <BookGridItems
-                data={books}
+                data={booksWithStatus}
                 loading={isLoading}
                 error={error?.message}
             />

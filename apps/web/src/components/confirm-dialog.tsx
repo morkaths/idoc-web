@@ -1,3 +1,4 @@
+import { useLocale } from '@/hooks/ui/useLocale';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -15,7 +16,7 @@ type ConfirmDialogProps = {
   onOpenChange: (open: boolean) => void;
   title: React.ReactNode;
   disabled?: boolean;
-  desc: React.JSX.Element | string;
+  desc: React.ReactNode;
   cancelBtnText?: string;
   confirmText?: React.ReactNode;
   destructive?: boolean;
@@ -26,6 +27,7 @@ type ConfirmDialogProps = {
 };
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
+  const { t, keys } = useLocale('common');
   const {
     title,
     desc,
@@ -50,13 +52,13 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
         </AlertDialogHeader>
         {children}
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>{cancelBtnText ?? 'Cancel'}</AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>{cancelBtnText ?? t(keys.actions.cancel)}</AlertDialogCancel>
           <Button
             variant={destructive ? 'destructive' : 'default'}
             onClick={handleConfirm}
             disabled={disabled || isLoading}
           >
-            {confirmText ?? 'Continue'}
+            {confirmText ?? t(keys.actions.confirm)}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

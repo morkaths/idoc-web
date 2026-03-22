@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { AuthorApi } from '@/apis/author.api';
-import type { Author, FindParams, Pagination } from '@/types';
+import type { Author, AuthorRequest, FindParams, Pagination } from '@/types';
 
 type AuthorResponse = { data: Author[]; pagination?: Pagination };
 
@@ -18,7 +18,7 @@ export const useAuthors = (
       data: data.data,
       pagination: data.pagination,
     }),
-    ...options,
+    ...options
   });
 };
 
@@ -35,7 +35,7 @@ export const useCreateAuthor = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (newAuthor: Partial<Author>) => AuthorApi.create(newAuthor),
+    mutationFn: (data: AuthorRequest) => AuthorApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['authors'] });
     },
@@ -46,7 +46,7 @@ export const useUpdateAuthor = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Author> }) => AuthorApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<AuthorRequest> }) => AuthorApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['authors', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['authors'] });

@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { User, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
+import type { User, UserRequest, FindParams, Pagination } from '../types';
+import { ApiClient } from './config';
 
 export const UserApi = {
   find: async (params?: FindParams): Promise<{ data: User[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<User[]>(
+    const response = await ApiClient.get<User[]>(
       API_CONFIG.endpoints.user.find,
       { params }
     );
@@ -14,34 +14,34 @@ export const UserApi = {
     };
   },
 
-  findById: async (id: string): Promise<User | null> => {
-    const response = await ApiRequest.apiGet<User>(
+  findById: async (id: string): Promise<User> => {
+    const response = await ApiClient.get<User>(
       API_CONFIG.endpoints.user.findById(id)
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error('User not found');
   },
 
-  create: async (data: Partial<User>): Promise<User | null> => {
-    const response = await ApiRequest.apiPost<User>(
+  create: async (data: UserRequest): Promise<User> => {
+    const response = await ApiClient.post<User>(
       API_CONFIG.endpoints.user.create,
       { data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error('Failed to create user');
   },
 
-  update: async (id: string, data: Partial<User>): Promise<User | null> => {
-    const response = await ApiRequest.apiPatch<User>(
+  update: async (id: string, data: Partial<UserRequest>): Promise<User> => {
+    const response = await ApiClient.patch<User>(
       API_CONFIG.endpoints.user.update(id),
       { data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error('Failed to update user');
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const response = await ApiRequest.apiDelete<null>(
+    const response = await ApiClient.delete<null>(
       API_CONFIG.endpoints.user.delete(id)
     );
     return response.success;

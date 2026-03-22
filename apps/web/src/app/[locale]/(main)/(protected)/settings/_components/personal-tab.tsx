@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { useProfile, useUpdateProfile } from "@/hooks/data/useProfile";
+import { useUser, useUpdateUser } from "@/hooks/data/useUser";
 import { Button } from "@repo/ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
 import { Input } from "@repo/ui/components/input";
@@ -14,20 +14,20 @@ import { DatePicker } from "@/components/form/date-picker";
 export function PersonalTab() {
     const { data: session } = useSession();
     const user = session?.user;
-    const { data: profile } = useProfile(user?.id?.toString() ?? '');
-    const updateProfile = useUpdateProfile();
+    const { data: profile } = useUser(user?.id?.toString() ?? '');
+    const updateProfile = useUpdateUser();
 
-    const [fullName, setFullName] = useState("");
+    const [fullname, setFullName] = useState("");
     const [bio, setBio] = useState("");
-    const [location, setLocation] = useState("");
-    const [birthday, setBirthday] = useState<Date | undefined>(undefined);
+    const [address, setAddress] = useState("");
+    const [dob, setDob] = useState<Date | undefined>(undefined);
 
     useEffect(() => {
-        if (profile) {
-            setFullName(profile.fullName || "");
-            setBio(profile.bio || "");
-            setLocation(profile.location || "");
-            setBirthday(profile.birthday ? new Date(profile.birthday) : undefined);
+        if (profile?.profile) {
+            setFullName(profile.profile.fullname || "");
+            setBio(profile.profile.bio || "");
+            setAddress(profile.profile.address || "");
+            setDob(profile.profile.dob ? new Date(profile.profile.dob) : undefined);
         }
     }, [profile]);
 
@@ -37,10 +37,12 @@ export function PersonalTab() {
         updateProfile.mutate({
             id: profile.id,
             data: {
-                fullName,
-                bio,
-                location,
-                birthday: birthday,
+                profile: {
+                    fullname,
+                    bio,
+                    address,
+                    dob,
+                }
             }
         }, {
             onSuccess: () => {
@@ -65,7 +67,7 @@ export function PersonalTab() {
                         <Label htmlFor="fullName">Full Name</Label>
                         <Input
                             id="fullName"
-                            value={fullName}
+                            value={fullname}
                             onChange={(e) => setFullName(e.target.value)}
                             placeholder="Your full name"
                         />
@@ -84,8 +86,8 @@ export function PersonalTab() {
                         <Label htmlFor="birthday">Date of Birth</Label>
                         <div className="flex flex-col">
                             <DatePicker
-                                selected={birthday}
-                                onSelect={setBirthday}
+                                selected={dob}
+                                onSelect={setDob}
                                 placeholder="Pick a date"
                             />
                         </div>
@@ -94,8 +96,8 @@ export function PersonalTab() {
                         <Label htmlFor="location">Location</Label>
                         <Input
                             id="location"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
                             placeholder="e.g. San Francisco, CA"
                         />
                     </div>

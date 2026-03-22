@@ -9,7 +9,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     <SearchProvider>
       <LayoutProvider>
         <Header />
-        <div className="block md:hidden h-14" />
+        <div className="block md:hidden" />
         {children}
         <Footer />
       </LayoutProvider>

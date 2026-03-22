@@ -16,6 +16,7 @@ import {
 import { Textarea } from "@repo/ui/components/textarea";
 import { Form, FormControl, FormField, FormLabel, FormMessage } from "@repo/ui/components/form";
 import { BorrowRangePicker } from "./borrows-ranger-picker";
+import { useLocale } from '@/hooks/ui/useLocale';
 
 const BorrowFormSchema = z.object({
     expireTime: z.date()
@@ -38,6 +39,7 @@ type BorrowBookDialogProps = {
 };
 
 export function BorrowBookDialog({ open, onOpenChange, onSubmit }: BorrowBookDialogProps) {
+    const { t, keys } = useLocale('book');
     const form = useForm<BorrowForm>({
         resolver: zodResolver(BorrowFormSchema),
         defaultValues: {
@@ -50,18 +52,15 @@ export function BorrowBookDialog({ open, onOpenChange, onSubmit }: BorrowBookDia
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Borrow Book</DialogTitle>
+                    <DialogTitle>{t(keys.borrow.title)}</DialogTitle>
                     <DialogDescription>
-                        Enter the borrow book information below.
+                        {t(keys.borrow.description)}
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit((data) => {
                             onSubmit(data);
-                            console.log(data);
-                            onOpenChange(false);
-                            form.reset();
                         })}
                     >
                         <div className="grid gap-4 mb-4">
@@ -70,7 +69,7 @@ export function BorrowBookDialog({ open, onOpenChange, onSubmit }: BorrowBookDia
                                 name="expireTime"
                                 render={({ field }) => (
                                     <div className="grid gap-3">
-                                        <FormLabel>Expire Time</FormLabel>
+                                        <FormLabel>{t(keys.borrow.expireTime.label)}</FormLabel>
                                         <FormControl>
                                             <BorrowRangePicker
                                                 borrowTime={new Date()}
@@ -87,9 +86,9 @@ export function BorrowBookDialog({ open, onOpenChange, onSubmit }: BorrowBookDia
                                 name="note"
                                 render={({ field }) => (
                                     <div className="grid gap-3">
-                                        <FormLabel>Note</FormLabel>
+                                        <FormLabel>{t(keys.borrow.note.label)}</FormLabel>
                                         <FormControl>
-                                            <Textarea {...field} rows={2} placeholder="Note (optional)" />
+                                            <Textarea {...field} rows={2} placeholder={t(keys.borrow.note.placeholder)} />
                                         </FormControl>
                                         <FormMessage />
                                     </div>
@@ -99,10 +98,10 @@ export function BorrowBookDialog({ open, onOpenChange, onSubmit }: BorrowBookDia
                         <DialogFooter>
                             <DialogClose asChild>
                                 <Button variant="outline" type="button">
-                                    Cancel
+                                    {t(keys.borrow.actions.cancel)}
                                 </Button>
                             </DialogClose>
-                            <Button type="submit">Confirm</Button>
+                            <Button type="submit">{t(keys.borrow.actions.confirm)}</Button>
                         </DialogFooter>
                     </form>
                 </Form>

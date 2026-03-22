@@ -1,13 +1,4 @@
-import type { Language } from '@/types/languages';
-
-export type SupportedLanguages = {
-    label: string;
-    value: Language;
-    country: string;
-    enabled: boolean;
-    hreflang: string;
-    flag: string;
-};
+import type { Language, SupportedLanguages } from '@/types/languages';
 
 export const SUPPORTED_LANGUAGES: Array<SupportedLanguages> = [
     {

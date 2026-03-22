@@ -3,7 +3,7 @@ import {
   HomeIcon,
   StarIcon,
   UserIcon,
-  CompassIcon,
+  LayoutGrid,
   TrendingUpIcon,
   LibraryIcon,
   BookmarkIcon,
@@ -48,16 +48,16 @@ export function useNavData(): NavItem[] {
       icon: LibraryIcon,
       dropdown: [
         {
+          title: t(keys.catalog.all.title),
+          icon: LayoutGrid,
+          href: "/books",
+          description: t(keys.catalog.all.description),
+        },
+        {
           title: t(keys.catalog.discover.title),
           icon: Sparkles,
           href: "/books/discover",
           description: t(keys.catalog.discover.description),
-        },
-        {
-          title: t(keys.catalog.newArrivals.title),
-          icon: CompassIcon,
-          href: "/books/new",
-          description: t(keys.catalog.newArrivals.description),
         },
         {
           title: t(keys.catalog.popular.title),
@@ -83,16 +83,16 @@ export function useNavData(): NavItem[] {
       icon: UserIcon,
       dropdown: [
         {
+          title: t(keys.authors.all.title),
+          icon: LayoutGrid,
+          href: "/authors",
+          description: t(keys.authors.all.description),
+        },
+        {
           title: t(keys.authors.featured.title),
           icon: TrendingUpIcon,
           href: "/authors/featured",
           description: t(keys.authors.featured.description),
-        },
-        {
-          title: t(keys.authors.directory.title),
-          icon: StarIcon,
-          href: "/authors/directory",
-          description: t(keys.authors.directory.description),
         },
       ],
       hero: {
@@ -107,23 +107,17 @@ export function useNavData(): NavItem[] {
       icon: BookmarkIcon,
       dropdown: [
         {
-          title: t(keys.library.borrowed.title),
+          title: t(keys.library.all.title),
           icon: BookOpenIcon,
-          href: "/library/borrowed",
-          description: t(keys.library.borrowed.description),
+          href: "/library",
+          description: t(keys.library.all.description),
         },
         {
           title: t(keys.library.wishlist.title),
           icon: StarIcon,
           href: "/library/wishlist",
           description: t(keys.library.wishlist.description),
-        },
-        {
-          title: t(keys.library.history.title),
-          icon: HistoryIcon,
-          href: "/library/history",
-          description: t(keys.library.history.description),
-        },
+        }
       ],
       hero: {
         title: "Library Center",

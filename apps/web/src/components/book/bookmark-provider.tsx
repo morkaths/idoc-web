@@ -1,0 +1,43 @@
+"use client";
+
+import React, { useState } from 'react';
+import { Book } from '@/types';
+import { BookmarkDialog } from './bookmark-dialog';
+
+type BookmarkContextType = {
+    open: boolean;
+    setOpen: (open: boolean) => void;
+    currentBook: Book | null;
+    setCurrentBook: React.Dispatch<React.SetStateAction<Book | null>>;
+};
+
+const BookmarkContext = React.createContext<BookmarkContextType | null>(null);
+
+export function BookmarkProvider({ children }: { children: React.ReactNode }) {
+    const [open, setOpen] = useState<boolean>(false);
+    const [currentBook, setCurrentBook] = useState<Book | null>(null);
+
+    // When dialog closes, verify we should clear currentBook or keep it?
+    // Usually fine to keep it or clear it. Let's keep it simple.
+
+    return (
+        <BookmarkContext.Provider value={{ open, setOpen, currentBook, setCurrentBook }}>
+            {children}
+            <BookmarkDialog
+                open={open}
+                onOpenChange={setOpen}
+                bookId={currentBook?.id}
+            />
+        </BookmarkContext.Provider>
+    );
+}
+
+export const useBookmarkContext = () => {
+    const ctx = React.useContext(BookmarkContext);
+
+    if (!ctx) {
+        throw new Error('useBookmarkContext has to be used within <BookmarkProvider>');
+    }
+
+    return ctx;
+};

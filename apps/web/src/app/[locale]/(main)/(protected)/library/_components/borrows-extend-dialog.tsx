@@ -17,6 +17,7 @@ import { Input } from "@repo/ui/components/input";
 import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/components/form';
 import { BorrowRangePicker } from './borrows-ranger-picker';
 import { DatePicker } from '@/components/form/date-picker';
+import { KEYS, useLocale } from '@/hooks/ui/useLocale';
 
 const ExtendFormSchema = z.object({
     extraDays: z.number().int().min(1, "Extra days must be at least 1"),
@@ -44,6 +45,7 @@ export function BorrowsExtendDialog({
     note,
     onSubmit,
 }: BorrowsExtendDialogProps) {
+    const { t, keys } = useLocale('library');
     const form = useForm<ExtendForm>({
         resolver: zodResolver(ExtendFormSchema),
         defaultValues: {
@@ -59,9 +61,9 @@ export function BorrowsExtendDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-100 max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Extend Borrow</DialogTitle>
+                    <DialogTitle>{t(keys.table.actions.extend.title)}</DialogTitle>
                     <DialogDescription>
-                        Choose extra days or pick a new expire date for this borrow.
+                        {t(keys.table.actions.extend.description)}
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -75,7 +77,7 @@ export function BorrowsExtendDialog({
                                 extraDays = diff > 0 ? diff : 0;
                             }
                             if (extraDays < 1) {
-                                form.setError("newExpireTime", { message: "Expire date must be at least 1 day after current expire date." });
+                                form.setError("newExpireTime", { message: t(keys.table.actions.extend.fields.error) });
                                 return;
                             }
                             onSubmit({
@@ -92,7 +94,7 @@ export function BorrowsExtendDialog({
                             name="borrowTime"
                             render={({ field }) => (
                                 <div className="grid gap-3">
-                                    <FormLabel htmlFor="borrowTime">Borrow Date</FormLabel>
+                                    <FormLabel htmlFor="borrowTime">{t(keys.table.actions.extend.fields.borrowDate)}</FormLabel>
                                     <FormControl>
                                         <DatePicker
                                             selected={field.value ? new Date(field.value) : undefined}
@@ -119,14 +121,14 @@ export function BorrowsExtendDialog({
                                 }
                                 return (
                                     <div className="grid gap-3">
-                                        <FormLabel htmlFor="extraDays">Extra Days</FormLabel>
+                                        <FormLabel htmlFor="extraDays">{t(keys.table.actions.extend.fields.extraDays)}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 id="extraDays"
                                                 type="number"
                                                 value={days}
                                                 disabled
-                                                placeholder="Number of days to extend"
+                                                placeholder={t(keys.table.actions.extend.fields.placeholder)}
                                                 tabIndex={-1}
                                             />
                                         </FormControl>
@@ -140,7 +142,7 @@ export function BorrowsExtendDialog({
                             name="newExpireTime"
                             render={({ field }) => (
                                 <div className="grid gap-3">
-                                    <FormLabel htmlFor="newExpireTime">Borrow Range</FormLabel>
+                                    <FormLabel htmlFor="newExpireTime">{t(keys.table.actions.extend.fields.borrowRange)}</FormLabel>
                                     <FormControl>
                                         <BorrowRangePicker
                                             borrowTime={expireTime ? new Date(expireTime) : new Date()}
@@ -157,7 +159,7 @@ export function BorrowsExtendDialog({
                             name="note"
                             render={({ field }) => (
                                 <div className="grid gap-3 mb-3">
-                                    <FormLabel htmlFor="note">Note</FormLabel>
+                                    <FormLabel htmlFor="note">{t(keys.table.actions.extend.fields.note)}</FormLabel>
                                     <FormControl>
                                         <textarea
                                             id="note"
@@ -172,11 +174,11 @@ export function BorrowsExtendDialog({
                         <DialogFooter>
                             <DialogClose asChild>
                                 <Button variant="outline" type="button">
-                                    Cancel
+                                    {t(KEYS.common.actions.cancel)}
                                 </Button>
                             </DialogClose>
                             <Button type="submit">
-                                Extend
+                                {t(keys.table.actions.extend.label)}
                             </Button>
                         </DialogFooter>
                     </form>

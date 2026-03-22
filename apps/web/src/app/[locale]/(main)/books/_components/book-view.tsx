@@ -1,10 +1,11 @@
 "use client";
 
+import { useCallback } from "react";
 import { useBooks } from "@/hooks/data/useBook";
 import { FindParams } from "@/types";
-import { useEffect, useState } from "react";
 import { BookGridView } from "./book-grid-view";
 import { BookListView } from "./book-list-view";
+import { useQueryParams } from "@/hooks/ui/useQueryParams";
 
 export function BookView({
     filter,
@@ -13,19 +14,21 @@ export function BookView({
     filter: Partial<FindParams>;
     view?: "grid" | "list";
 }) {
-    const [page, setPage] = useState(1);
+    const { getParam, setParams } = useQueryParams();
+    const page = Number(getParam('page')) || 1;
+
+    const handlePageChange = useCallback((newPage: number) => {
+        setParams({ page: newPage }, { preservePage: true });
+    }, [setParams]);
+
     const { data, isLoading, error } = useBooks({ page, ...filter });
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setPage(1);
-    }, [filter]);
 
     const commonProps = {
         data: data?.data,
         loading: isLoading,
         error: error?.message,
         pagination: data?.pagination,
-        onPageChange: setPage,
+        onPageChange: handlePageChange,
     };
 
     return view === "list" ? (

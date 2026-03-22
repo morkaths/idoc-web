@@ -17,15 +17,11 @@ export default async function GlobalNotFound() {
     const messages = await getMessages({ locale: defaultLocale });
 
     return (
-        <html lang={defaultLocale} className={cn(fontVariables)}>
-            <body>
-                <NextIntlClientProvider locale={defaultLocale} messages={messages}>
-                    <ThemeProvider>
-                        <NotFoundView />
-                        <Toaster />
-                    </ThemeProvider>
-                </NextIntlClientProvider>
-            </body>
-        </html>
+        <NextIntlClientProvider locale={defaultLocale} messages={messages}>
+            <ThemeProvider>
+                <NotFoundView />
+                <Toaster />
+            </ThemeProvider>
+        </NextIntlClientProvider>
     );
 }

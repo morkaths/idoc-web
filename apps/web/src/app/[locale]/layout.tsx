@@ -1,7 +1,7 @@
 import { Devtools } from "../dev-tools";
 import { locales } from '@/i18n';
 import { Providers } from "../providers";
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { getMessages, setRequestLocale, getTimeZone } from 'next-intl/server';
 import { notFound } from "next/navigation";
 
 export function generateStaticParams() {
@@ -26,9 +26,10 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   const messages = await getMessages({ locale });
+  const timeZone = await getTimeZone();
 
   return (
-    <Providers locale={locale} messages={messages}>
+    <Providers locale={locale} messages={messages} timeZone={timeZone}>
       {children}
       <Devtools />
     </Providers>

@@ -1,6 +1,5 @@
 'use client';
 
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@repo/ui/components/button';
@@ -21,22 +20,14 @@ import {
   FormMessage,
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
-import { type Role, type Permission } from '@/types';
+import { type Role, type Permission, RoleRequest, RoleRequestSchema } from '@/types';
 import { PermissionsCombobox } from './permissions-combobox';
-
-const RoleFormSchema = z.object({
-  code: z.string().min(1, 'Code is required.'),
-  name: z.string().min(1, 'Name is required.'),
-  permissions: z.array(z.string()).min(1, 'Select at least one permission'),
-});
-
-type RoleForm = z.infer<typeof RoleFormSchema>;
 
 type RolesMutateDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialData?: Partial<Role>;
-  onSubmit: (data: Partial<Role>) => void;
+  onSubmit: (data: RoleRequest) => void;
   permissions: Permission[];
 };
 
@@ -47,8 +38,8 @@ export function RolesMutateDialog({
   onSubmit,
   permissions,
 }: RolesMutateDialogProps) {
-  const form = useForm<RoleForm>({
-    resolver: zodResolver(RoleFormSchema),
+  const form = useForm<RoleRequest>({
+    resolver: zodResolver(RoleRequestSchema),
     defaultValues: {
       code: initialData?.code ?? '',
       name: initialData?.name ?? '',
@@ -73,10 +64,8 @@ export function RolesMutateDialog({
             id='role-form'
             onSubmit={form.handleSubmit((data) => {
               onSubmit({
-                ...initialData,
-                code: data.code,
-                name: data.name,
-                permissionIds: data.permissions,
+                ...data,
+                id: initialData?.id,
               });
               onOpenChange(false);
               form.reset();
@@ -116,7 +105,7 @@ export function RolesMutateDialog({
                 <div className="grid gap-3">
                   <FormLabel htmlFor="permissions">Permissions</FormLabel>
                   <PermissionsCombobox
-                    permissions={permissions.map(p => ({ ...p, id: String(p.id) }))}
+                    permissions={permissions}
                     value={field.value || []}
                     onChange={field.onChange}
                   />

@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { Category, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
+import type { Category, CategoryRequest, FindParams, Pagination } from '../types';
+import { ApiClient } from './config';
 
 export const CategoryApi = {
   find: async (params?: FindParams): Promise<{ data: Category[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<Category[]>(
+    const response = await ApiClient.get<Category[]>(
       API_CONFIG.endpoints.category.find,
       { mode: 'public', params }
     );
@@ -14,35 +14,35 @@ export const CategoryApi = {
     };
   },
 
-  findById: async (id: string): Promise<Category | null> => {
-    const response = await ApiRequest.apiGet<Category>(
+  findById: async (id: string): Promise<Category> => {
+    const response = await ApiClient.get<Category>(
       API_CONFIG.endpoints.category.findById(id),
       { mode: 'public', }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Category not found');
   },
 
-  create: async (data: Partial<Category>): Promise<Category | null> => {
-    const response = await ApiRequest.apiPost<Category>(
+  create: async (data: CategoryRequest): Promise<Category> => {
+    const response = await ApiClient.post<Category>(
       API_CONFIG.endpoints.category.create,
       { mode: 'private', data, }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to create category');
   },
 
-  update: async (id: string, data: Partial<Category>): Promise<Category | null> => {
-    const response = await ApiRequest.apiPatch<Category>(
+  update: async (id: string, data: Partial<CategoryRequest>): Promise<Category> => {
+    const response = await ApiClient.patch<Category>(
       API_CONFIG.endpoints.category.update(id),
       { mode: 'private', data, }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to update category');
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const response = await ApiRequest.apiDelete<null>(
+    const response = await ApiClient.delete<null>(
       API_CONFIG.endpoints.category.delete(id),
       { mode: 'private' }
     );

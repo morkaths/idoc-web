@@ -9,7 +9,29 @@
       "create": "作成",
       "update": "更新",
       "close": "閉じる",
-      "search": "検索..."
+      "select": "選択",
+      "search": "検索...",
+      "next": "次へ",
+      "previous": "前へ",
+      "view": "表示",
+      "toggleColumns": "列の切り替え"
+    },
+    "table": {
+      "asc": "昇順",
+      "desc": "降順",
+      "hide": "非表示",
+      "selected": "選択済み",
+      "actions": {
+        "clear": "選択を解除"
+      },
+      "confirmByTyping": "「{word}」と入力して確認してください：",
+      "typeToConfirm": "確認のためにキーワードを入力してください。",
+      "warning": "警告！",
+      "operationRisk": "注意してください。この操作は取り消せません。",
+      "actionSucceeded": "{entity}の{action}に成功しました（{count}件）！",
+      "actionFailed": "{action}に失敗しました！",
+      "defaultConfirmTitle": "{count}件の{entity}を{action}",
+      "defaultConfirmDesc": "選択した{entity}を{action}してもよろしいですか？"
     },
     "states": {
       "loading": "読み込み中...",
@@ -17,6 +39,15 @@
       "error": "エラー",
       "success": "成功",
       "noData": "データが見つかりません"
+    },
+    "pagination": {
+      "rowsPerPage": "ページあたりの行数",
+      "of": "/",
+      "page": "ページ",
+      "first": "最初",
+      "last": "最後",
+      "next": "次へ",
+      "previous": "前へ"
     }
   },
   "theme": {
@@ -47,13 +78,13 @@
     "search": "検索",
     "catalog": {
       "label": "カタログ",
+      "all": {
+        "title": "すべての書籍",
+        "description": "私たちの豊富な書籍コレクションをご覧ください。"
+      },
       "discover": {
         "title": "発見",
         "description": "あなたのために選ばれたコレクションとおすすめを探索しましょう。"
-      },
-      "newArrivals": {
-        "title": "新着",
-        "description": "今週コレクションに追加された最新の書籍。"
       },
       "popular": {
         "title": "人気",
@@ -70,24 +101,20 @@
         "title": "注目",
         "description": "受賞作家とその傑作にスポットライトを当てます。"
       },
-      "directory": {
-        "title": "ディレクトリ",
-        "description": "すべての著者の経歴と著書を探索しましょう。"
+      "all": {
+        "title": "すべての著者",
+        "description": "コレクション内のすべての著者を閲覧します。"
       }
     },
     "library": {
       "label": "ライブラリ",
-      "borrowed": {
-        "title": "借用中",
-        "description": "現在図書館から借りている書籍。"
+      "all": {
+        "title": "マイライブラリ",
+        "description": "図書館の活動と借りている本の概要。"
       },
       "wishlist": {
         "title": "ウィッシュリスト",
         "description": "将来借りるために保存した書籍。"
-      },
-      "history": {
-        "title": "履歴",
-        "description": "借用履歴と図書館とのやり取り。"
       }
     },
     "user": {
@@ -199,7 +226,7 @@
         "placeholder": "name@example.com",
         "validation": {
           "emailRequired": "メールアドレスを入力してください",
-          "invalidEmail": "有効なメールアドレスではありません"
+          "invalidEmail": "有効なメールアドレスではないようです"
         }
       },
       "username": {
@@ -226,22 +253,32 @@
           "passwordsNotMatch": "確認用パスワードが一致しません"
         }
       },
-      "messages": {
-        "loadingSignIn": "サインイン中...",
-        "loadingGoogleSignIn": "Googleでサインイン中...",
-        "loadingSignUp": "アカウント作成中...",
-        "loadingSignOut": "サインアウト中...",
-        "loadingForgotPassword": "パスワードリセット中...",
-        "successSignIn": "おかえりなさい！ サインインに成功しました。",
-        "successGoogleSignIn": "Googleでのサインインに成功しました。",
-        "successSignUp": "登録成功！ 続行するにはサインインしてください。",
-        "successSignOut": "サインアウトしました！",
-        "successForgotPassword": "パスワードのリセットに成功しました！ 続行するにはサインインしてください。",
-        "errorSignIn": "メールアドレスまたはパスワードが正しくありません",
-        "errorGoogleSignIn": "Googleでのサインイン中にエラーが発生しました。",
-        "errorSignUp": "アカウント作成中にエラーが発生しました。",
-        "errorSignOut": "サインアウト中にエラーが発生しました。",
-        "errorForgotPassword": "パスワードのリセット中にエラーが発生しました。"
+      "states": {
+        "signIn": {
+          "loading": "サインイン中...",
+          "success": "サインインに成功しました！",
+          "error": "サインインエラー。"
+        },
+        "googleSignIn": {
+          "loading": "Googleでサインイン中...",
+          "success": "Googleでのサインインに成功しました！",
+          "error": "Googleでのサインインエラー。"
+        },
+        "signUp": {
+          "loading": "アカウント作成中...",
+          "success": "アカウントが正常に作成されました！",
+          "error": "アカウント作成エラー。"
+        },
+        "signOut": {
+          "loading": "サインアウト中...",
+          "success": "サインアウトに成功しました！",
+          "error": "サインアウトエラー。"
+        },
+        "forgotPassword": {
+          "loading": "パスワードリセット中...",
+          "success": "パスワードが正常にリセットされました！",
+          "error": "パスワードリセットエラー。"
+        }
       }
     }
   },
@@ -266,6 +303,318 @@
     "503": {
       "title": "ウェブサイトはメンテナンス中です！",
       "description": "現在サイトを利用できません。<br />後でもう一度お試しください。"
+    }
+  },
+  "books": {
+    "sidebar": {
+      "title": "探索",
+      "actions": {
+        "reset": "リセット",
+        "submit": "適用"
+      },
+      "tabs": {
+        "filter": "フィルター",
+        "sort": "並び替え"
+      },
+      "filter": {
+        "search": {
+          "label": "検索",
+          "placeholder": "タイトル、ISBNで検索..."
+        },
+        "categories": {
+          "label": "カテゴリー",
+          "placeholder": "カテゴリーを選択...",
+          "searchPlaceholder": "カテゴリーを検索...",
+          "empty": "カテゴリーが見つかりません。",
+          "loading": "カテゴリーを読み込み中..."
+        }
+      },
+      "sort": {
+        "label": "並び替え",
+        "direction": "順序",
+        "fields": {
+          "title": "タイトル",
+          "createdAt": "作成日",
+          "updatedAt": "更新日",
+          "publishedYear": "出版年",
+          "price": "価格",
+          "pages": "ページ数"
+        },
+        "order": {
+          "asc": "昇順",
+          "desc": "降順"
+        }
+      }
+    },
+    "view": {
+      "author": "不明な著者",
+      "description": "説明はありません。",
+      "empty": {
+        "title": "書籍が見つかりません",
+        "description": "検索条件に一致する結果が見つかりませんでした。フィルターやキーワードを変更してみてください。"
+      },
+      "bookmark": {
+        "title": "ブックマーク",
+        "error": "ブックマークに失敗しました。もう一度お試しください。",
+        "success": "コレクションに追加されました",
+        "removed": "コレクションから削除されました"
+      },
+      "collection": {
+        "empty": "コレクションが見つかりません。",
+        "description": "検索条件に一致するコレクションが見つかりませんでした。フィルターやキーワードを変更してみてください。"
+      }
+    }
+  },
+  "book": {
+    "by": "著者:",
+    "author": "不明な著者",
+    "actions": {
+      "addToCollection": "コレクションに追加",
+      "borrow": "今すぐ借りる"
+    },
+    "borrow": {
+      "title": "書籍の貸出",
+      "description": "以下の貸出情報を入力してください。",
+      "expireTime": {
+        "label": "有効期限",
+        "placeholder": "有効期限を選択"
+      },
+      "note": {
+        "label": "備考",
+        "placeholder": "備考（任意）"
+      },
+      "actions": {
+        "cancel": "キャンセル",
+        "confirm": "確定"
+      },
+      "states": {
+        "loading": "貸出リクエストを作成中...",
+        "success": "貸出リクエストが正常に作成されました！",
+        "error": "貸出リクエストの作成中にエラーが発生しました。"
+      }
+    },
+    "reviews": {
+      "total": "{count}件のレビューに基づく",
+      "error": {
+        "fetch": "レビューを読み込めませんでした",
+        "tryAgain": "後でもう一度お試しください"
+      },
+      "empty": {
+        "title": "まだレビューはありません。",
+        "description": "あなたの創造的な感想を最初に共有しましょう。"
+      }
+    },
+    "tabs": {
+      "info": {
+        "label": "情報",
+        "description": {
+          "label": "説明",
+          "empty": "説明はありません。"
+        },
+        "language": {
+          "label": "言語"
+        },
+        "pages": {
+          "label": "ページ数",
+          "page": "ページ"
+        },
+        "publisher": {
+          "label": "出版社"
+        },
+        "publishedYear": {
+          "label": "出版年"
+        }
+      },
+      "reviews": {
+        "label": "レビュー"
+      },
+      "recommendations": {
+        "label": "おすすめ"
+      },
+      "similar": {
+        "label": "似ている書籍"
+      },
+      "tags": {
+        "label": "タグ",
+        "empty": "タグが見つかりません。",
+        "description": "検索条件に一致するタグが見つかりませんでした。フィルターやキーワードを変更してみてください。"
+      }
+    },
+    "error": {
+      "title": "書籍が見つかりません",
+      "description": "お探しの書籍は削除されたか、名前が変更されたか、一時的に利用できない可能性があります。",
+      "actions": {
+        "reload": "再読み込み",
+        "backToHome": "ホームに戻る"
+      }
+    }
+  },
+  "view": {
+    "unauthenticated": {
+      "title": "サインインが必要です",
+      "description": "この書籍を閲覧するにはサインインしてください。",
+      "actions": {
+        "login": "今すぐサインイン"
+      }
+    },
+    "unauthorized": {
+      "title": "アクセス権限がありません",
+      "description": "内容を読むには、まずこの書籍を借りる必要があります。",
+      "actions": {
+        "goBack": "戻る"
+      }
+    },
+    "error": {
+      "title": "タイトルなし",
+      "book": {
+        "title": "ドキュメントが見つかりません",
+        "description": "お探しのドキュメントは存在しないか、まだ添付されていません。"
+      },
+      "actions": {
+        "goBack": "戻る"
+      }
+    }
+  },
+  "library": {
+    "title": "マイライブラリ",
+    "description": "借りている書籍を管理し、個人の借り入れ履歴を確認できます。",
+    "tabs": {
+      "books": "書籍一覧",
+      "borrows": "貸出一覧"
+    },
+    "search": {
+      "placeholder": "貸出を検索..."
+    },
+    "table": {
+      "entity": "貸出",
+      "columns": {
+        "cover": "表紙",
+        "item": "アイテム",
+        "renewals": "更新回数",
+        "borrowTime": "貸出日",
+        "expireTime": "返却期限",
+        "returnTime": "返却日",
+        "status": "ステータス"
+      },
+      "states": {
+        "active": "貸出中",
+        "overdue": "延滞",
+        "returned": "返却済み"
+      },
+      "actions": {
+        "view": {
+          "label": "表示",
+          "loading": "リダイレクト中..."
+        },
+        "extend": {
+          "label": "延長",
+          "title": "貸出期間の延長",
+          "description": "延長日数を選択するか、新しい返却期限を指定してください。",
+          "loading": "延長中...",
+          "success": "貸出期間が正常に延長されました！",
+          "error": "期間の延長に失敗しました。もう一度お試しください。",
+          "fields": {
+            "borrowDate": "貸出日",
+            "extraDays": "延長日数",
+            "borrowRange": "貸出期間",
+            "note": "備考",
+            "placeholder": "延長する日数",
+            "error": "新しい返却期限は、現在の期限から少なくとも1日後である必要があります。"
+          }
+        },
+        "review": {
+          "label": "レビュー",
+          "create": {
+            "success": "正常にレビューされました！",
+            "error": "レビューに失敗しました。もう一度お試しください。"
+          },
+          "update": {
+            "success": "レビューが正常に更新されました！",
+            "error": "レビューの更新に失敗しました。もう一度お試しください。"
+          }
+        },
+        "return": {
+          "label": "返却",
+          "title": "この貸出アイテム（{borrowId}）を返却しますか？",
+          "loading": "返却処理中...",
+          "success": "正常に返却されました！",
+          "error": "返却に失敗しました。もう一度お試しください。",
+          "confirm": "以下のアイテムが返却されました：",
+          "confirmDesc": "本当に「<strong>{title}</strong>」を返却しますか？<br></br>この操作は取り消せません。"
+        },
+        "history": {
+          "label": "履歴",
+          "title": "貸出履歴",
+          "description": "この貸出記録のイベントタイムライン。",
+          "unknownTitle": "不明なタイトル",
+          "unknownAuthor": "不明な著者",
+          "noCategory": "カテゴリーなし",
+          "loading": "貸出履歴を読み込み中...",
+          "success": "貸出履歴が正常に読み込まれました！",
+          "error": "貸出履歴の読み込みに失敗しました。もう一度お試しください。",
+          "timeline": {
+            "borrowed": {
+              "title": "貸出済み",
+              "content": "ユーザー「<strong>{username}</strong>」が「<strong>{title}</strong>」を借りました。"
+            },
+            "renewal": {
+              "title": "更新 #{index}",
+              "content": "<strong>{date}</strong> まで延長されました。"
+            },
+            "returned": {
+              "title": "返却済み",
+              "content": "アイテムが返却されました。"
+            },
+            "overdue": {
+              "title": "延滞",
+              "content": "<strong>{date}</strong> から延滞しています。"
+            },
+            "due": {
+              "title": "返却期限",
+              "content": "返却期限は <strong>{date}</strong> です。"
+            },
+            "unknown": "日付不明"
+          }
+        }
+      },
+      "bulkActions": {
+        "return": {
+          "label": "返却",
+          "tooltip": "選択した貸出を返却",
+          "confirmDesc": "選択した貸出を返却してもよろしいですか？"
+        },
+        "export": {
+          "label": "エクスポート",
+          "tooltip": "選択した貸出を書き出し",
+          "confirmDesc": "選択した貸出を書き出してもよろしいですか？"
+        }
+      }
+    },
+    "review": {
+      "create": "書籍をレビュー",
+      "update": "レビューを更新",
+      "title": "貸出アイテムをレビュー",
+      "description": "「{title}」についての感想を共有しましょう。",
+      "fallback": "この書籍についての感想を書きましょう。",
+      "rating": {
+        "label": "あなたの評価",
+        "error": "評価を選択してください！",
+        "value": {
+          "excellent": "最高！",
+          "good": "良い！",
+          "neutral": "普通",
+          "poor": "悪い",
+          "terrible": "最悪"
+        }
+      },
+      "content": {
+        "label": "レビュー内容",
+        "placeholder": "この書籍のどのような点が気に入りましたか？または気に食わなかったですか？"
+      },
+      "actions": {
+        "submit": "レビューを送信",
+        "update": "レビューを更新"
+      }
     }
   }
 }

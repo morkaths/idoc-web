@@ -7,14 +7,15 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 
 export function AuthSync() {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
 
     useEffect(() => {
+        if (status === 'loading') return;
         setAccessToken(session?.accessToken ?? null);
-    }, [session?.accessToken]);
+    }, [session, status]);
 
     useEffect(() => {
         const login = searchParams.get('login');

@@ -82,5 +82,3 @@ export function DataTableBulkActions<T>({
     </BulkActionsToolbar>
   );
 }
-
-export default DataTableBulkActions;

@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { Author, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
+import type { Author, AuthorRequest, FindParams, Pagination } from '../types';
+import { ApiClient } from './config';
 
 export const AuthorApi = {
   find: async (params?: FindParams): Promise<{ data: Author[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<Author[]>(
+    const response = await ApiClient.get<Author[]>(
       API_CONFIG.endpoints.author.find,
       { mode: 'public', params }
     );
@@ -14,35 +14,35 @@ export const AuthorApi = {
     };
   },
 
-  findById: async (id: string): Promise<Author | null> => {
-    const response = await ApiRequest.apiGet<Author>(
+  findById: async (id: string): Promise<Author> => {
+    const response = await ApiClient.get<Author>(
       API_CONFIG.endpoints.author.findById(id),
       { mode: 'public' }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Author not found');
   },
 
-  create: async (data: Partial<Author>): Promise<Author | null> => {
-    const response = await ApiRequest.apiPost<Author>(
+  create: async (data: AuthorRequest): Promise<Author> => {
+    const response = await ApiClient.post<Author>(
       API_CONFIG.endpoints.author.create,
       { mode: 'private', data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to create author');
   },
 
-  update: async (id: string, data: Partial<Author>): Promise<Author | null> => {
-    const response = await ApiRequest.apiPatch<Author>(
+  update: async (id: string, data: Partial<AuthorRequest>): Promise<Author> => {
+    const response = await ApiClient.patch<Author>(
       API_CONFIG.endpoints.author.update(id),
       { mode: 'private', data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to update author');
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const response = await ApiRequest.apiDelete<null>(
+    const response = await ApiClient.delete<null>(
       API_CONFIG.endpoints.author.delete(id),
       { mode: 'private' }
     );

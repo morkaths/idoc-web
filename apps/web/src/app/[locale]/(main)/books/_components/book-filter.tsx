@@ -14,10 +14,11 @@ import {
 } from "@repo/ui/components/form";
 import { Input } from "@repo/ui/components/input";
 import { FindParams } from "@/types";
+import { useLocale } from '@/hooks/ui/useLocale';
 
 const FilterSchema = z.object({
     search: z.string().optional(),
-    categoryIds: z.array(z.string()).optional(),
+    categories: z.array(z.string()).optional(),
 });
 
 type FilterForm = z.infer<typeof FilterSchema>;
@@ -33,14 +34,22 @@ export default function BookFilter({
     onFilter,
     onReset,
 }: BookFilterProps) {
+    const { t, keys } = useLocale('books');
+
+    const normalizedCategories = Array.isArray(filter?.categories)
+        ? filter.categories
+        : filter?.categories
+            ? [filter.categories as string]
+            : [];
+
     const form = useForm<FilterForm>({
         resolver: zodResolver(FilterSchema),
         defaultValues: {
-            search: "",
-            categoryIds: [],
-            ...filter,
+            search: filter?.query || "",
+            categories: normalizedCategories,
         },
     });
+
 
     return (
         <Form {...form}>
@@ -48,7 +57,7 @@ export default function BookFilter({
                 onSubmit={form.handleSubmit(async (data) => {
                     const params: FindParams = {
                         query: data.search,
-                        categoryIds: data.categoryIds,
+                        categories: data.categories,
                     };
                     onFilter(params);
 
@@ -61,9 +70,9 @@ export default function BookFilter({
                     name="search"
                     render={({ field }) => (
                         <div className="grid gap-3">
-                            <FormLabel htmlFor="search">Search</FormLabel>
+                            <FormLabel htmlFor="search">{t(keys.sidebar.filter.search.label)}</FormLabel>
                             <FormControl>
-                                <Input id="search" placeholder="Search books..." {...field} />
+                                <Input id="search" placeholder={t(keys.sidebar.filter.search.placeholder)} {...field} />
                             </FormControl>
                             <FormMessage />
                         </div>
@@ -72,10 +81,10 @@ export default function BookFilter({
                 {/* Categories (multi-select) */}
                 <FormField
                     control={form.control}
-                    name="categoryIds"
+                    name="categories"
                     render={({ field }) => (
                         <div className="grid gap-3">
-                            <FormLabel htmlFor="categoryIds">Categories</FormLabel>
+                            <FormLabel htmlFor="categories">{t(keys.sidebar.filter.categories.label)}</FormLabel>
                             <FormControl>
                                 <CategoriesCombobox
                                     value={field.value || []}
@@ -88,15 +97,18 @@ export default function BookFilter({
                 />
                 {/* Reset & Submit */}
                 <div className="flex gap-2">
-                    <Button variant="outline" type="button" className="flex-1" onClick={() => { form.reset(); onReset(); }}>
-                        Reset
+                    <Button variant="outline" type="button" className="flex-1" onClick={() => {
+                        form.reset({ search: "", categories: [] });
+                        onReset();
+                    }}>
+                        {t(keys.sidebar.actions.reset)}
                     </Button>
                     <Button
                         type="submit"
                         className="flex-1"
                         disabled={form.formState.isSubmitting}
                     >
-                        Apply
+                        {t(keys.sidebar.actions.submit)}
                     </Button>
                 </div>
             </form>

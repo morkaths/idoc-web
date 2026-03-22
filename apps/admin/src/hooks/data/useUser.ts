@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { UserApi } from '@/apis';
-import type { FindParams, User, Pagination } from '@/types';
+import type { FindParams, User, UserRequest, Pagination } from '@/types';
 
 type UserResponse = { data: User[]; pagination?: Pagination };
 
@@ -34,7 +34,7 @@ export const useUser = (id: string) => {
 export const useCreateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (newUser: Partial<User>) => UserApi.create(newUser),
+    mutationFn: (data: UserRequest) => UserApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
@@ -44,7 +44,7 @@ export const useCreateUser = () => {
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<User> }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<UserRequest> }) =>
       UserApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['users', variables.id] });

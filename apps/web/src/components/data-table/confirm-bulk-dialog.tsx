@@ -5,6 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert';
 import { Input } from '@repo/ui/components/input';
 import { Label } from '@repo/ui/components/label';
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 type ConfirmBulkDialogProps<T> = {
   open: boolean;
@@ -23,18 +24,20 @@ export function ConfirmBulkDialog<T>({
   onOpenChange,
   table,
   selectedCount,
-  confirmWord = 'DELETE',
+  confirmWord = 'CONFIRM',
   confirmDesc,
   itemName = 'item',
-  action = 'Delete',
+  action = 'Confirm',
   onConfirm,
 }: ConfirmBulkDialogProps<T>) {
+  const { t, keys } = useLocale('common');
   const [value, setValue] = useState('');
   const count = table ? table.getFilteredSelectedRowModel().rows.length : (selectedCount ?? 0);
+  const entityLabel = count > 1 ? `${itemName}s` : itemName;
 
   const handleConfirm = async () => {
     if (confirmWord && value.trim() !== confirmWord) {
-      toast.error(`Please type "${confirmWord}" to confirm.`);
+      toast.error(t(keys.table.typeToConfirm, { word: confirmWord }));
       return;
     }
 
@@ -42,13 +45,17 @@ export function ConfirmBulkDialog<T>({
       await toast.promise(
         Promise.resolve().then(() => onConfirm()),
         {
-          loading: `${action} ${count} ${count > 1 ? `${itemName}s` : itemName}...`,
+          loading: `${action} ${count} ${entityLabel}...`,
           success: () => {
             if (table) table.resetRowSelection();
             onOpenChange(false);
-            return `${action} ${count} ${count > 1 ? `${itemName}s` : itemName} successfully!`;
+            return t(keys.table.actionSucceeded, {
+              action,
+              count,
+              entity: entityLabel
+            });
           },
-          error: `${action} failed!`,
+          error: t(keys.table.actionFailed, { action }),
         }
       );
     } finally {
@@ -64,30 +71,32 @@ export function ConfirmBulkDialog<T>({
       disabled={confirmWord ? value.trim() !== confirmWord : false}
       title={
         <span className='text-destructive'>
-          {action} {count} {count > 1 ? `${itemName}s` : itemName}
+          {t(keys.table.defaultConfirmTitle, { action, count, entity: entityLabel })}
         </span>
       }
       desc={
         <div className='space-y-4'>
           <p>
-            {confirmDesc || `Are you sure you want to ${action.toLowerCase()} the selected ${itemName}${
-              count > 1 ? 's' : ''
-            }?`}
+            {confirmDesc || t(keys.table.defaultConfirmDesc, {
+              action: action.toLowerCase(),
+              entity: entityLabel
+            })}
           </p>
 
           <Label className='my-4 flex flex-col items-start gap-1.5'>
-            <span>Confirm by typing &quot;{confirmWord}&quot;:</span>
+            <span>{t(keys.table.confirmByTyping, { word: confirmWord })}</span>
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder={`Type "${confirmWord}" to confirm.`}
+              placeholder={t(keys.table.typeToConfirm)}
+              className='placeholder:text-muted-foreground/50'
             />
           </Label>
 
-          <Alert variant='destructive'>
-            <AlertTitle>Warning!</AlertTitle>
+          <Alert variant='destructive' className='border-dashed'>
+            <AlertTitle>{t(keys.table.warning)}</AlertTitle>
             <AlertDescription>
-              Please be careful, this operation cannot be rolled back.
+              {t(keys.table.operationRisk)}
             </AlertDescription>
           </Alert>
         </div>

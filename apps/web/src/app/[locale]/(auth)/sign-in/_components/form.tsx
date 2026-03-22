@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useSession } from "next-auth/react";
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,7 +11,6 @@ import { Loader2, LogIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { IconFacebook, IconGmail } from '@/assets/brand-icons';
 import { handleGoogleLogin, handleCredentialsLogin } from '@/actions/auth';
-import { useLocale, KEYS } from '@/hooks/ui/useLocale';
 import { cn } from '@/lib/utils';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -23,7 +23,7 @@ import {
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
-import { useSession } from "next-auth/react";
+import { useLocale, KEYS } from '@/hooks/ui/useLocale';
 
 const formSchema = z.object({
   email: z.string()
@@ -43,7 +43,7 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { update } = useSession();
-  const { t, tCommon, keys } = useLocale('auth');
+  const { t, keys } = useLocale('auth');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,7 +62,7 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
     toast.promise(
       handleCredentialsLogin(formData),
       {
-        loading: t(keys.form.messages.loadingSignIn),
+        loading: t(keys.form.states.signIn.loading),
         success: async (result) => {
           setIsLoading(false);
           if (result.success) {
@@ -70,9 +70,9 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
             router.refresh();
             const targetPath = redirectTo || '/?login=success';
             router.replace(targetPath);
-            return t(keys.form.messages.successSignIn);
+            return t(keys.form.states.signIn.success);
           }
-          throw new Error(result.error || t(keys.form.messages.errorSignIn));
+          throw new Error(result.error || t(keys.form.states.signIn.error));
         },
         error: (err) => {
           setIsLoading(false);
@@ -147,9 +147,9 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
             onClick={() => {
               setIsLoading(true);
               toast.promise(handleGoogleLogin(), {
-                loading: t(keys.form.messages.loadingGoogleSignIn),
-                success: () => t(keys.form.messages.successGoogleSignIn),
-                error: (err) => err.message || t(keys.form.messages.errorGoogleSignIn),
+                loading: t(keys.form.states.googleSignIn.loading),
+                success: () => t(keys.form.states.googleSignIn.success),
+                error: (err) => err.message || t(keys.form.states.googleSignIn.error),
               });
             }}
           >

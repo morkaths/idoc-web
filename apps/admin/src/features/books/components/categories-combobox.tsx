@@ -36,11 +36,9 @@ export function CategoriesCombobox({
         query: debouncedQuery,
     }), [page, debouncedQuery]);
 
-    // FETCH DATA
     const shouldFetch = open || value.length > 0;
     const { data, isLoading } = useCategories(categoryParams, { enabled: shouldFetch });
     const [categories, setCategories] = useState<Category[]>([]);
-    // Cache all seen categories to ensure selected items can always be displayed
     const [categoryMap, setCategoryMap] = useState<Map<string, Category>>(() => {
         const map = new Map<string, Category>();
         initialCategories.forEach(c => map.set(c.id, c));

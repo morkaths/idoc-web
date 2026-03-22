@@ -19,13 +19,13 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
     toast.promise(
       signOut({ redirect: false }),
       {
-        loading: t(keys.form.messages.loadingSignOut),
+        loading: t(keys.form.states.signOut.loading),
         success: () => {
           const currentPath = location.href;
           router.replace('/sign-in?redirect=' + encodeURIComponent(currentPath));
-          return t(keys.form.messages.successSignOut);
+          return t(keys.form.states.signOut.success);
         },
-        error: () => t(keys.form.messages.errorSignOut),
+        error: () => t(keys.form.states.signOut.error),
       }
     );
   };

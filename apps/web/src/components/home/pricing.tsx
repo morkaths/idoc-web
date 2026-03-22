@@ -38,15 +38,15 @@ export function FrequencyToggle({
         >
             {frequencies.map((freq) => (
                 <button
-                    className="relative px-4 py-1 text-sm capitalize"
+                    className="relative px-4 py-1 text-sm capitalize transition-colors"
                     key={freq}
                     onClick={() => setFrequency(freq)}
                     type="button"
                 >
-                    <span className="relative z-10">{freq}</span>
+                    <span className={cn("relative z-10 font-medium", frequency === freq ? "text-primary-foreground" : "text-muted-foreground")}>{freq}</span>
                     {frequency === freq && (
                         <motion.span
-                            className="absolute inset-0 z-10 rounded-full mix-blend-difference bg-background dark:bg-foreground"
+                            className="absolute inset-0 z-0 rounded-full bg-primary"
                             layoutId="frequency"
                             transition={{ type: "spring", duration: 0.4 }}
                         />
@@ -90,14 +90,14 @@ export function PricingSection({ ...props }: PricingSectionProps) {
             </div>
 
             <div className="block md:hidden w-full max-w-xs sm:max-w-sm px-4">
-                <Carousel 
-                    opts={{ align: "start", loop: true }} 
+                <Carousel
+                    opts={{ align: "start", loop: true }}
                     className="w-full"
                 >
                     <CarouselContent className="-ml-4">
                         {PLANS.map((plan) => (
                             <CarouselItem key={plan.name} className="pl-4">
-                                <div className="py-4 px-2"> 
+                                <div className="py-4 px-2">
                                     <PricingCard frequency={frequency} plan={plan} />
                                 </div>
                             </CarouselItem>
@@ -127,8 +127,8 @@ export function PricingCard({
     return (
         <div
             className={cn(
-                "relative flex w-full flex-col rounded-lg border shadow-sm",
-                plan.highlighted && "scale-105",
+                "relative flex w-full flex-col rounded-lg border shadow-sm bg-card text-card-foreground",
+                plan.highlighted && "scale-105 shadow-md",
                 className
             )}
             key={plan.name}
@@ -136,8 +136,7 @@ export function PricingCard({
         >
             <div
                 className={cn(
-                    "rounded-t-lg border-b p-4",
-                    plan.highlighted && "bg-card dark:bg-card/80"
+                    "rounded-t-lg border-b p-4"
                 )}
             >
                 <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
@@ -175,8 +174,7 @@ export function PricingCard({
             </div>
             <div
                 className={cn(
-                    "space-y-4 px-4 pt-6 pb-8 text-muted-foreground text-sm",
-                    plan.highlighted && "bg-muted/10"
+                    "space-y-4 px-4 pt-6 pb-8 text-muted-foreground text-sm"
                 )}
             >
                 {plan.features.map((feature, index) => (
@@ -203,8 +201,7 @@ export function PricingCard({
             </div>
             <div
                 className={cn(
-                    "mt-auto w-full rounded-b-lg border-t p-3",
-                    plan.highlighted && "bg-card dark:bg-card/80"
+                    "mt-auto w-full rounded-b-lg border-t p-3"
                 )}
             >
                 <Button

@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Author } from "@/types/schema";
+import { AuthorRequestSchema, type Author, type AuthorRequest } from "@/types";
 import { Button } from "@repo/ui/components/button";
 import {
     Dialog,
@@ -12,7 +12,6 @@ import {
     DialogTitle,
 } from "@repo/ui/components/dialog";
 import { Input } from "@repo/ui/components/input";
-import { z } from "zod";
 import { DatePicker } from '@/components/form/date-picker';
 import { ImageUpload } from "@/components/form/image-upload";
 import { Textarea } from "@repo/ui/components/textarea";
@@ -21,21 +20,11 @@ import { useUploadImage } from "@/hooks/data/useImage";
 import { toast } from "sonner";
 import { Form, FormControl, FormField, FormLabel, FormMessage } from "@repo/ui/components/form";
 
-// Schema for Author form
-export const AuthorFormSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    avatarUrl: z.string().url("Invalid URL").optional().or(z.literal('')),
-    birthDate: z.union([z.date(), z.string(), z.number()]).optional(),
-    nationality: z.string().optional(),
-    bio: z.string().optional(),
-});
-export type AuthorForm = z.infer<typeof AuthorFormSchema>;
-
 type AuthorsMutateDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     initialData?: Partial<Author>;
-    onSubmit: (data: Partial<Author>) => void;
+    onSubmit: (data: AuthorRequest) => void;
 };
 
 export function AuthorsMutateDialog({
@@ -46,12 +35,12 @@ export function AuthorsMutateDialog({
 }: AuthorsMutateDialogProps) {
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const uploadImage = useUploadImage();
-    const form = useForm<AuthorForm>({
-        resolver: zodResolver(AuthorFormSchema),
+    const form = useForm<AuthorRequest>({
+        resolver: zodResolver(AuthorRequestSchema),
         defaultValues: {
             name: initialData?.name ?? "",
-            avatarUrl: initialData?.avatarUrl ?? "",
-            birthDate: initialData?.birthDate ? new Date(initialData.birthDate) : undefined,
+            avatar: initialData?.avatar ?? "",
+            dob: initialData?.dob ? new Date(initialData.dob) : undefined,
             nationality: initialData?.nationality ?? "",
             bio: initialData?.bio ?? "",
         },
@@ -71,29 +60,29 @@ export function AuthorsMutateDialog({
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(async (data) => {
-                            let avatarUrl = data.avatarUrl || "";
+                            let avatar = data.avatar || "";
                             try {
                                 if (avatarFile) {
                                     toast.loading("Uploading avatar...", { id: "upload-image" });
-                                    avatarUrl = await uploadImage.mutateAsync({ file: avatarFile, folder: "authors" });
+                                    avatar = await uploadImage.mutateAsync({ file: avatarFile, folder: "authors" });
                                     toast.success("Avatar uploaded!", { id: "upload-image" });
                                 }
                             } catch {
                                 toast.error("Upload avatar failed!", { id: "upload-image" });
                                 return;
                             }
-                            let birthDate: Date | undefined = undefined;
-                            if (data.birthDate instanceof Date) {
-                                birthDate = data.birthDate;
-                            } else if (typeof data.birthDate === 'string' || typeof data.birthDate === 'number') {
-                                const d = new Date(data.birthDate);
-                                birthDate = isNaN(d.getTime()) ? undefined : d;
+                            let dob: Date | undefined = undefined;
+                            if (data.dob instanceof Date) {
+                                dob = data.dob;
+                            } else if (typeof data.dob === 'string' || typeof data.dob === 'number') {
+                                const d = new Date(data.dob);
+                                dob = isNaN(d.getTime()) ? undefined : d;
                             }
                             onSubmit({
-                                ...initialData,
                                 ...data,
-                                avatarUrl,
-                                birthDate,
+                                id: initialData?.id,
+                                avatar,
+                                dob,
                             });
                             onOpenChange(false);
                             form.reset();
@@ -105,10 +94,10 @@ export function AuthorsMutateDialog({
                             <div className="md:row-span-3 flex flex-col items-center justify-start">
                                 <FormLabel className="mb-3">Avatar</FormLabel>
                                 <ImageUpload
-                                    value={form.getValues("avatarUrl")}
+                                    value={form.getValues("avatar")}
                                     onChange={(file, previewUrl) => {
                                         setAvatarFile(file);
-                                        form.setValue("avatarUrl", previewUrl || "");
+                                        form.setValue("avatar", previewUrl || "");
                                     }}
                                     label="Upload avatar"
                                     maxSizeMB={4}
@@ -131,10 +120,10 @@ export function AuthorsMutateDialog({
                                 />
                                 <FormField
                                     control={form.control}
-                                    name="birthDate"
+                                    name="dob"
                                     render={({ field }) => (
                                         <div className="grid gap-3">
-                                            <FormLabel htmlFor="birthDate">Birth Date</FormLabel>
+                                            <FormLabel htmlFor="dob">Birth Date</FormLabel>
                                             <FormControl>
                                                 <DatePicker
                                                     selected={field.value ? new Date(field.value) : undefined}

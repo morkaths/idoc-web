@@ -2,8 +2,11 @@ import { Icon } from '@iconify/react';
 import { Book } from "@/types";
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { useCreateBookmark, useDeleteBookmark } from "@/hooks/data/useBookmark";
-import { BookmarkDialog } from './bookmark-dialog';
+import { useDeleteBookmark } from "@/hooks/data/useBookmark";
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
+import { useLocale } from '@/hooks/ui/useLocale';
+import { useBookmarkContext } from './bookmark-provider';
 
 type BookGridItemProps = {
   book: Book;
@@ -14,14 +17,15 @@ export function BookGridItem({
   book,
   onClick,
 }: BookGridItemProps) {
+  const { t, keys } = useLocale('books');
   const [imageError, setImageError] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(book.bookmarkId);
   const isBookmarked = !!bookmarkId;
 
-  const [showBookmarkDialog, setShowBookmarkDialog] = useState(false);
+  const { setOpen, setCurrentBook } = useBookmarkContext();
+  const { mutate: deleteBookmark, isPending: isDeleting } = useDeleteBookmark();
 
-  const { mutate: createBookmark } = useCreateBookmark();
-  const { mutate: deleteBookmark } = useDeleteBookmark();
+  const isLoading = isDeleting;
 
   // Sync state with props
   useEffect(() => {
@@ -30,43 +34,27 @@ export function BookGridItem({
 
   const handleToggleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isLoading) return;
+
     if (isBookmarked) {
       if (bookmarkId) {
         deleteBookmark(bookmarkId, {
           onSuccess: () => {
             setBookmarkId(undefined);
+            toast.success(t(keys.view.bookmark.removed));
           },
           onError: (error) => {
             console.error("Failed to unbookmark:", error);
+            toast.error(t(keys.view.bookmark.error));
           }
         });
       } else {
         console.warn("Cannot unbookmark: Missing bookmark ID");
       }
     } else {
-      setShowBookmarkDialog(true);
+      setCurrentBook(book);
+      setOpen(true);
     }
-  };
-
-  const handleSelectCollection = (collectionId?: string) => {
-    createBookmark(
-      {
-        itemId: book.id,
-        collectionId: collectionId,
-      },
-      {
-        onSuccess: (data: any) => {
-          // Assuming data is the created bookmark object
-          if (data && data.id) {
-            setBookmarkId(data.id);
-          }
-          setShowBookmarkDialog(false);
-        },
-        onError: (error) => {
-          console.error("Failed to bookmark:", error);
-        }
-      }
-    );
   };
 
   return (
@@ -79,11 +67,11 @@ export function BookGridItem({
         onKeyDown={(e) => { if (e.key === 'Enter') onClick?.(); }}
       >
         {/* Top Background Pattern */}
-        <div className="h-46 w-full bg-primary/10 dark:bg-primary/10" />
+        <div className="h-32 w-full bg-primary/10 dark:bg-primary/10" />
 
         {/* Book Cover Container */}
-        <div className="relative px-4 -mt-36 w-full flex justify-center z-10 w-full">
-          <div className="relative w-36 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden transition-transform duration-300 group-hover:-translate-y-1 bg-white dark:bg-zinc-800">
+        <div className="relative px-2 sm:px-4 -mt-24 flex justify-center z-10 w-full">
+          <div className="relative w-28 sm:w-36 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden transition-transform duration-300 group-hover:-translate-y-1 bg-white dark:bg-zinc-800">
             {!imageError && book.coverUrl ? (
               <Image
                 src={book.coverUrl}
@@ -104,16 +92,16 @@ export function BookGridItem({
         </div>
 
         {/* Content */}
-        <div className="p-3 pt-3 flex flex-col flex-grow">
-          <span className="text-xs text-muted-foreground mb-1 font-medium tracking-wide block text-left">
+        <div className="p-2 sm:p-3 pt-2 sm:pt-3 flex flex-col flex-grow">
+          <span className="text-[10px] sm:text-xs text-muted-foreground mb-0.5 sm:mb-1 font-medium tracking-wide block text-left">
             Ebook
           </span>
 
-          <h3 className="font-bold text-foreground text-base leading-snug line-clamp-2 mb-1 text-left h-[44px]" title={book.title}>
+          <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug line-clamp-2 mb-1 text-left h-[38px] sm:h-[44px]" title={book.title}>
             {book.title}
           </h3>
 
-          <div className="text-sm text-muted-foreground mb-2 line-clamp-1 text-left" title={book.authors?.map(a => a.name).join(", ")}>
+          <div className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-1 text-left" title={book.authors?.map(a => a.name).join(", ")}>
             {book.authors?.length ? (
               book.authors.map((a, i) => (
                 <span key={i}>
@@ -124,13 +112,23 @@ export function BookGridItem({
                 </span>
               ))
             ) : (
-              "Unknown Author"
+              t(keys.view.author)
             )}
           </div>
 
           <div className="mt-auto flex items-center justify-between">
             <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-0.5 text-amber-500">
+              <div className="flex sm:hidden items-center gap-1 text-amber-500">
+                <Icon icon="mdi:star" width={14} height={14} />
+                <span className="text-xs font-semibold text-foreground">
+                  {book.rating ? book.rating.toFixed(1) : "0"}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  ({book.totalReviews || 0})
+                </span>
+              </div>
+              
+              <div className="hidden sm:flex items-center gap-0.5 text-amber-500">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Icon
                     key={i}
@@ -147,26 +145,25 @@ export function BookGridItem({
 
             <button
               onClick={handleToggleBookmark}
+              disabled={isLoading}
               className={`transition-colors p-1 ${isBookmarked
                 ? "text-primary hover:text-primary/80"
                 : "text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-zinc-200"
-                }`}
+                } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <Icon
-                icon={isBookmarked ? "mdi:bookmark" : "mdi:bookmark-outline"}
-                width={20}
-                height={20}
-              />
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin text-primary" />
+              ) : (
+                <Icon
+                  icon={isBookmarked ? "mdi:bookmark" : "mdi:bookmark-outline"}
+                  width={20}
+                  height={20}
+                />
+              )}
             </button>
           </div>
         </div>
       </div>
-
-      <BookmarkDialog
-        open={showBookmarkDialog}
-        onOpenChange={setShowBookmarkDialog}
-        onSelectCollection={handleSelectCollection}
-      />
     </>
   );
 }

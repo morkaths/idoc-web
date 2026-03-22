@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { BorrowApi } from '@/apis/borrow.api';
-import type { Borrow, FindParams, Pagination } from '@/types';
+import type { Borrow, BorrowRequest, FindParams, Pagination } from '@/types';
 
 type BorrowResponse = { data: Borrow[]; pagination?: Pagination };
 
@@ -59,7 +59,7 @@ export const useCreateBorrow = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (newBorrow: Partial<Borrow>) => BorrowApi.create(newBorrow),
+    mutationFn: (data: BorrowRequest) => BorrowApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['borrows'] });
     },
@@ -70,7 +70,7 @@ export const useUpdateBorrow = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Borrow> }) => BorrowApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<BorrowRequest> }) => BorrowApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['borrows', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['borrows'] });

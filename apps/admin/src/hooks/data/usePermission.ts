@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { PermissionApi } from '@/apis/permission.api';
-import type { Permission, FindParams, Pagination } from '@/types';
+import type { Permission, PermissionRequest, FindParams, Pagination, } from '@/types';
 
 type PermissionResponse = { data: Permission[]; pagination?: Pagination };
 
@@ -38,7 +38,7 @@ export const useCreatePermission = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (newPermission: Partial<Permission>) => PermissionApi.create(newPermission),
+    mutationFn: (data: PermissionRequest) => PermissionApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['permissions'] });
     },
@@ -49,7 +49,7 @@ export const useUpdatePermission = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Permission> }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<PermissionRequest> }) =>
       PermissionApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['permissions', variables.id] });

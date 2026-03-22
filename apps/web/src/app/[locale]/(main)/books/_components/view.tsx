@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Button } from "@repo/ui/components/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "@repo/ui/components/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@repo/ui/components/tabs";
@@ -10,20 +11,68 @@ import BookSort from "./book-sort";
 import { FindParams } from "@/types";
 import { ArrowDownAZ, FilterIcon, LayoutGrid, List, SlidersHorizontal, Sparkles } from "lucide-react";
 import { BookView } from "./book-view";
+import { useLocale } from '@/hooks/ui/useLocale';
+
+// Types
+interface FilterState extends Partial<FindParams> {
+  query?: string;
+  categories?: string[];
+}
+
+interface SortState {
+  sortBy: string;
+  sortOrder: "desc" | "asc";
+}
+
+// Helper: Parse URL params
+const parseFilter = (p: URLSearchParams): FilterState => ({
+  query: p.get('query') || undefined,
+  categories: p.get('categories')?.split(',').filter(Boolean),
+});
+
+const parseSort = (p: URLSearchParams): SortState => ({
+  sortBy: p.get('sortBy') || 'createdAt',
+  sortOrder: (p.get('sortOrder') as 'desc' | 'asc') || 'desc',
+});
 
 export function BooksView() {
+  const { t, keys } = useLocale('books');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // View state
   const [view, setView] = useState<"grid" | "list">("grid");
-  const [filter, setFilter] = useState<Partial<FindParams>>({});
-  const [sort, setSort] = useState<{ sortBy: string; sortOrder: "desc" | "asc" }>({ sortBy: "createdAt", sortOrder: "desc" });
 
-  const handleSetSort = (params: { sortBy?: string; sortOrder?: "desc" | "asc" }) => {
-    setSort({
-      sortBy: params.sortBy ?? "createdAt",
-      sortOrder: params.sortOrder ?? "desc",
+  // State - khởi tạo từ URL
+  const [filter, setFilter] = useState<FilterState>(() => parseFilter(searchParams));
+  const [sort, setSort] = useState<SortState>(() => parseSort(searchParams));
+
+  // Sync state → URL
+  useEffect(() => {
+    const p = new URLSearchParams();
+    if (filter.query) p.set('query', filter.query);
+    if (filter.categories?.length) p.set('categories', filter.categories.join(','));
+    if (sort.sortBy !== 'createdAt') p.set('sortBy', sort.sortBy);
+    if (sort.sortOrder !== 'desc') p.set('sortOrder', sort.sortOrder);
+    p.set('page', '1');
+    router.replace(`${pathname}?${p.toString()}`, { scroll: false });
+  }, [filter, sort, pathname, router]);
+
+  // Handlers
+  const handleSetFilter = useCallback((f: Partial<FindParams>) => {
+    setFilter({
+      query: (f.query as string) || undefined,
+      categories: Array.isArray(f.categories) ? f.categories : undefined,
     });
-  };
+  }, []);
 
-  const activeFilter = useMemo(() => ({ ...filter, ...sort }), [filter, sort]);
+  const handleSetSort = useCallback((s: Partial<SortState>) => {
+    setSort(prev => ({ ...prev, ...s }));
+  }, []);
+
+  // Merge filter + sort
+  const activeFilter = useMemo<Partial<FindParams>>(() => ({ ...filter, ...sort }), [filter, sort]);
 
   return (
     <main className="container py-8 flex gap-8">
@@ -32,11 +81,11 @@ export function BooksView() {
         <Card className="p-4 mb-4">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-4 h-4" />
-            <span className="font-semibold">Discover</span>
+            <span className="font-semibold">{t(keys.sidebar.title)}</span>
           </div>
           <FilterTabs
             filter={filter}
-            setFilter={setFilter}
+            setFilter={handleSetFilter}
             sort={sort}
             setSort={handleSetSort}
             defaultValue="filter"
@@ -59,12 +108,12 @@ export function BooksView() {
                 <SheetTitle className="mb-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="w-4 h-4" />
-                    <span className="font-semibold">Discover</span>
+                    <span className="font-semibold">{t(keys.sidebar.title)}</span>
                   </div>
                 </SheetTitle>
                 <FilterTabs
                   filter={filter}
-                  setFilter={setFilter}
+                  setFilter={handleSetFilter}
                   sort={sort}
                   setSort={handleSetSort}
                   defaultValue="filter"
@@ -106,44 +155,32 @@ function FilterTabs({
   setSort,
   defaultValue = "filter",
 }: {
-  filter: Partial<FindParams>;
+  filter: FilterState;
   setFilter: (params: Partial<FindParams>) => void;
-  sort: { sortBy: string; sortOrder: "desc" | "asc" };
+  sort: SortState;
   setSort: (params: { sortBy?: string; sortOrder?: "desc" | "asc" }) => void;
   defaultValue?: string;
 }) {
+  const { t, keys } = useLocale('books');
   return (
     <Tabs defaultValue={defaultValue} className="w-full">
       <TabsList className="w-full mb-4 bg-background gap-1 border p-1">
-        <TabsTrigger
-          value="filter"
-          className="flex-1 data-[state=active]:bg-primary dark:data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:border-transparent"
-        >
-          <FilterIcon className="w-4 h-4" />
-          Filter
+        <TabsTrigger value="filter" className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <FilterIcon className="w-4 h-4 mr-1" />
+          {t(keys.sidebar.tabs.filter)}
         </TabsTrigger>
-        <TabsTrigger
-          value="sort"
-          className="flex-1 data-[state=active]:bg-primary dark:data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:border-transparent"
-        >
+        <TabsTrigger value="sort" className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
           <ArrowDownAZ className="w-4 h-4" />
-          Sort
+          {t(keys.sidebar.tabs.sort)}
         </TabsTrigger>
       </TabsList>
       <TabsContent value="filter">
-        <BookFilter
-          filter={filter}
-          onFilter={setFilter}
-          onReset={() => setFilter({})}
-        />
+        <BookFilter filter={filter} onFilter={setFilter} onReset={() => setFilter({})} />
       </TabsContent>
       <TabsContent value="sort">
         <BookSort
           sort={sort}
-          onSort={params => setSort({
-            sortBy: params.sortBy ?? "createdAt",
-            sortOrder: params.sortOrder ?? "desc"
-          })}
+          onSort={setSort}
           onReset={() => setSort({ sortBy: "createdAt", sortOrder: "desc" })}
         />
       </TabsContent>

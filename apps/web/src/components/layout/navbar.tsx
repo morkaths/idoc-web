@@ -78,7 +78,7 @@ export function Navbar({ items }: NavbarProps) {
                             <NavigationMenuLink asChild className={navigationMenuTriggerStyle() + " bg-transparent"}>
                                 <Link href={item.href || "#"} className="flex items-center gap-2">
                                     <div className="flex items-center gap-2">
-                                        {item.icon && React.createElement(item.icon, { className: "w-4 h-4" })}
+                                        {item.icon && React.createElement(item.icon, { className: "w-4 h-4 text-foreground" })}
                                         {item.label}
                                     </div>
                                 </Link>

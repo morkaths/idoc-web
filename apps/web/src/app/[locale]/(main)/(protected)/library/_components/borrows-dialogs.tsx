@@ -3,14 +3,21 @@ import { ConfirmDialog } from '@/components/confirm-dialog';
 import { BorrowsMutateDialog } from './borrows-mutate-dialog';
 import { useBorrowsContext } from './borrows-provider';
 import { useExtendBorrow, useReturnBorrow } from '@/hooks/data/useBorrow';
+import { useCreateReview, useUpdateReview } from '@/hooks/data/useReview';
 import { toast } from 'sonner';
 import { BorrowsExtendDialog } from './borrows-extend-dialog';
 import { BorrowsHistoryDialog } from './borrows-history-dialog';
+import { ReviewMutateDialog } from './review-mutate-dialog';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 export function BorrowsDialogs() {
+    const { t, keys } = useLocale('library');
     const { open, setOpen, currentRow, setCurrentRow } = useBorrowsContext();
     const extendBorrowMut = useExtendBorrow();
     const returnBorrowMut = useReturnBorrow();
+    const createReviewMut = useCreateReview();
+    const updateReviewMut = useUpdateReview();
+
 
     return (
         <>
@@ -46,13 +53,13 @@ export function BorrowsDialogs() {
                             toast.promise(
                                 extendBorrowMut.mutateAsync({ id: currentRow!.id!, ...data }),
                                 {
-                                    loading: 'Extending borrow...',
+                                    loading: t(keys.table.actions.extend.loading),
                                     success: () => {
                                         setOpen(null);
                                         setCurrentRow(null);
-                                        return 'Borrow extended successfully!';
+                                        return t(keys.table.actions.extend.success);
                                     },
-                                    error: (err) => err?.message || 'Failed to extend borrow',
+                                    error: (err) => err?.message || t(keys.table.actions.extend.error),
                                 }
                             );
                         }}
@@ -62,6 +69,42 @@ export function BorrowsDialogs() {
                         open={open === 'history'}
                         onOpenChange={() => setOpen('history')}
                         borrow={currentRow}
+                    />
+
+                    <ReviewMutateDialog
+                        open={open === 'review'}
+                        onOpenChange={(v) => setOpen(v ? 'review' : null)}
+                        borrow={currentRow}
+                        onSubmit={async (data, existingReview) => {
+                            const payload = {
+                                rating: data.rating,
+                                content: data.content ?? "",
+                            };
+
+                            const onSuccess = () => {
+                                toast.success(existingReview ? t(keys.table.actions.review.update.success) : t(keys.table.actions.review.create.success));
+                                setOpen(null);
+                                setCurrentRow(null);
+                            };
+
+                            const onError = (err: any) => {
+                                toast.error(err?.message || (existingReview ? t(keys.table.actions.review.update.error) : t(keys.table.actions.review.create.error)));
+                            };
+
+                            if (existingReview) {
+                                await updateReviewMut.mutateAsync({ id: existingReview.id, data: payload })
+                                    .then(onSuccess)
+                                    .catch(onError);
+                            } else {
+                                await createReviewMut.mutateAsync({ 
+                                    item: currentRow.item.id,
+                                    user: currentRow.borrower.id,
+                                    ...payload 
+                                })
+                                    .then(onSuccess)
+                                    .catch(onError);
+                            }
+                        }}
                     />
 
                     <ConfirmDialog
@@ -78,26 +121,25 @@ export function BorrowsDialogs() {
                             toast.promise(
                                 returnBorrowMut.mutateAsync(currentRow.id!),
                                 {
-                                    loading: 'Returning...',
+                                    loading: t(keys.table.actions.return.loading),
                                     success: () => {
                                         setOpen(null);
                                         setTimeout(() => setCurrentRow(null), 500);
-                                        showSubmittedData(currentRow, 'The following borrow has been returned:');
-                                        return 'Borrow returned successfully!';
+                                        showSubmittedData(currentRow, t(keys.table.actions.return.confirm));
+                                        return t(keys.table.actions.return.success);
                                     },
-                                    error: (err) => err?.message || 'Failed to return borrow',
+                                    error: (err) => err?.message || t(keys.table.actions.return.error),
                                 }
                             );
                         }}
                         className='max-w-md'
-                        title={`Return this borrow: ${currentRow.id} ?`}
-                        desc={
-                            <>
-                                You are about to return a borrow with the ID <strong>{currentRow.id}</strong>.<br />
-                                This action cannot be undone.
-                            </>
-                        }
-                        confirmText='Return'
+                        title={t(keys.table.actions.return.title, { borrowId: currentRow.id })}
+                        desc={t.rich(keys.table.actions.return.confirmDesc, {
+                            title: currentRow.item?.title || currentRow.id,
+                            strong: (chunks) => <strong>{chunks}</strong>,
+                            br: () => <br />
+                        })}
+                        confirmText={t(keys.table.actions.return.label)}
                     />
                 </>
             )}

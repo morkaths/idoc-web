@@ -2,7 +2,6 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { locales, defaultLocale } from '@/i18n';
 import env from '@/config/env';
 
-const PROTECTED_PATHS = ['/library', '/profile', '/settings'];
 const AUTH_PATHS = ['/sign-in', '/sign-up'];
 
 /**
@@ -17,15 +16,12 @@ export function authMiddleware(req: NextRequest): NextResponse | null {
     // Loại bỏ tiền tố ngôn ngữ (vd: /vi/library -> /library) để kiểm tra route
     const pathWithoutLocale = pathname.replace(new RegExp(`^/(${locales.join('|')})`), '') || '/';
 
-    const isProtectedRoute = PROTECTED_PATHS.some((path) => pathWithoutLocale.startsWith(path));
     const isAuthPage = AUTH_PATHS.some((path) => pathWithoutLocale.startsWith(path));
 
-    // Nếu truy cập route bảo vệ mà không có token, redirect về trang login
-    if (!token && isProtectedRoute && !isAuthPage) {
+    // Nếu đã đăng nhập mà truy cập trang auth (login/register), redirect về trang chủ hoặc dashboard
+    if (token && isAuthPage) {
         const locale = locales.find((l) => pathname.startsWith(`/${l}`)) || defaultLocale;
-        const signinUrl = new URL(`/${locale}/sign-in`, req.url);
-        signinUrl.searchParams.set('redirect', pathname);
-        return NextResponse.redirect(signinUrl);
+        return NextResponse.redirect(new URL(`/${locale}/`, req.url));
     }
 
     return null;
