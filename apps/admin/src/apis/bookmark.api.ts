@@ -15,13 +15,13 @@ export const BookmarkApi = {
         };
     },
 
-    findById: async (id: string): Promise<Bookmark | null> => {
+    findById: async (id: string): Promise<Bookmark> => {
         const response = await ApiClient.get<Bookmark>(
             API_CONFIG.endpoints.bookmark.findById(id),
             { mode: 'public' }
         );
         if (response.success && response.data) return response.data;
-        return null;
+        throw new Error(response.message || 'Bookmark not found');
     },
 
     status: async (items: string[]): Promise<Record<string, string | null>> => {
@@ -35,22 +35,22 @@ export const BookmarkApi = {
         return {};
     },
 
-    create: async (data: BookmarkRequest): Promise<Bookmark | null> => {
+    create: async (data: BookmarkRequest): Promise<Bookmark> => {
         const response = await ApiClient.post<Bookmark>(
             API_CONFIG.endpoints.bookmark.create,
             { mode: 'private', data }
         );
         if (response.success && response.data) return response.data;
-        return null;
+        throw new Error(response.message || 'Failed to create bookmark');
     },
 
-    update: async (id: string, data: Partial<BookmarkRequest>): Promise<Bookmark | null> => {
+    update: async (id: string, data: Partial<BookmarkRequest>): Promise<Bookmark> => {
         const response = await ApiClient.patch<Bookmark>(
             API_CONFIG.endpoints.bookmark.update(id),
             { mode: 'private', data }
         );
         if (response.success && response.data) return response.data;
-        return null;
+        throw new Error(response.message || 'Failed to update bookmark');
     },
 
     delete: async (id: string): Promise<boolean> => {

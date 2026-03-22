@@ -11,7 +11,7 @@ import { useLocale } from '@/hooks/ui/useLocale';
 export function LibraryView() {
   const { t, keys } = useLocale('library');
   return (
-    <main className="container py-8">
+    <main className="container py-8 w-full max-w-full overflow-x-hidden">
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2">{t(keys.title)}</h1>
         <p className="text-muted-foreground">{t(keys.description)}</p>
@@ -26,10 +26,8 @@ export function LibraryView() {
         </TabsContent>
         <TabsContent value="borrows">
           <BorrowsProvider>
-            <div className='flex flex-col gap-4 sm:gap-6'>
+            <div className='flex flex-col gap-4 sm:gap-6 w-full max-w-full overflow-hidden @container/content'>
               <div className='flex flex-wrap items-end justify-end gap-4 sm:gap-6'>
-                <div>
-                </div>
                 <BorrowsPrimaryButtons />
               </div>
               <BorrowsTable />

@@ -22,12 +22,13 @@ export const authConfig = {
           });
 
           if (result && result.user && result.token) {
-            return {
+            const returnedData = {
               ...result.user,
               accessToken: result.token.accessToken,
               refreshToken: result.token.refreshToken,
               accessTokenExpiresIn: result.token.accessTokenExpiresIn,
-            } as any;
+            };
+            return returnedData as any;
           }
           throw new CredentialsSignin();
         } catch (error) {
@@ -75,7 +76,6 @@ export const authConfig = {
               };
             }
           } catch (error) {
-            console.error("Google verify failed", error);
             return {
               ...token,
               error: "InvalidCredentials" as const,
@@ -93,13 +93,13 @@ export const authConfig = {
       }
 
       // Return previous token if the access token has not expired yet
-      if (Date.now() < token.expiresAt) {
+      if (token.expiresAt && Date.now() < token.expiresAt) {
         return token;
       }
 
       // Access token has expired, try to update it
       try {
-        const result = await AuthApi.refresh(token.refreshToken);
+        const result = await AuthApi.refresh(token.refreshToken as string);
         if (!result || !result.token) {
           return {
             ...token,
@@ -114,7 +114,6 @@ export const authConfig = {
           error: undefined,
         };
       } catch (error) {
-        console.error("Error refreshing access token", error);
         return {
           ...token,
           error: "InvalidCredentials" as const,

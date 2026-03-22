@@ -61,9 +61,6 @@ export function BorrowBookDialog({ open, onOpenChange, onSubmit }: BorrowBookDia
                     <form
                         onSubmit={form.handleSubmit((data) => {
                             onSubmit(data);
-                            console.log(data);
-                            onOpenChange(false);
-                            form.reset();
                         })}
                     >
                         <div className="grid gap-4 mb-4">

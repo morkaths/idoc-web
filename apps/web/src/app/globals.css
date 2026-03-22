@@ -43,6 +43,24 @@
   }
 }
 
+@layer components {
+  /* Titles */
+  .title-h1 { @apply text-3xl sm:text-4xl md:text-5xl font-bold leading-tight; }
+  .title-h2 { @apply text-2xl sm:text-3xl md:text-4xl font-bold leading-tight; }
+  .title-h3 { @apply text-xl sm:text-2xl md:text-3xl font-semibold leading-snug; }
+  .title-h4 { @apply text-lg sm:text-xl font-semibold leading-snug; }
+  
+  /* Text */
+  .text-body-lg { @apply text-base sm:text-lg leading-relaxed; }
+  .text-body { @apply text-sm sm:text-base leading-normal; }
+  
+  /* Meta */
+  .text-meta { @apply text-xs sm:text-sm text-muted-foreground; }
+  
+  /* Badge */
+  .text-badge { @apply text-[10px] sm:text-xs font-medium tracking-wide; }
+}
+
 @utility container {
   margin-inline: auto;
   padding-inline: 2rem;

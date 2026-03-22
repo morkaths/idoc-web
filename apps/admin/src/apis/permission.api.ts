@@ -14,30 +14,30 @@ export const PermissionApi = {
     };
   },
 
-  findById: async (id: string): Promise<Permission | null> => {
+  findById: async (id: string): Promise<Permission> => {
     const response = await ApiClient.get<Permission>(
       API_CONFIG.endpoints.permission.findById(id)
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Permission not found');
   },
 
-  create: async (data: PermissionRequest): Promise<Permission | null> => {
+  create: async (data: PermissionRequest): Promise<Permission> => {
     const response = await ApiClient.post<Permission>(
       API_CONFIG.endpoints.permission.create,
       { data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to create permission');
   },
 
-  update: async (id: string, data: Partial<PermissionRequest>): Promise<Permission | null> => {
+  update: async (id: string, data: Partial<PermissionRequest>): Promise<Permission> => {
     const response = await ApiClient.patch<Permission>(
       API_CONFIG.endpoints.permission.update(id),
       { data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to update permission');
   },
 
   delete: async (id: string): Promise<boolean> => {

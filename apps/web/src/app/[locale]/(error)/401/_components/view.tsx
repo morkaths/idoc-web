@@ -26,12 +26,12 @@ export function UnauthorizedView() {
               <EmptyTitle className="font-black font-mono text-8xl">
                 401
               </EmptyTitle>
-              <EmptyDescription className="text-nowrap">
+              <EmptyDescription className="text-balance text-center max-w-xs sm:max-w-md px-4">
                 {t(keys[401].description)}
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-2 sm:gap-4 px-4">
                 <Button variant='outline' onClick={() => router.back()}>
                   <ArrowLeft /> {t(keys.actions.goBack)}
                 </Button>

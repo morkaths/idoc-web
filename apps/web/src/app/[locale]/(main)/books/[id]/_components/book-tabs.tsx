@@ -90,12 +90,12 @@ export function BookTabs({ book }: { book?: Book }) {
 
     return (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full gap-4">
-            <TabsList className="bg-background gap-1 border p-1 w-fit mx-auto flex justify-center">
+            <TabsList className="bg-background gap-1 border p-1 w-full sm:w-fit mx-auto flex justify-start sm:justify-center overflow-x-auto no-scrollbar">
                 {tabs.map((tab) => (
                     <TabsTrigger
                         key={tab.value}
                         value={tab.value}
-                        className="data-[state=active]:bg-primary dark:data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:border-transparent px-4 py-2"
+                        className="data-[state=active]:bg-primary dark:data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:border-transparent px-4 py-2 whitespace-nowrap"
                     >
                         {tab.name}
                     </TabsTrigger>

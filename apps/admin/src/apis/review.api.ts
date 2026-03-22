@@ -14,31 +14,31 @@ export const ReviewApi = {
         };
     },
 
-    findById: async (id: string): Promise<Review | null> => {
+    findById: async (id: string): Promise<Review> => {
         const response = await ApiClient.get<Review>(
             API_CONFIG.endpoints.review.findById(id),
             { mode: 'public' }
         );
         if (response.success && response.data) return response.data;
-        return null;
+        throw new Error('Review not found');
     },
 
-    create: async (data: ReviewRequest): Promise<Review | null> => {
+    create: async (data: ReviewRequest): Promise<Review> => {
         const response = await ApiClient.post<Review>(
             API_CONFIG.endpoints.review.create,
             { mode: 'private', data }
         );
         if (response.success && response.data) return response.data;
-        return null;
+        throw new Error('Failed to create review');
     },
 
-    update: async (id: string, data: Partial<ReviewRequest>): Promise<Review | null> => {
+    update: async (id: string, data: Partial<ReviewRequest>): Promise<Review> => {
         const response = await ApiClient.patch<Review>(
             API_CONFIG.endpoints.review.update(id),
             { mode: 'private', data }
         );
         if (response.success && response.data) return response.data;
-        return null;
+        throw new Error('Failed to update review');
     },
 
     delete: async (id: string): Promise<boolean> => {

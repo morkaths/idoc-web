@@ -67,11 +67,11 @@ export function BookGridItem({
         onKeyDown={(e) => { if (e.key === 'Enter') onClick?.(); }}
       >
         {/* Top Background Pattern */}
-        <div className="h-46 w-full bg-primary/10 dark:bg-primary/10" />
+        <div className="h-32 w-full bg-primary/10 dark:bg-primary/10" />
 
         {/* Book Cover Container */}
-        <div className="relative px-4 -mt-36 w-full flex justify-center z-10 w-full">
-          <div className="relative w-36 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden transition-transform duration-300 group-hover:-translate-y-1 bg-white dark:bg-zinc-800">
+        <div className="relative px-2 sm:px-4 -mt-24 flex justify-center z-10 w-full">
+          <div className="relative w-28 sm:w-36 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden transition-transform duration-300 group-hover:-translate-y-1 bg-white dark:bg-zinc-800">
             {!imageError && book.coverUrl ? (
               <Image
                 src={book.coverUrl}
@@ -92,16 +92,16 @@ export function BookGridItem({
         </div>
 
         {/* Content */}
-        <div className="p-3 pt-3 flex flex-col flex-grow">
-          <span className="text-xs text-muted-foreground mb-1 font-medium tracking-wide block text-left">
+        <div className="p-2 sm:p-3 pt-2 sm:pt-3 flex flex-col flex-grow">
+          <span className="text-[10px] sm:text-xs text-muted-foreground mb-0.5 sm:mb-1 font-medium tracking-wide block text-left">
             Ebook
           </span>
 
-          <h3 className="font-bold text-foreground text-base leading-snug line-clamp-2 mb-1 text-left h-[44px]" title={book.title}>
+          <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug line-clamp-2 mb-1 text-left h-[38px] sm:h-[44px]" title={book.title}>
             {book.title}
           </h3>
 
-          <div className="text-sm text-muted-foreground mb-2 line-clamp-1 text-left" title={book.authors?.map(a => a.name).join(", ")}>
+          <div className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-1 text-left" title={book.authors?.map(a => a.name).join(", ")}>
             {book.authors?.length ? (
               book.authors.map((a, i) => (
                 <span key={i}>
@@ -118,7 +118,17 @@ export function BookGridItem({
 
           <div className="mt-auto flex items-center justify-between">
             <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-0.5 text-amber-500">
+              <div className="flex sm:hidden items-center gap-1 text-amber-500">
+                <Icon icon="mdi:star" width={14} height={14} />
+                <span className="text-xs font-semibold text-foreground">
+                  {book.rating ? book.rating.toFixed(1) : "0"}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  ({book.totalReviews || 0})
+                </span>
+              </div>
+              
+              <div className="hidden sm:flex items-center gap-0.5 text-amber-500">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Icon
                     key={i}

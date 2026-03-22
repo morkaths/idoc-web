@@ -56,23 +56,41 @@ export class ApiClient {
 
     instance.interceptors.request.use(async (config) => {
       config.headers = config.headers || {};
+
+      if (config.params && config.params.lang) {
+        config.headers['Accept-Language'] = config.params.lang;
+        delete config.params.lang;
+      } else if (typeof window !== 'undefined') {
+        const match = document.cookie.match(/NEXT_LOCALE=([^;]+)/);
+        if (match) config.headers['Accept-Language'] = match[1];
+      } else {
+        try {
+          const { headers } = await import('next/headers');
+          const headerList = await headers();
+          const locale = headerList.get('Accept-Language');
+          if (locale) config.headers['Accept-Language'] = locale;
+        } catch (e) {}
+      }
+
+
       if (ApiClient.config.key || env.api.key) {
         config.headers['x-api-key'] = ApiClient.config.key || env.api.key;
       }
 
-      // Use stored token or try to get it if we are in private mode
-      if (typeof window !== 'undefined') {
-        if (!ApiClient.token) {
-          const session = await getSession();
-          if (session?.accessToken) {
-            ApiClient.setToken(session.accessToken);
-          }
-        }
-
-        if (ApiClient.token) {
-          config.headers['Authorization'] = `Bearer ${ApiClient.token}`;
+      if (typeof window !== 'undefined' && withCredentials) {
+        const session = await getSession();
+        if (session?.accessToken) {
+          ApiClient.setToken(session.accessToken);
         }
       }
+
+      if (ApiClient.token) {
+        config.headers['Authorization'] = `Bearer ${ApiClient.token}`;
+        console.log(`[ApiClient] Private Request to ${config.url} - Token:`, ApiClient.token.substring(0, 15) + '...');
+      } else if (withCredentials) {
+        console.warn(`[ApiClient] Private Request to ${config.url} with NO token!`);
+      }
+
       return config;
     }, (error) => Promise.reject(error));
 
@@ -140,7 +158,7 @@ export class ApiClient {
 
   private static handleError(error: any): ApiResponse<any> {
     const timestamp = new Date().toISOString();
-    
+
     // Logic from original handleError
     if (axios.isAxiosError(error) && error.response?.data) {
       const serverResponse = error.response.data;

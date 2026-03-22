@@ -48,12 +48,12 @@ const CoverImage = ({ title, src }: { title: string, src?: string }) => {
 
 function BookDetailSkeleton() {
   return (
-    <div className="relative min-h-screen py-10">
+    <div className="relative min-h-screen pb-10 pt-2 md:pt-10">
       {/* Banner */}
       <Skeleton className="w-full h-64 md:h-72 lg:h-96 relative rounded-none" />
 
       {/* Main content */}
-      <div className="relative z-10 max-w-5xl mx-auto -mt-40 flex flex-col md:flex-row gap-8 px-4">
+      <div className="relative max-w-5xl mx-auto -mt-24 md:-mt-40 flex flex-col md:flex-row gap-4 md:gap-8 px-4">
         {/* Book cover */}
         <div className="w-46 sm:w-64 md:w-72 lg:w-80 aspect-[3/4] rounded-md overflow-hidden border-2 bg-white dark:bg-zinc-800">
           <Skeleton className="w-full h-full rounded-none" />
@@ -79,7 +79,7 @@ function BookDetailSkeleton() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto mt-10 px-4 space-y-6">
+      <div className="max-w-5xl mx-auto mt-6 md:mt-10 px-4 space-y-6">
         {/* Tabs List */}
         <div className="flex justify-center p-1 w-fit mx-auto gap-1 border rounded-md bg-background">
           <Skeleton className="h-8 w-20 rounded-md" />
@@ -173,11 +173,11 @@ export function BookDetailView({ id }: BookDetailViewProps) {
   };
 
   return (
-    <div key="content" className="relative min-h-screen py-10">
+    <div key="content" className="relative min-h-screen pb-10 pt-2 md:pt-10">
       {/* Banner */}
       <div className="w-full h-64 md:h-72 lg:h-96 bg-primary/10 dark:bg-primary/10 relative" />
       {/* Main content */}
-      <div className="relative z-10 max-w-5xl mx-auto -mt-40 flex flex-col md:flex-row gap-8 px-4">
+      <div className="relative max-w-5xl mx-auto -mt-24 md:-mt-40 flex flex-col md:flex-row gap-4 md:gap-8 px-4">
         {/* Book cover */}
         <CoverImage title={book.title} src={book.coverUrl} />
         {/* Book info */}
@@ -248,7 +248,7 @@ export function BookDetailView({ id }: BookDetailViewProps) {
         </div>
       </div>
       {/* Tabs */}
-      <div className="max-w-5xl mx-auto mt-10 px-4">
+      <div className="max-w-5xl mx-auto mt-6 md:mt-10 px-4">
         <BookTabs book={book} />
       </div>
     </div>

@@ -14,31 +14,31 @@ export const AuthorApi = {
     };
   },
 
-  findById: async (id: string): Promise<Author | null> => {
+  findById: async (id: string): Promise<Author> => {
     const response = await ApiClient.get<Author>(
       API_CONFIG.endpoints.author.findById(id),
       { mode: 'public' }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Author not found');
   },
 
-  create: async (data: AuthorRequest): Promise<Author | null> => {
+  create: async (data: AuthorRequest): Promise<Author> => {
     const response = await ApiClient.post<Author>(
       API_CONFIG.endpoints.author.create,
       { mode: 'private', data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to create author');
   },
 
-  update: async (id: string, data: Partial<AuthorRequest>): Promise<Author | null> => {
+  update: async (id: string, data: Partial<AuthorRequest>): Promise<Author> => {
     const response = await ApiClient.patch<Author>(
       API_CONFIG.endpoints.author.update(id),
       { mode: 'private', data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to update author');
   },
 
   delete: async (id: string): Promise<boolean> => {

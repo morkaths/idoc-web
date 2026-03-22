@@ -25,31 +25,31 @@ export const BorrowApi = {
     };
   },
 
-  findById: async (id: string): Promise<Borrow | null> => {
+  findById: async (id: string): Promise<Borrow> => {
     const response = await ApiClient.get<Borrow>(
       API_CONFIG.endpoints.borrow.findById(id),
       { mode: 'public' }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Borrow record not found');
   },
 
-  create: async (data: BorrowRequest): Promise<Borrow | null> => {
+  create: async (data: BorrowRequest): Promise<Borrow> => {
     const response = await ApiClient.post<Borrow>(
       API_CONFIG.endpoints.borrow.create,
       { mode: 'private', data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to create borrow record');
   },
 
-  update: async (id: string, data: Partial<BorrowRequest>): Promise<Borrow | null> => {
+  update: async (id: string, data: Partial<BorrowRequest>): Promise<Borrow> => {
     const response = await ApiClient.patch<Borrow>(
       API_CONFIG.endpoints.borrow.update(id),
       { mode: 'private', data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to update borrow record');
   },
 
   delete: async (id: string): Promise<boolean> => {
@@ -60,21 +60,21 @@ export const BorrowApi = {
     return response.success;
   },
 
-  extend: async (id: string, extraDays: number, note?: string): Promise<Borrow | null> => {
+  extend: async (id: string, extraDays: number, note?: string): Promise<Borrow> => {
     const response = await ApiClient.put<Borrow>(
       API_CONFIG.endpoints.borrow.extend(id),
       { mode: 'private', data: { extraDays, note } }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to extend borrow time');
   },
 
-  return: async (id: string): Promise<Borrow | null> => {
+  return: async (id: string): Promise<Borrow> => {
     const response = await ApiClient.put<Borrow>(
       API_CONFIG.endpoints.borrow.return(id),
       { mode: 'private' }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to return borrowed item');
   },
 };

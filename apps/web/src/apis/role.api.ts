@@ -14,30 +14,30 @@ export const RoleApi = {
     };
   },
 
-  findById: async (id: string): Promise<Role | null> => {
+  findById: async (id: string): Promise<Role> => {
     const response = await ApiClient.get<Role>(
       API_CONFIG.endpoints.role.findById(id)
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Role not found');
   },
 
-  create: async (data: RoleRequest): Promise<Role | null> => {
+  create: async (data: RoleRequest): Promise<Role> => {
     const response = await ApiClient.post<Role>(
       API_CONFIG.endpoints.role.create,
       { data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to create role');
   },
 
-  update: async (id: string, data: Partial<RoleRequest>): Promise<Role | null> => {
+  update: async (id: string, data: Partial<RoleRequest>): Promise<Role> => {
     const response = await ApiClient.patch<Role>(
       API_CONFIG.endpoints.role.update(id),
       { data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to update role');
   },
 
   delete: async (id: string): Promise<boolean> => {

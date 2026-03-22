@@ -14,31 +14,31 @@ export const BookApi = {
     };
   },
 
-  findById: async (id: string): Promise<Book | null> => {
+  findById: async (id: string): Promise<Book> => {
     const response = await ApiClient.get<Book>(
       API_CONFIG.endpoints.book.findById(id),
       { mode: 'public' }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Book not found');
   },
 
-  create: async (data: BookRequest): Promise<Book | null> => {
+  create: async (data: BookRequest): Promise<Book> => {
     const response = await ApiClient.post<Book>(
       API_CONFIG.endpoints.book.create,
       { mode: 'private', data: data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to create book');
   },
 
-  update: async (id: string, data: Partial<BookRequest>): Promise<Book | null> => {
+  update: async (id: string, data: Partial<BookRequest>): Promise<Book> => {
     const response = await ApiClient.patch<Book>(
       API_CONFIG.endpoints.book.update(id),
       { mode: 'private', data: data }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to update book');
   },
 
   delete: async (id: string): Promise<boolean> => {

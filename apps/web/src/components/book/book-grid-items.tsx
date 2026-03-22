@@ -37,18 +37,18 @@ export function BookGridItems({
                         <Skeleton className="h-32 w-full rounded-none bg-primary/5" />
 
                         {/* Book Cover Skeleton */}
-                        <div className="relative px-4 -mt-24 w-full flex justify-center z-10">
-                            <Skeleton className="w-36 aspect-[3/4] shadow-md rounded-sm" />
+                        <div className="relative px-2 sm:px-4 -mt-24 w-full flex justify-center z-10">
+                            <Skeleton className="w-28 sm:w-36 aspect-[3/4] shadow-md rounded-sm" />
                         </div>
 
                         {/* Content Skeleton */}
-                        <div className="p-3 pt-3 flex flex-col flex-grow gap-2">
-                            <Skeleton className="h-3 w-10" /> {/* Ebook tag */}
+                        <div className="p-2 sm:p-3 pt-2 sm:pt-3 flex flex-col flex-grow gap-1 sm:gap-2">
+                            <Skeleton className="h-2 sm:h-3 w-10" /> {/* Ebook tag */}
                             <div className="space-y-1">
-                                <Skeleton className="h-4 w-full" /> {/* Title line 1 */}
-                                <Skeleton className="h-4 w-2/3" /> {/* Title line 2 */}
+                                <Skeleton className="h-3 sm:h-4 w-full" /> {/* Title line 1 */}
+                                <Skeleton className="h-3 sm:h-4 w-2/3" /> {/* Title line 2 */}
                             </div>
-                            <Skeleton className="h-3 w-1/2 mt-1" /> {/* Author */}
+                            <Skeleton className="h-2 sm:h-3 w-1/2 mt-1" /> {/* Author */}
 
                             <div className="mt-auto flex items-center justify-between pt-2">
                                 <Skeleton className="h-3 w-16" /> {/* Rating stars */}

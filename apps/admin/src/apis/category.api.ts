@@ -14,31 +14,31 @@ export const CategoryApi = {
     };
   },
 
-  findById: async (id: string): Promise<Category | null> => {
+  findById: async (id: string): Promise<Category> => {
     const response = await ApiClient.get<Category>(
       API_CONFIG.endpoints.category.findById(id),
       { mode: 'public', }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Category not found');
   },
 
-  create: async (data: CategoryRequest): Promise<Category | null> => {
+  create: async (data: CategoryRequest): Promise<Category> => {
     const response = await ApiClient.post<Category>(
       API_CONFIG.endpoints.category.create,
       { mode: 'private', data, }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to create category');
   },
 
-  update: async (id: string, data: Partial<CategoryRequest>): Promise<Category | null> => {
+  update: async (id: string, data: Partial<CategoryRequest>): Promise<Category> => {
     const response = await ApiClient.patch<Category>(
       API_CONFIG.endpoints.category.update(id),
       { mode: 'private', data, }
     );
     if (response.success && response.data) return response.data;
-    return null;
+    throw new Error(response.message || 'Failed to update category');
   },
 
   delete: async (id: string): Promise<boolean> => {
