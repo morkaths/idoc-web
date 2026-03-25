@@ -66,7 +66,7 @@ export const BorrowApi = {
       { mode: 'private', data: { extraDays, note } }
     );
     if (response.success && response.data) return response.data;
-    throw new Error(response.message || 'Không thể gia hạn mượn sách');
+    throw new Error(response.message || 'Failed to extend borrow');
   },
 
   return: async (id: string): Promise<Borrow> => {
@@ -75,6 +75,15 @@ export const BorrowApi = {
       { mode: 'private' }
     );
     if (response.success && response.data) return response.data;
-    throw new Error(response.message || 'Không thể trả sách');
+    throw new Error(response.message || 'Failed to return borrow');
+  },
+
+  read: async (id: string): Promise<string> => {
+    const response = await ApiClient.get<string>(
+      API_CONFIG.endpoints.borrow.read(id),
+      { mode: 'private' }
+    );
+    if (response.success && response.data) return response.data;
+    throw new Error(response.message || 'Failed to get read link');
   },
 };

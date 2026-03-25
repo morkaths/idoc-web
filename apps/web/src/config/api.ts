@@ -66,15 +66,17 @@ export const API_CONFIG = {
     file: {
       find: '/files',
       findByUser: '/files/user',
-      findByKey: (key: string) => `/files/${key}`,
-      download: (key: string) => `/files/${key}/download`,
-      upload: '/files/upload/url',
-      confirm: '/files/upload/confirm',
-      delete: (key: string) => `/files/${key}`,
+      findById: (id: string) => `/files/${id}`,
+      download: (id: string) => `/files/${id}/download`,
+      upload: '/files/upload',
+      uploadPresigned: '/files/upload/presigned',
+      completePresignedUpload: '/files/upload/complete',
+      delete: (id: string) => `/files/${id}`,
+      view: (id: string) => `/files/${id}/view`,
     },
     image: {
       upload: '/images/upload',
-      delete: '/images/delete',
+      delete: (url: string) => `/images/${url}`,
     },
     borrow: {
       find: '/borrows',
@@ -85,6 +87,7 @@ export const API_CONFIG = {
       delete: (id: string) => `/borrows/${id}`,
       extend: (id: string) => `/borrows/${id}/extend`,
       return: (id: string) => `/borrows/${id}/return`,
+      read: (id: string) => `/borrows/${id}/read`,
     },
     bookmark: {
       find: '/bookmarks',

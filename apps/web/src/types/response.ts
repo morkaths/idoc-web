@@ -101,6 +101,7 @@ export interface File {
   url: string;
   size: number;
   mimetype: string;
+  status: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }

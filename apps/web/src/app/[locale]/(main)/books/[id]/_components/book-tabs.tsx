@@ -40,7 +40,7 @@ export function BookTabs({ book }: { book?: Book }) {
                         </div>
                         <div className="space-y-1">
                             <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Format</div>
-                            <div className="text-sm font-medium">{book?.fileKey?.split('.').pop()?.toUpperCase() || 'N/A'}</div>
+                            <div className="text-sm font-medium">{book?.file?.split('.').pop()?.toUpperCase() || 'N/A'}</div>
                         </div>
                         <div className="space-y-1">
                             <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t(keys.tabs.info.publisher.label)}</div>

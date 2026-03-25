@@ -105,6 +105,7 @@ export function BooksMutateDialog({
                                 }
                             } catch {
                                 toast.error("Upload cover image failed!", { id: "upload-cover" });
+                                return;
                             }
 
                             try {
@@ -117,6 +118,7 @@ export function BooksMutateDialog({
                                 }
                             } catch {
                                 toast.error("Upload book file failed!", { id: "upload-file" });
+                                return;
                             }
 
                             onSubmit({

@@ -465,11 +465,9 @@
       }
     },
     "error": {
-      "title": "No title",
-      "book": {
-        "title": "Book not found",
-        "description": "The book you are looking for might have been removed, had its name changed, or is temporarily unavailable."
-      },
+      "title": "Failed to access file",
+      "description": "Creating a secure link or you don't have permission to view this file.",
+      
       "actions": {
         "goBack": "Go Back"
       }

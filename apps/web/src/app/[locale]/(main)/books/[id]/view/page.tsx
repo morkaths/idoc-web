@@ -1,16 +1,15 @@
 "use client";
 
-import { useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useBook } from "@/hooks/data/useBook";
-import { useFile } from "@/hooks/data/useFile";
-import { ArrowLeft, Loader2, FileQuestion, Lock } from "lucide-react";
+import { useFile, useViewUrl } from "@/hooks/data/useFile";
+import { ArrowLeft, Loader2, Lock } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useBorrowHistory } from "@/hooks/data/useBorrow";
+import { useBorrowHistory, useRead } from "@/hooks/data/useBorrow";
 import { useLocale } from '@/hooks/ui/useLocale';
-import { RoleCode } from "@/types";
 import { Button } from "@repo/ui/components/button";
 import { FileViewer } from "@/components/viewers/file-viewer";
+import { API_CONFIG } from "@/config/api";
 
 export default function BookViewPage() {
     const { t, keys } = useLocale('view');
@@ -18,29 +17,26 @@ export default function BookViewPage() {
     const router = useRouter();
     const { data: session, status } = useSession();
     const { data: book, isLoading: bookLoading } = useBook(params.id);
-    const { data: file, isLoading: fileLoading } = useFile(book?.fileKey || "");
+    const { data: file, isLoading: fileLoading } = useFile(book?.file || "");
     const { data: borrows, isLoading: borrowsLoading } = useBorrowHistory({
-        itemId: params.id,
+        item: params.id,
         status: "active",
-        limit: 1 // Chỉ cần kiểm tra xem có bản ghi nào không
+        limit: 1
     }, { enabled: !!session?.user });
+
+    const activeBorrowId = borrows?.data?.[0]?.id;
+    const { data: ticket, isLoading: ticketLoading } = useRead(activeBorrowId || "", {
+        enabled: !!activeBorrowId && !!session?.user
+    });
+
+    const { data: viewUrl, isLoading: viewUrlLoading } = useViewUrl(book?.file || "", ticket || "", {
+        enabled: !!book?.file && !!ticket
+    });
 
     const handleBack = () => router.back();
 
-    const canView = useMemo(() => {
-        if (!session?.user) return false;
-
-        // Admin hoặc Manager xem được hết
-        const hasPrivilegedRole = session.user.roles?.some(
-            (role) => role.code === RoleCode.Admin || role.code === RoleCode.Manager
-        );
-        if (hasPrivilegedRole) return true;
-
-        // User thường phải có phiếu mượn đang active (borrowing)
-        return borrows?.data && borrows.data.length > 0;
-    }, [session, borrows]);
-
-    const isLoading = status === "loading" || bookLoading || fileLoading || (session?.user && !canView && borrowsLoading);
+    const isLoading = status === "loading" || bookLoading || fileLoading || borrowsLoading || 
+                      (!!activeBorrowId && (ticketLoading || viewUrlLoading));
 
     if (isLoading) {
         return (
@@ -73,7 +69,7 @@ export default function BookViewPage() {
     }
 
     // If user is authenticated but not allowed to view
-    if (!canView) {
+    if (borrows && !activeBorrowId) {
         return (
             <div className="container flex h-[calc(100vh-theme(spacing.16))] items-center justify-center p-4">
                 <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-lg border bg-card p-8 text-center shadow-sm">
@@ -95,26 +91,22 @@ export default function BookViewPage() {
         );
     }
 
-    // If book or file is not found
-    if (!book || !book.fileKey || !file || !file.url) {
+    // If read link is not ready
+    if (!viewUrl) {
         return (
             <div className="container flex h-[calc(100vh-theme(spacing.16))] items-center justify-center p-4">
                 <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-lg border bg-card p-8 text-center shadow-sm">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                        <FileQuestion className="h-6 w-6 text-muted-foreground" />
+                        <Lock className="h-6 w-6 text-muted-foreground" />
                     </div>
                     <div className="space-y-1">
                         <h3 className="text-lg font-semibold">
-                            {t(keys.error.book.title)}
+                            {t(keys.error.title)}
                         </h3>
                         <p className="text-sm text-center text-muted-foreground text-balance">
-                            {t(keys.error.book.description)}
+                            {t(keys.error.description)}
                         </p>
                     </div>
-                    <Button onClick={handleBack} variant="outline" className="mt-2 text-foreground">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        {t(keys.error.actions.goBack)}
-                    </Button>
                 </div>
             </div>
         );
@@ -126,11 +118,12 @@ export default function BookViewPage() {
                 <Button variant="ghost" size="icon" onClick={handleBack}>
                     <ArrowLeft size={20} />
                 </Button>
-                <h1 className="text-xl font-semibold truncate">{book.title || t(keys.error.title)}</h1>
+                <h1 className="text-xl font-semibold truncate">{book?.title}</h1>
             </div>
 
             <FileViewer
-                fileUrl={file.url}
+                fileUrl={viewUrl}
+                mimeType={file?.mimetype}
                 className="flex-1 w-full border rounded-md overflow-hidden bg-background"
             />
         </main>

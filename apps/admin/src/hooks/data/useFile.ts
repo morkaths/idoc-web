@@ -38,10 +38,10 @@ export const useUploadPresignedFile = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async ({ file, folder }: { file: File; folder?: string }) => {
-            const { url, key } = await FileApi.uploadPresigned(file.name, file.type, folder);
+            const { url, objectname } = await FileApi.uploadPresigned(file.name, file.type, folder);
             const success = await FileApi.upload(url, file);
             if (!success) throw new Error('Upload failed');
-            return key;
+            return objectname;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['files'] });
@@ -52,7 +52,7 @@ export const useUploadPresignedFile = () => {
 export const useCompletePresignUploadFile = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (key: string) => FileApi.completePresignedUpload(key),
+        mutationFn: (objectname: string) => FileApi.completePresignedUpload(objectname),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['files'] });
         },

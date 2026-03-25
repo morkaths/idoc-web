@@ -20,8 +20,8 @@ export const ImageApi = {
 
     delete: async (url: string): Promise<boolean> => {
         const response = await ApiClient.delete<null>(
-            API_CONFIG.endpoints.image.delete,
-            { mode: 'private', data: { url } }
+            API_CONFIG.endpoints.image.delete(url),
+            { mode: 'private' }
         );
         return response.success;
     }

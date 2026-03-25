@@ -42,33 +42,33 @@ export const FileApi = {
                     "Content-Type": file.type,
                 },
             });
-            return res.status === 200;
+            return res.status >= 200 && res.status < 300;
         } catch {
             return false;
         }
     },
 
-    uploadPresigned: async (filename: string, type: string, folder?: string): Promise<{ url: string; key: string }> => {
-        const response = await ApiClient.post<{ url: string; key: string }>(
+    uploadPresigned: async (filename: string, mimetype: string, folder?: string): Promise<{ url: string; objectname: string }> => {
+        const response = await ApiClient.post<{ url: string; objectname: string }>(
             API_CONFIG.endpoints.file.uploadPresigned,
             {
                 mode: 'private',
-                data: { filename, type, folder }
+                data: { filename, mimetype, folder }
             }
         );
         if (response.success && response.data) return {
             url: response.data.url,
-            key: response.data.key
+            objectname: response.data.objectname
         };
         throw new Error('Failed to get upload URL');
     },
 
-    completePresignedUpload: async (key: string): Promise<IFile> => {
+    completePresignedUpload: async (objectname: string): Promise<IFile> => {
         const response = await ApiClient.post<IFile>(
             API_CONFIG.endpoints.file.completePresignedUpload,
             {
                 mode: 'private',
-                data: { key }
+                data: { objectname }
             }
         );
         if (response.success && response.data) return response.data;
