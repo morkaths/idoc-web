@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { FileApi } from '@/apis/file.api';
-import type { FileMeta, FindParams, Pagination } from '@/types';
+import type { File as IFile, FindParams, Pagination } from '@/types';
 
-type FileResponse = { data: FileMeta[]; pagination?: Pagination };
+type FileResponse = { data: IFile[]; pagination?: Pagination };
 
 export const useFiles = (
     params: FindParams = {},
@@ -25,20 +25,20 @@ export const useFiles = (
     });
 };
 
-export const useFile = (key: string) => {
+export const useFile = (id: string) => {
     return useQuery({
-        queryKey: ['files', key],
-        queryFn: () => FileApi.findByKey(key),
-        enabled: !!key,
+        queryKey: ['files', id],
+        queryFn: () => FileApi.findById(id),
+        enabled: !!id,
         staleTime: 10 * 60 * 1000,
     });
 };
 
-export const useUploadFile = () => {
+export const useUploadPresignedFile = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async ({ file, folder }: { file: File; folder?: string }) => {
-            const { url, key } = await FileApi.getUploadUrl(file.name, file.type, folder);
+            const { url, key } = await FileApi.uploadPresigned(file.name, file.type, folder);
             const success = await FileApi.upload(url, file);
             if (!success) throw new Error('Upload failed');
             return key;
@@ -49,10 +49,10 @@ export const useUploadFile = () => {
     });
 };
 
-export const useConfirmFile = () => {
+export const useCompletePresignUploadFile = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (key: string) => FileApi.confirm(key),
+        mutationFn: (key: string) => FileApi.completePresignedUpload(key),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['files'] });
         },
@@ -62,7 +62,7 @@ export const useConfirmFile = () => {
 export const useDeleteFile = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (key: string) => FileApi.delete(key),
+        mutationFn: (id: string) => FileApi.delete(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['files'] });
         },

@@ -84,22 +84,21 @@ export const BookRequestSchema = z.object({
   price: z.number().min(0).optional(),
   stock: z.number().int().min(0).optional(),
   coverUrl: z.string().trim().url().optional().or(z.literal('')),
-  fileKey: z.string().trim().optional(),
+  file: z.string().trim().optional(),
   tags: z.array(z.string().trim()).optional(),
   authors: z.array(z.string()).optional(),
   categories: z.array(z.string()).optional(),
 });
 
-export const FileMetaRequestSchema = z.object({
+export const FileRequestSchema = z.object({
   id: z.string().optional(),
-  key: z.string(),
-  filename: z.string(),
-  mimeType: z.string(),
-  type: z.string(),
-  size: z.number().int(),
+  originalname: z.string(),
+  objectname: z.string(),
   url: z.string(),
+  size: z.number().int(),
+  mimetype: z.string(),
   provider: z.string(),
-  uploadedBy: z.string(),
+  status: z.string(),
 });
 
 export const BorrowRequestSchema = z.object({
@@ -151,7 +150,7 @@ export type LinkedAccountRequest = z.infer<typeof LinkedAccountSchema>;
 export type AuthorRequest = z.infer<typeof AuthorRequestSchema>;
 export type CategoryRequest = z.infer<typeof CategoryRequestSchema>;
 export type BookRequest = z.infer<typeof BookRequestSchema>;
-export type FileMetaRequest = z.infer<typeof FileMetaRequestSchema>;
+export type FileRequest = z.infer<typeof FileRequestSchema>;
 export type BorrowRequest = z.infer<typeof BorrowRequestSchema>;
 export type ReviewRequest = z.infer<typeof ReviewRequestSchema>;
 export type BookmarkRequest = z.infer<typeof BookmarkRequestSchema>;
