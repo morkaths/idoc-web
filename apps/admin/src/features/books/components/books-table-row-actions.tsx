@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type Row } from '@tanstack/react-table';
-import { Book } from '@/types';
+import { BookResponse } from '@/types';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -17,7 +17,7 @@ type BooksTableRowActionsProps<TData> = {
 };
 
 export function BooksTableRowActions<TData>({ row }: BooksTableRowActionsProps<TData>) {
-  const book = row.original as Book;
+  const book = row.original as BookResponse;
   const ctx = useBooksContext();
   if (!ctx) throw new Error('BooksTableRowActions must be used inside BooksProvider');
   const { setOpen, setCurrentRow } = ctx;

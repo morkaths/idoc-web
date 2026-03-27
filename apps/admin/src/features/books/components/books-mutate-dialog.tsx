@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BookRequestSchema, type Book, type BookRequest } from "@/types";
+import { BookRequestSchema, type BookResponse, type BookRequest } from "@/types";
 import { Button } from "@repo/ui/components/button";
 import {
     Dialog,
@@ -32,7 +32,7 @@ import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/c
 type BooksMutateDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    initialData?: Partial<Book>;
+    initialData?: Partial<BookResponse>;
     onSubmit: (data: BookRequest) => void;
 };
 

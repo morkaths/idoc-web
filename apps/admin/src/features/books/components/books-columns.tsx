@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table';
-import type { Book } from '@/types';
+import type { BookResponse } from '@/types';
 import { Badge } from '@repo/ui/components/badge';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
@@ -32,7 +32,7 @@ const BookCoverCell = ({ src, title }: { src?: string; title: string }) => {
   );
 };
 
-export const booksColumns: ColumnDef<Book>[] = [
+export const booksColumns: ColumnDef<BookResponse>[] = [
   {
     id: 'select',
     enableSorting: false,

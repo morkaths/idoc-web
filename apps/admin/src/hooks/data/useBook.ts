@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
-import type { Book, BookRequest, FindParams, Pagination } from '@/types';
+import type { BookResponse, BookRequest, FindParams, Pagination } from '@/types';
 
-type PaginationResponse = { data: Book[]; pagination?: Pagination };
+type PaginationResponse = { data: BookResponse[]; pagination?: Pagination };
 
 export const useBooks = (
   params: FindParams = {},

@@ -68,7 +68,7 @@ export interface CategoryResponse {
   updatedAt?: Date | string;
 }
 
-export interface Book {
+export interface BookResponse {
   id: string;
   title: string;
   slug?: string;
@@ -109,7 +109,7 @@ export interface File {
 export interface Borrow {
   id: string;
   borrower: UserResponse;
-  item: Book;
+  item: BookResponse;
   renewals?: {
     renewedAt: Date | string;
     oldExpireTime: Date | string;
@@ -126,7 +126,7 @@ export interface Borrow {
 
 export interface Review {
   id: string;
-  item: Book;
+  item: BookResponse;
   user: UserResponse;
   rating: number;
   content?: string;
@@ -137,7 +137,7 @@ export interface Review {
 export interface Bookmark {
   id: string;
   user: UserResponse;
-  item: Book;
+  item: BookResponse;
   page?: number;
   note?: string;
   createdAt?: Date | string;
