@@ -1,8 +1,8 @@
 import { ApiEndpoint } from '@/config/api';
-import type { Collection, CollectionRequest } from '../types';
+import type { CollectionResponse, CollectionRequest } from '../types';
 import { apiFactory } from './factory';
 
-export const CollectionApi = apiFactory<Collection, CollectionRequest>(
+export const CollectionApi = apiFactory<CollectionResponse, CollectionRequest>(
   ApiEndpoint.endpoints.collections,
   'Collection',
   { find: 'public', findById: 'public' }

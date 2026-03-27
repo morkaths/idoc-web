@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BookmarkApi } from '@/apis/bookmark.api';
-import type { Bookmark, BookmarkRequest, FindParams, Pagination } from '@/types';
+import type { BookmarkResponse, BookmarkRequest, FindParams, Pagination } from '@/types';
 
-type PaginationResponse = { data: Bookmark[]; pagination?: Pagination };
+type PaginationResponse = { data: BookmarkResponse[]; pagination?: Pagination };
 
 export const useBookmarks = (
     params: FindParams = {},

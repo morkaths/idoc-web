@@ -1,10 +1,10 @@
 import { useAuthStore } from '@/stores/auth-store';
 import { ApiEndpoint } from '@/config/api';
-import type { Bookmark, BookmarkRequest } from '../types';
+import type { BookmarkResponse, BookmarkRequest } from '../types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
-const factory = apiFactory<Bookmark, BookmarkRequest>(
+const factory = apiFactory<BookmarkResponse, BookmarkRequest>(
   ApiEndpoint.endpoints.bookmarks,
   'Bookmark',
   { find: 'public', findById: 'public', findByIds: 'public' }

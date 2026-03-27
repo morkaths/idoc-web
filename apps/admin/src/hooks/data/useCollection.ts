@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { CollectionApi } from '@/apis/collection.api';
-import type { Collection, CollectionRequest, FindParams, Pagination } from '@/types';
+import type { CollectionResponse, CollectionRequest, FindParams, Pagination } from '@/types';
 
-type PaginationResponse = { data: Collection[]; pagination?: Pagination };
+type PaginationResponse = { data: CollectionResponse[]; pagination?: Pagination };
 
 export const useCollections = (
     params: FindParams = {},

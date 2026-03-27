@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { ReviewApi } from '@/apis/review.api';
-import type { Review, ReviewRequest, FindParams, Pagination } from '@/types';
+import type { ReviewResponse, ReviewRequest, FindParams, Pagination } from '@/types';
 
-type PaginationResponse = { data: Review[]; pagination?: Pagination };
+type PaginationResponse = { data: ReviewResponse[]; pagination?: Pagination };
 
 export const useReviews = (
     params: FindParams = {},
