@@ -8,31 +8,41 @@ export const useUsers = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['users', params],
-    queryFn: async () => await UserApi.find(params),
+    queryFn: () => UserApi.find(params),
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 60 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
     ...options,
   });
+
+  return {
+    ...query,
+    data: {
+      data: query.data?.data || [],
+      pagination: query.data?.pagination,
+    },
+  };
 };
 
 export const useUser = (id: string) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['users', id],
     queryFn: () => UserApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
   });
+
+  return {
+    ...query,
+    data: query.data || null,
+  };
 };
 
 export const useCreateUser = () => {
   const queryClient = useQueryClient();
+  
   return useMutation({
     mutationFn: (data: UserRequest) => UserApi.create(data),
     onSuccess: () => {
@@ -43,9 +53,9 @@ export const useCreateUser = () => {
 
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
+  
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<UserRequest> }) =>
-      UserApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<UserRequest> }) => UserApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['users', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -55,6 +65,7 @@ export const useUpdateUser = () => {
 
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();
+  
   return useMutation({
     mutationFn: (id: string) => UserApi.delete(id),
     onSuccess: () => {

@@ -8,34 +8,41 @@ export const useFiles = (
     params: FindParams = {},
     options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['files', params],
-        queryFn: async () => {
-            const res = await FileApi.find(params);
-            return res;
-        },
+        queryFn: () => FileApi.find(params),
         enabled: true,
         refetchOnWindowFocus: false,
         staleTime: 5 * 60 * 1000,
-        select: (data) => ({
-            data: data.data,
-            pagination: data.pagination,
-        }),
         ...options,
     });
+
+    return {
+        ...query,
+        data: {
+            data: query.data?.data || [],
+            pagination: query.data?.pagination,
+        },
+    };
 };
 
 export const useFile = (id: string) => {
-    return useQuery({
+    const query = useQuery({
         queryKey: ['files', id],
         queryFn: () => FileApi.findById(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
     });
+
+    return {
+        ...query,
+        data: query.data || null,
+    };
 };
 
 export const useUploadPresignedFile = () => {
     const queryClient = useQueryClient();
+    
     return useMutation({
         mutationFn: async ({ file, folder }: { file: File; folder?: string }) => {
             const { url, objectname } = await FileApi.uploadPresigned(file.name, file.type, folder);
@@ -51,6 +58,7 @@ export const useUploadPresignedFile = () => {
 
 export const useCompletePresignUploadFile = () => {
     const queryClient = useQueryClient();
+    
     return useMutation({
         mutationFn: (objectname: string) => FileApi.completePresignedUpload(objectname),
         onSuccess: () => {
@@ -61,6 +69,7 @@ export const useCompletePresignUploadFile = () => {
 
 export const useDeleteFile = () => {
     const queryClient = useQueryClient();
+    
     return useMutation({
         mutationFn: (id: string) => FileApi.delete(id),
         onSuccess: () => {

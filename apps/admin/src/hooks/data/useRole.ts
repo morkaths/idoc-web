@@ -8,27 +8,36 @@ export const useRoles = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['roles', params],
-    queryFn: async () => await RoleApi.find(params),
+    queryFn: () => RoleApi.find(params),
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
     ...options,
   });
+
+  return {
+    ...query,
+    data: {
+      data: query.data?.data || [],
+      pagination: query.data?.pagination,
+    },
+  };
 };
 
 export const useRole = (id: string) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['roles', id],
     queryFn: () => RoleApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
   });
+
+  return {
+    ...query,
+    data: query.data || null,
+  };
 };
 
 export const useCreateRole = () => {
@@ -46,8 +55,7 @@ export const useUpdateRole = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<RoleRequest> }) =>
-      RoleApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<RoleRequest> }) => RoleApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['roles', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['roles'] });

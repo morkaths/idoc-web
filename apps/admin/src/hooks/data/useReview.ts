@@ -8,27 +8,36 @@ export const useReviews = (
     params: FindParams = {},
     options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['reviews', params],
-        queryFn: async () => await ReviewApi.find(params),
+        queryFn: () => ReviewApi.find(params),
         enabled: true,
         refetchOnWindowFocus: false,
         staleTime: 5 * 60 * 1000,
-        select: (data) => ({
-            data: data.data,
-            pagination: data.pagination,
-        }),
         ...options,
     });
+
+    return {
+        ...query,
+        data: {
+            data: query.data?.data || [],
+            pagination: query.data?.pagination,
+        },
+    };
 };
 
 export const useReview = (id: string) => {
-    return useQuery({
+    const query = useQuery({
         queryKey: ['reviews', id],
         queryFn: () => ReviewApi.findById(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
     });
+
+    return {
+        ...query,
+        data: query.data || null,
+    };
 };
 
 export const useCreateReview = () => {

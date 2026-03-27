@@ -8,27 +8,36 @@ export const useCollections = (
     params: FindParams = {},
     options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['collections', params],
-        queryFn: async () => await CollectionApi.find(params),
+        queryFn: () => CollectionApi.find(params),
         enabled: true,
         refetchOnWindowFocus: false,
         staleTime: 5 * 60 * 1000,
-        select: (data) => ({
-            data: data.data,
-            pagination: data.pagination,
-        }),
         ...options,
     });
+
+    return {
+        ...query,
+        data: {
+            data: query.data?.data || [],
+            pagination: query.data?.pagination,
+        },
+    };
 };
 
 export const useCollection = (id: string) => {
-    return useQuery({
+    const query = useQuery({
         queryKey: ['collections', id],
         queryFn: () => CollectionApi.findById(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
     });
+
+    return {
+        ...query,
+        data: query.data || null,
+    };
 };
 
 export const useCreateCollection = () => {

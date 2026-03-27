@@ -8,7 +8,7 @@ export const useBooks = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  const booksQuery = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['books', params],
     queryFn: () => BookApi.find(params),
     enabled: true,
@@ -18,16 +18,16 @@ export const useBooks = (
   });
 
   return {
-    ...booksQuery,
+    ...query,
     data: {
-      data: booksQuery.data?.data || [],
-      pagination: booksQuery.data?.pagination,
+      data: query.data?.data || [],
+      pagination: query.data?.pagination,
     }
   };
 };
 
 export const useBook = (id: string) => {
-  const bookQuery = useQuery({
+  const query = useQuery({
     queryKey: ['books', id],
     queryFn: () => BookApi.findById(id),
     enabled: !!id,
@@ -35,8 +35,8 @@ export const useBook = (id: string) => {
   });
 
   return {
-    ...bookQuery,
-    data: bookQuery.data || null,
+    ...query,
+    data: query.data || null,
   };
 };
 

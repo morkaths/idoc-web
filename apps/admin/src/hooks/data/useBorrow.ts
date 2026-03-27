@@ -8,51 +8,58 @@ export const useBorrows = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['borrows', params],
-    queryFn: async () => {
-      const res = await BorrowApi.find(params);
-      return res;
-    },
+    queryFn: () => BorrowApi.find(params),
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
     ...options,
   });
+
+  return {
+    ...query,
+    data: {
+      data: query.data?.data || [],
+      pagination: query.data?.pagination,
+    },
+  };
 };
 
 export const useBorrowHistory = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['borrows', 'history', params],
-    queryFn: async () => {
-      const res = await BorrowApi.history(params);
-      return res;
-    },
+    queryFn: () => BorrowApi.history(params),
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
     ...options,
   });
+
+  return {
+    ...query,
+    data: {
+      data: query.data?.data || [],
+      pagination: query.data?.pagination,
+    },
+  };
 };
 
 export const useBorrow = (id: string) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['borrows', id],
     queryFn: () => BorrowApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
   });
+
+  return {
+    ...query,
+    data: query.data || null,
+  };
 };
 
 export const useCreateBorrow = () => {

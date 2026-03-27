@@ -8,27 +8,36 @@ export const useBookmarks = (
     params: FindParams = {},
     options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['bookmarks', params],
-        queryFn: async () => await BookmarkApi.find(params),
+        queryFn: () => BookmarkApi.find(params),
         enabled: true,
         refetchOnWindowFocus: false,
         staleTime: 5 * 60 * 1000,
-        select: (data) => ({
-            data: data.data,
-            pagination: data.pagination,
-        }),
         ...options,
     });
+
+    return {
+        ...query,
+        data: {
+            data: query.data?.data || [],
+            pagination: query.data?.pagination,
+        },
+    };
 };
 
 export const useBookmark = (id: string) => {
-    return useQuery({
+    const query = useQuery({
         queryKey: ['bookmarks', id],
         queryFn: () => BookmarkApi.findById(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
     });
+
+    return {
+        ...query,
+        data: query.data || null,
+    };
 };
 
 export const useCreateBookmark = () => {
@@ -64,11 +73,17 @@ export const useDeleteBookmark = () => {
         },
     });
 };
+
 export const useBookmarkStatus = (itemIds: string[]) => {
-    return useQuery({
+    const query = useQuery({
         queryKey: ['bookmarks', 'status', itemIds],
         queryFn: () => BookmarkApi.status(itemIds),
         enabled: itemIds.length > 0,
         staleTime: 5 * 60 * 1000,
     });
+
+    return {
+        ...query,
+        data: query.data || [],
+    };
 };

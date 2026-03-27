@@ -8,27 +8,36 @@ export const usePermissions = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['permissions', params],
-    queryFn: async () => await PermissionApi.find(params),
+    queryFn: () => PermissionApi.find(params),
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
     ...options,
   });
+
+  return {
+    ...query,
+    data: {
+      data: query.data?.data || [],
+      pagination: query.data?.pagination,
+    },
+  };
 };
 
 export const usePermission = (id: string) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['permissions', id],
     queryFn: () => PermissionApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
   });
+
+  return {
+    ...query,
+    data: query.data || null,
+  };
 };
 
 export const useCreatePermission = () => {
@@ -46,8 +55,7 @@ export const useUpdatePermission = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<PermissionRequest> }) =>
-      PermissionApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<PermissionRequest> }) => PermissionApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['permissions', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['permissions'] });
