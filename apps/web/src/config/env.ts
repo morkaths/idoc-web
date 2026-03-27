@@ -61,9 +61,11 @@ export const env = {
   },
   auth: {
     secret: _env.AUTH_SECRET,
-    google: {
-      clientId: _env.GOOGLE_CLIENT_ID,
-      clientSecret: _env.GOOGLE_CLIENT_SECRET,
+    oauth: {
+      google: {
+        clientId: _env.GOOGLE_CLIENT_ID,
+        clientSecret: _env.GOOGLE_CLIENT_SECRET,
+      },
     },
   },
 };
