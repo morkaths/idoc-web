@@ -86,24 +86,24 @@ export interface Book {
   price?: number;
   stock?: number;
   coverUrl?: string;
-  fileKey?: string;
+  file?: string;
   tags?: string[];
-  bookmarkId?: string;
+  bookmark?: string;
   rating?: number;
   totalReviews?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
 
-export interface FileMeta {
+export interface File {
   id: string;
-  key: string;
-  filename: string;
-  mimeType: string;
-  type: string;
-  size: number;
+  originalname: string;
+  objectname: string;
   url: string;
+  size: number;
+  mimetype: string;
   provider: string;
+  status: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }

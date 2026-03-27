@@ -112,3 +112,15 @@ export const useReturnBorrow = () => {
     },
   });
 };
+
+export const useRead = (
+  borrowId: string,
+  options?: Omit<UseQueryOptions<string, Error, string, any[]>, 'queryKey' | 'queryFn'>
+) => {
+  return useQuery({
+    queryKey: ['borrows', 'read', borrowId],
+    queryFn: () => BorrowApi.read(borrowId),
+    enabled: !!borrowId,
+    ...options
+  });
+};

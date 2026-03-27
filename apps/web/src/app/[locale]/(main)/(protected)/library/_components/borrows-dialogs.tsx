@@ -125,7 +125,6 @@ export function BorrowsDialogs() {
                                     success: () => {
                                         setOpen(null);
                                         setTimeout(() => setCurrentRow(null), 500);
-                                        showSubmittedData(currentRow, t(keys.table.actions.return.confirm));
                                         return t(keys.table.actions.return.success);
                                     },
                                     error: (err) => err?.message || t(keys.table.actions.return.error),
@@ -134,7 +133,7 @@ export function BorrowsDialogs() {
                         }}
                         className='max-w-md'
                         title={t(keys.table.actions.return.title, { borrowId: currentRow.id })}
-                        desc={t.rich(keys.table.actions.return.confirmDesc, {
+                        desc={t.rich(keys.table.actions.return.desc, {
                             title: currentRow.item?.title || currentRow.id,
                             strong: (chunks) => <strong>{chunks}</strong>,
                             br: () => <br />

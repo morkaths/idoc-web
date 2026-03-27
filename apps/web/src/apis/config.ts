@@ -3,7 +3,6 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { API_CONFIG } from '@/config/api';
 import env from '@/config/env';
 import type { ApiResponse } from '@/types';
-import { toast } from 'sonner';
 import { getSession, signOut } from 'next-auth/react';
 
 export type ApiMode = 'public' | 'private';
@@ -20,6 +19,9 @@ export class ApiClient {
   private static instances: { public: AxiosInstance; private: AxiosInstance } | null = null;
   private static token: string | null = null;
   private static config: ApiConfig;
+
+  private static refreshPromise: Promise<string | null> | null = null;
+  private static isLoggingOut = false;
 
   static setToken(token: string | null) {
     ApiClient.token = token;
@@ -39,11 +41,27 @@ export class ApiClient {
     }
   }
 
+  private static async syncSession(): Promise<string | null> {
+    if (typeof window === 'undefined') return null;
+    
+    if (ApiClient.refreshPromise) return ApiClient.refreshPromise;
+
+    ApiClient.refreshPromise = (async () => {
+      try {
+        const session = await getSession();
+        const token = session?.accessToken || null;
+        ApiClient.setToken(token);
+        return token;
+      } finally {
+        ApiClient.refreshPromise = null;
+      }
+    })();
+
+    return ApiClient.refreshPromise;
+  }
+
   private static createInstance(withCredentials = false): AxiosInstance {
     if (!ApiClient.config) {
-      // Fallback or throw? Original didn't throw, but reference does.
-      // We will initialize lazily if needed, but for now lets assume init is called or we use default.
-      // Actually, let's use the imported API_CONFIG as default if not set.
       ApiClient.config = API_CONFIG;
     }
 
@@ -72,23 +90,17 @@ export class ApiClient {
         } catch (e) {}
       }
 
-
       if (ApiClient.config.key || env.api.key) {
         config.headers['x-api-key'] = ApiClient.config.key || env.api.key;
       }
 
-      if (typeof window !== 'undefined' && withCredentials) {
-        const session = await getSession();
-        if (session?.accessToken) {
-          ApiClient.setToken(session.accessToken);
-        }
+      // Chỉ sync session nếu là private request và chưa có token
+      if (typeof window !== 'undefined' && withCredentials && !ApiClient.token) {
+        await ApiClient.syncSession();
       }
 
       if (ApiClient.token) {
         config.headers['Authorization'] = `Bearer ${ApiClient.token}`;
-        console.log(`[ApiClient] Private Request to ${config.url} - Token:`, ApiClient.token.substring(0, 15) + '...');
-      } else if (withCredentials) {
-        console.warn(`[ApiClient] Private Request to ${config.url} with NO token!`);
       }
 
       return config;
@@ -100,40 +112,30 @@ export class ApiClient {
         const originalRequest = error.config;
         if (
           error?.response?.status === 401 &&
-          !originalRequest._retry
+          !originalRequest._retry &&
+          !ApiClient.isLoggingOut
         ) {
           if (typeof window !== 'undefined') {
-            console.log('[ApiClient] 401 detected. Attempting refresh...');
             originalRequest._retry = true;
-            // Try to get a fresh session from NextAuth
-            const session = await getSession();
-            console.log('[ApiClient] Session retrieved:', session);
-            const newToken = session?.accessToken;
+            const newToken = await ApiClient.syncSession();
 
             if (newToken && newToken !== ApiClient.token) {
-              console.log('[ApiClient] New token found. Retrying request...');
-              ApiClient.setToken(newToken);
               originalRequest.headers.Authorization = `Bearer ${newToken}`;
               return instance.request(originalRequest);
             } else {
-              console.warn('[ApiClient] No new token found or token unchanged. Forcing logout.');
-              // Token refresh failed or same invalid token
               ApiClient.setToken(null);
 
-              if (!withCredentials) {
-                // For public requests, just retry without token (guest mode)
-                delete originalRequest.headers.Authorization;
-                return instance.request(originalRequest);
-              } else {
-                // For private requests, force logout
+              if (withCredentials) {
+                ApiClient.isLoggingOut = true;
                 await signOut({ callbackUrl: '/sign-in' });
-                toast.error('Session expired. Please log in again.');
+              } else {
+                 delete originalRequest.headers.Authorization;
+                 return instance.request(originalRequest);
               }
             }
           }
         }
 
-        // Return standard error format
         return Promise.reject(ApiClient.handleError(error));
       }
     );

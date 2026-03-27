@@ -22,7 +22,7 @@ import { CategoriesCombobox } from "./categories-combobox";
 import { LanguageSelect } from "./language-select";
 import { ImageUpload } from '@/components/form/image-upload';
 import { FileUpload } from '@/components/form/file-upload';
-import { useUploadFile, useConfirmFile, useFile, useDeleteFile } from "@/hooks/data/useFile";
+import { useUploadPresignedFile, useCompletePresignUploadFile, useFile, useDeleteFile } from "@/hooks/data/useFile";
 import { toast } from 'sonner';
 import { DatePicker } from '@/components/form/date-picker';
 import { useUploadImage } from '@/hooks/data/useImage';
@@ -45,10 +45,10 @@ export function BooksMutateDialog({
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const [files, setFiles] = useState<File[]>([]);
     const uploadImage = useUploadImage();
-    const uploadFile = useUploadFile();
-    const confirmUpload = useConfirmFile();
+    const uploadFile = useUploadPresignedFile();
+    const confirmUpload = useCompletePresignUploadFile();
     const deleteFile = useDeleteFile();
-    const { data: fileMeta } = useFile(initialData?.fileKey || "");
+    const { data: file } = useFile(initialData?.file || "");
 
     const form = useForm<BookRequest>({
         resolver: zodResolver(BookRequestSchema),
@@ -65,7 +65,7 @@ export function BooksMutateDialog({
             price: initialData?.price ?? 0,
             stock: initialData?.stock ?? 0,
             coverUrl: initialData?.coverUrl ?? "",
-            fileKey: initialData?.fileKey ?? "",
+            file: initialData?.file ?? "",
             tags: initialData?.tags ?? [],
             authors: initialData?.authors?.map((a) => a.id) ?? [],
             categories: initialData?.categories?.map((c) => c.id) ?? [],
@@ -75,7 +75,7 @@ export function BooksMutateDialog({
     function handleFileUpload(files: File[]): void {
         setFiles(files);
         if (!files.length) {
-            form.setValue("fileKey", "");
+            form.setValue("file", "");
             setFiles([]);
         }
     }
@@ -95,7 +95,7 @@ export function BooksMutateDialog({
                     <form
                         onSubmit={form.handleSubmit(async (data) => {
                             let coverUrl = data.coverUrl;
-                            let fileKey = data.fileKey;
+                            let fileValue = data.file;
 
                             try {
                                 if (coverFile) {
@@ -105,25 +105,27 @@ export function BooksMutateDialog({
                                 }
                             } catch {
                                 toast.error("Upload cover image failed!", { id: "upload-cover" });
+                                return;
                             }
 
                             try {
                                 if (files.length > 0) {
                                     toast.loading("Uploading book file...", { id: "upload-file" });
                                     const key = await uploadFile.mutateAsync({ file: files[0], folder: "books" });
-                                    const fileMeta = await confirmUpload.mutateAsync(key);
-                                    fileKey = fileMeta.key;
+                                    const fileResult = await confirmUpload.mutateAsync(key);
+                                    fileValue = fileResult.id;
                                     toast.success("Book file uploaded!", { id: "upload-file" });
                                 }
                             } catch {
                                 toast.error("Upload book file failed!", { id: "upload-file" });
+                                return;
                             }
 
                             onSubmit({
                                 ...data,
                                 id: initialData?.id,
                                 coverUrl,
-                                fileKey,
+                                file: fileValue,
                             });
                             onOpenChange(false);
                             form.reset();
@@ -369,15 +371,15 @@ export function BooksMutateDialog({
                                 accept=".pdf,.doc,.docx,.zip"
                                 maxSizeMB={100}
                             />
-                            {fileMeta && (
+                            {file && (
                                 <div className="space-y-3 mt-4 px-4">
                                     <FileItem
-                                        key={fileMeta.filename}
-                                        file={fileMeta}
+                                        key={file.originalname}
+                                        file={file}
                                         progress={100}
                                         onDelete={async () => {
-                                            await deleteFile.mutateAsync(fileMeta.key);
-                                            form.setValue("fileKey", "");
+                                            if (file) await deleteFile.mutateAsync(file.id);
+                                            form.setValue("file", "");
                                         }}
                                     />
                                 </div>

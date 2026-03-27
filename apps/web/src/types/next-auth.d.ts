@@ -1,5 +1,4 @@
-import { User } from './schema';
-import { AuthToken } from './api';
+import { User, AuthToken } from './response';
 import 'next-auth';
 import 'next-auth/jwt';
 

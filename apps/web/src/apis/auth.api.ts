@@ -12,10 +12,10 @@ export const AuthApi = {
     throw new Error(response.message || 'Login failed');
   },
 
-  loginGoogle: async (idToken: string): Promise<AuthenticationResponse> => {
+  loginGoogle: async (credentials: string): Promise<AuthenticationResponse> => {
     const response = await ApiClient.post<AuthenticationResponse>(
       API_CONFIG.endpoints.auth.loginGoogle,
-      { mode: "public", data: { idToken } }
+      { mode: "public", data: { credentials } }
     );
     if (response.success && response.data) return response.data;
     throw new Error(response.message || 'Login with Google failed');
