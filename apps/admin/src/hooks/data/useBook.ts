@@ -1,14 +1,14 @@
-import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
 import type { Book, BookRequest, FindParams, Pagination } from '@/types';
 
-type BookResponse = { data: Book[]; pagination?: Pagination };
+type PaginationResponse = { data: Book[]; pagination?: Pagination };
 
 export const useBooks = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<BookResponse, Error, BookResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  const booksQuery = useQuery<BookResponse, Error, BookResponse, any[]>({
+  const booksQuery = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['books', params],
     queryFn: () => BookApi.find(params),
     enabled: true,
@@ -27,7 +27,6 @@ export const useBooks = (
 };
 
 export const useBook = (id: string) => {
-  // 1. Fetch book details
   const bookQuery = useQuery({
     queryKey: ['books', id],
     queryFn: () => BookApi.findById(id),

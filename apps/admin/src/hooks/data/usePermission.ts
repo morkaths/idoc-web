@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { PermissionApi } from '@/apis/permission.api';
 import type { PermissionResponse, PermissionRequest, FindParams, Pagination, } from '@/types';
 
@@ -6,9 +6,9 @@ type PaginationResponse = { data: PermissionResponse[]; pagination?: Pagination 
 
 export const usePermissions = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<PaginationResponse, Error, PaginationResponse, any[]>({
+  return useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['permissions', params],
     queryFn: async () => await PermissionApi.find(params),
     enabled: true,

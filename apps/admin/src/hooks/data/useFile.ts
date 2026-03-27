@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { FileApi } from '@/apis/file.api';
 import type { File as IFile, FindParams, Pagination } from '@/types';
 
@@ -6,9 +6,9 @@ type FileResponse = { data: IFile[]; pagination?: Pagination };
 
 export const useFiles = (
     params: FindParams = {},
-    options?: Omit<UseQueryOptions<FileResponse, Error, FileResponse, any[]>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<FileResponse, Error, FileResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<FileResponse, Error, FileResponse, any[]>({
+    return useQuery<FileResponse, Error, FileResponse, QueryKey>({
         queryKey: ['files', params],
         queryFn: async () => {
             const res = await FileApi.find(params);

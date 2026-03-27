@@ -1,14 +1,14 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { CollectionApi } from '@/apis/collection.api';
 import type { Collection, CollectionRequest, FindParams, Pagination } from '@/types';
 
-type CollectionResponse = { data: Collection[]; pagination?: Pagination };
+type PaginationResponse = { data: Collection[]; pagination?: Pagination };
 
 export const useCollections = (
     params: FindParams = {},
-    options?: Omit<UseQueryOptions<CollectionResponse, Error, CollectionResponse, any[]>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<CollectionResponse, Error, CollectionResponse, any[]>({
+    return useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['collections', params],
         queryFn: async () => await CollectionApi.find(params),
         enabled: true,
