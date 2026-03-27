@@ -11,10 +11,10 @@ import {
     CommandList,
 } from "@repo/ui/components/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/popover";
-import { Permission } from "@/types";
+import { PermissionResponse } from "@/types";
 
 type PermissionsComboboxProps = {
-    permissions: Permission[];
+    permissions: PermissionResponse[];
     value: string[];
     onChange: (permissions: string[]) => void;
 };
@@ -27,7 +27,7 @@ export function PermissionsCombobox({
     const id = useId();
     const [open, setOpen] = useState(false);
 
-    const toggleSelection = (permission: Permission) => {
+    const toggleSelection = (permission: PermissionResponse) => {
         if (value.includes(permission.id)) {
             onChange(value.filter((id) => id !== permission.id));
         } else {
@@ -35,7 +35,7 @@ export function PermissionsCombobox({
         }
     };
 
-    const removeSelection = (permission: Permission) => {
+    const removeSelection = (permission: PermissionResponse) => {
         onChange(value.filter((id) => id !== permission.id));
     };
 
