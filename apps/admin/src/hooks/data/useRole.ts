@@ -10,10 +10,7 @@ export const useRoles = (
 ) => {
   return useQuery<PaginationResponse, Error, PaginationResponse, any[]>({
     queryKey: ['roles', params],
-    queryFn: async () => {
-      const res = await RoleApi.find(params);
-      return res;
-    },
+    queryFn: async () => await RoleApi.find(params),
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
