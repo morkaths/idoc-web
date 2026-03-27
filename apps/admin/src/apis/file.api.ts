@@ -4,16 +4,14 @@ import { ApiClient } from './config';
 import type { File as FileResponse, FileRequest, FindParams, Pagination } from '@/types';
 import { apiFactory } from './factory';
 
+const factory = apiFactory<FileResponse, FileRequest>(
+  ApiEndpoint.endpoints.files,
+  'File',
+  { find: 'private', findById: 'private', delete: 'private' }
+);
+
 export const FileApi = {
-  ...apiFactory<FileResponse, FileRequest>(
-    ApiEndpoint.endpoints.files,
-    'File',
-    { 
-      find: 'private', 
-      findById: 'private',
-      delete: 'private'
-    }
-  ),
+  ...factory,
 
   findByUser: async (params?: FindParams): Promise<{ data: FileResponse[]; pagination?: Pagination }> => {
     const response = await ApiClient.get<FileResponse[]>(

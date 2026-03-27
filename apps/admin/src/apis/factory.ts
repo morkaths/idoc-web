@@ -40,12 +40,15 @@ const defaultConfig: SecurityConfig = {
 
 /**
  * Generic API factory for CRUD operations
- * @param endpoints - Object containing API endpoints
- * @param resourceName - Name of the resource (e.g., 'Author', 'Book') used for error messages
- * @param customConfig - Configuration for API access modes (defaulting write operations to 'private')
- * @returns An object with CRUD methods
+ * @template TResponse The type of the resource response
+ * @template TRequest The type of the resource request data
+ * @template TParams The type of additional query parameters (defaults to Record<string, unknown>)
  */
-export const apiFactory = <Response, Request>(
+export const apiFactory = <
+  TResponse,
+  TRequest,
+  TParams = Record<string, unknown>
+>(
   endpoints: CrudEndpoints,
   resourceName: string,
   customConfig?: Partial<SecurityConfig>
@@ -53,73 +56,81 @@ export const apiFactory = <Response, Request>(
   const config: SecurityConfig = { ...defaultConfig, ...customConfig };
 
   return {
-    find: async (params?: FindParams): Promise<{ data: Response[]; pagination?: Pagination }> => {
-      const response = await ApiClient.get<Response[]>(endpoints.find, {
+    find: async (params?: FindParams & TParams): Promise<{ data: TResponse[]; pagination?: Pagination }> => {
+      const response = await ApiClient.get<TResponse[]>(endpoints.find, {
         security: config.find,
         params,
       });
       return { data: response.data ?? [], pagination: response.pagination };
     },
 
-    findById: async (id: string): Promise<Response> => {
-      const response = await ApiClient.get<Response>(endpoints.findById(id), {
+    findById: async <P = TParams>(id: string, params?: P): Promise<TResponse> => {
+      const response = await ApiClient.get<TResponse>(endpoints.findById(id), {
         security: config.findById,
+        params,
       });
       if (response.success && response.data) return response.data;
       throw new Error(response.message || `${resourceName} not found`);
     },
 
-    findByIds: async (ids: string[]): Promise<Response[]> => {
-      const response = await ApiClient.get<Response[]>(endpoints.findByIds(ids), {
+    findByIds: async <P = TParams>(ids: string[], params?: P): Promise<TResponse[]> => {
+      const response = await ApiClient.get<TResponse[]>(endpoints.findByIds(ids), {
         security: config.findByIds,
+        params,
       });
       return response.data ?? [];
     },
 
-    create: async (data: Request): Promise<Response> => {
-      const response = await ApiClient.post<Response>(endpoints.create, {
+    create: async <P = TParams>(data: TRequest, params?: P): Promise<TResponse> => {
+      const response = await ApiClient.post<TResponse>(endpoints.create, {
         security: config.create,
         data,
+        params,
       });
       if (response.success && response.data) return response.data;
       throw new Error(response.message || `Failed to create ${resourceName.toLowerCase()}`);
     },
 
-    createMany: async (data: Request[]): Promise<Response[]> => {
-      const response = await ApiClient.post<Response[]>(endpoints.createMany, { 
+    createMany: async <P = TParams>(data: TRequest[], params?: P): Promise<TResponse[]> => {
+      const response = await ApiClient.post<TResponse[]>(endpoints.createMany, { 
         security: config.createMany, 
-        data 
+        data,
+        params
       });
       return response.data ?? [];
     },
 
-    update: async (id: string, data: Partial<Request>): Promise<Response> => {
-      const response = await ApiClient.patch<Response>(endpoints.update(id), {
+    update: async <P = TParams>(id: string, data: Partial<TRequest>, params?: P): Promise<TResponse> => {
+      const response = await ApiClient.patch<TResponse>(endpoints.update(id), {
         security: config.update,
         data,
+        params,
       });
       if (response.success && response.data) return response.data;
       throw new Error(response.message || `Failed to update ${resourceName.toLowerCase()}`);
     },
 
-    updateMany: async (ids: string[], data: Partial<Request>[]): Promise<Response[]> => {
-      const response = await ApiClient.patch<Response[]>(endpoints.updateMany(ids), { 
+    updateMany: async <P = TParams>(ids: string[], data: Partial<TRequest>[], params?: P): Promise<TResponse[]> => {
+      const response = await ApiClient.patch<TResponse[]>(endpoints.updateMany(ids), { 
         security: config.updateMany, 
-        data 
+        data,
+        params
       });
       return response.data ?? [];
     },
 
-    delete: async (id: string): Promise<boolean> => {
+    delete: async <P = TParams>(id: string, params?: P): Promise<boolean> => {
       const response = await ApiClient.delete<null>(endpoints.delete(id), {
         security: config.delete,
+        params,
       });
       return response.success;
     },
 
-    deleteMany: async (ids: string[]): Promise<boolean> => {
+    deleteMany: async <P = TParams>(ids: string[], params?: P): Promise<boolean> => {
       const response = await ApiClient.delete<null>(endpoints.deleteMany(ids), { 
-        security: config.deleteMany 
+        security: config.deleteMany,
+        params
       });
       return response.success;
     },

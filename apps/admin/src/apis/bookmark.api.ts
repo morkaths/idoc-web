@@ -4,12 +4,14 @@ import type { Bookmark, BookmarkRequest } from '../types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
+const factory = apiFactory<Bookmark, BookmarkRequest>(
+  ApiEndpoint.endpoints.bookmarks,
+  'Bookmark',
+  { find: 'public', findById: 'public', findByIds: 'public' }
+);
+
 export const BookmarkApi = {
-  ...apiFactory<Bookmark, BookmarkRequest>(
-    ApiEndpoint.endpoints.bookmarks,
-    'Bookmark',
-    { find: 'public', findById: 'public', findByIds: 'public' }
-  ),
+  ...factory,
 
   status: async (ids: string[]): Promise<Record<string, string | null>> => {
     const { auth } = useAuthStore.getState();
