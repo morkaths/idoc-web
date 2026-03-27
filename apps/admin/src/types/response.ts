@@ -93,7 +93,7 @@ export interface BookResponse {
   updatedAt?: Date | string;
 }
 
-export interface File {
+export interface FileResponse {
   id: string;
   originalname: string;
   objectname: string;

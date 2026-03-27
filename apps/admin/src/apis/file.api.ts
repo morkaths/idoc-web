@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ApiEndpoint } from '@/config/api';
 import { ApiClient } from './config';
-import type { File as FileResponse, FileRequest, FindParams, Pagination } from '@/types';
+import type { FileResponse, FileRequest, FindParams, Pagination } from '@/types';
 import { apiFactory } from './factory';
 
 const factory = apiFactory<FileResponse, FileRequest>(

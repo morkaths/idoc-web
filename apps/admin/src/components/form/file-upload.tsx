@@ -1,11 +1,11 @@
 import { Upload } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { FileItem } from "./file-item";
-import { File as IFile } from "@/types";
+import { FileResponse } from "@/types";
 
 interface FileUploadProps {
     value?: File[];
-    fileMeta?: IFile[];
+    metadata?: FileResponse[];
     onChange: (files: File[]) => void;
     label?: string;
     maxSizeMB?: number;
