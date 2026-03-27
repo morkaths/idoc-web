@@ -106,7 +106,7 @@ export interface FileResponse {
   updatedAt?: Date | string;
 }
 
-export interface Borrow {
+export interface BorrowResponse {
   id: string;
   borrower: UserResponse;
   item: BookResponse;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Borrow } from '@/types';
+import type { BorrowResponse } from '@/types';
 import useDialogState from '@/hooks/ui/useDialogState';
 
 type DialogType = 'create' | 'update' | 'delete' | 'extend';
@@ -7,15 +7,15 @@ type DialogType = 'create' | 'update' | 'delete' | 'extend';
 type BorrowsContextType = {
   open: DialogType | null;
   setOpen: (str: DialogType | null) => void;
-  currentRow: Borrow | null;
-  setCurrentRow: React.Dispatch<React.SetStateAction<Borrow | null>>;
+  currentRow: BorrowResponse | null;
+  setCurrentRow: React.Dispatch<React.SetStateAction<BorrowResponse | null>>;
 };
 
 const BorrowsContext = React.createContext<BorrowsContextType | null>(null);
 
 export function BorrowsProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useDialogState<DialogType>(null);
-  const [currentRow, setCurrentRow] = useState<Borrow | null>(null);
+  const [currentRow, setCurrentRow] = useState<BorrowResponse | null>(null);
 
   return (
     <BorrowsContext.Provider value={{ open, setOpen, currentRow, setCurrentRow }}>

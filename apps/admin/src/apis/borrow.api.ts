@@ -1,17 +1,17 @@
 import { ApiEndpoint } from '@/config/api';
-import type { Borrow, BorrowRequest, FindParams, Pagination } from '../types';
+import type { BorrowResponse, BorrowRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
 export const BorrowApi = {
-  ...apiFactory<Borrow, BorrowRequest>(
+  ...apiFactory<BorrowResponse, BorrowRequest>(
     ApiEndpoint.endpoints.borrows,
     'Borrow',
     { find: 'public', findById: 'public' }
   ),
 
-  history: async (params?: FindParams): Promise<{ data: Borrow[]; pagination?: Pagination }> => {
-    const response = await ApiClient.get<Borrow[]>(
+  history: async (params?: FindParams): Promise<{ data: BorrowResponse[]; pagination?: Pagination }> => {
+    const response = await ApiClient.get<BorrowResponse[]>(
       ApiEndpoint.endpoints.borrows.history,
       { security: 'private', params }
     );
@@ -21,8 +21,8 @@ export const BorrowApi = {
     };
   },
 
-  extend: async (id: string, extraDays: number, note?: string): Promise<Borrow> => {
-    const response = await ApiClient.put<Borrow>(
+  extend: async (id: string, extraDays: number, note?: string): Promise<BorrowResponse> => {
+    const response = await ApiClient.put<BorrowResponse>(
       ApiEndpoint.endpoints.borrows.extend(id),
       { security: 'private', data: { extraDays, note } }
     );
@@ -30,8 +30,8 @@ export const BorrowApi = {
     throw new Error(response.message || 'Failed to extend borrow time');
   },
 
-  return: async (id: string): Promise<Borrow> => {
-    const response = await ApiClient.put<Borrow>(
+  return: async (id: string): Promise<BorrowResponse> => {
+    const response = await ApiClient.put<BorrowResponse>(
       ApiEndpoint.endpoints.borrows.return(id),
       { security: 'private' }
     );

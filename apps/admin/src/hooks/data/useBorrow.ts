@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BorrowApi } from '@/apis/borrow.api';
-import type { Borrow, BorrowRequest, FindParams, Pagination } from '@/types';
+import type { BorrowResponse, BorrowRequest, FindParams, Pagination } from '@/types';
 
-type PaginationResponse = { data: Borrow[]; pagination?: Pagination };
+type PaginationResponse = { data: BorrowResponse[]; pagination?: Pagination };
 
 export const useBorrows = (
   params: FindParams = {},
