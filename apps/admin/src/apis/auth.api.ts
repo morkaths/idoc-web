@@ -1,5 +1,5 @@
 import { ApiEndpoint } from '@/config/api';
-import type { AuthenticationResponse, User, UserRequest } from '../types';
+import type { AuthenticationResponse, UserResponse, UserRequest } from '../types';
 import { ApiClient } from './config';
 
 export const AuthApi = {
@@ -38,8 +38,8 @@ export const AuthApi = {
     return response.success;
   },
 
-  verify: async (data: { token: string }): Promise<User> => {
-    const response = await ApiClient.post<User>(
+  verify: async (data: { token: string }): Promise<UserResponse> => {
+    const response = await ApiClient.post<UserResponse>(
       ApiEndpoint.endpoints.auth.verify,
       { security: 'public', data }
     );

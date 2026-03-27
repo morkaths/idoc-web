@@ -1,11 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import type { Table } from '@tanstack/react-table';
-import type { User } from '@/types';
+import type { UserResponse } from '@/types';
 import { useDeleteUser } from '@/hooks/data/useUser';
 import DataTableBulkActions from '@/components/data-table/data-table-bulk-actions';
 
 type Props = {
-  table: Table<User>;
+  table: Table<UserResponse>;
 };
 
 export function UsersTableBulkActions({ table }: Props) {

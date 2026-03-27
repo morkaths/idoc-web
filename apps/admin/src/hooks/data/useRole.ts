@@ -2,13 +2,13 @@ import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@ta
 import { RoleApi } from '@/apis/role.api';
 import type { RoleResponse, RoleRequest, FindParams, Pagination } from '@/types';
 
-type RoleResponse = { data: RoleResponse[]; pagination?: Pagination };
+type PaginationResponse = { data: RoleResponse[]; pagination?: Pagination };
 
 export const useRoles = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<RoleResponse, Error, RoleResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, any[]>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<RoleResponse, Error, RoleResponse, any[]>({
+  return useQuery<PaginationResponse, Error, PaginationResponse, any[]>({
     queryKey: ['roles', params],
     queryFn: async () => {
       const res = await RoleApi.find(params);

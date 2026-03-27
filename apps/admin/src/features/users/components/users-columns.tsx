@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table';
-import { RoleCode, UserStatus, type User } from '@/types';
+import { RoleCode, UserStatus, type UserResponse } from '@/types';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
@@ -7,7 +7,7 @@ import { UsersTableRowActions } from './users-table-row-actions';
 import { BriefcaseBusiness, ShieldCheck, User2, UserCog } from 'lucide-react';
 import { Badge } from '@repo/ui/components/badge';
 
-export const usersColumns: ColumnDef<User>[] = [
+export const usersColumns: ColumnDef<UserResponse>[] = [
   {
     id: 'select',
     enableSorting: false,

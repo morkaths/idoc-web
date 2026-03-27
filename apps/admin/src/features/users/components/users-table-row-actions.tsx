@@ -10,14 +10,14 @@ import {
     DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { useUsersContext } from './users-provider';
-import { type User } from '@/types';
+import { type UserResponse } from '@/types';
 
 type UsersTableRowActionsProps<TData> = {
     row: Row<TData>;
 };
 
 export function UsersTableRowActions<TData>({ row }: UsersTableRowActionsProps<TData>) {
-    const user = row.original as User;
+    const user = row.original as UserResponse;
     const ctx = useUsersContext();
     if (!ctx) throw new Error('UsersTableRowActions must be used inside UsersProvider');
     const { setOpen, setCurrentRow } = ctx;

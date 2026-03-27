@@ -1,8 +1,8 @@
 import { ApiEndpoint } from '@/config/api';
-import type { User, UserRequest } from '../types';
+import type { UserResponse, UserRequest } from '../types';
 import { apiFactory } from './factory';
 
-export const UserApi = apiFactory<User, UserRequest>(
+export const UserApi = apiFactory<UserResponse, UserRequest>(
   ApiEndpoint.endpoints.users,
   'User'
 );

@@ -1,14 +1,14 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { UserApi } from '@/apis';
-import type { FindParams, User, UserRequest, Pagination } from '@/types';
+import type { FindParams, UserResponse, UserRequest, Pagination } from '@/types';
 
-type UserResponse = { data: User[]; pagination?: Pagination };
+type PaginationResponse = { data: UserResponse[]; pagination?: Pagination };
 
 export const useUsers = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<UserResponse, Error, UserResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, any[]>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<UserResponse, Error, UserResponse, any[]>({
+  return useQuery<PaginationResponse, Error, PaginationResponse, any[]>({
     queryKey: ['users', params],
     queryFn: async () => await UserApi.find(params),
     enabled: true,

@@ -1,15 +1,15 @@
 import { create } from 'zustand';
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies';
 import { AuthApi } from '@/apis/auth.api';
-import type { User, UserRequest } from '@/types';
+import type { UserResponse, UserRequest } from '@/types';
 import type { AuthToken } from '@/types';
 import env from '@/config/env';
 
 interface AuthState {
   auth: {
-    user: User | null;
+    user: UserResponse | null;
     token: AuthToken | null;
-    setUser: (user: User | null) => void;
+    setUser: (user: UserResponse | null) => void;
     setToken: (token: AuthToken | null) => void;
     refresh: () => Promise<boolean>;
     logout: () => Promise<boolean>;
@@ -21,10 +21,10 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()((set) => {
   const tokenCookie = getCookie(env.cookie.token);
   const userCookie = getCookie(env.cookie.user);
-  
+
   let initToken = null;
   let initUser = null;
-  
+
   try {
     if (tokenCookie && tokenCookie !== 'undefined') {
       initToken = JSON.parse(tokenCookie) as AuthToken;
@@ -32,20 +32,20 @@ export const useAuthStore = create<AuthState>()((set) => {
   } catch (e) {
     console.error('[AuthStore] Failed to parse token cookie:', e);
   }
-  
+
   try {
     if (userCookie && userCookie !== 'undefined') {
-      initUser = JSON.parse(userCookie) as User;
+      initUser = JSON.parse(userCookie) as UserResponse;
     }
   } catch (e) {
     console.error('[AuthStore] Failed to parse user cookie:', e);
   }
 
-  console.log('[AuthStore] Initializing store:', { 
-    hasTokenCookie: !!tokenCookie, 
+  console.log('[AuthStore] Initializing store:', {
+    hasTokenCookie: !!tokenCookie,
     tokenContent: tokenCookie,
     hasUserCookie: !!userCookie,
-    initToken 
+    initToken
   });
 
   return {
@@ -65,7 +65,7 @@ export const useAuthStore = create<AuthState>()((set) => {
       refresh: async () => {
         const { token: currentToken } = useAuthStore.getState().auth;
         const response: any = await AuthApi.refresh(currentToken?.refreshToken ?? '');
-        
+
         const token = response?.token || (response?.accessToken ? {
           accessToken: response.accessToken,
           refreshToken: response.refreshToken,
@@ -102,7 +102,7 @@ export const useAuthStore = create<AuthState>()((set) => {
       login: async (identifier, password) => {
         const response: any = await AuthApi.login({ identifier, password });
         console.log('[AuthStore] Login response:', response);
-        
+
         // Map top-level tokens to token object if missing
         const token = response?.token || (response?.accessToken ? {
           accessToken: response.accessToken,
@@ -114,7 +114,7 @@ export const useAuthStore = create<AuthState>()((set) => {
             user: response.user,
             token: token,
           };
-          
+
           set((state) => ({
             ...state,
             auth: {
@@ -122,16 +122,16 @@ export const useAuthStore = create<AuthState>()((set) => {
               ...authData,
             },
           }));
-          
+
           setCookie(env.cookie.token, JSON.stringify(token));
           setCookie(env.cookie.user, JSON.stringify(response.user));
           return true;
         }
-        
+
         if (response && !token) {
           console.error('[AuthStore] Login response missing token structure!', response);
         }
-        
+
         return false;
       },
       register: async (data) => {
