@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { AuthorApi } from '@/apis/author.api';
-import type { Author, AuthorRequest, FindParams, Pagination } from '@/types';
+import type { AuthorResponse, AuthorRequest, FindParams, Pagination } from '@/types';
 
-type PaginationResponse = { data: Author[]; pagination?: Pagination };
+type PaginationResponse = { data: AuthorResponse[]; pagination?: Pagination };
 
 export const useAuthors = (
   params: FindParams = {},

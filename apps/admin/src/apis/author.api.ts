@@ -1,8 +1,8 @@
 import { ApiEndpoint } from '@/config/api';
-import type { Author, AuthorRequest } from '../types';
+import type { AuthorResponse, AuthorRequest } from '../types';
 import { apiFactory } from './factory';
 
-export const AuthorApi = apiFactory<Author, AuthorRequest>(
+export const AuthorApi = apiFactory<AuthorResponse, AuthorRequest>(
   ApiEndpoint.endpoints.authors,
   'Author',
   {

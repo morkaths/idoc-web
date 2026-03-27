@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthorRequestSchema, type Author, type AuthorRequest } from "@/types";
+import { AuthorRequestSchema, type AuthorResponse, type AuthorRequest } from "@/types";
 import { Button } from "@repo/ui/components/button";
 import {
     Dialog,
@@ -23,7 +23,7 @@ import { Form, FormControl, FormField, FormLabel, FormMessage } from "@repo/ui/c
 type AuthorsMutateDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    initialData?: Partial<Author>;
+    initialData?: Partial<AuthorResponse>;
     onSubmit: (data: AuthorRequest) => void;
 };
 

@@ -1,12 +1,12 @@
 import { type ColumnDef } from '@tanstack/react-table';
-import type { Author } from '@/types';
+import type { AuthorResponse } from '@/types';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
 import { AuthorsTableRowActions } from './authors-table-row-actions';
 import { AuthorAvatar } from './author-avatar';
 
-export const authorsColumns: ColumnDef<Author>[] = [
+export const authorsColumns: ColumnDef<AuthorResponse>[] = [
     {
         id: 'select',
         enableSorting: false,
