@@ -2,18 +2,15 @@ import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@ta
 import { PermissionApi } from '@/apis/permission.api';
 import type { PermissionResponse, PermissionRequest, FindParams, Pagination, } from '@/types';
 
-type PermissionResponse = { data: PermissionResponse[]; pagination?: Pagination };
+type PaginationResponse = { data: PermissionResponse[]; pagination?: Pagination };
 
 export const usePermissions = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<PermissionResponse, Error, PermissionResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, any[]>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<PermissionResponse, Error, PermissionResponse, any[]>({
+  return useQuery<PaginationResponse, Error, PaginationResponse, any[]>({
     queryKey: ['permissions', params],
-    queryFn: async () => {
-      const res = await PermissionApi.find(params);
-      return res;
-    },
+    queryFn: async () => await PermissionApi.find(params),
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
