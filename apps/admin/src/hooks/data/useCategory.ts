@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { CategoryApi } from '@/apis';
-import type { FindParams, Category, Pagination, CategoryRequest } from '@/types';
+import type { FindParams, CategoryResponse, Pagination, CategoryRequest } from '@/types';
 
-type PaginationResponse = { data: Category[]; pagination?: Pagination };
+type PaginationResponse = { data: CategoryResponse[]; pagination?: Pagination };
 
 export const useCategories = (
   params: FindParams = {},

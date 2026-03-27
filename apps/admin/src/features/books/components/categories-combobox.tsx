@@ -11,14 +11,14 @@ import {
     CommandList,
 } from "@repo/ui/components/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/popover";
-import type { Category } from "@/types";
+import type { CategoryResponse } from "@/types";
 import { useDebounce } from "@/hooks/ui/useDebounce";
 import { useCategories } from "@/hooks/data/useCategory";
 
 type CategoriesComboboxProps = {
     value: string[];
     onChange: (categories: string[]) => void;
-    initialCategories?: Category[];
+    initialCategories?: CategoryResponse[];
 };
 
 export function CategoriesCombobox({
@@ -38,9 +38,9 @@ export function CategoriesCombobox({
 
     const shouldFetch = open || value.length > 0;
     const { data, isLoading } = useCategories(categoryParams, { enabled: shouldFetch });
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [categoryMap, setCategoryMap] = useState<Map<string, Category>>(() => {
-        const map = new Map<string, Category>();
+    const [categories, setCategories] = useState<CategoryResponse[]>([]);
+    const [categoryMap, setCategoryMap] = useState<Map<string, CategoryResponse>>(() => {
+        const map = new Map<string, CategoryResponse>();
         initialCategories.forEach(c => map.set(c.id, c));
         return map;
     });
@@ -83,7 +83,7 @@ export function CategoriesCombobox({
         }
     };
 
-    const toggleSelection = (category: Category) => {
+    const toggleSelection = (category: CategoryResponse) => {
         if (value.includes(category.id)) {
             onChange(value.filter((id) => id !== category.id));
         } else {
@@ -91,7 +91,7 @@ export function CategoriesCombobox({
         }
     };
 
-    const removeSelection = (category: Category) => {
+    const removeSelection = (category: CategoryResponse) => {
         onChange(value.filter((id) => id !== category.id));
     };
 

@@ -55,17 +55,15 @@ export interface AuthorResponse {
   updatedAt?: Date | string;
 }
 
-export interface CategoryTranslation {
-  lang: string;
-  name: string;
-  description?: string;
-}
-
-export interface Category {
+export interface CategoryResponse {
   id: string;
   slug?: string;
-  parent?: Category;
-  translations?: CategoryTranslation[];
+  parent?: CategoryResponse;
+  translations?: {
+    lang: string;
+    name: string;
+    description?: string;
+  }[];
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
@@ -75,7 +73,7 @@ export interface Book {
   title: string;
   slug?: string;
   description?: string;
-  categories?: Category[];
+  categories?: CategoryResponse[];
   authors?: AuthorResponse[];
   publisher?: string;
   publishedDate?: Date | string;

@@ -1,8 +1,8 @@
 import { ApiEndpoint } from '@/config/api';
-import type { Category, CategoryRequest, FindParams } from '../types';
+import type { CategoryResponse, CategoryRequest, FindParams } from '../types';
 import { apiFactory } from './factory';
 
-const factory = apiFactory<Category, CategoryRequest>(
+const factory = apiFactory<CategoryResponse, CategoryRequest>(
   ApiEndpoint.endpoints.categories,
   'Category',
   { find: 'public', findById: 'public' }

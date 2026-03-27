@@ -1,6 +1,6 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CategoryRequestSchema, type Category, type CategoryRequest } from "@/types";
+import { CategoryRequestSchema, type CategoryResponse, type CategoryRequest } from "@/types";
 import { Button } from "@repo/ui/components/button";
 import {
     Dialog,
@@ -19,7 +19,7 @@ import { Form, FormControl, FormField, FormLabel, FormMessage } from "@repo/ui/c
 type CategoriesMutateDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    initialData?: Partial<Category>;
+    initialData?: Partial<CategoryResponse>;
     onSubmit: (data: CategoryRequest) => void;
 };
 
@@ -38,8 +38,8 @@ export function CategoriesMutateDialog({
                 name: t.name,
                 description: t.description ?? ""
             })) ?? [
-                { lang: "vn", name: "", description: "" }
-            ],
+                    { lang: "vn", name: "", description: "" }
+                ],
         },
     });
 

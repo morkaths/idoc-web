@@ -1,11 +1,11 @@
 import { type ColumnDef } from '@tanstack/react-table';
-import type { Category } from '@/types';
+import type { CategoryResponse } from '@/types';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
 import { CategoriesTableRowActions } from './categories-table-row-actions';
 
-export const categoriesColumns: ColumnDef<Category>[] = [
+export const categoriesColumns: ColumnDef<CategoryResponse>[] = [
     {
         id: 'select',
         enableSorting: false,
