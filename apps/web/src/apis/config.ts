@@ -117,16 +117,12 @@ export class ApiClient {
         ) {
           if (typeof window !== 'undefined') {
             originalRequest._retry = true;
-            
-            console.log('[ApiClient] 401 detected. Attempting sync session...');
             const newToken = await ApiClient.syncSession();
 
             if (newToken && newToken !== ApiClient.token) {
-              console.log('[ApiClient] New token found. Retrying request...');
               originalRequest.headers.Authorization = `Bearer ${newToken}`;
               return instance.request(originalRequest);
             } else {
-              console.warn('[ApiClient] Session expired or invalid. Forcing logout.');
               ApiClient.setToken(null);
 
               if (withCredentials) {
