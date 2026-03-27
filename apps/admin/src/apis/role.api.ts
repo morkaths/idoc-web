@@ -1,8 +1,8 @@
 import { ApiEndpoint } from '@/config/api';
-import type { Role, RoleRequest } from '../types';
+import type { RoleResponse, RoleRequest } from '../types';
 import { apiFactory } from './factory';
 
-export const RoleApi = apiFactory<Role, RoleRequest>(
+export const RoleApi = apiFactory<RoleResponse, RoleRequest>(
   ApiEndpoint.endpoints.roles,
   'Role'
 );

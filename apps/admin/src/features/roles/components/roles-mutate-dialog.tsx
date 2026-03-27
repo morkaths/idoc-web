@@ -20,13 +20,13 @@ import {
   FormMessage,
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
-import { type Role, type PermissionResponse, RoleRequest, RoleRequestSchema } from '@/types';
+import { type RoleResponse, type PermissionResponse, RoleRequest, RoleRequestSchema } from '@/types';
 import { PermissionsCombobox } from './permissions-combobox';
 
 type RolesMutateDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: Partial<Role>;
+  initialData?: Partial<RoleResponse>;
   onSubmit: (data: RoleRequest) => void;
   permissions: PermissionResponse[];
 };

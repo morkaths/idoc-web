@@ -1,11 +1,11 @@
 import { type ColumnDef } from '@tanstack/react-table';
-import type { Role } from '@/types';
+import type { RoleResponse } from '@/types';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
 import { RolesTableRowActions } from './roles-table-row-actions';
 
-export const rolesColumns: ColumnDef<Role>[] = [
+export const rolesColumns: ColumnDef<RoleResponse>[] = [
   {
     id: 'select',
     enableSorting: false,
@@ -67,8 +67,8 @@ export const rolesColumns: ColumnDef<Role>[] = [
           {permissions.length === 0
             ? <span className="text-xs text-muted-foreground">No permissions</span>
             : permissions.slice(0, 3).map((p) => (
-                <span key={p.id} className="px-2 py-0.5 rounded bg-muted text-xs">{p.name}</span>
-              ))}
+              <span key={p.id} className="px-2 py-0.5 rounded bg-muted text-xs">{p.name}</span>
+            ))}
           {permissions.length > 3 && (
             <span className="text-xs text-muted-foreground">+{permissions.length - 3} more</span>
           )}

@@ -11,10 +11,10 @@ import {
     CommandList,
 } from "@repo/ui/components/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/popover";
-import { Role } from "@/types";
+import { RoleResponse } from "@/types";
 
 type RolesComboboxProps = {
-    roles: Role[];
+    roles: RoleResponse[];
     value: string[];
     onChange: (roles: string[]) => void;
 };
@@ -27,7 +27,7 @@ export function RolesCombobox({
     const id = useId();
     const [open, setOpen] = useState(false);
 
-    const toggleSelection = (role: Role) => {
+    const toggleSelection = (role: RoleResponse) => {
         if (value.includes(role.id)) {
             onChange(value.filter((id) => id !== role.id));
         } else {
@@ -35,7 +35,7 @@ export function RolesCombobox({
         }
     };
 
-    const removeSelection = (role: Role) => {
+    const removeSelection = (role: RoleResponse) => {
         onChange(value.filter((id) => id !== role.id));
     };
 

@@ -10,14 +10,14 @@ import {
     DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { useRolesContext } from './roles-provider';
-import { type Role } from '@/types';
+import { type RoleResponse } from '@/types';
 
 type RolesTableRowActionsProps<TData> = {
     row: Row<TData>;
 };
 
 export function RolesTableRowActions<TData>({ row }: RolesTableRowActionsProps<TData>) {
-    const role = row.original as Role;
+    const role = row.original as RoleResponse;
     const ctx = useRolesContext();
     if (!ctx) throw new Error('RolesTableRowActions must be used inside RolesProvider');
     const { setOpen, setCurrentRow } = ctx;

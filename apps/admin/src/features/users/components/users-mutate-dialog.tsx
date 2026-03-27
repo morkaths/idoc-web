@@ -29,7 +29,7 @@ import {
 } from '@repo/ui/components/select';
 import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
-import { UserRequest, UserRequestSchema, UserStatus, type Role, type User } from '@/types';
+import { UserRequest, UserRequestSchema, UserStatus, type RoleResponse, type User } from '@/types';
 import { RolesCombobox } from './roles-combobox';
 
 const UserFormSchema = UserRequestSchema.extend({
@@ -52,7 +52,7 @@ type UsersMutateDialogProps = {
   onOpenChange: (open: boolean) => void;
   initialData?: Partial<User>;
   onSubmit: (data: UserRequest) => void;
-  roles: Role[];
+  roles: RoleResponse[];
 };
 
 export function UsersMutateDialog({

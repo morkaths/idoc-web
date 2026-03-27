@@ -7,7 +7,7 @@ export interface PermissionResponse {
   updatedAt?: Date | string;
 }
 
-export interface Role {
+export interface RoleResponse {
   id: string;
   code?: string;
   name?: string;
@@ -28,7 +28,7 @@ export interface User {
   username: string;
   password: string;
   status: number;
-  roles?: Role[];
+  roles?: RoleResponse[];
   linkedAccounts?: LinkedAccount[];
   profile?: {
     fullname?: string;

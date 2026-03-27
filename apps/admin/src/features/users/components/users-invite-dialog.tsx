@@ -22,7 +22,7 @@ import {
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
 import { Textarea } from '@repo/ui/components/textarea';
-import { type Role } from '@/types';
+import { type RoleResponse } from '@/types';
 import { RolesCombobox } from './roles-combobox';
 
 const formSchema = z.object({
@@ -37,7 +37,7 @@ type UserInviteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: UserInviteForm) => void;
-  roles: Role[];
+  roles: RoleResponse[];
 };
 
 export function UsersInviteDialog({

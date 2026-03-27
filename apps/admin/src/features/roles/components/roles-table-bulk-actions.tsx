@@ -1,11 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import type { Table } from '@tanstack/react-table';
-import type { Role } from '@/types';
+import type { RoleResponse } from '@/types';
 import { useDeleteRole } from '@/hooks/data/useRole';
 import DataTableBulkActions from '@/components/data-table/data-table-bulk-actions';
 
 type Props = {
-  table: Table<Role>;
+  table: Table<RoleResponse>;
 };
 
 export function RolesTableBulkActions({ table }: Props) {
