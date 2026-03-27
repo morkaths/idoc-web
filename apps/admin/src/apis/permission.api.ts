@@ -1,49 +1,8 @@
-import { API_CONFIG } from '@/config/api';
-import type { Permission, PermissionRequest, FindParams, Pagination } from '../types';
-import { ApiClient } from './config';
+import { ApiEndpoint } from '@/config/api';
+import type { Permission, PermissionRequest } from '../types';
+import { apiFactory } from './factory';
 
-export const PermissionApi = {
-  find: async (params?: FindParams): Promise<{ data: Permission[]; pagination?: Pagination }> => {
-    const response = await ApiClient.get<Permission[]>(
-      API_CONFIG.endpoints.permission.find,
-      { params }
-    );
-    return {
-      data: response.data ?? [],
-      pagination: response.pagination
-    };
-  },
-
-  findById: async (id: string): Promise<Permission> => {
-    const response = await ApiClient.get<Permission>(
-      API_CONFIG.endpoints.permission.findById(id)
-    );
-    if (response.success && response.data) return response.data;
-    throw new Error(response.message || 'Permission not found');
-  },
-
-  create: async (data: PermissionRequest): Promise<Permission> => {
-    const response = await ApiClient.post<Permission>(
-      API_CONFIG.endpoints.permission.create,
-      { data }
-    );
-    if (response.success && response.data) return response.data;
-    throw new Error(response.message || 'Failed to create permission');
-  },
-
-  update: async (id: string, data: Partial<PermissionRequest>): Promise<Permission> => {
-    const response = await ApiClient.patch<Permission>(
-      API_CONFIG.endpoints.permission.update(id),
-      { data }
-    );
-    if (response.success && response.data) return response.data;
-    throw new Error(response.message || 'Failed to update permission');
-  },
-
-  delete: async (id: string): Promise<boolean> => {
-    const response = await ApiClient.delete<null>(
-      API_CONFIG.endpoints.permission.delete(id)
-    );
-    return response.success;
-  },
-};
+export const PermissionApi = apiFactory<Permission, PermissionRequest>(
+  ApiEndpoint.endpoints.permissions,
+  'Permission'
+);
