@@ -37,8 +37,8 @@ export const authConfig = {
       },
     }),
     Google({
-      clientId: env.auth.google.clientId,
-      clientSecret: env.auth.google.clientSecret,
+      clientId: env.auth.oauth.google.clientId,
+      clientSecret: env.auth.oauth.google.clientSecret,
     }),
   ],
   callbacks: {
@@ -54,33 +54,21 @@ export const authConfig = {
     async jwt({ token, user, account }) {
       if (user) {
         if (account?.provider === "google") {
-          try {
-            const backendResponse = await AuthApi.loginGoogle(account.id_token!);
-            if (backendResponse && backendResponse.token) {
-              return {
-                ...token,
-                user: backendResponse.user as any,
-                accessToken: backendResponse.token.accessToken,
-                refreshToken: backendResponse.token.refreshToken,
-                expiresAt: Date.now() + (backendResponse.token.accessTokenExpiresIn * 1000),
-                error: undefined,
-              };
-            } else {
-              return {
-                ...token,
-                user: token.user ?? null,
-                accessToken: token.accessToken ?? null,
-                refreshToken: token.refreshToken ?? null,
-                expiresAt: token.expiresAt ?? 0,
-                error: "InvalidCredentials" as const,
-              };
-            }
-          } catch (error) {
+          const response = await AuthApi.loginGoogle(account.id_token!).catch((err) => {
+            return null;
+          });
+
+          if (response && response.token) {
             return {
               ...token,
-              error: "InvalidCredentials" as const,
+              user: response.user as any,
+              accessToken: response.token.accessToken,
+              refreshToken: response.token.refreshToken,
+              expiresAt: Date.now() + (response.token.accessTokenExpiresIn * 1000),
+              error: undefined,
             };
           }
+          return null;
         }
         return {
           ...token,
@@ -101,10 +89,7 @@ export const authConfig = {
       try {
         const result = await AuthApi.refresh(token.refreshToken as string);
         if (!result || !result.token) {
-          return {
-            ...token,
-            error: "InvalidCredentials" as const,
-          };
+          return null;
         }
         return {
           ...token,
@@ -114,10 +99,8 @@ export const authConfig = {
           error: undefined,
         };
       } catch (error) {
-        return {
-          ...token,
-          error: "InvalidCredentials" as const,
-        };
+        console.error("[Auth] Refresh token failed with exception:", error);
+        return null;
       }
     }
   },

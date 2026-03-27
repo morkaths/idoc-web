@@ -537,8 +537,7 @@
           "loading": "Returning borrow...",
           "success": "Borrow returned successfully!",
           "error": "Failed to return borrow. Please try again.",
-          "confirm": "The following borrow has been returned:",
-          "confirmDesc": "Are you sure you want to return <strong>{title}</strong>?<br></br>This action cannot be undone."
+          "desc": "Are you sure you want to return <strong>{title}</strong>?<br></br>This action cannot be undone."
         },
         "history": {
           "label": "History",
