@@ -1,34 +1,44 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { CollectionApi } from '@/apis/collection.api';
 import type { Collection, CollectionRequest, FindParams, Pagination } from '@/types';
 
-type CollectionResponse = { data: Collection[]; pagination?: Pagination };
+type PaginationResponse = { data: Collection[]; pagination?: Pagination };
 
 export const useCollections = (
     params: FindParams = {},
-    options?: Omit<UseQueryOptions<CollectionResponse, Error, CollectionResponse, any[]>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<CollectionResponse, Error, CollectionResponse, any[]>({
+    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['collections', params],
-        queryFn: async () => await CollectionApi.find(params),
+        queryFn: () => CollectionApi.find(params),
         enabled: true,
         refetchOnWindowFocus: false,
         staleTime: 5 * 60 * 1000,
-        select: (data) => ({
-            data: data.data,
-            pagination: data.pagination,
-        }),
         ...options,
     });
+
+    return {
+        ...query,
+        data: {
+            data: query.data?.data || [],
+            pagination: query.data?.pagination,
+        },
+    };
 };
 
-export const useCollection = (id: string) => {
-    return useQuery({
+export const useCollection = (id: string, options?: Omit<UseQueryOptions<Collection, Error, Collection, QueryKey>, 'queryKey' | 'queryFn'>) => {
+    const query = useQuery<Collection, Error, Collection, QueryKey>({
         queryKey: ['collections', id],
         queryFn: () => CollectionApi.findById(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
+        ...options,
     });
+
+    return {
+        ...query,
+        data: query.data || null,
+    };
 };
 
 export const useCreateCollection = () => {

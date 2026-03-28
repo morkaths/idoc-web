@@ -1,34 +1,44 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { ReviewApi } from '@/apis/review.api';
 import type { Review, ReviewRequest, FindParams, Pagination } from '@/types';
 
-type ReviewResponse = { data: Review[]; pagination?: Pagination };
+type PaginationResponse = { data: Review[]; pagination?: Pagination };
 
 export const useReviews = (
     params: FindParams = {},
-    options?: Omit<UseQueryOptions<ReviewResponse, Error, ReviewResponse, any[]>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<ReviewResponse, Error, ReviewResponse, any[]>({
+    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['reviews', params],
-        queryFn: async () => await ReviewApi.find(params),
+        queryFn: () => ReviewApi.find(params),
         enabled: true,
         refetchOnWindowFocus: false,
         staleTime: 5 * 60 * 1000,
-        select: (data) => ({
-            data: data.data,
-            pagination: data.pagination,
-        }),
         ...options,
     });
+
+    return {
+        ...query,
+        data: {
+            data: query.data?.data || [],
+            pagination: query.data?.pagination,
+        },
+    };
 };
 
-export const useReview = (id: string) => {
-    return useQuery({
+export const useReview = (id: string, options?: Omit<UseQueryOptions<Review, Error, Review, QueryKey>, 'queryKey' | 'queryFn'>) => {
+    const query = useQuery<Review, Error, Review, QueryKey>({
         queryKey: ['reviews', id],
         queryFn: () => ReviewApi.findById(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
+        ...options,
     });
+
+    return {
+        ...query,
+        data: query.data || null,
+    };
 };
 
 export const useCreateReview = () => {

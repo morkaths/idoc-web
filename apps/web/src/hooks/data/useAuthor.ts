@@ -1,34 +1,44 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { AuthorApi } from '@/apis/author.api';
 import type { Author, AuthorRequest, FindParams, Pagination } from '@/types';
 
-type AuthorResponse = { data: Author[]; pagination?: Pagination };
+type PaginationResponse = { data: Author[]; pagination?: Pagination };
 
 export const useAuthors = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<AuthorResponse, Error, AuthorResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<AuthorResponse, Error, AuthorResponse, any[]>({
+  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['authors', params],
-    queryFn: async () => await AuthorApi.find(params),
+    queryFn: () => AuthorApi.find(params),
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
     ...options
   });
+
+  return {
+    ...query,
+    data: {
+      data: query.data?.data || [],
+      pagination: query.data?.pagination,
+    },
+  };
 };
 
-export const useAuthor = (id: string) => {
-  return useQuery({
+export const useAuthor = (id: string, options?: Omit<UseQueryOptions<Author, Error, Author, QueryKey>, 'queryKey' | 'queryFn'>) => {
+  const query = useQuery<Author, Error, Author, QueryKey>({
     queryKey: ['authors', id],
     queryFn: () => AuthorApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
+    ...options
   });
+
+  return {
+    ...query,
+    data: query.data || null,
+  };
 };
 
 export const useCreateAuthor = () => {

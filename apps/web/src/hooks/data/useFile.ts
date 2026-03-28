@@ -1,37 +1,44 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { FileApi } from '@/apis/file.api';
 import type { File as IFile, FindParams, Pagination } from '@/types';
 
-type FileResponse = { data: IFile[]; pagination?: Pagination };
+type PaginationResponse = { data: IFile[]; pagination?: Pagination };
 
 export const useFiles = (
     params: FindParams = {},
-    options?: Omit<UseQueryOptions<FileResponse, Error, FileResponse, any[]>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<FileResponse, Error, FileResponse, any[]>({
+    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['files', params],
-        queryFn: async () => {
-            const res = await FileApi.find(params);
-            return res;
-        },
+        queryFn: () => FileApi.find(params),
         enabled: true,
         refetchOnWindowFocus: false,
         staleTime: 5 * 60 * 1000,
-        select: (data) => ({
-            data: data.data,
-            pagination: data.pagination,
-        }),
         ...options,
     });
+
+    return {
+        ...query,
+        data: {
+            data: query.data?.data || [],
+            pagination: query.data?.pagination,
+        },
+    };
 };
 
-export const useFile = (id: string) => {
-    return useQuery({
+export const useFile = (id: string, options?: Omit<UseQueryOptions<IFile, Error, IFile, QueryKey>, 'queryKey' | 'queryFn'>) => {
+    const query = useQuery<IFile, Error, IFile, QueryKey>({
         queryKey: ['files', id],
         queryFn: () => FileApi.findById(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
+        ...options,
     });
+
+    return {
+        ...query,
+        data: query.data || null,
+    };
 };
 
 export const useUploadPresignedFile = () => {
@@ -72,9 +79,9 @@ export const useDeleteFile = () => {
 export const useViewUrl = (
     id: string, 
     ticket: string,
-    options?: Omit<UseQueryOptions<string, Error, string, any[]>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<string, Error, string, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery({
+    return useQuery<string, Error, string, QueryKey>({
         queryKey: ['files', 'view', id, ticket],
         queryFn: () => FileApi.getViewUrl(id, ticket),
         enabled: !!id && !!ticket,

@@ -1,58 +1,66 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BorrowApi } from '@/apis/borrow.api';
 import type { Borrow, BorrowRequest, FindParams, Pagination } from '@/types';
 
-type BorrowResponse = { data: Borrow[]; pagination?: Pagination };
+type PaginationResponse = { data: Borrow[]; pagination?: Pagination };
 
 export const useBorrows = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<BorrowResponse, Error, BorrowResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<BorrowResponse, Error, BorrowResponse, any[]>({
+  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['borrows', params],
-    queryFn: async () => {
-      const res = await BorrowApi.find(params);
-      return res;
-    },
+    queryFn: () => BorrowApi.find(params),
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
     ...options,
   });
+
+  return {
+    ...query,
+    data: {
+      data: query.data?.data || [],
+      pagination: query.data?.pagination,
+    },
+  };
 };
 
 export const useBorrowHistory = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<BorrowResponse, Error, BorrowResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<BorrowResponse, Error, BorrowResponse, any[]>({
+  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['borrows', 'history', params],
-    queryFn: async () => {
-      const res = await BorrowApi.history(params);
-      return res;
-    },
+    queryFn: () => BorrowApi.history(params),
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
     ...options,
   });
+
+  return {
+    ...query,
+    data: {
+      data: query.data?.data || [],
+      pagination: query.data?.pagination,
+    },
+  };
 };
 
-export const useBorrow = (id: string) => {
-  return useQuery({
+export const useBorrow = (id: string, options?: Omit<UseQueryOptions<Borrow, Error, Borrow, QueryKey>, 'queryKey' | 'queryFn'>) => {
+  const query = useQuery<Borrow, Error, Borrow, QueryKey>({
     queryKey: ['borrows', id],
     queryFn: () => BorrowApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
+    ...options,
   });
+
+  return {
+    ...query,
+    data: query.data || null,
+  };
 };
 
 export const useCreateBorrow = () => {
@@ -115,9 +123,9 @@ export const useReturnBorrow = () => {
 
 export const useRead = (
   borrowId: string,
-  options?: Omit<UseQueryOptions<string, Error, string, any[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<string, Error, string, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery({
+  return useQuery<string, Error, string, QueryKey>({
     queryKey: ['borrows', 'read', borrowId],
     queryFn: () => BorrowApi.read(borrowId),
     enabled: !!borrowId,
