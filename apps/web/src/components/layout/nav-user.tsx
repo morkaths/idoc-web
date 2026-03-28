@@ -17,13 +17,13 @@ import { Button } from '@repo/ui/components/button';
 import { SignOutDialog } from '@/components/sign-out-dialog';
 import { useSession } from "next-auth/react";
 import { useResponsive } from '@/hooks/ui/useResponsive';
-import type { User } from "@/types";
+import type { UserResponse } from "@/types";
 import { useLocale } from '@/hooks/ui/useLocale';
 
 export function NavUser() {
   const locale = useNextLocale();
   const { data: session } = useSession();
-  const user = session?.user as User;
+  const user = session?.user as UserResponse;
   const { isMobile } = useResponsive();
   const [open, setOpen] = useDialogState();
   const { t, keys } = useLocale('navigation');

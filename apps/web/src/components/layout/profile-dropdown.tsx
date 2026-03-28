@@ -19,13 +19,13 @@ import {
 } from '@repo/ui/components/dropdown-menu';
 import { SignOutDialog } from '@/components/sign-out-dialog';
 import { useSession } from "next-auth/react";
-import type { User } from "@/types";
+import type { UserResponse } from "@/types";
 import { useLocale } from '@/hooks/ui/useLocale';
 
 export function ProfileDropdown() {
   const locale = useNextLocale();
   const { data: session } = useSession();
-  const user = session?.user as User;
+  const user = session?.user as UserResponse;
   const [open, setOpen] = useDialogState();
   const [isMounted, setIsMounted] = useState(false);
   const { t, keys } = useLocale('navigation');

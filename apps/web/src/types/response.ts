@@ -7,7 +7,7 @@ export interface PermissionResponse {
   updatedAt?: Date | string;
 }
 
-export interface Role {
+export interface RoleResponse {
   id: string;
   code?: string;
   name?: string;
@@ -16,20 +16,19 @@ export interface Role {
   updatedAt?: Date | string;
 }
 
-export interface LinkedAccount {
-  provider: string;
-  providerId: string;
-  linkedAt: Date | string;
-}
 
-export interface User {
+export interface UserResponse {
   id: string;
   email: string;
   username: string;
   password: string;
   status: number;
-  roles?: Role[];
-  linkedAccounts?: LinkedAccount[];
+  roles?: RoleResponse[];
+  linkedAccounts?: {
+    provider: string;
+    providerId: string;
+    linkedAt: Date | string;
+  }[];
   profile?: {
     fullname?: string;
     dob?: Date | string;
@@ -108,7 +107,7 @@ export interface File {
 
 export interface Borrow {
   id: string;
-  borrower: User;
+  borrower: UserResponse;
   item: Book;
   renewals?: {
     renewedAt: Date | string;
@@ -127,7 +126,7 @@ export interface Borrow {
 export interface Review {
   id: string;
   item: Book;
-  user: User;
+  user: UserResponse;
   rating: number;
   content?: string;
   createdAt?: Date | string;
@@ -136,7 +135,7 @@ export interface Review {
 
 export interface Bookmark {
   id: string;
-  user: User;
+  user: UserResponse;
   item: Book;
   page?: number;
   note?: string;
@@ -146,7 +145,7 @@ export interface Bookmark {
 
 export interface Collection {
   id: string;
-  user: User;
+  user: UserResponse;
   name: string;
   description?: string;
   bookmarks?: Bookmark[];
@@ -192,7 +191,7 @@ export interface ErrorResponse extends BaseResponse {
 }
 
 export interface AuthenticationResponse {
-  user: User;
+  user: UserResponse;
   token: AuthToken;
 }
 

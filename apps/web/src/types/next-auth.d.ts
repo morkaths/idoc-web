@@ -1,10 +1,10 @@
-import { User, AuthToken } from './response';
+import { UserResponse, AuthToken } from './response';
 import 'next-auth';
 import 'next-auth/jwt';
 
 declare module 'next-auth' {
     interface Session {
-        user: User;
+        user: UserResponse;
         accessToken: string;
         refreshToken: string;
         error?: 'RefreshAccessTokenError' | 'InvalidCredentials' | string;
@@ -13,7 +13,7 @@ declare module 'next-auth' {
 
 declare module 'next-auth/jwt' {
     interface JWT {
-        user: User;
+        user: UserResponse;
         accessToken: string;
         refreshToken: string;
         expiresAt: number;

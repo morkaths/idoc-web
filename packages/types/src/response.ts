@@ -16,12 +16,6 @@ export interface RoleResponse {
   updatedAt?: Date | string;
 }
 
-export interface LinkedAccountResponse {
-  provider: string;
-  providerId: string;
-  linkedAt: Date | string;
-}
-
 export interface UserResponse {
   id: string;
   email: string;
@@ -29,7 +23,11 @@ export interface UserResponse {
   password: string;
   status: number;
   roles?: RoleResponse[];
-  linkedAccounts?: LinkedAccountResponse[];
+  linkedAccounts?: {
+    provider: string;
+    providerId: string;
+    linkedAt: Date | string;
+  }[];
   profile?: {
     fullname?: string;
     dob?: Date | string;

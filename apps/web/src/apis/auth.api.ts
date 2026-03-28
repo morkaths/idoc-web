@@ -1,5 +1,5 @@
 import { API_CONFIG } from '@/config/api';
-import type { AuthenticationResponse, User, UserRequest } from '../types';
+import type { AuthenticationResponse, UserResponse, UserRequest } from '../types';
 import { ApiClient } from './config';
 
 export const AuthApi = {
@@ -30,8 +30,8 @@ export const AuthApi = {
     throw new Error(response.message || 'Registration failed');
   },
 
-  verify: async (data: { token: string }): Promise<User> => {
-    const response = await ApiClient.post<User>(
+  verify: async (data: { token: string }): Promise<UserResponse> => {
+    const response = await ApiClient.post<UserResponse>(
       API_CONFIG.endpoints.auth.verify,
       { mode: 'public', data }
     );
@@ -56,8 +56,8 @@ export const AuthApi = {
     return response.success || false;
   },
 
-  update: async (data: Partial<User>): Promise<User> => {
-    const response = await ApiClient.patch<User>(
+  update: async (data: Partial<UserResponse>): Promise<UserResponse> => {
+    const response = await ApiClient.patch<UserResponse>(
       API_CONFIG.endpoints.auth.update,
       { mode: 'private', data }
     );

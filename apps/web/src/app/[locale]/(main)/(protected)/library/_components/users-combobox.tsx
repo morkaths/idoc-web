@@ -12,7 +12,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/popover";
 import { useUsers } from "@/hooks/data/useUser";
 import { useDebounce } from "@/hooks/ui/useDebounce";
-import { User } from "@/types";
+import { UserResponse } from "@/types";
 
 type UserComboboxProps = {
     value: string;
@@ -34,7 +34,7 @@ export function UserCombobox({ value, onChange, error }: UserComboboxProps) {
     // FETCH DATA
     const shouldFetch = open || !!value;
     const { data, isLoading } = useUsers(params, { enabled: shouldFetch });
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<UserResponse[]>([]);
     const pagination = Array.isArray(data?.pagination) ? data.pagination[0] : data?.pagination;
     const total = pagination?.total ?? 0;
     const limited = pagination?.limit ?? 10;
@@ -67,7 +67,7 @@ export function UserCombobox({ value, onChange, error }: UserComboboxProps) {
 
     // Group users by first letter of username (A-Z, #)
     const grouped = useMemo(() => {
-        const groups: Record<string, User[]> = {};
+        const groups: Record<string, UserResponse[]> = {};
         for (const user of users) {
             const firstChar = user.username?.[0]?.toUpperCase();
             const group = firstChar && /[A-Z]/.test(firstChar) ? firstChar : "#";

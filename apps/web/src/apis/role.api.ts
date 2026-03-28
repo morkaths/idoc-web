@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { Role, RoleRequest, FindParams, Pagination } from '../types';
+import type { RoleResponse, RoleRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const RoleApi = {
-  find: async (params?: FindParams): Promise<{ data: Role[]; pagination?: Pagination }> => {
-    const response = await ApiClient.get<Role[]>(
+  find: async (params?: FindParams): Promise<{ data: RoleResponse[]; pagination?: Pagination }> => {
+    const response = await ApiClient.get<RoleResponse[]>(
       API_CONFIG.endpoints.role.find,
       { params }
     );
@@ -14,16 +14,16 @@ export const RoleApi = {
     };
   },
 
-  findById: async (id: string): Promise<Role> => {
-    const response = await ApiClient.get<Role>(
+  findById: async (id: string): Promise<RoleResponse> => {
+    const response = await ApiClient.get<RoleResponse>(
       API_CONFIG.endpoints.role.findById(id)
     );
     if (response.success && response.data) return response.data;
     throw new Error(response.message || 'Role not found');
   },
 
-  create: async (data: RoleRequest): Promise<Role> => {
-    const response = await ApiClient.post<Role>(
+  create: async (data: RoleRequest): Promise<RoleResponse> => {
+    const response = await ApiClient.post<RoleResponse>(
       API_CONFIG.endpoints.role.create,
       { data }
     );
@@ -31,8 +31,8 @@ export const RoleApi = {
     throw new Error(response.message || 'Failed to create role');
   },
 
-  update: async (id: string, data: Partial<RoleRequest>): Promise<Role> => {
-    const response = await ApiClient.patch<Role>(
+  update: async (id: string, data: Partial<RoleRequest>): Promise<RoleResponse> => {
+    const response = await ApiClient.patch<RoleResponse>(
       API_CONFIG.endpoints.role.update(id),
       { data }
     );
