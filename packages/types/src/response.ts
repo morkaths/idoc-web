@@ -136,18 +136,19 @@ export interface BookmarkResponse {
   id: string;
   user: UserResponse;
   item: BookResponse;
-  collections?: CollectionResponse[];
+  folder?: string;
   page?: number;
   note?: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
 
-export interface CollectionResponse {
+export interface FolderResponse {
   id: string;
   user: UserResponse;
   name: string;
   description?: string;
+  items?: BookmarkResponse[];
   itemCount?: number;
   isPublic?: boolean;
   createdAt?: Date | string;

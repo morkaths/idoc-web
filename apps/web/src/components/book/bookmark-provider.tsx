@@ -17,9 +17,6 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
     const [open, setOpen] = useState<boolean>(false);
     const [currentBook, setCurrentBook] = useState<BookResponse | null>(null);
 
-    // When dialog closes, verify we should clear currentBook or keep it?
-    // Usually fine to keep it or clear it. Let's keep it simple.
-
     return (
         <BookmarkContext.Provider value={{ open, setOpen, currentBook, setCurrentBook }}>
             {children}

@@ -29,7 +29,7 @@ export default function BookGridView({ filter }: { filter: Partial<FindParams> }
     if (!bookmarkStatus) return books;
     return books.map((book) => ({
       ...book,
-      bookmark: bookmarkStatus[book.id] ?? book.bookmark,
+      bookmark: bookmarkStatus[book.id]?.id ?? book.bookmark,
     }));
   }, [books, bookmarkStatus]);
 

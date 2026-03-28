@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Image from "next/image";
 import { Icon } from '@iconify/react';
-import { BookResponse } from "@/types";
+import { BookResponse, BookmarkResponse } from "@/types";
 import { cn } from "@/lib/utils";
 import { useDeleteBookmark } from "@/hooks/data/useBookmark";
 import { toast } from 'sonner';
@@ -19,7 +19,7 @@ export function BookListItem({ book, onClick, className }: BookListItemProps) {
   const { t, keys } = useLocale('books');
   const [imageError, setImageError] = useState(false);
   const [bookmark, setBookmark] = useState(book.bookmark);
-  const isBookmarked = !!bookmark;
+  const isBookmarked = !!(bookmark || book.bookmark);
 
   const { setOpen, setCurrentBook } = useBookmarkContext();
   const { mutate: deleteBookmark, isPending: isDeleting } = useDeleteBookmark();
@@ -36,10 +36,9 @@ export function BookListItem({ book, onClick, className }: BookListItemProps) {
     if (isLoading) return;
 
     if (isBookmarked) {
-      if (bookmark) {
-        deleteBookmark(bookmark, {
+      if (book.bookmark) {
+        deleteBookmark(book.bookmark, {
           onSuccess: () => {
-            setBookmark(undefined);
             toast.success(t(keys.view.bookmark.removed));
           },
           onError: (error) => {

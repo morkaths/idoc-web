@@ -5,8 +5,8 @@ import { ApiClient } from './config';
 
 export const FileApi = {
   find: async (params?: FindParams): Promise<{ data: IFile[]; pagination?: Pagination }> => {
-    const response = await ApiClient.get<IFile[]>(API_CONFIG.endpoints.file.find, {
-      mode: 'private',
+    const response = await ApiClient.get<IFile[]>(API_CONFIG.endpoints.files.find, {
+      security: 'private',
       params,
     });
     return {
@@ -16,8 +16,8 @@ export const FileApi = {
   },
 
   findByUser: async (params?: FindParams): Promise<{ data: IFile[]; pagination?: Pagination }> => {
-    const response = await ApiClient.get<IFile[]>(API_CONFIG.endpoints.file.findByUser, {
-      mode: 'private',
+    const response = await ApiClient.get<IFile[]>(API_CONFIG.endpoints.files.findByUser, {
+      security: 'private',
       params,
     });
     return {
@@ -27,8 +27,8 @@ export const FileApi = {
   },
 
   findById: async (id: string): Promise<IFile> => {
-    const response = await ApiClient.get<IFile>(API_CONFIG.endpoints.file.findById(id), {
-      mode: 'private',
+    const response = await ApiClient.get<IFile>(API_CONFIG.endpoints.files.findById(id), {
+      security: 'private',
     });
     if (response.success && response.data) return response.data;
     throw new Error('File not found');
@@ -53,9 +53,9 @@ export const FileApi = {
     folder?: string
   ): Promise<{ url: string; objectname: string }> => {
     const response = await ApiClient.post<{ url: string; objectname: string }>(
-      API_CONFIG.endpoints.file.uploadPresigned,
+      API_CONFIG.endpoints.files.uploadPresigned,
       {
-        mode: 'private',
+        security: 'private',
         data: { filename, mimetype, folder },
       }
     );
@@ -69,9 +69,9 @@ export const FileApi = {
 
   completePresignedUpload: async (objectname: string): Promise<IFile> => {
     const response = await ApiClient.post<IFile>(
-      API_CONFIG.endpoints.file.completePresignedUpload,
+      API_CONFIG.endpoints.files.completePresignedUpload,
       {
-        mode: 'private',
+        security: 'private',
         data: { objectname },
       }
     );
@@ -80,24 +80,24 @@ export const FileApi = {
   },
 
   download: async (id: string): Promise<Blob> => {
-    const response = await ApiClient.get(API_CONFIG.endpoints.file.download(id), {
-      mode: 'private',
+    const response = await ApiClient.get(API_CONFIG.endpoints.files.download(id), {
+      security: 'private',
       responseType: 'blob',
     });
     return response.data as Blob;
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const response = await ApiClient.delete<null>(API_CONFIG.endpoints.file.delete(id), {
-      mode: 'private',
+    const response = await ApiClient.delete<null>(API_CONFIG.endpoints.files.delete(id), {
+      security: 'private',
     });
     return response.success;
   },
 
   getViewUrl: async (id: string, ticket: string): Promise<string> => {
     const response = await ApiClient.get<{ url: string }>(
-      `${API_CONFIG.endpoints.file.view(id)}?ticket=${encodeURIComponent(ticket)}`,
-      { mode: 'public' }
+      `${API_CONFIG.endpoints.files.view(id)}?ticket=${encodeURIComponent(ticket)}`,
+      { security: 'public' }
     );
     if (response.success && response.data) return response.data.url;
     throw new Error('Failed to get view URL');

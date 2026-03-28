@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { setAccessToken } from "@/apis/config";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -11,6 +11,7 @@ export function AuthSync() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
+    const loginShownRef = useRef<string | null>(null);
 
     useEffect(() => {
         if (status === 'loading') return;
@@ -19,8 +20,9 @@ export function AuthSync() {
 
     useEffect(() => {
         const login = searchParams.get('login');
-        if (session && login) {
+        if (session && login && loginShownRef.current !== login) {
             toast.success(`Welcome back, ${session.user?.email}!`);
+            loginShownRef.current = login;
         }
         if (login) {
             const params = new URLSearchParams(searchParams.toString());

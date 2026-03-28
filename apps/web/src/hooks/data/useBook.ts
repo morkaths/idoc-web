@@ -40,7 +40,7 @@ export const useBooks = (
   const books = useMemo(() => {
     return booksQuery.data?.data?.map(book => ({
       ...book,
-      bookmarkId: bookmarksQuery.data?.[book.id] || undefined
+      bookmark: bookmarksQuery.data?.[book.id] || book.bookmark
     })) || [];
   }, [booksQuery.data, bookmarksQuery.data]);
 
@@ -81,7 +81,7 @@ export const useBook = (id: string, options?: Omit<UseQueryOptions<BookResponse,
     if (!bookQuery.data) return null;
     return {
       ...bookQuery.data,
-      bookmarkId: bookmarksQuery.data?.[id] || undefined
+      bookmark: bookmarksQuery.data?.[id] || bookQuery.data.bookmark
     };
   }, [bookQuery.data, bookmarksQuery.data, id]);
 

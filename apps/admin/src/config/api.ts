@@ -45,7 +45,7 @@ export const ENDPOINTS = {
     extend: (id: string) => `/borrows/${id}/extend`,
     return: (id: string) => `/borrows/${id}/return`,
   },
-  collections: crud('/collections'),
+  folders: crud('/folders'),
   reviews: crud('/reviews'),
   bookmarks: {
     ...crud('/bookmarks'),

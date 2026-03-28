@@ -48,7 +48,9 @@
       "last": "Last page",
       "next": "Next page",
       "previous": "Previous page"
-    }
+    },
+    "item": "item",
+    "items": "items"
   },
   "theme": {
     "title": "Theme Settings",
@@ -356,12 +358,14 @@
       "bookmark": {
         "title": "Bookmark Book",
         "error": "Failed to bookmark book. Please try again.",
-        "success": "Book added to your collection",
-        "removed": "Book removed from your collection"
+        "success": "Book added to your folder",
+        "removed": "Book removed from your folder",
+        "readingList": "Reading List",
+        "orAddToFolder": "Or add to Folder"
       },
-      "collection": {
-        "empty": "No collections found.",
-        "description": "We couldn't find any collections matching your search criteria. Please try changing your filters or keywords."
+      "folder": {
+        "empty": "No folders found.",
+        "description": "We couldn't find any folders matching your search criteria. Please try changing your filters or keywords."
       }
     }
   },
@@ -369,7 +373,7 @@
     "by": "By",
     "author": "Unknown Author",
     "actions": {
-      "addToCollection": "Add to Collection",
+      "addToFolder": "Add to Folder",
       "borrow": "Borrow Now"
     },
     "borrow": {

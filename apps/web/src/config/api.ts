@@ -1,117 +1,84 @@
 import env from './env';
 
-export const API_CONFIG = {
-  timeout: 10000,
-  baseURL: env.api.url,
-  endpoints: {
-    auth: {
-      login: '/auth/login',
-      loginGoogle: '/auth/login/google',
-      register: '/auth/register',
-      verify: '/auth/verify',
-      refresh: '/auth/refresh',
-      logout: '/auth/logout',
-      update: '/auth/update',
-    },
-    user: {
-      find: '/users',
-      findById: (id: string) => `/users/${id}`,
-      create: '/users',
-      update: (id: string) => `/users/${id}`,
-      delete: (id: string) => `/users/${id}`,
-    },
-    role: {
-      find: '/roles',
-      findById: (id: string) => `/roles/${id}`,
-      create: '/roles',
-      update: (id: string) => `/roles/${id}`,
-      delete: (id: string) => `/roles/${id}`,
-    },
-    permission: {
-      find: '/permissions',
-      findById: (id: string) => `/permissions/${id}`,
-      create: '/permissions',
-      update: (id: string) => `/permissions/${id}`,
-      delete: (id: string) => `/permissions/${id}`,
-    },
-    profile: {
-      me: '/profiles/me',
-      find: '/profiles',
-      findById: (id: string) => `/profiles/${id}`,
-      create: '/profiles',
-      update: (id: string) => `/profiles/${id}`,
-      delete: (id: string) => `/profiles/${id}`
-    },
-    author: {
-      find: '/authors',
-      findById: (id: string) => `/authors/${id}`,
-      create: '/authors',
-      update: (id: string) => `/authors/${id}`,
-      delete: (id: string) => `/authors/${id}`,
-    },
-    category: {
-      find: '/categories',
-      findById: (id: string) => `/categories/${id}`,
-      create: '/categories',
-      update: (id: string) => `/categories/${id}`,
-      delete: (id: string) => `/categories/${id}`,
-    },
-    book: {
-      find: '/books',
-      findById: (id: string) => `/books/${id}`,
-      create: '/books',
-      update: (id: string) => `/books/${id}`,
-      delete: (id: string) => `/books/${id}`,
-    },
-    file: {
-      find: '/files',
-      findByUser: '/files/user',
-      findById: (id: string) => `/files/${id}`,
-      download: (id: string) => `/files/${id}/download`,
-      upload: '/files/upload',
-      uploadPresigned: '/files/upload/presigned',
-      completePresignedUpload: '/files/upload/complete',
-      delete: (id: string) => `/files/${id}`,
-      view: (id: string) => `/files/${id}/view`,
-    },
-    image: {
-      upload: '/images/upload',
-      delete: (url: string) => `/images/${url}`,
-    },
-    borrow: {
-      find: '/borrows',
-      history: '/borrows/history',
-      findById: (id: string) => `/borrows/${id}`,
-      create: '/borrows',
-      update: (id: string) => `/borrows/${id}`,
-      delete: (id: string) => `/borrows/${id}`,
-      extend: (id: string) => `/borrows/${id}/extend`,
-      return: (id: string) => `/borrows/${id}/return`,
-      read: (id: string) => `/borrows/${id}/read`,
-    },
-    bookmark: {
-      find: '/bookmarks',
-      findById: (id: string) => `/bookmarks/${id}`,
-      status: '/bookmarks/status',
-      create: '/bookmarks',
-      update: (id: string) => `/bookmarks/${id}`,
-      delete: (id: string) => `/bookmarks/${id}`,
-    },
-    collection: {
-      find: '/collections',
-      findById: (id: string) => `/collections/${id}`,
-      create: '/collections',
-      update: (id: string) => `/collections/${id}`,
-      delete: (id: string) => `/collections/${id}`,
-    },
-    review: {
-      find: '/reviews',
-      findById: (id: string) => `/reviews/${id}`,
-      create: '/reviews',
-      update: (id: string) => `/reviews/${id}`,
-      delete: (id: string) => `/reviews/${id}`,
-    },
-  },
-};
+const crud = (path: string) => ({
+  find: path,
+  findById: (id: string) => `${path}/${id}`,
+  findByIds: (ids: readonly string[]) => `${path}/bulk?ids=${ids.join(',')}`,
+  create: path,
+  createMany: `${path}/bulk`,
+  update: (id: string) => `${path}/${id}`,
+  updateMany: (ids: readonly string[]) => `${path}/bulk?ids=${ids.join(',')}`,
+  delete: (id: string) => `${path}/${id}`,
+  deleteMany: (ids: readonly string[]) => `${path}/bulk?ids=${ids.join(',')}`,
+});
 
+// ── Connection meta ───────────────────────────────────────────────────────────
+
+export const META = {
+  baseURL: env.api.url,
+  timeout: 10_000,
+} as const;
+
+// ── Endpoint tree ─────────────────────────────────────────────────────────────
+
+export const ENDPOINTS = {
+  auth: {
+    login: '/auth/login',
+    loginGoogle: '/auth/login/google',
+    register: '/auth/register',
+    verify: '/auth/verify',
+    refresh: '/auth/refresh',
+    logout: '/auth/logout',
+    update: '/auth/update',
+  },
+  users: crud('/users'),
+  roles: crud('/roles'),
+  permissions: crud('/permissions'),
+  profiles: {
+    ...crud('/profiles'),
+    me: '/profiles/me',
+  },
+  authors: crud('/authors'),
+  categories: crud('/categories'),
+  books: crud('/books'),
+  borrows: {
+    ...crud('/borrows'),
+    history: '/borrows/history',
+    extend: (id: string) => `/borrows/${id}/extend`,
+    return: (id: string) => `/borrows/${id}/return`,
+    read: (id: string) => `/borrows/${id}/read`,
+  },
+  bookmarks: {
+    ...crud('/bookmarks'),
+    status: (ids: readonly string[]) => `/bookmarks/status?ids=${ids.join(',')}`,
+  },
+  folders: crud('/folders'),
+  reviews: crud('/reviews'),
+  files: {
+    ...crud('/files'),
+    findByUser: '/files/user',
+    download: (id: string) => `/files/${id}/download`,
+    upload: '/files/upload',
+    uploadPresigned: '/files/upload/presigned',
+    completePresignedUpload: '/files/upload/complete',
+    view: (id: string) => `/files/${id}/view`,
+  },
+  images: {
+    upload: '/images/upload',
+    delete: (url: string) => `/images/${url}`,
+  },
+} as const;
+
+export const API_CONFIG = {
+  baseURL: META.baseURL,
+  timeout: META.timeout,
+  endpoints: ENDPOINTS,
+} as const;
+
+export const ApiEndpoint = {
+  meta: META,
+  endpoints: ENDPOINTS,
+} as const;
+
+export type ApiEndpointType = typeof ApiEndpoint;
 export default API_CONFIG;

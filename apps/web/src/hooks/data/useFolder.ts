@@ -1,17 +1,17 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
-import { CollectionApi } from '@/apis/collection.api';
-import type { CollectionResponse, CollectionRequest, FindParams, Pagination } from '@/types';
+import { FolderApi } from '@/apis/folder.api';
+import type { FolderResponse, FolderRequest, FindParams, Pagination } from '@/types';
 import { useMemo } from 'react';
 
-type PaginationResponse = { data: CollectionResponse[]; pagination?: Pagination };
+type PaginationResponse = { data: FolderResponse[]; pagination?: Pagination };
 
-export const useCollections = (
+export const useFolders = (
     params: FindParams = {},
     options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
     const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
-        queryKey: ['collections', params],
-        queryFn: () => CollectionApi.find(params),
+        queryKey: ['folders', params],
+        queryFn: () => FolderApi.find(params),
         enabled: true,
         refetchOnWindowFocus: false,
         staleTime: 5 * 60 * 1000,
@@ -33,10 +33,10 @@ export const useCollections = (
     }), [stabilizedData, status, error, isLoading, isFetching, refetch]);
 };
 
-export const useCollection = (id: string, options?: Omit<UseQueryOptions<CollectionResponse, Error, CollectionResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<CollectionResponse, Error, CollectionResponse, QueryKey>({
-        queryKey: ['collections', id],
-        queryFn: () => CollectionApi.findById(id),
+export const useFolder = (id: string, options?: Omit<UseQueryOptions<FolderResponse, Error, FolderResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+    const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<FolderResponse, Error, FolderResponse, QueryKey>({
+        queryKey: ['folders', id],
+        queryFn: () => FolderApi.findById(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
         ...options,
@@ -54,36 +54,36 @@ export const useCollection = (id: string, options?: Omit<UseQueryOptions<Collect
     }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
-export const useCreateCollection = () => {
+export const useCreateFolder = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: CollectionRequest) => CollectionApi.create(data),
+        mutationFn: (data: FolderRequest) => FolderApi.create(data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['collections'] });
+            queryClient.invalidateQueries({ queryKey: ['folders'] });
         },
     });
 };
 
-export const useUpdateCollection = () => {
+export const useUpdateFolder = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ id, data }: { id: string; data: Partial<CollectionRequest> }) => CollectionApi.update(id, data),
+        mutationFn: ({ id, data }: { id: string; data: Partial<FolderRequest> }) => FolderApi.update(id, data),
         onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['collections', variables.id] });
-            queryClient.invalidateQueries({ queryKey: ['collections'] });
+            queryClient.invalidateQueries({ queryKey: ['folders', variables.id] });
+            queryClient.invalidateQueries({ queryKey: ['folders'] });
         },
     });
 };
 
-export const useDeleteCollection = () => {
+export const useDeleteFolder = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (id: string) => CollectionApi.delete(id),
+        mutationFn: (id: string) => FolderApi.delete(id),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['collections'] });
+            queryClient.invalidateQueries({ queryKey: ['folders'] });
         },
     });
 };

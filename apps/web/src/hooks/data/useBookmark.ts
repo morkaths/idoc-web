@@ -53,6 +53,7 @@ export const useCreateBookmark = () => {
         mutationFn: (data: BookmarkRequest) => BookmarkApi.create(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['bookmarks'] });
+            queryClient.invalidateQueries({ queryKey: ['books'] });
         },
     });
 };
@@ -76,12 +77,13 @@ export const useDeleteBookmark = () => {
         mutationFn: (id: string) => BookmarkApi.delete(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['bookmarks'] });
+            queryClient.invalidateQueries({ queryKey: ['books'] });
         },
     });
 };
 
-export const useBookmarkStatus = (items: string[], options?: Omit<UseQueryOptions<Record<string, string>, Error, Record<string, string>, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<Record<string, string>, Error, Record<string, string>, QueryKey>({
+export const useBookmarkStatus = (items: string[], options?: Omit<UseQueryOptions<Record<string, BookmarkResponse>, Error, Record<string, BookmarkResponse>, QueryKey>, 'queryKey' | 'queryFn'>) => {
+    const query = useQuery<Record<string, BookmarkResponse>, Error, Record<string, BookmarkResponse>, QueryKey>({
         queryKey: ['bookmarks', 'status', items],
         queryFn: () => BookmarkApi.status(items),
         enabled: items.length > 0,

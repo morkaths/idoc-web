@@ -129,12 +129,10 @@ export const BookmarkRequestSchema = z.object({
   id: z.string().optional(),
   user: z.string().trim().optional(),
   item: z.string().trim(),
-  collections: z.array(z.string().trim()).optional(),
-  page: z.number().int().min(0).optional(),
-  note: z.string().trim().optional(),
+  folder: z.string().trim().optional()
 });
 
-export const CollectionRequestSchema = z.object({
+export const FolderRequestSchema = z.object({
   id: z.string().optional(),
   user: z.string().trim().optional(),
   name: z.string().trim().min(1).max(100),
@@ -154,4 +152,4 @@ export type FileRequest = z.infer<typeof FileRequestSchema>;
 export type BorrowRequest = z.infer<typeof BorrowRequestSchema>;
 export type ReviewRequest = z.infer<typeof ReviewRequestSchema>;
 export type BookmarkRequest = z.infer<typeof BookmarkRequestSchema>;
-export type CollectionRequest = z.infer<typeof CollectionRequestSchema>;
+export type FolderRequest = z.infer<typeof FolderRequestSchema>;

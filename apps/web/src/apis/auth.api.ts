@@ -8,7 +8,7 @@ export const AuthApi = {
     password: string;
   }): Promise<AuthenticationResponse> => {
     const response = await ApiClient.post<AuthenticationResponse>(API_CONFIG.endpoints.auth.login, {
-      mode: 'public',
+      security: 'public',
       data,
     });
     if (response.success && response.data) return response.data;
@@ -18,7 +18,7 @@ export const AuthApi = {
   loginGoogle: async (credentials: string): Promise<AuthenticationResponse> => {
     const response = await ApiClient.post<AuthenticationResponse>(
       API_CONFIG.endpoints.auth.loginGoogle,
-      { mode: 'public', data: { credentials } }
+      { security: 'public', data: { credentials } }
     );
     if (response.success && response.data) return response.data;
     throw new Error(response.message || 'Login with Google failed');
@@ -27,7 +27,7 @@ export const AuthApi = {
   register: async (data: Partial<UserRequest>): Promise<AuthenticationResponse> => {
     const response = await ApiClient.post<AuthenticationResponse>(
       API_CONFIG.endpoints.auth.register,
-      { mode: 'public', data }
+      { security: 'public', data }
     );
     if (response.success && response.data) return response.data;
     throw new Error(response.message || 'Registration failed');
@@ -35,7 +35,7 @@ export const AuthApi = {
 
   verify: async (data: { token: string }): Promise<UserResponse> => {
     const response = await ApiClient.post<UserResponse>(API_CONFIG.endpoints.auth.verify, {
-      mode: 'public',
+      security: 'public',
       data,
     });
     if (response.success && response.data) return response.data;
@@ -45,7 +45,7 @@ export const AuthApi = {
   refresh: async (refreshToken: string): Promise<AuthenticationResponse> => {
     const response = await ApiClient.post<AuthenticationResponse>(
       API_CONFIG.endpoints.auth.refresh,
-      { mode: 'public', data: { refreshToken } }
+      { security: 'public', data: { refreshToken } }
     );
     if (response.success && response.data) return response.data;
     throw new Error(response.message || 'Refresh token failed');
@@ -53,14 +53,14 @@ export const AuthApi = {
 
   logout: async (): Promise<boolean> => {
     const response = await ApiClient.post<{ success: boolean }>(API_CONFIG.endpoints.auth.logout, {
-      mode: 'private',
+      security: 'private',
     });
     return response.success || false;
   },
 
   update: async (data: Partial<UserResponse>): Promise<UserResponse> => {
     const response = await ApiClient.patch<UserResponse>(API_CONFIG.endpoints.auth.update, {
-      mode: 'private',
+      security: 'private',
       data,
     });
     if (response.success && response.data) return response.data;

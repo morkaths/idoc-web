@@ -5,5 +5,5 @@ export * from './user.api';
 export * from './role.api';
 export * from './permission.api';
 export * from './bookmark.api';
-export * from './collection.api';
+export * from './folder.api';
 export * from './review.api';

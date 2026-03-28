@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react';
-import { BookResponse } from "@/types";
+import { BookResponse, BookmarkResponse } from "@/types";
 import Image from 'next/image';
 import { useState, useEffect, useMemo } from 'react';
 import { useDeleteBookmark } from "@/hooks/data/useBookmark";
@@ -27,7 +27,6 @@ export function BookGridItem({
 
   const isLoading = isDeleting;
 
-  // Sync optimistic state with props when props change
   useEffect(() => {
     setBookmark(book.bookmark);
   }, [book.bookmark]);
@@ -37,9 +36,13 @@ export function BookGridItem({
     if (isLoading) return;
 
     if (isBookmarked) {
-      const activeBookmarkId = book.bookmark || bookmark;
-      if (activeBookmarkId) {
-        deleteBookmark(activeBookmarkId, {
+      const activeBookmark = book.bookmark || bookmark;
+      if (activeBookmark) {
+        const bookmarkId = typeof activeBookmark === 'string'
+          ? activeBookmark
+          : (activeBookmark as BookmarkResponse).id;
+
+        deleteBookmark(bookmarkId, {
           onSuccess: () => {
             setBookmark(undefined);
             toast.success(t(keys.view.bookmark.removed));
