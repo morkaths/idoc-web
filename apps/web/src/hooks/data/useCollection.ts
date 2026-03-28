@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { CollectionApi } from '@/apis/collection.api';
-import type { Collection, CollectionRequest, FindParams, Pagination } from '@/types';
+import type { CollectionResponse, CollectionRequest, FindParams, Pagination } from '@/types';
 import { useMemo } from 'react';
 
-type PaginationResponse = { data: Collection[]; pagination?: Pagination };
+type PaginationResponse = { data: CollectionResponse[]; pagination?: Pagination };
 
 export const useCollections = (
     params: FindParams = {},
@@ -27,8 +27,8 @@ export const useCollections = (
     }), [query]);
 };
 
-export const useCollection = (id: string, options?: Omit<UseQueryOptions<Collection, Error, Collection, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<Collection, Error, Collection, QueryKey>({
+export const useCollection = (id: string, options?: Omit<UseQueryOptions<CollectionResponse, Error, CollectionResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+    const query = useQuery<CollectionResponse, Error, CollectionResponse, QueryKey>({
         queryKey: ['collections', id],
         queryFn: () => CollectionApi.findById(id),
         enabled: !!id,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { type Borrow } from "@/types";
+import { type BorrowResponse } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@repo/ui/components/dialog";
 import { Badge } from "@repo/ui/components/badge";
 import { useParams } from "next/navigation";
@@ -34,7 +34,7 @@ const CoverImage = ({ src, title }: { src?: string; title: string }) => {
 type BorrowsHistoryDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    borrow: Borrow | null;
+    borrow: BorrowResponse | null;
 };
 
 export function BorrowsHistoryDialog({ open, onOpenChange, borrow }: BorrowsHistoryDialogProps) {

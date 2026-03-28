@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BorrowApi } from '@/apis/borrow.api';
-import type { Borrow, BorrowRequest, FindParams, Pagination } from '@/types';
+import type { BorrowResponse, BorrowRequest, FindParams, Pagination } from '@/types';
 import { useMemo } from 'react';
 
-type PaginationResponse = { data: Borrow[]; pagination?: Pagination };
+type PaginationResponse = { data: BorrowResponse[]; pagination?: Pagination };
 
 export const useBorrows = (
   params: FindParams = {},
@@ -49,8 +49,8 @@ export const useBorrowHistory = (
   }), [query]);
 };
 
-export const useBorrow = (id: string, options?: Omit<UseQueryOptions<Borrow, Error, Borrow, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const query = useQuery<Borrow, Error, Borrow, QueryKey>({
+export const useBorrow = (id: string, options?: Omit<UseQueryOptions<BorrowResponse, Error, BorrowResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+  const query = useQuery<BorrowResponse, Error, BorrowResponse, QueryKey>({
     queryKey: ['borrows', id],
     queryFn: () => BorrowApi.findById(id),
     enabled: !!id,

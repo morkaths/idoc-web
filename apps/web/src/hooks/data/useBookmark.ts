@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BookmarkApi } from '@/apis/bookmark.api';
-import type { Bookmark, BookmarkRequest, FindParams, Pagination } from '@/types';
+import type { BookmarkResponse, BookmarkRequest, FindParams, Pagination } from '@/types';
 import { useMemo } from 'react';
 
-type PaginationResponse = { data: Bookmark[]; pagination?: Pagination };
+type PaginationResponse = { data: BookmarkResponse[]; pagination?: Pagination };
 
 export const useBookmarks = (
     params: FindParams = {},
@@ -27,8 +27,8 @@ export const useBookmarks = (
     }), [query]);
 };
 
-export const useBookmark = (id: string, options?: Omit<UseQueryOptions<Bookmark, Error, Bookmark, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<Bookmark, Error, Bookmark, QueryKey>({
+export const useBookmark = (id: string, options?: Omit<UseQueryOptions<BookmarkResponse, Error, BookmarkResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+    const query = useQuery<BookmarkResponse, Error, BookmarkResponse, QueryKey>({
         queryKey: ['bookmarks', id],
         queryFn: () => BookmarkApi.findById(id),
         enabled: !!id,

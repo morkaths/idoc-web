@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { ReviewApi } from '@/apis/review.api';
-import type { Review, ReviewRequest, FindParams, Pagination } from '@/types';
+import type { ReviewResponse, ReviewRequest, FindParams, Pagination } from '@/types';
 import { useMemo } from 'react';
 
-type PaginationResponse = { data: Review[]; pagination?: Pagination };
+type PaginationResponse = { data: ReviewResponse[]; pagination?: Pagination };
 
 export const useReviews = (
     params: FindParams = {},
@@ -27,8 +27,8 @@ export const useReviews = (
     }), [query]);
 };
 
-export const useReview = (id: string, options?: Omit<UseQueryOptions<Review, Error, Review, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<Review, Error, Review, QueryKey>({
+export const useReview = (id: string, options?: Omit<UseQueryOptions<ReviewResponse, Error, ReviewResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+    const query = useQuery<ReviewResponse, Error, ReviewResponse, QueryKey>({
         queryKey: ['reviews', id],
         queryFn: () => ReviewApi.findById(id),
         enabled: !!id,

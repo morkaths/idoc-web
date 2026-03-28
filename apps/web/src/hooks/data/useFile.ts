@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { FileApi } from '@/apis/file.api';
-import type { File as IFile, FindParams, Pagination } from '@/types';
+import type { FileResponse, FindParams, Pagination } from '@/types';
 import { useMemo } from 'react';
 
-type PaginationResponse = { data: IFile[]; pagination?: Pagination };
+type PaginationResponse = { data: FileResponse[]; pagination?: Pagination };
 
 export const useFiles = (
     params: FindParams = {},
@@ -27,8 +27,8 @@ export const useFiles = (
     }), [query]);
 };
 
-export const useFile = (id: string, options?: Omit<UseQueryOptions<IFile, Error, IFile, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<IFile, Error, IFile, QueryKey>({
+export const useFile = (id: string, options?: Omit<UseQueryOptions<FileResponse, Error, FileResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+    const query = useQuery<FileResponse, Error, FileResponse, QueryKey>({
         queryKey: ['files', id],
         queryFn: () => FileApi.findById(id),
         enabled: !!id,
@@ -78,7 +78,7 @@ export const useDeleteFile = () => {
 };
 
 export const useViewUrl = (
-    id: string, 
+    id: string,
     ticket: string,
     options?: Omit<UseQueryOptions<string, Error, string, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {

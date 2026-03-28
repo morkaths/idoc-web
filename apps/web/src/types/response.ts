@@ -92,7 +92,7 @@ export interface BookResponse {
   updatedAt?: Date | string;
 }
 
-export interface File {
+export interface FileResponse {
   id: string;
   originalname: string;
   url: string;
@@ -103,7 +103,7 @@ export interface File {
   updatedAt?: Date | string;
 }
 
-export interface Borrow {
+export interface BorrowResponse {
   id: string;
   borrower: UserResponse;
   item: BookResponse;
@@ -121,7 +121,7 @@ export interface Borrow {
   updatedAt?: Date | string;
 }
 
-export interface Review {
+export interface ReviewResponse {
   id: string;
   item: BookResponse;
   user: UserResponse;
@@ -131,7 +131,7 @@ export interface Review {
   updatedAt?: Date | string;
 }
 
-export interface Bookmark {
+export interface BookmarkResponse {
   id: string;
   user: UserResponse;
   item: BookResponse;
@@ -141,12 +141,12 @@ export interface Bookmark {
   updatedAt?: Date | string;
 }
 
-export interface Collection {
+export interface CollectionResponse {
   id: string;
   user: UserResponse;
   name: string;
   description?: string;
-  bookmarks?: Bookmark[];
+  bookmarks?: BookmarkResponse[];
   itemCount?: number;
   isPublic?: boolean;
   createdAt?: Date | string;

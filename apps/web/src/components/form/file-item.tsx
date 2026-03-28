@@ -1,4 +1,4 @@
-import { File as IFile } from "@/types";
+import { FileResponse } from "@/types";
 import { FileArchive, FileCode, FilePlay, FileText, Sheet, Trash2 } from "lucide-react";
 
 export function FileItem({
@@ -6,7 +6,7 @@ export function FileItem({
     progress = 100,
     onDelete,
 }: {
-    file: IFile | File;
+    file: FileResponse | File;
     progress?: number;
     onDelete?: () => void;
 }) {
@@ -14,7 +14,7 @@ export function FileItem({
     const size = file.size;
     const name = file instanceof File ? file.name : file.originalname;
     const ext = name.split('.').pop()?.toLowerCase() || "";
-    
+
     function getFileIcon(ext: string) {
         switch (ext) {
             case "xls":

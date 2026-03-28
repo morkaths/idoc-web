@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { Borrow, BorrowRequest, FindParams, Pagination } from '../types';
+import type { BorrowResponse, BorrowRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const BorrowApi = {
-  find: async (params?: FindParams): Promise<{ data: Borrow[]; pagination?: Pagination }> => {
-    const response = await ApiClient.get<Borrow[]>(
+  find: async (params?: FindParams): Promise<{ data: BorrowResponse[]; pagination?: Pagination }> => {
+    const response = await ApiClient.get<BorrowResponse[]>(
       API_CONFIG.endpoints.borrow.find,
       { mode: 'public', params }
     );
@@ -14,8 +14,8 @@ export const BorrowApi = {
     };
   },
 
-  history: async (params?: FindParams): Promise<{ data: Borrow[]; pagination?: Pagination }> => {
-    const response = await ApiClient.get<Borrow[]>(
+  history: async (params?: FindParams): Promise<{ data: BorrowResponse[]; pagination?: Pagination }> => {
+    const response = await ApiClient.get<BorrowResponse[]>(
       API_CONFIG.endpoints.borrow.history,
       { mode: 'private', params }
     );
@@ -25,8 +25,8 @@ export const BorrowApi = {
     };
   },
 
-  findById: async (id: string): Promise<Borrow> => {
-    const response = await ApiClient.get<Borrow>(
+  findById: async (id: string): Promise<BorrowResponse> => {
+    const response = await ApiClient.get<BorrowResponse>(
       API_CONFIG.endpoints.borrow.findById(id),
       { mode: 'public' }
     );
@@ -34,8 +34,8 @@ export const BorrowApi = {
     throw new Error(response.message || 'Borrow not found');
   },
 
-  create: async (data: BorrowRequest): Promise<Borrow> => {
-    const response = await ApiClient.post<Borrow>(
+  create: async (data: BorrowRequest): Promise<BorrowResponse> => {
+    const response = await ApiClient.post<BorrowResponse>(
       API_CONFIG.endpoints.borrow.create,
       { mode: 'private', data }
     );
@@ -43,8 +43,8 @@ export const BorrowApi = {
     throw new Error(response.message || 'Failed to create borrow');
   },
 
-  update: async (id: string, data: Partial<BorrowRequest>): Promise<Borrow> => {
-    const response = await ApiClient.patch<Borrow>(
+  update: async (id: string, data: Partial<BorrowRequest>): Promise<BorrowResponse> => {
+    const response = await ApiClient.patch<BorrowResponse>(
       API_CONFIG.endpoints.borrow.update(id),
       { mode: 'private', data }
     );
@@ -60,8 +60,8 @@ export const BorrowApi = {
     return response.success;
   },
 
-  extend: async (id: string, extraDays: number, note?: string): Promise<Borrow> => {
-    const response = await ApiClient.put<Borrow>(
+  extend: async (id: string, extraDays: number, note?: string): Promise<BorrowResponse> => {
+    const response = await ApiClient.put<BorrowResponse>(
       API_CONFIG.endpoints.borrow.extend(id),
       { mode: 'private', data: { extraDays, note } }
     );
@@ -69,8 +69,8 @@ export const BorrowApi = {
     throw new Error(response.message || 'Failed to extend borrow');
   },
 
-  return: async (id: string): Promise<Borrow> => {
-    const response = await ApiClient.put<Borrow>(
+  return: async (id: string): Promise<BorrowResponse> => {
+    const response = await ApiClient.put<BorrowResponse>(
       API_CONFIG.endpoints.borrow.return(id),
       { mode: 'private' }
     );

@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { Review, ReviewRequest, FindParams, Pagination } from '../types';
+import type { ReviewResponse, ReviewRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const ReviewApi = {
-    find: async (params?: FindParams): Promise<{ data: Review[]; pagination?: Pagination }> => {
-        const response = await ApiClient.get<Review[]>(
+    find: async (params?: FindParams): Promise<{ data: ReviewResponse[]; pagination?: Pagination }> => {
+        const response = await ApiClient.get<ReviewResponse[]>(
             API_CONFIG.endpoints.review.find,
             { mode: 'public', params }
         );
@@ -14,8 +14,8 @@ export const ReviewApi = {
         };
     },
 
-    findById: async (id: string): Promise<Review> => {
-        const response = await ApiClient.get<Review>(
+    findById: async (id: string): Promise<ReviewResponse> => {
+        const response = await ApiClient.get<ReviewResponse>(
             API_CONFIG.endpoints.review.findById(id),
             { mode: 'public' }
         );
@@ -23,8 +23,8 @@ export const ReviewApi = {
         throw new Error(response.message || 'Review not found');
     },
 
-    create: async (data: ReviewRequest): Promise<Review> => {
-        const response = await ApiClient.post<Review>(
+    create: async (data: ReviewRequest): Promise<ReviewResponse> => {
+        const response = await ApiClient.post<ReviewResponse>(
             API_CONFIG.endpoints.review.create,
             { mode: 'private', data }
         );
@@ -32,8 +32,8 @@ export const ReviewApi = {
         throw new Error(response.message || 'Failed to create review');
     },
 
-    update: async (id: string, data: Partial<ReviewRequest>): Promise<Review> => {
-        const response = await ApiClient.patch<Review>(
+    update: async (id: string, data: Partial<ReviewRequest>): Promise<ReviewResponse> => {
+        const response = await ApiClient.patch<ReviewResponse>(
             API_CONFIG.endpoints.review.update(id),
             { mode: 'private', data }
         );

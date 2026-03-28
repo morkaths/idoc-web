@@ -11,7 +11,7 @@ import {
     DialogClose,
 } from '@repo/ui/components/dialog';
 import { useReviews } from '@/hooks/data/useReview';
-import type { Borrow, Review } from '@/types';
+import type { BorrowResponse, ReviewResponse } from '@/types';
 import { Textarea } from '@repo/ui/components/textarea';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
@@ -30,8 +30,8 @@ export type ReviewForm = z.infer<typeof ReviewFormSchema>;
 interface ReviewMutateDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    borrow: Borrow;
-    onSubmit: (data: ReviewForm, existingReview?: Review) => Promise<void>;
+    borrow: BorrowResponse;
+    onSubmit: (data: ReviewForm, existingReview?: ReviewResponse) => Promise<void>;
 }
 
 export function ReviewMutateDialog({

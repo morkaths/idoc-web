@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_CONFIG } from '@/config/api';
 import { ApiClient } from './config';
-import type { File as IFile, FindParams, Pagination } from '../types';
+import type { FileResponse as IFile, FindParams, Pagination } from '../types';
 
 export const FileApi = {
     find: async (params?: FindParams): Promise<{ data: IFile[]; pagination?: Pagination }> => {

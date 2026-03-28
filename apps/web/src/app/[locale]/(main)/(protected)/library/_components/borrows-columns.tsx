@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
-import type { Borrow } from '@/types';
+import type { BorrowResponse } from '@/types';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
@@ -31,7 +31,7 @@ const CoverCell = ({ src, title }: { src?: string; title: string }) => {
   );
 };
 
-export const borrowsColumns = (t: any, keys: any): ColumnDef<Borrow>[] => [
+export const borrowsColumns = (t: any, keys: any): ColumnDef<BorrowResponse>[] => [
   {
     id: 'select',
     enableSorting: false,

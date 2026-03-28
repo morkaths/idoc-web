@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from "@/lib/utils";
-import { type Borrow } from "@/types";
+import { type BorrowResponse } from "@/types";
 import { format } from "date-fns";
 import { Badge } from "@repo/ui/components/badge";
 import { Calendar, Check, Clock, AlertCircle, Play } from "lucide-react";
@@ -15,7 +15,7 @@ type TimelineEntry = {
 };
 
 interface BorrowTimelineProps {
-    borrow: Borrow;
+    borrow: BorrowResponse;
     className?: string;
 }
 

@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { Bookmark, BookmarkRequest, FindParams, Pagination } from '../types';
+import type { BookmarkResponse, BookmarkRequest, FindParams, Pagination } from '../types';
 import { ApiClient, getAccessToken } from './config';
 
 export const BookmarkApi = {
-    find: async (params?: FindParams): Promise<{ data: Bookmark[]; pagination?: Pagination }> => {
-        const response = await ApiClient.get<Bookmark[]>(
+    find: async (params?: FindParams): Promise<{ data: BookmarkResponse[]; pagination?: Pagination }> => {
+        const response = await ApiClient.get<BookmarkResponse[]>(
             API_CONFIG.endpoints.bookmark.find,
             { mode: 'public', params }
         );
@@ -14,8 +14,8 @@ export const BookmarkApi = {
         };
     },
 
-    findById: async (id: string): Promise<Bookmark> => {
-        const response = await ApiClient.get<Bookmark>(
+    findById: async (id: string): Promise<BookmarkResponse> => {
+        const response = await ApiClient.get<BookmarkResponse>(
             API_CONFIG.endpoints.bookmark.findById(id),
             { mode: 'public' }
         );
@@ -34,8 +34,8 @@ export const BookmarkApi = {
         return {};
     },
 
-    create: async (data: BookmarkRequest): Promise<Bookmark> => {
-        const response = await ApiClient.post<Bookmark>(
+    create: async (data: BookmarkRequest): Promise<BookmarkResponse> => {
+        const response = await ApiClient.post<BookmarkResponse>(
             API_CONFIG.endpoints.bookmark.create,
             { mode: 'private', data }
         );
@@ -43,8 +43,8 @@ export const BookmarkApi = {
         throw new Error(response.message || 'Failed to create bookmark');
     },
 
-    update: async (id: string, data: Partial<BookmarkRequest>): Promise<Bookmark> => {
-        const response = await ApiClient.patch<Bookmark>(
+    update: async (id: string, data: Partial<BookmarkRequest>): Promise<BookmarkResponse> => {
+        const response = await ApiClient.patch<BookmarkResponse>(
             API_CONFIG.endpoints.bookmark.update(id),
             { mode: 'private', data }
         );

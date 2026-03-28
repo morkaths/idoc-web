@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type Row } from '@tanstack/react-table';
-import { type Borrow } from '@/types';
+import { type BorrowResponse } from '@/types';
 import { Clock, Eye, Undo2, History, Star } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -20,7 +20,7 @@ type BorrowsTableRowActionsProps<TData> = {
 
 export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsProps<TData>) {
   const { t, keys } = useLocale('library');
-  const original = row.original as unknown as Borrow;
+  const original = row.original as unknown as BorrowResponse;
   const safeBorrow = {
     ...original,
     renewals: original.renewals ?? [],
@@ -51,7 +51,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
       }
       : undefined,
   };
-  const borrow = safeBorrow as Borrow;
+  const borrow = safeBorrow as BorrowResponse;
   const ctx = useBorrowsContext();
   if (!ctx) throw new Error('BorrowsTableRowActions must be used inside BorrowsProvider');
   const { setOpen, setCurrentRow } = ctx;

@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { Collection, CollectionRequest, FindParams, Pagination } from '../types';
+import type { CollectionResponse, CollectionRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const CollectionApi = {
-    find: async (params?: FindParams): Promise<{ data: Collection[]; pagination?: Pagination }> => {
-        const response = await ApiClient.get<Collection[]>(
+    find: async (params?: FindParams): Promise<{ data: CollectionResponse[]; pagination?: Pagination }> => {
+        const response = await ApiClient.get<CollectionResponse[]>(
             API_CONFIG.endpoints.collection.find,
             { mode: 'public', params }
         );
@@ -14,8 +14,8 @@ export const CollectionApi = {
         };
     },
 
-    findById: async (id: string): Promise<Collection> => {
-        const response = await ApiClient.get<Collection>(
+    findById: async (id: string): Promise<CollectionResponse> => {
+        const response = await ApiClient.get<CollectionResponse>(
             API_CONFIG.endpoints.collection.findById(id),
             { mode: 'public' }
         );
@@ -23,8 +23,8 @@ export const CollectionApi = {
         throw new Error(response.message || 'Collection not found');
     },
 
-    create: async (data: CollectionRequest): Promise<Collection> => {
-        const response = await ApiClient.post<Collection>(
+    create: async (data: CollectionRequest): Promise<CollectionResponse> => {
+        const response = await ApiClient.post<CollectionResponse>(
             API_CONFIG.endpoints.collection.create,
             { mode: 'private', data }
         );
@@ -32,8 +32,8 @@ export const CollectionApi = {
         throw new Error(response.message || 'Failed to create collection');
     },
 
-    update: async (id: string, data: Partial<CollectionRequest>): Promise<Collection> => {
-        const response = await ApiClient.patch<Collection>(
+    update: async (id: string, data: Partial<CollectionRequest>): Promise<CollectionResponse> => {
+        const response = await ApiClient.patch<CollectionResponse>(
             API_CONFIG.endpoints.collection.update(id),
             { mode: 'private', data }
         );
