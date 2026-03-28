@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react';
-import { Book } from "@/types";
+import { BookResponse } from "@/types";
 import Image from 'next/image';
 import { useState, useEffect, useMemo } from 'react';
 import { useDeleteBookmark } from "@/hooks/data/useBookmark";
@@ -9,7 +9,7 @@ import { useLocale } from '@/hooks/ui/useLocale';
 import { useBookmarkContext } from './bookmark-provider';
 
 type BookGridItemProps = {
-  book: Book;
+  book: BookResponse;
   onClick?: () => void;
 };
 
@@ -19,7 +19,7 @@ export function BookGridItem({
 }: BookGridItemProps) {
   const { t, keys } = useLocale('books');
   const [imageError, setImageError] = useState(false);
-  
+
   // Use props directly for initial state, but sync back if props change
   // Actually, we can just use book.bookmarkId directly unless we need optimistic updates
   const [optimisticBookmarkId, setOptimisticBookmarkId] = useState<string | undefined>(book.bookmarkId);
@@ -135,7 +135,7 @@ export function BookGridItem({
                   ({book.totalReviews || 0})
                 </span>
               </div>
-              
+
               <div className="hidden sm:flex items-center gap-0.5 text-amber-500">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Icon

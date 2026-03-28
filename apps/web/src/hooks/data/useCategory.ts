@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { CategoryApi } from '@/apis';
-import type { FindParams, Category, Pagination, CategoryRequest } from '@/types';
+import type { FindParams, CategoryResponse, Pagination, CategoryRequest } from '@/types';
 import { useMemo } from 'react';
 
-type PaginationResponse = { data: Category[]; pagination?: Pagination };
+type PaginationResponse = { data: CategoryResponse[]; pagination?: Pagination };
 
 export const useCategories = (
   params: FindParams = {},
@@ -27,8 +27,8 @@ export const useCategories = (
   }), [query]);
 };
 
-export const useCategory = (id: string, options?: Omit<UseQueryOptions<Category, Error, Category, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const query = useQuery<Category, Error, Category, QueryKey>({
+export const useCategory = (id: string, options?: Omit<UseQueryOptions<CategoryResponse, Error, CategoryResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+  const query = useQuery<CategoryResponse, Error, CategoryResponse, QueryKey>({
     queryKey: ['categories', id],
     queryFn: () => CategoryApi.findById(id),
     enabled: !!id,

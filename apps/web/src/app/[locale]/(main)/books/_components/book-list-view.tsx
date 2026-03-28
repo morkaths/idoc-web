@@ -1,6 +1,6 @@
 "use client";
 
-import { Book, Pagination as PaginationType } from "@/types";
+import { BookResponse, Pagination as PaginationType } from "@/types";
 import { BookListItems } from "@/components/book/book-list-items";
 import { Pagination } from "@/components/pagination";
 
@@ -11,7 +11,7 @@ export function BookListView({
   pagination,
   onPageChange,
 }: {
-  data?: Book[];
+  data?: BookResponse[];
   loading?: boolean;
   error?: string;
   pagination?: PaginationType;

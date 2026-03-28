@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { BookRequest, Book, FindParams, Pagination } from '../types';
+import type { BookRequest, BookResponse, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const BookApi = {
-  find: async (params?: FindParams): Promise<{ data: Book[]; pagination?: Pagination }> => {
-    const response = await ApiClient.get<Book[]>(
+  find: async (params?: FindParams): Promise<{ data: BookResponse[]; pagination?: Pagination }> => {
+    const response = await ApiClient.get<BookResponse[]>(
       API_CONFIG.endpoints.book.find,
       { mode: 'public', params }
     );
@@ -14,8 +14,8 @@ export const BookApi = {
     };
   },
 
-  findById: async (id: string): Promise<Book> => {
-    const response = await ApiClient.get<Book>(
+  findById: async (id: string): Promise<BookResponse> => {
+    const response = await ApiClient.get<BookResponse>(
       API_CONFIG.endpoints.book.findById(id),
       { mode: 'public' }
     );
@@ -23,8 +23,8 @@ export const BookApi = {
     throw new Error(response.message || 'Book not found');
   },
 
-  create: async (data: BookRequest): Promise<Book> => {
-    const response = await ApiClient.post<Book>(
+  create: async (data: BookRequest): Promise<BookResponse> => {
+    const response = await ApiClient.post<BookResponse>(
       API_CONFIG.endpoints.book.create,
       { mode: 'private', data: data }
     );
@@ -32,8 +32,8 @@ export const BookApi = {
     throw new Error(response.message || 'Failed to create book');
   },
 
-  update: async (id: string, data: Partial<BookRequest>): Promise<Book> => {
-    const response = await ApiClient.patch<Book>(
+  update: async (id: string, data: Partial<BookRequest>): Promise<BookResponse> => {
+    const response = await ApiClient.patch<BookResponse>(
       API_CONFIG.endpoints.book.update(id),
       { mode: 'private', data: data }
     );

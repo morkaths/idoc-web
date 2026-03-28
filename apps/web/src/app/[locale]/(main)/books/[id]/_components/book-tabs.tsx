@@ -3,7 +3,7 @@
 import { BookGridItems } from "@/components/book/book-grid-items";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
 import { ReactNode, useState } from "react";
-import { Book } from "@/types";
+import { BookResponse } from "@/types";
 import { formatDate } from "@/utils/date";
 import { BookRecommended } from "./book-recommended";
 import { BookReviews } from "./book-reviews";
@@ -15,7 +15,7 @@ interface TabItem {
     content: ReactNode;
 }
 
-export function BookTabs({ book }: { book?: Book }) {
+export function BookTabs({ book }: { book?: BookResponse }) {
     const { t, keys } = useLocale('book');
     const [activeTab, setActiveTab] = useState('info');
 

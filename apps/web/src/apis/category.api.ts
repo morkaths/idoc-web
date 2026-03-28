@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { Category, CategoryRequest, FindParams, Pagination } from '../types';
+import type { CategoryResponse, CategoryRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const CategoryApi = {
-  find: async (params?: FindParams): Promise<{ data: Category[]; pagination?: Pagination }> => {
-    const response = await ApiClient.get<Category[]>(
+  find: async (params?: FindParams): Promise<{ data: CategoryResponse[]; pagination?: Pagination }> => {
+    const response = await ApiClient.get<CategoryResponse[]>(
       API_CONFIG.endpoints.category.find,
       { mode: 'public', params }
     );
@@ -14,8 +14,8 @@ export const CategoryApi = {
     };
   },
 
-  findById: async (id: string): Promise<Category> => {
-    const response = await ApiClient.get<Category>(
+  findById: async (id: string): Promise<CategoryResponse> => {
+    const response = await ApiClient.get<CategoryResponse>(
       API_CONFIG.endpoints.category.findById(id),
       { mode: 'public', }
     );
@@ -23,8 +23,8 @@ export const CategoryApi = {
     throw new Error(response.message || 'Category not found');
   },
 
-  create: async (data: CategoryRequest): Promise<Category> => {
-    const response = await ApiClient.post<Category>(
+  create: async (data: CategoryRequest): Promise<CategoryResponse> => {
+    const response = await ApiClient.post<CategoryResponse>(
       API_CONFIG.endpoints.category.create,
       { mode: 'private', data, }
     );
@@ -32,8 +32,8 @@ export const CategoryApi = {
     throw new Error(response.message || 'Failed to create category');
   },
 
-  update: async (id: string, data: Partial<CategoryRequest>): Promise<Category> => {
-    const response = await ApiClient.patch<Category>(
+  update: async (id: string, data: Partial<CategoryRequest>): Promise<CategoryResponse> => {
+    const response = await ApiClient.patch<CategoryResponse>(
       API_CONFIG.endpoints.category.update(id),
       { mode: 'private', data, }
     );

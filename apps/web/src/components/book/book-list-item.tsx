@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Image from "next/image";
 import { Icon } from '@iconify/react';
-import { Book } from "@/types";
+import { BookResponse } from "@/types";
 import { cn } from "@/lib/utils";
 import { useDeleteBookmark } from "@/hooks/data/useBookmark";
 import { toast } from 'sonner';
@@ -10,7 +10,7 @@ import { useLocale } from '@/hooks/ui/useLocale';
 import { useBookmarkContext } from './bookmark-provider';
 
 type BookListItemProps = {
-  book: Book;
+  book: BookResponse;
   onClick?: () => void;
   className?: string;
 };
@@ -129,7 +129,7 @@ export function BookListItem({ book, onClick, className }: BookListItemProps) {
                 ({book.totalReviews || 0})
               </span>
             </div>
-            
+
             {/* Desktop Rating View (5 stars) */}
             <div className="hidden sm:flex items-center gap-0.5 text-amber-500 dark:text-amber-400">
               {Array.from({ length: 5 }).map((_, i) => (

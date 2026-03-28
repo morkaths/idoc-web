@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
-import type { Book, BookRequest, FindParams, Pagination } from '@/types';
+import type { BookResponse, BookRequest, FindParams, Pagination } from '@/types';
 import { BookmarkApi } from '@/apis/bookmark.api';
 import { useSession } from 'next-auth/react';
 import { useMemo } from 'react';
 
-type PaginationResponse = { data: Book[]; pagination?: Pagination };
+type PaginationResponse = { data: BookResponse[]; pagination?: Pagination };
 
 export const useBooks = (
   params: FindParams = {},
@@ -55,11 +55,11 @@ export const useBooks = (
   return result;
 };
 
-export const useBook = (id: string, options?: Omit<UseQueryOptions<Book, Error, Book, QueryKey>, 'queryKey' | 'queryFn'>) => {
+export const useBook = (id: string, options?: Omit<UseQueryOptions<BookResponse, Error, BookResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
   const { data: session, status } = useSession();
 
   // 1. Fetch book details
-  const bookQuery = useQuery<Book, Error, Book, QueryKey>({
+  const bookQuery = useQuery<BookResponse, Error, BookResponse, QueryKey>({
     queryKey: ['books', id],
     queryFn: () => BookApi.findById(id),
     enabled: !!id,

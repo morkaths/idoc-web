@@ -1,6 +1,6 @@
 "use client";
 
-import { Book } from "@/types";
+import { BookResponse } from "@/types";
 import { useRouter } from "next/navigation";
 import paths from "@/config/path";
 import { Skeleton } from "@repo/ui/components/skeleton";
@@ -10,7 +10,7 @@ import { useLocale } from '@/hooks/ui/useLocale';
 import { BookmarkProvider } from "./bookmark-provider";
 
 interface BookGridItemsProps {
-    data?: Book[];
+    data?: BookResponse[];
     loading?: boolean;
     error?: string | null;
     className?: string;

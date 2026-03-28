@@ -1,6 +1,6 @@
 "use client";
 
-import { Book } from "@/types";
+import { BookResponse } from "@/types";
 import { Skeleton } from "@repo/ui/components/skeleton";
 
 import { SearchX } from "lucide-react";
@@ -11,7 +11,7 @@ import { useLocale } from '@/hooks/ui/useLocale';
 import { BookmarkProvider } from "./bookmark-provider";
 
 interface BookListItemsProps {
-  data?: Book[];
+  data?: BookResponse[];
   loading?: boolean;
   error?: string | null;
   className?: string;

@@ -54,27 +54,25 @@ export interface AuthorResponse {
   updatedAt?: Date | string;
 }
 
-export interface CategoryTranslation {
-  lang: string;
-  name: string;
-  description?: string;
-}
-
-export interface Category {
+export interface CategoryResponse {
   id: string;
   slug?: string;
-  parent?: Category;
-  translations?: CategoryTranslation[];
+  parent?: CategoryResponse;
+  translations?: {
+    lang: string;
+    name: string;
+    description?: string;
+  }[];
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
 
-export interface Book {
+export interface BookResponse {
   id: string;
   title: string;
   slug?: string;
   description?: string;
-  categories?: Category[];
+  categories?: CategoryResponse[];
   authors?: AuthorResponse[];
   publisher?: string;
   publishedDate?: Date | string;
@@ -108,7 +106,7 @@ export interface File {
 export interface Borrow {
   id: string;
   borrower: UserResponse;
-  item: Book;
+  item: BookResponse;
   renewals?: {
     renewedAt: Date | string;
     oldExpireTime: Date | string;
@@ -125,7 +123,7 @@ export interface Borrow {
 
 export interface Review {
   id: string;
-  item: Book;
+  item: BookResponse;
   user: UserResponse;
   rating: number;
   content?: string;
@@ -136,7 +134,7 @@ export interface Review {
 export interface Bookmark {
   id: string;
   user: UserResponse;
-  item: Book;
+  item: BookResponse;
   page?: number;
   note?: string;
   createdAt?: Date | string;

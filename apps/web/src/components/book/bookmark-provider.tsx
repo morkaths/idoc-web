@@ -1,21 +1,21 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Book } from '@/types';
+import { BookResponse } from '@/types';
 import { BookmarkDialog } from './bookmark-dialog';
 
 type BookmarkContextType = {
     open: boolean;
     setOpen: (open: boolean) => void;
-    currentBook: Book | null;
-    setCurrentBook: React.Dispatch<React.SetStateAction<Book | null>>;
+    currentBook: BookResponse | null;
+    setCurrentBook: React.Dispatch<React.SetStateAction<BookResponse | null>>;
 };
 
 const BookmarkContext = React.createContext<BookmarkContextType | null>(null);
 
 export function BookmarkProvider({ children }: { children: React.ReactNode }) {
     const [open, setOpen] = useState<boolean>(false);
-    const [currentBook, setCurrentBook] = useState<Book | null>(null);
+    const [currentBook, setCurrentBook] = useState<BookResponse | null>(null);
 
     // When dialog closes, verify we should clear currentBook or keep it?
     // Usually fine to keep it or clear it. Let's keep it simple.

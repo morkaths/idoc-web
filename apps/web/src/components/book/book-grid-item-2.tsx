@@ -1,10 +1,10 @@
 import { Icon } from '@iconify/react';
-import { Book } from "@/types";
+import { BookResponse } from "@/types";
 import Image from 'next/image';
 import { Button } from '@repo/ui/components/button';
 
 type BookGridItemProps = {
-  book: Book;
+  book: BookResponse;
   onClick?: () => void;
 };
 

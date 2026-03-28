@@ -11,7 +11,7 @@ import {
     CommandList,
 } from "@repo/ui/components/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/popover";
-import type { Category } from "@/types";
+import type { CategoryResponse } from "@/types";
 import { useDebounce } from "@/hooks/ui/useDebounce";
 import { useCategories } from "@/hooks/data/useCategory";
 import { useLocale } from '@/hooks/ui/useLocale';
@@ -39,7 +39,7 @@ export function CategoriesCombobox({
     // FETCH DATA
     const shouldFetch = open || value.length > 0;
     const { data, isLoading } = useCategories(categoryParams, { enabled: shouldFetch });
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<CategoryResponse[]>([]);
     const pagination = Array.isArray(data?.pagination) ? data.pagination[0] : data?.pagination;
     const total = pagination?.total ?? 0;
     const limited = pagination?.limit ?? 10;
@@ -70,7 +70,7 @@ export function CategoriesCombobox({
         }
     };
 
-    const toggleSelection = (category: Category) => {
+    const toggleSelection = (category: CategoryResponse) => {
         if (value.includes(category.id)) {
             onChange(value.filter((id) => id !== category.id));
         } else {
@@ -78,7 +78,7 @@ export function CategoriesCombobox({
         }
     };
 
-    const removeSelection = (category: Category) => {
+    const removeSelection = (category: CategoryResponse) => {
         onChange(value.filter((id) => id !== category.id));
     };
 
