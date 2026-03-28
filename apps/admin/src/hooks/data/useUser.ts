@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { UserApi } from '@/apis';
 import type { FindParams, UserResponse, UserRequest, Pagination } from '@/types';
+import { useMemo } from 'react';
 
 type PaginationResponse = { data: UserResponse[]; pagination?: Pagination };
 
@@ -17,27 +18,28 @@ export const useUsers = (
     ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: {
       data: query.data?.data || [],
       pagination: query.data?.pagination,
     },
-  };
+  }), [query]);
 };
 
-export const useUser = (id: string) => {
-  const query = useQuery({
+export const useUser = (id: string, options?: Omit<UseQueryOptions<UserResponse, Error, UserResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+  const query = useQuery<UserResponse, Error, UserResponse, QueryKey>({
     queryKey: ['users', id],
     queryFn: () => UserApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
+    ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: query.data || null,
-  };
+  }), [query]);
 };
 
 export const useCreateUser = () => {

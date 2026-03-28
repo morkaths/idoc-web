@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BorrowApi } from '@/apis/borrow.api';
 import type { BorrowResponse, BorrowRequest, FindParams, Pagination } from '@/types';
+import { useMemo } from 'react';
 
 type PaginationResponse = { data: BorrowResponse[]; pagination?: Pagination };
 
@@ -17,13 +18,13 @@ export const useBorrows = (
     ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: {
       data: query.data?.data || [],
       pagination: query.data?.pagination,
     },
-  };
+  }), [query]);
 };
 
 export const useBorrowHistory = (
@@ -39,27 +40,28 @@ export const useBorrowHistory = (
     ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: {
       data: query.data?.data || [],
       pagination: query.data?.pagination,
     },
-  };
+  }), [query]);
 };
 
-export const useBorrow = (id: string) => {
-  const query = useQuery({
+export const useBorrow = (id: string, options?: Omit<UseQueryOptions<BorrowResponse, Error, BorrowResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+  const query = useQuery<BorrowResponse, Error, BorrowResponse, QueryKey>({
     queryKey: ['borrows', id],
     queryFn: () => BorrowApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
+    ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: query.data || null,
-  };
+  }), [query]);
 };
 
 export const useCreateBorrow = () => {
@@ -118,4 +120,4 @@ export const useReturnBorrow = () => {
       queryClient.invalidateQueries({ queryKey: ['borrows'] });
     },
   });
-};
+};

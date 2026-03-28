@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BookmarkApi } from '@/apis/bookmark.api';
 import type { BookmarkResponse, BookmarkRequest, FindParams, Pagination } from '@/types';
+import { useMemo } from 'react';
 
 type PaginationResponse = { data: BookmarkResponse[]; pagination?: Pagination };
 
@@ -17,27 +18,28 @@ export const useBookmarks = (
         ...options,
     });
 
-    return {
+    return useMemo(() => ({
         ...query,
         data: {
             data: query.data?.data || [],
             pagination: query.data?.pagination,
         },
-    };
+    }), [query]);
 };
 
-export const useBookmark = (id: string) => {
-    const query = useQuery({
+export const useBookmark = (id: string, options?: Omit<UseQueryOptions<BookmarkResponse, Error, BookmarkResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+    const query = useQuery<BookmarkResponse, Error, BookmarkResponse, QueryKey>({
         queryKey: ['bookmarks', id],
         queryFn: () => BookmarkApi.findById(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
+        ...options,
     });
 
-    return {
+    return useMemo(() => ({
         ...query,
         data: query.data || null,
-    };
+    }), [query]);
 };
 
 export const useCreateBookmark = () => {
@@ -74,16 +76,17 @@ export const useDeleteBookmark = () => {
     });
 };
 
-export const useBookmarkStatus = (itemIds: string[]) => {
-    const query = useQuery({
+export const useBookmarkStatus = (itemIds: string[], options?: Omit<UseQueryOptions<Record<string, string | null>, Error, Record<string, string | null>, QueryKey>, 'queryKey' | 'queryFn'>) => {
+    const query = useQuery<Record<string, string | null>, Error, Record<string, string | null>, QueryKey>({
         queryKey: ['bookmarks', 'status', itemIds],
         queryFn: () => BookmarkApi.status(itemIds),
         enabled: itemIds.length > 0,
         staleTime: 5 * 60 * 1000,
+        ...options,
     });
 
-    return {
+    return useMemo(() => ({
         ...query,
-        data: query.data || [],
-    };
+        data: query.data || {},
+    }), [query]);
 };

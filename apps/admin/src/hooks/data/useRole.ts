@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { RoleApi } from '@/apis/role.api';
 import type { RoleResponse, RoleRequest, FindParams, Pagination } from '@/types';
+import { useMemo } from 'react';
 
 type PaginationResponse = { data: RoleResponse[]; pagination?: Pagination };
 
@@ -17,27 +18,28 @@ export const useRoles = (
     ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: {
       data: query.data?.data || [],
       pagination: query.data?.pagination,
     },
-  };
+  }), [query]);
 };
 
-export const useRole = (id: string) => {
-  const query = useQuery({
+export const useRole = (id: string, options?: Omit<UseQueryOptions<RoleResponse, Error, RoleResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+  const query = useQuery<RoleResponse, Error, RoleResponse, QueryKey>({
     queryKey: ['roles', id],
     queryFn: () => RoleApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
+    ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: query.data || null,
-  };
+  }), [query]);
 };
 
 export const useCreateRole = () => {
@@ -72,4 +74,4 @@ export const useDeleteRole = () => {
       queryClient.invalidateQueries({ queryKey: ['roles'] });
     },
   });
-};
+};

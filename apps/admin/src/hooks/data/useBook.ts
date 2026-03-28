@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
 import type { BookResponse, BookRequest, FindParams, Pagination } from '@/types';
+import { useMemo } from 'react';
 
 type PaginationResponse = { data: BookResponse[]; pagination?: Pagination };
 
@@ -17,27 +18,28 @@ export const useBooks = (
     ...options
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: {
       data: query.data?.data || [],
       pagination: query.data?.pagination,
     }
-  };
+  }), [query]);
 };
 
-export const useBook = (id: string) => {
-  const query = useQuery({
+export const useBook = (id: string, options?: Omit<UseQueryOptions<BookResponse, Error, BookResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+  const query = useQuery<BookResponse, Error, BookResponse, QueryKey>({
     queryKey: ['books', id],
     queryFn: () => BookApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
+    ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: query.data || null,
-  };
+  }), [query]);
 };
 
 export const useCreateBook = () => {
