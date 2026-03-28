@@ -1,5 +1,5 @@
 
-export interface Permission {
+export interface PermissionResponse {
   id: string;
   code?: string;
   name?: string;
@@ -11,7 +11,7 @@ export interface Role {
   id: string;
   code?: string;
   name?: string;
-  permissions?: Permission[];
+  permissions?: PermissionResponse[];
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
