@@ -1,4 +1,6 @@
-export type LanguageCode = 'vi' | 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ja';
+import ISO6391 from 'iso-639-1';
+
+export type LanguageCode = string;
 
 export interface Language {
   label: string;
@@ -9,14 +11,36 @@ export interface Language {
   flag: string;
 }
 
-export const Languages: Language[] = [
-  { label: 'Tiếng Việt', value: 'vi', flag: 'vn', country: 'Vietnam', enabled: true, hreflang: 'vi-VN' },
-  { label: 'English', value: 'en', flag: 'gb', country: 'United Kingdom', enabled: true, hreflang: 'en-US' },
-  { label: 'Español', value: 'es', flag: 'es', country: 'Spain', enabled: false, hreflang: 'es-ES' },
-  { label: 'Français', value: 'fr', flag: 'fr', country: 'France', enabled: false, hreflang: 'fr-FR' },
-  { label: 'Deutsch', value: 'de', flag: 'de', country: 'Germany', enabled: false, hreflang: 'de-DE' },
-  { label: 'Italiano', value: 'it', flag: 'it', country: 'Italy', enabled: false, hreflang: 'it-IT' },
-  { label: 'Português', value: 'pt', flag: 'pt', country: 'Portugal', enabled: false, hreflang: 'pt-PT' },
-  { label: '日本語', value: 'ja', flag: 'jp', country: 'Japan', enabled: false, hreflang: 'ja-JP' },
-];
+const REGION_OVERRIDE: Record<string, string> = {
+  en: 'GB',
+  ar: 'SA',
+};
 
+export const Locales = ['vi', 'en', 'ja'] as const;
+export type Locale = (typeof Locales)[number];
+const SUPPORTED = new Set<string>(Locales);
+
+const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+
+export const Languages: Language[] = ISO6391.getAllCodes()
+  .map(code => {
+    const isSupported = SUPPORTED.has(code);
+    const name = ISO6391.getName(code);
+    const label = name.charAt(0).toUpperCase() + name.slice(1);
+    const region = REGION_OVERRIDE[code] || new Intl.Locale(code).maximize().region;
+    const countryName = region && region !== '001' ? regionNames.of(region) : label;
+    const flag = region && region !== '001' ? region.toLowerCase() : code;
+
+    return {
+      label,
+      value: code,
+      country: countryName || label,
+      enabled: isSupported,
+      hreflang: `${code}-${region ? region : code.toUpperCase()}`,
+      flag,
+    };
+  })
+  .sort((a, b) => {
+    if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
+    return a.label.localeCompare(b.label);
+  });

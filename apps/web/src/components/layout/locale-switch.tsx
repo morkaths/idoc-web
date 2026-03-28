@@ -1,6 +1,5 @@
 "use client";
 
-import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
     DropdownMenu,
@@ -11,7 +10,7 @@ import {
 import { Button } from "@repo/ui/components/button";
 import { Languages } from "lucide-react";
 import { type Locale } from '@/i18n';
-import { Languages as SupportedLanguages, type Language } from '@/types';
+import { Languages as AllLanguages, type Language } from '@/types';
 import { useLocale } from 'next-intl';
 
 export function LocaleSwitch() {
@@ -21,7 +20,7 @@ export function LocaleSwitch() {
 
     const segments = pathname.split('/').filter(Boolean);
     const firstSegment = segments[0];
-    const isFirstSegmentLocale = firstSegment && SupportedLanguages.some((l: Language) => l.value === firstSegment);
+    const isFirstSegmentLocale = firstSegment && AllLanguages.some((l: Language) => l.value === firstSegment);
 
     const activeLocale = isFirstSegmentLocale ? (firstSegment as Locale) : currentLocale;
 
@@ -30,7 +29,7 @@ export function LocaleSwitch() {
 
         const segments = pathname.split('/').filter(Boolean);
         const firstSegment = segments[0];
-        const isFirstSegmentLocale = firstSegment && SupportedLanguages.some((l: Language) => l.value === firstSegment);
+        const isFirstSegmentLocale = firstSegment && AllLanguages.some((l: Language) => l.value === firstSegment);
 
         let newPathname;
         if (isFirstSegmentLocale) {
@@ -43,7 +42,7 @@ export function LocaleSwitch() {
         router.push(newPathname);
     };
 
-    const enabledLanguages = SupportedLanguages.filter((lang: Language) => lang.enabled);
+    const enabledLanguages = AllLanguages.filter((lang: Language) => lang.enabled);
 
     return (
         <DropdownMenu>
@@ -59,7 +58,7 @@ export function LocaleSwitch() {
                         onClick={() => handleLocaleChange(lang.value as Locale)}
                         className={activeLocale === lang.value ? "bg-accent" : ""}
                     >
-                        <span className={`${lang.flag} fis mr-2`} />
+                        <span className={`fi fi-${lang.flag} fis mr-2`} />
                         {lang.label}
                     </DropdownMenuItem>
                 ))}

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { type BookResponse } from '@/types';
 import { useRouter, useParams } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -215,7 +216,7 @@ export function BookDetailView({ id }: BookDetailViewProps) {
           <div className='flex gap-2'>
             <Button variant='outline'>
               <Plus className='h-4 w-4' />
-              {t(keys.actions.addToCollection)}
+              {t(keys.actions.addToFolder)}
             </Button>
             <Button variant='default' onClick={handleBorrowClick}>
               <Bookmark className='h-4 w-4' />
@@ -247,7 +248,7 @@ export function BookDetailView({ id }: BookDetailViewProps) {
       </div>
       {/* Tabs */}
       <div className='mx-auto mt-6 max-w-5xl px-4 md:mt-10'>
-        <BookTabs book={book} />
+        <BookTabs book={book as BookResponse} />
       </div>
     </div>
   );

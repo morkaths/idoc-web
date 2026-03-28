@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import { BookResponse } from '@/types';
+import { BookResponse, Languages } from '@/types';
 import { formatDate } from '@/utils/date';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/tabs';
@@ -38,7 +38,23 @@ export function BookTabs({ book }: { book?: BookResponse }) {
               <div className='text-muted-foreground text-xs font-semibold tracking-wider uppercase'>
                 {t(keys.tabs.info.language.label)}
               </div>
-              <div className='text-sm font-medium'>{book?.language || 'N/A'}</div>
+              <div className='text-sm font-medium'>
+                {(() => {
+                  if (!book?.language) return 'N/A';
+                  const langConfig = Languages.find((l) => l.value === book.language);
+                  const flagCode = langConfig?.flag || book.language.toLowerCase();
+                  return (
+                    <div className='flex items-center gap-2'>
+                      <span
+                        className={`fi fi-${flagCode} text-lg`}
+                        title={langConfig?.label || book.language}
+                        aria-hidden
+                      />
+                      <span>{langConfig?.label || book.language}</span>
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
             <div className='space-y-1'>
               <div className='text-muted-foreground text-xs font-semibold tracking-wider uppercase'>

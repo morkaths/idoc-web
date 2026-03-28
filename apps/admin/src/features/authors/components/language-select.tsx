@@ -30,7 +30,7 @@ export function LanguageSelect({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {Languages.filter(opt => opt.enabled).map(opt => (
+          {Languages.map(opt => (
             <SelectItem
               key={opt.value}
               value={opt.value}

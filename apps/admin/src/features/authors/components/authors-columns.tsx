@@ -1,5 +1,6 @@
 import { type ColumnDef } from '@tanstack/react-table';
 import type { AuthorResponse } from '@/types';
+import { Languages } from '@/types';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
@@ -76,12 +77,22 @@ export const authorsColumns: ColumnDef<AuthorResponse>[] = [
     accessorKey: 'nationality',
     meta: { className: 'ps-4' },
     header: ({ column }) => <DataTableColumnHeader column={column} title='Nationality' />,
-    cell: ({ row, table }) => {
+    cell: ({ row }) => {
       const nationality = row.original.nationality ?? '';
-      const query = String(table.getState().globalFilter ?? '');
+      const langConfig = Languages.find((l) => l.value === nationality);
+      const flagCode = langConfig?.flag || String(nationality).toLowerCase();
+      
+      if (!nationality) {
+        return <span className='text-muted-foreground'>—</span>;
+      }
+
       return (
-        <div className='max-w-32 truncate'>
-          <Highlight text={nationality} query={query} />
+        <div className='flex items-center justify-start'>
+          <span 
+            className={`fi fi-${flagCode} text-lg`} 
+            title={langConfig?.label || nationality} 
+            aria-hidden 
+          />
         </div>
       );
     },

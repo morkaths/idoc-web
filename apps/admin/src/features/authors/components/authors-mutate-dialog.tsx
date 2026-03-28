@@ -19,6 +19,7 @@ import { Input } from '@repo/ui/components/input';
 import { Textarea } from '@repo/ui/components/textarea';
 import { DatePicker } from '@/components/form/date-picker';
 import { ImageUpload } from '@/components/form/image-upload';
+import { LanguageSelect } from './language-select';
 
 type AuthorsMutateDialogProps = {
   open: boolean;
@@ -142,7 +143,12 @@ export function AuthorsMutateDialog({
                     <div className='grid gap-3'>
                       <FormLabel htmlFor='nationality'>Nationality</FormLabel>
                       <FormControl>
-                        <Input id='nationality' {...field} />
+                        <LanguageSelect
+                          id='nationality'
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          name={field.name}
+                        />
                       </FormControl>
                       <FormMessage />
                     </div>
