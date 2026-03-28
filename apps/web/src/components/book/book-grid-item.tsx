@@ -1,7 +1,7 @@
 import { Icon } from '@iconify/react';
 import { Book } from "@/types";
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useDeleteBookmark } from "@/hooks/data/useBookmark";
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
@@ -19,17 +19,20 @@ export function BookGridItem({
 }: BookGridItemProps) {
   const { t, keys } = useLocale('books');
   const [imageError, setImageError] = useState(false);
-  const [bookmarkId, setBookmarkId] = useState(book.bookmarkId);
-  const isBookmarked = !!bookmarkId;
+  
+  // Use props directly for initial state, but sync back if props change
+  // Actually, we can just use book.bookmarkId directly unless we need optimistic updates
+  const [optimisticBookmarkId, setOptimisticBookmarkId] = useState<string | undefined>(book.bookmarkId);
+  const isBookmarked = !!(book.bookmarkId || optimisticBookmarkId);
 
   const { setOpen, setCurrentBook } = useBookmarkContext();
   const { mutate: deleteBookmark, isPending: isDeleting } = useDeleteBookmark();
 
   const isLoading = isDeleting;
 
-  // Sync state with props
+  // Sync optimistic state with props when props change
   useEffect(() => {
-    setBookmarkId(book.bookmarkId);
+    setOptimisticBookmarkId(book.bookmarkId);
   }, [book.bookmarkId]);
 
   const handleToggleBookmark = (e: React.MouseEvent) => {
@@ -37,10 +40,11 @@ export function BookGridItem({
     if (isLoading) return;
 
     if (isBookmarked) {
-      if (bookmarkId) {
-        deleteBookmark(bookmarkId, {
+      const activeBookmarkId = book.bookmarkId || optimisticBookmarkId;
+      if (activeBookmarkId) {
+        deleteBookmark(activeBookmarkId, {
           onSuccess: () => {
-            setBookmarkId(undefined);
+            setOptimisticBookmarkId(undefined);
             toast.success(t(keys.view.bookmark.removed));
           },
           onError: (error) => {
@@ -56,6 +60,10 @@ export function BookGridItem({
       setOpen(true);
     }
   };
+
+  const authorNames = useMemo(() => {
+    return book.authors?.map(a => a.name).join(", ");
+  }, [book.authors]);
 
   return (
     <>
@@ -101,7 +109,7 @@ export function BookGridItem({
             {book.title}
           </h3>
 
-          <div className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-1 text-left" title={book.authors?.map(a => a.name).join(", ")}>
+          <div className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-1 text-left" title={authorNames}>
             {book.authors?.length ? (
               book.authors.map((a, i) => (
                 <span key={i}>

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { PermissionApi } from '@/apis/permission.api';
 import type { Permission, PermissionRequest, FindParams, Pagination, } from '@/types';
+import { useMemo } from 'react';
 
 type PaginationResponse = { data: Permission[]; pagination?: Pagination };
 
@@ -17,13 +18,13 @@ export const usePermissions = (
     ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: {
       data: query.data?.data || [],
       pagination: query.data?.pagination,
     },
-  };
+  }), [query]);
 };
 
 export const usePermission = (id: string, options?: Omit<UseQueryOptions<Permission, Error, Permission, QueryKey>, 'queryKey' | 'queryFn'>) => {
@@ -35,10 +36,10 @@ export const usePermission = (id: string, options?: Omit<UseQueryOptions<Permiss
     ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: query.data || null,
-  };
+  }), [query]);
 };
 
 export const useCreatePermission = () => {

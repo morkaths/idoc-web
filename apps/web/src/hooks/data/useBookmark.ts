@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BookmarkApi } from '@/apis/bookmark.api';
 import type { Bookmark, BookmarkRequest, FindParams, Pagination } from '@/types';
+import { useMemo } from 'react';
 
 type PaginationResponse = { data: Bookmark[]; pagination?: Pagination };
 
@@ -17,13 +18,13 @@ export const useBookmarks = (
         ...options,
     });
 
-    return {
+    return useMemo(() => ({
         ...query,
         data: {
             data: query.data?.data || [],
             pagination: query.data?.pagination,
         },
-    };
+    }), [query]);
 };
 
 export const useBookmark = (id: string, options?: Omit<UseQueryOptions<Bookmark, Error, Bookmark, QueryKey>, 'queryKey' | 'queryFn'>) => {
@@ -35,10 +36,10 @@ export const useBookmark = (id: string, options?: Omit<UseQueryOptions<Bookmark,
         ...options,
     });
 
-    return {
+    return useMemo(() => ({
         ...query,
         data: query.data || null,
-    };
+    }), [query]);
 };
 
 export const useCreateBookmark = () => {
@@ -76,11 +77,16 @@ export const useDeleteBookmark = () => {
 };
 
 export const useBookmarkStatus = (itemIds: string[], options?: Omit<UseQueryOptions<Record<string, string>, Error, Record<string, string>, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    return useQuery<Record<string, string>, Error, Record<string, string>, QueryKey>({
+    const query = useQuery<Record<string, string>, Error, Record<string, string>, QueryKey>({
         queryKey: ['bookmarks', 'status', itemIds],
         queryFn: () => BookmarkApi.status(itemIds),
         enabled: itemIds.length > 0,
         staleTime: 5 * 60 * 1000,
         ...options,
     });
+
+    return useMemo(() => ({
+        ...query,
+        data: query.data || {},
+    }), [query]);
 };

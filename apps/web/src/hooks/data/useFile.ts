@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { FileApi } from '@/apis/file.api';
 import type { File as IFile, FindParams, Pagination } from '@/types';
+import { useMemo } from 'react';
 
 type PaginationResponse = { data: IFile[]; pagination?: Pagination };
 
@@ -17,13 +18,13 @@ export const useFiles = (
         ...options,
     });
 
-    return {
+    return useMemo(() => ({
         ...query,
         data: {
             data: query.data?.data || [],
             pagination: query.data?.pagination,
         },
-    };
+    }), [query]);
 };
 
 export const useFile = (id: string, options?: Omit<UseQueryOptions<IFile, Error, IFile, QueryKey>, 'queryKey' | 'queryFn'>) => {
@@ -35,10 +36,10 @@ export const useFile = (id: string, options?: Omit<UseQueryOptions<IFile, Error,
         ...options,
     });
 
-    return {
+    return useMemo(() => ({
         ...query,
         data: query.data || null,
-    };
+    }), [query]);
 };
 
 export const useUploadPresignedFile = () => {
@@ -81,11 +82,16 @@ export const useViewUrl = (
     ticket: string,
     options?: Omit<UseQueryOptions<string, Error, string, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<string, Error, string, QueryKey>({
+    const query = useQuery<string, Error, string, QueryKey>({
         queryKey: ['files', 'view', id, ticket],
         queryFn: () => FileApi.getViewUrl(id, ticket),
         enabled: !!id && !!ticket,
         staleTime: 5 * 60 * 1000,
         ...options,
     });
+
+    return useMemo(() => ({
+        ...query,
+        data: query.data || null,
+    }), [query]);
 };

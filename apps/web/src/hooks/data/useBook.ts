@@ -37,18 +37,22 @@ export const useBooks = (
     refetchOnWindowFocus: false,
   });
 
-  const books = booksQuery.data?.data?.map(book => ({
-    ...book,
-    bookmarkId: bookmarksQuery.data?.[book.id] || undefined
-  })) || [];
+  const books = useMemo(() => {
+    return booksQuery.data?.data?.map(book => ({
+      ...book,
+      bookmarkId: bookmarksQuery.data?.[book.id] || undefined
+    })) || [];
+  }, [booksQuery.data, bookmarksQuery.data]);
 
-  return {
+  const result = useMemo(() => ({
     ...booksQuery,
     data: {
       data: books,
       pagination: booksQuery.data?.pagination,
     }
-  };
+  }), [booksQuery, books]);
+
+  return result;
 };
 
 export const useBook = (id: string, options?: Omit<UseQueryOptions<Book, Error, Book, QueryKey>, 'queryKey' | 'queryFn'>) => {
@@ -73,15 +77,20 @@ export const useBook = (id: string, options?: Omit<UseQueryOptions<Book, Error, 
   });
 
   // 3. Merge data
-  const book = bookQuery.data ? {
-    ...bookQuery.data,
-    bookmarkId: bookmarksQuery.data?.[id] || undefined
-  } : null;
+  const book = useMemo(() => {
+    if (!bookQuery.data) return null;
+    return {
+      ...bookQuery.data,
+      bookmarkId: bookmarksQuery.data?.[id] || undefined
+    };
+  }, [bookQuery.data, bookmarksQuery.data, id]);
 
-  return {
+  const result = useMemo(() => ({
     ...bookQuery,
     data: book,
-  };
+  }), [bookQuery, book]);
+
+  return result;
 };
 
 export const useCreateBook = () => {

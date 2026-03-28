@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BorrowApi } from '@/apis/borrow.api';
 import type { Borrow, BorrowRequest, FindParams, Pagination } from '@/types';
+import { useMemo } from 'react';
 
 type PaginationResponse = { data: Borrow[]; pagination?: Pagination };
 
@@ -17,13 +18,13 @@ export const useBorrows = (
     ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: {
       data: query.data?.data || [],
       pagination: query.data?.pagination,
     },
-  };
+  }), [query]);
 };
 
 export const useBorrowHistory = (
@@ -39,13 +40,13 @@ export const useBorrowHistory = (
     ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: {
       data: query.data?.data || [],
       pagination: query.data?.pagination,
     },
-  };
+  }), [query]);
 };
 
 export const useBorrow = (id: string, options?: Omit<UseQueryOptions<Borrow, Error, Borrow, QueryKey>, 'queryKey' | 'queryFn'>) => {
@@ -57,10 +58,10 @@ export const useBorrow = (id: string, options?: Omit<UseQueryOptions<Borrow, Err
     ...options,
   });
 
-  return {
+  return useMemo(() => ({
     ...query,
     data: query.data || null,
-  };
+  }), [query]);
 };
 
 export const useCreateBorrow = () => {
@@ -125,10 +126,15 @@ export const useRead = (
   borrowId: string,
   options?: Omit<UseQueryOptions<string, Error, string, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<string, Error, string, QueryKey>({
+  const query = useQuery<string, Error, string, QueryKey>({
     queryKey: ['borrows', 'read', borrowId],
     queryFn: () => BorrowApi.read(borrowId),
     enabled: !!borrowId,
     ...options
   });
+
+  return useMemo(() => ({
+    ...query,
+    data: query.data || null,
+  }), [query]);
 };

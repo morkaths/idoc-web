@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { ReviewApi } from '@/apis/review.api';
 import type { Review, ReviewRequest, FindParams, Pagination } from '@/types';
+import { useMemo } from 'react';
 
 type PaginationResponse = { data: Review[]; pagination?: Pagination };
 
@@ -17,13 +18,13 @@ export const useReviews = (
         ...options,
     });
 
-    return {
+    return useMemo(() => ({
         ...query,
         data: {
             data: query.data?.data || [],
             pagination: query.data?.pagination,
         },
-    };
+    }), [query]);
 };
 
 export const useReview = (id: string, options?: Omit<UseQueryOptions<Review, Error, Review, QueryKey>, 'queryKey' | 'queryFn'>) => {
@@ -35,10 +36,10 @@ export const useReview = (id: string, options?: Omit<UseQueryOptions<Review, Err
         ...options,
     });
 
-    return {
+    return useMemo(() => ({
         ...query,
         data: query.data || null,
-    };
+    }), [query]);
 };
 
 export const useCreateReview = () => {
