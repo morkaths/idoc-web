@@ -7,11 +7,11 @@ import { SidebarInset, SidebarProvider } from '@repo/ui/components/sidebar';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SkipToMain } from '@/components/skip-to-main';
 import { ConfigDrawer } from './config-drawer';
+import { Header } from './header';
+import { Main } from './main';
 import { ProfileDropdown } from './profile-dropdown';
 import { Search } from './search';
 import { ThemeSwitch } from './theme-switch';
-import { Header } from './header';
-import { Main } from './main';
 
 type AuthenticatedLayoutProps = {
   children?: React.ReactNode;
@@ -26,16 +26,10 @@ export function AuthenticatedLayoutWrapper({ children }: AuthenticatedLayoutProp
           <SkipToMain />
           <AppSidebar />
           <SidebarInset
+            dir='ltr'
             className={cn(
-              // Set content container, so we can use container queries
               '@container/content',
-
-              // If layout is fixed, set the height
-              // to 100svh to prevent overflow
               'has-data-[layout=fixed]:h-svh',
-
-              // If layout is fixed and sidebar is inset,
-              // set the height to 100svh - spacing (total margins) to prevent overflow
               'peer-data-[variant=inset]:has-data-[layout=fixed]:h-[calc(100svh-(var(--spacing)*4))]'
             )}
           >

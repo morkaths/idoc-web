@@ -44,15 +44,15 @@ export const useBooks = (
     })) || [];
   }, [booksQuery.data, bookmarksQuery.data]);
 
-  const result = useMemo(() => ({
-    ...booksQuery,
-    data: {
-      data: books,
-      pagination: booksQuery.data?.pagination,
-    }
-  }), [booksQuery, books]);
+  const stabilizedData = useMemo(() => ({
+    data: books,
+    pagination: booksQuery.data?.pagination,
+  }), [books, booksQuery.data?.pagination]);
 
-  return result;
+  return useMemo(() => ({
+    ...booksQuery,
+    data: stabilizedData,
+  }), [booksQuery, stabilizedData]);
 };
 
 export const useBook = (id: string, options?: Omit<UseQueryOptions<BookResponse, Error, BookResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
@@ -85,12 +85,10 @@ export const useBook = (id: string, options?: Omit<UseQueryOptions<BookResponse,
     };
   }, [bookQuery.data, bookmarksQuery.data, id]);
 
-  const result = useMemo(() => ({
+  return useMemo(() => ({
     ...bookQuery,
     data: book,
   }), [bookQuery, book]);
-
-  return result;
 };
 
 export const useCreateBook = () => {

@@ -33,6 +33,7 @@ export const usersColumns: ColumnDef<UserResponse>[] = [
   },
   {
     accessorKey: 'username',
+    meta: { className: 'ps-4' },
     header: ({ column }) => <DataTableColumnHeader column={column} title='Username' />,
     cell: ({ row, table }) => {
       const username = String(row.getValue('username') ?? '');
@@ -46,6 +47,7 @@ export const usersColumns: ColumnDef<UserResponse>[] = [
   },
   {
     accessorKey: 'email',
+    meta: { className: 'ps-4' },
     header: ({ column }) => <DataTableColumnHeader column={column} title='Email' />,
     cell: ({ row, table }) => {
       const email = row.original.email ?? '';
@@ -59,6 +61,7 @@ export const usersColumns: ColumnDef<UserResponse>[] = [
   },
   {
     accessorKey: 'status',
+    meta: { className: 'ps-4' },
     header: ({ column }) => <DataTableColumnHeader column={column} title='Status' />,
     cell: ({ row }) => {
       const status = row.original.status;
@@ -80,6 +83,7 @@ export const usersColumns: ColumnDef<UserResponse>[] = [
   },
   {
     accessorKey: 'roles',
+    meta: { className: 'ps-4' },
     header: ({ column }) => <DataTableColumnHeader column={column} title='Role' />,
     cell: ({ row }) => {
       const roles = row.original.roles ?? [];
@@ -88,10 +92,10 @@ export const usersColumns: ColumnDef<UserResponse>[] = [
         <div className='max-w-65 overflow-x-auto'>
           <div className='flex items-center gap-1 whitespace-nowrap'>
             {roles.slice(0, maxShow).map((role) => {
-              let icon = <User2 className="w-3.5 h-3.5 mr-1" />;
-              if (role.code === RoleCode.Admin) icon = <ShieldCheck className="w-3.5 h-3.5 mr-1" />;
-              else if (role.code === RoleCode.Manager) icon = <BriefcaseBusiness className="w-3.5 h-3.5 mr-1" />;
-              else if (role.code === RoleCode.Staff) icon = <UserCog className="w-3.5 h-3.5 mr-1" />;
+              let icon = <User2 className='w-3.5 h-3.5 mr-1' />;
+              if (role.code === RoleCode.Admin) icon = <ShieldCheck className='w-3.5 h-3.5 mr-1' />;
+              else if (role.code === RoleCode.Manager) icon = <BriefcaseBusiness className='w-3.5 h-3.5 mr-1' />;
+              else if (role.code === RoleCode.Staff) icon = <UserCog className='w-3.5 h-3.5 mr-1' />;
               return (
                 <Badge key={role.id} variant='outline' className='text-xs flex items-center'>
                   {icon}

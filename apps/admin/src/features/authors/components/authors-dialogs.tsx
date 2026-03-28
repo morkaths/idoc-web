@@ -1,9 +1,9 @@
+import { toast } from 'sonner';
+import { useCreateAuthor, useDeleteAuthor, useUpdateAuthor } from '@/hooks/data/useAuthor';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ImportDialog } from '@/components/import-dialog';
 import { AuthorsMutateDialog } from './authors-mutate-dialog';
 import { useAuthorsContext } from './authors-provider';
-import { useCreateAuthor, useDeleteAuthor, useUpdateAuthor } from '@/hooks/data/useAuthor';
-import { toast } from 'sonner';
 
 export function AuthorsDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useAuthorsContext();
@@ -18,17 +18,14 @@ export function AuthorsDialogs() {
         open={open === 'create'}
         onOpenChange={() => setOpen('create')}
         onSubmit={async (data) => {
-          toast.promise(
-            createAuthorMut.mutateAsync(data),
-            {
-              loading: 'Creating author...',
-              success: () => {
-                setOpen(null);
-                return 'Author created successfully!';
-              },
-              error: (err) => err?.message || 'Failed to create author',
-            }
-          );
+          toast.promise(createAuthorMut.mutateAsync(data), {
+            loading: 'Creating author...',
+            success: () => {
+              setOpen(null);
+              return 'Author created successfully!';
+            },
+            error: (err) => err?.message || 'Failed to create author',
+          });
         }}
       />
 
@@ -51,18 +48,15 @@ export function AuthorsDialogs() {
             }}
             initialData={currentRow}
             onSubmit={async (data) => {
-              toast.promise(
-                updateAuthorMut.mutateAsync({ id: currentRow.id!, data }),
-                {
-                  loading: 'Updating author...',
-                  success: () => {
-                    setOpen(null);
-                    setTimeout(() => setCurrentRow(null), 500);
-                    return 'Author updated successfully!';
-                  },
-                  error: (err) => err?.message || 'Failed to update author',
-                }
-              );
+              toast.promise(updateAuthorMut.mutateAsync({ id: currentRow.id!, data }), {
+                loading: 'Updating author...',
+                success: () => {
+                  setOpen(null);
+                  setTimeout(() => setCurrentRow(null), 500);
+                  return 'Author updated successfully!';
+                },
+                error: (err) => err?.message || 'Failed to update author',
+              });
             }}
           />
 
@@ -77,24 +71,22 @@ export function AuthorsDialogs() {
               }, 500);
             }}
             handleConfirm={() => {
-              toast.promise(
-                deleteAuthorMut.mutateAsync(currentRow.id!),
-                {
-                  loading: 'Deleting author...',
-                  success: () => {
-                    setOpen(null);
-                    setTimeout(() => setCurrentRow(null), 500);
-                    return 'Author deleted successfully!';
-                  },
-                  error: (err) => err?.message || 'Failed to delete author',
-                }
-              );
+              toast.promise(deleteAuthorMut.mutateAsync(currentRow.id!), {
+                loading: 'Deleting author...',
+                success: () => {
+                  setOpen(null);
+                  setTimeout(() => setCurrentRow(null), 500);
+                  return 'Author deleted successfully!';
+                },
+                error: (err) => err?.message || 'Failed to delete author',
+              });
             }}
             className='max-w-md'
             title={`Delete this author: ${currentRow.name || currentRow.id} ?`}
             desc={
               <>
-                You are about to delete an author with the ID <strong>{currentRow.id}</strong>.<br />
+                You are about to delete an author with the ID <strong>{currentRow.id}</strong>.
+                <br />
                 This action cannot be undone.
               </>
             }

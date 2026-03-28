@@ -1,10 +1,10 @@
-import qs from 'qs';
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { ApiEndpoint } from '@/config/api';
 import env from '@/config/env';
 import type { ApiResponse } from '@/types';
-import { useAuthStore } from '@/stores/auth-store';
+import qs from 'qs';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/stores/auth-store';
 
 export type SecurityStrategy = 'public' | 'private';
 

@@ -9,7 +9,7 @@ export const useFiles = (
     params: FindParams = {},
     options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+    const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['files', params],
         queryFn: () => FileApi.find(params),
         enabled: true,
@@ -19,16 +19,20 @@ export const useFiles = (
     });
 
     return useMemo(() => ({
-        ...query,
+        status,
+        error,
+        isLoading,
+        isFetching,
+        refetch,
         data: {
-            data: query.data?.data || [],
-            pagination: query.data?.pagination,
+            data: rawData?.data || [],
+            pagination: rawData?.pagination,
         },
-    }), [query]);
+    }), [rawData, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useFile = (id: string, options?: Omit<UseQueryOptions<FileResponse, Error, FileResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<FileResponse, Error, FileResponse, QueryKey>({
+    const { data, status, error, isLoading, isFetching, refetch } = useQuery<FileResponse, Error, FileResponse, QueryKey>({
         queryKey: ['files', id],
         queryFn: () => FileApi.findById(id),
         enabled: !!id,
@@ -37,9 +41,13 @@ export const useFile = (id: string, options?: Omit<UseQueryOptions<FileResponse,
     });
 
     return useMemo(() => ({
-        ...query,
-        data: query.data || null,
-    }), [query]);
+        status,
+        error,
+        isLoading,
+        isFetching,
+        refetch,
+        data: data || null,
+    }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useUploadPresignedFile = () => {

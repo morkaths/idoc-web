@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { type ColumnDef } from '@tanstack/react-table';
 import type { BorrowResponse } from '@/types';
+import { type ColumnDef } from '@tanstack/react-table';
+import { ImageOff } from 'lucide-react';
+import { Badge } from '@repo/ui/components/badge';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
-import { Badge } from '@repo/ui/components/badge';
 import { BorrowsTableRowActions } from './borrows-table-row-actions';
-import { ImageOff } from 'lucide-react';
 
 const CoverCell = ({ src, title }: { src?: string; title: string }) => {
   const [error, setError] = useState(false);
@@ -14,7 +14,7 @@ const CoverCell = ({ src, title }: { src?: string; title: string }) => {
   if (!src || error) {
     return (
       <div className='bg-muted/20 text-muted-foreground flex h-15 w-10 items-center justify-center rounded-md border'>
-        <ImageOff className="h-4 w-4 opacity-50" />
+        <ImageOff className='h-4 w-4 opacity-50' />
       </div>
     );
   }
@@ -23,7 +23,7 @@ const CoverCell = ({ src, title }: { src?: string; title: string }) => {
     <img
       src={src}
       alt={title}
-      className='h-15 w-10 rounded object-cover border'
+      className='h-15 w-10 rounded border object-cover'
       style={{ borderRadius: 'var(--radius-img)' }}
       loading='lazy'
       onError={() => setError(true)}
@@ -57,8 +57,10 @@ export const borrowsColumns = (t: any, keys: any): ColumnDef<BorrowResponse>[] =
   },
   {
     id: 'coverUrl',
-    header: ({ column }) => <DataTableColumnHeader column={column} title={t(keys.table.columns.cover)} />,
-    meta: { title: t(keys.table.columns.cover) },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t(keys.table.columns.cover)} />
+    ),
+    meta: { title: t(keys.table.columns.cover), className: 'ps-4' },
     cell: ({ row }) => {
       const item = row.original.item;
       const src = item?.coverUrl;
@@ -70,8 +72,10 @@ export const borrowsColumns = (t: any, keys: any): ColumnDef<BorrowResponse>[] =
   },
   {
     accessorKey: 'item',
-    header: ({ column }) => <DataTableColumnHeader column={column} title={t(keys.table.columns.item)} />,
-    meta: { title: t(keys.table.columns.item) },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t(keys.table.columns.item)} />
+    ),
+    meta: { title: t(keys.table.columns.item), className: 'ps-4' },
     cell: ({ row, table }) => {
       const item = row.original.item;
       const title = item?.title ?? '-';
@@ -87,21 +91,29 @@ export const borrowsColumns = (t: any, keys: any): ColumnDef<BorrowResponse>[] =
   {
     accessorKey: 'renewals',
     header: ({ column }) => (
-      <div className='text-center w-full'>
-        <DataTableColumnHeader column={column} title={t(keys.table.columns.renewals)} />
+      <div className='w-full text-center'>
+        <DataTableColumnHeader
+          column={column}
+          title={t(keys.table.columns.renewals)}
+          className='justify-center'
+        />
       </div>
     ),
     meta: { title: t(keys.table.columns.renewals) },
     cell: ({ row }) => {
       const count = row.original.renewals?.length ?? 0;
-      return <span className='block text-center w-full'>{count}</span>;
+      return <span className='block w-full text-center'>{count}</span>;
     },
   },
   {
     accessorKey: 'borrowTime',
     header: ({ column }) => (
-      <div className="text-center w-full">
-        <DataTableColumnHeader column={column} title={t(keys.table.columns.borrowTime)} />
+      <div className='w-full text-center'>
+        <DataTableColumnHeader
+          column={column}
+          title={t(keys.table.columns.borrowTime)}
+          className='justify-center'
+        />
       </div>
     ),
     meta: { title: t(keys.table.columns.borrowTime) },
@@ -109,7 +121,7 @@ export const borrowsColumns = (t: any, keys: any): ColumnDef<BorrowResponse>[] =
       const d = row.getValue('borrowTime') as string | Date | undefined;
       const date = d ? (d instanceof Date ? d : new Date(String(d))) : null;
       return (
-        <span className="block text-center w-full">
+        <span className='block w-full text-center'>
           {date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}
         </span>
       );
@@ -118,8 +130,12 @@ export const borrowsColumns = (t: any, keys: any): ColumnDef<BorrowResponse>[] =
   {
     accessorKey: 'expireTime',
     header: ({ column }) => (
-      <div className="text-center w-full">
-        <DataTableColumnHeader column={column} title={t(keys.table.columns.expireTime)} />
+      <div className='w-full text-center'>
+        <DataTableColumnHeader
+          column={column}
+          title={t(keys.table.columns.expireTime)}
+          className='justify-center'
+        />
       </div>
     ),
     meta: { title: t(keys.table.columns.expireTime) },
@@ -127,7 +143,7 @@ export const borrowsColumns = (t: any, keys: any): ColumnDef<BorrowResponse>[] =
       const d = row.getValue('expireTime') as string | Date | undefined;
       const date = d ? (d instanceof Date ? d : new Date(String(d))) : null;
       return (
-        <span className="block text-center w-full">
+        <span className='block w-full text-center'>
           {date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}
         </span>
       );
@@ -136,8 +152,12 @@ export const borrowsColumns = (t: any, keys: any): ColumnDef<BorrowResponse>[] =
   {
     accessorKey: 'returnTime',
     header: ({ column }) => (
-      <div className="text-center w-full">
-        <DataTableColumnHeader column={column} title={t(keys.table.columns.returnTime)} />
+      <div className='w-full text-center'>
+        <DataTableColumnHeader
+          column={column}
+          title={t(keys.table.columns.returnTime)}
+          className='justify-center'
+        />
       </div>
     ),
     meta: { title: t(keys.table.columns.returnTime) },
@@ -145,7 +165,7 @@ export const borrowsColumns = (t: any, keys: any): ColumnDef<BorrowResponse>[] =
       const d = row.getValue('returnTime') as string | Date | undefined;
       const date = d ? (d instanceof Date ? d : new Date(String(d))) : null;
       return (
-        <span className="block text-center w-full">
+        <span className='block w-full text-center'>
           {date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}
         </span>
       );
@@ -154,8 +174,12 @@ export const borrowsColumns = (t: any, keys: any): ColumnDef<BorrowResponse>[] =
   {
     accessorKey: 'status',
     header: ({ column }) => (
-      <div className="text-center w-full">
-        <DataTableColumnHeader column={column} title={t(keys.table.columns.status)} />
+      <div className='w-full text-center'>
+        <DataTableColumnHeader
+          column={column}
+          title={t(keys.table.columns.status)}
+          className='justify-center'
+        />
       </div>
     ),
     meta: { title: t(keys.table.columns.status) },
@@ -182,7 +206,7 @@ export const borrowsColumns = (t: any, keys: any): ColumnDef<BorrowResponse>[] =
           label = status;
       }
       return (
-        <div className="flex justify-center">
+        <div className='flex justify-center'>
           <Badge variant={color} className='text-xs capitalize'>
             {label}
           </Badge>

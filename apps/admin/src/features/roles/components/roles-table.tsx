@@ -67,12 +67,10 @@ export function RolesTable() {
     };
   }, [page, limit, globalFilter, sorting]);
 
-  // Fetch server-side page
   const { data: rolesData, isFetching: isRolesFetching } = useRoles(roleParams);
   const roles = rolesData?.data ?? [];
   const rolePagination = rolesData?.pagination;
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: roles,
     columns,

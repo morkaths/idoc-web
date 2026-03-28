@@ -1,8 +1,8 @@
 import { getRequestConfig } from 'next-intl/server';
 
-import { SUPPORTED_LANGUAGES } from './constants/languages';
+import { Languages as SupportedLanguages, type Language } from '@/types';
 
-export const locales = SUPPORTED_LANGUAGES.filter(l => l.enabled).map(l => l.value);
+export const locales = SupportedLanguages.filter((l: Language) => l.enabled).map((l: Language) => l.value);
 export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = 'vi';
@@ -33,13 +33,8 @@ export default getRequestConfig(async ({ locale: incomingLocale }) => {
         ? incomingLocale
         : defaultLocale;
 
-    // Tải messages tiếng Anh làm base fallback
     const fallbackmsg = (await import(`../locales/en.json`)).default;
-
-    // Tải messages của ngôn ngữ hiện tại
     const currentmsg = (await import(`../locales/${locale}.json`)).default;
-
-    // Merge: Ngôn ngữ hiện tại đè lên tiếng Anh
     const messages = locale === 'en' ? fallbackmsg : deepMerge(fallbackmsg, currentmsg);
 
     return {

@@ -11,7 +11,7 @@ import {
     CommandList,
 } from "@repo/ui/components/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/popover";
-import { PermissionResponse } from "@/types";
+import type { PermissionResponse } from "@/types";
 
 type PermissionsComboboxProps = {
     permissions: PermissionResponse[];

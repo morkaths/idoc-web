@@ -9,7 +9,7 @@ export const useCategories = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['categories', params],
     queryFn: () => CategoryApi.find(params),
     enabled: true,
@@ -19,16 +19,20 @@ export const useCategories = (
   });
 
   return useMemo(() => ({
-    ...query,
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
     data: {
-      data: query.data?.data || [],
-      pagination: query.data?.pagination,
+      data: rawData?.data || [],
+      pagination: rawData?.pagination,
     },
-  }), [query]);
+  }), [rawData, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useCategory = (id: string, options?: Omit<UseQueryOptions<CategoryResponse, Error, CategoryResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const query = useQuery<CategoryResponse, Error, CategoryResponse, QueryKey>({
+  const { data, status, error, isLoading, isFetching, refetch } = useQuery<CategoryResponse, Error, CategoryResponse, QueryKey>({
     queryKey: ['categories', id],
     queryFn: () => CategoryApi.findById(id),
     enabled: !!id,
@@ -37,9 +41,13 @@ export const useCategory = (id: string, options?: Omit<UseQueryOptions<CategoryR
   });
 
   return useMemo(() => ({
-    ...query,
-    data: query.data || null,
-  }), [query]);
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
+    data: data || null,
+  }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useCreateCategory = () => {

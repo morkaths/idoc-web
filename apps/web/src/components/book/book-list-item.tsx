@@ -18,8 +18,8 @@ type BookListItemProps = {
 export function BookListItem({ book, onClick, className }: BookListItemProps) {
   const { t, keys } = useLocale('books');
   const [imageError, setImageError] = useState(false);
-  const [bookmarkId, setBookmarkId] = useState(book.bookmarkId);
-  const isBookmarked = !!bookmarkId;
+  const [bookmark, setBookmark] = useState(book.bookmark);
+  const isBookmarked = !!bookmark;
 
   const { setOpen, setCurrentBook } = useBookmarkContext();
   const { mutate: deleteBookmark, isPending: isDeleting } = useDeleteBookmark();
@@ -28,18 +28,18 @@ export function BookListItem({ book, onClick, className }: BookListItemProps) {
 
   // Sync state with props
   useEffect(() => {
-    setBookmarkId(book.bookmarkId);
-  }, [book.bookmarkId]);
+    setBookmark(book.bookmark);
+  }, [book.bookmark]);
 
   const handleToggleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isLoading) return;
 
     if (isBookmarked) {
-      if (bookmarkId) {
-        deleteBookmark(bookmarkId, {
+      if (bookmark) {
+        deleteBookmark(bookmark, {
           onSuccess: () => {
-            setBookmarkId(undefined);
+            setBookmark(undefined);
             toast.success(t(keys.view.bookmark.removed));
           },
           onError: (error) => {

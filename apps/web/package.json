@@ -7,7 +7,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "check:lint": "next lint --dir src",
+    "check:type": "tsc --noEmit",
+    "check:format": "prettier --check .",
+    "check": "npm run check:lint && npm run check:type && npm run check:format",
+    "format:write": "prettier --write .",
+    "format": "npm run format:write",
+    "clean": "rimraf .next",
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "prepare": "husky"
   },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.8.0",

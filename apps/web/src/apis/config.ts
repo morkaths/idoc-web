@@ -1,9 +1,9 @@
-import qs from 'qs';
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
+import { getSession, signOut } from 'next-auth/react';
 import { API_CONFIG } from '@/config/api';
 import env from '@/config/env';
 import type { ApiResponse } from '@/types';
-import { getSession, signOut } from 'next-auth/react';
+import qs from 'qs';
 
 export type ApiMode = 'public' | 'private';
 
@@ -13,7 +13,9 @@ export interface ApiConfig {
   key?: string;
 }
 
-export type ApiOptions = Omit<AxiosRequestConfig, 'method' | 'url' | 'baseURL'> & { mode?: ApiMode };
+export type ApiOptions = Omit<AxiosRequestConfig, 'method' | 'url' | 'baseURL'> & {
+  mode?: ApiMode;
+};
 
 export class ApiClient {
   private static instances: { public: AxiosInstance; private: AxiosInstance } | null = null;
@@ -43,7 +45,7 @@ export class ApiClient {
 
   private static async syncSession(): Promise<string | null> {
     if (typeof window === 'undefined') return null;
-    
+
     if (ApiClient.refreshPromise) return ApiClient.refreshPromise;
 
     ApiClient.refreshPromise = (async () => {
@@ -72,49 +74,48 @@ export class ApiClient {
       paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
     });
 
-    instance.interceptors.request.use(async (config) => {
-      config.headers = config.headers || {};
+    instance.interceptors.request.use(
+      async (config) => {
+        config.headers = config.headers || {};
 
-      if (config.params && config.params.lang) {
-        config.headers['Accept-Language'] = config.params.lang;
-        delete config.params.lang;
-      } else if (typeof window !== 'undefined') {
-        const match = document.cookie.match(/NEXT_LOCALE=([^;]+)/);
-        if (match) config.headers['Accept-Language'] = match[1];
-      } else {
-        try {
-          const { headers } = await import('next/headers');
-          const headerList = await headers();
-          const locale = headerList.get('Accept-Language');
-          if (locale) config.headers['Accept-Language'] = locale;
-        } catch (e) {}
-      }
+        if (config.params && config.params.lang) {
+          config.headers['Accept-Language'] = config.params.lang;
+          delete config.params.lang;
+        } else if (typeof window !== 'undefined') {
+          const match = document.cookie.match(/NEXT_LOCALE=([^;]+)/);
+          if (match) config.headers['Accept-Language'] = match[1];
+        } else {
+          try {
+            const { headers } = await import('next/headers');
+            const headerList = await headers();
+            const locale = headerList.get('Accept-Language');
+            if (locale) config.headers['Accept-Language'] = locale;
+          } catch (e) {}
+        }
 
-      if (ApiClient.config.key || env.api.key) {
-        config.headers['x-api-key'] = ApiClient.config.key || env.api.key;
-      }
+        if (ApiClient.config.key || env.api.key) {
+          config.headers['x-api-key'] = ApiClient.config.key || env.api.key;
+        }
 
-      // Chỉ sync session nếu là private request và chưa có token
-      if (typeof window !== 'undefined' && withCredentials && !ApiClient.token) {
-        await ApiClient.syncSession();
-      }
+        // Chỉ sync session nếu là private request và chưa có token
+        if (typeof window !== 'undefined' && withCredentials && !ApiClient.token) {
+          await ApiClient.syncSession();
+        }
 
-      if (ApiClient.token) {
-        config.headers['Authorization'] = `Bearer ${ApiClient.token}`;
-      }
+        if (ApiClient.token) {
+          config.headers['Authorization'] = `Bearer ${ApiClient.token}`;
+        }
 
-      return config;
-    }, (error) => Promise.reject(error));
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
 
     instance.interceptors.response.use(
       (res) => res,
       async (error) => {
         const originalRequest = error.config;
-        if (
-          error?.response?.status === 401 &&
-          !originalRequest._retry &&
-          !ApiClient.isLoggingOut
-        ) {
+        if (error?.response?.status === 401 && !originalRequest._retry && !ApiClient.isLoggingOut) {
           if (typeof window !== 'undefined') {
             originalRequest._retry = true;
             const newToken = await ApiClient.syncSession();
@@ -129,8 +130,8 @@ export class ApiClient {
                 ApiClient.isLoggingOut = true;
                 await signOut({ callbackUrl: '/sign-in' });
               } else {
-                 delete originalRequest.headers.Authorization;
-                 return instance.request(originalRequest);
+                delete originalRequest.headers.Authorization;
+                return instance.request(originalRequest);
               }
             }
           }
@@ -153,7 +154,7 @@ export class ApiClient {
     }
     // Check for null again to satisfy TypeScript, though init() ensures it's not null
     if (!ApiClient.instances) {
-      throw new Error("Failed to initialize ApiClient instances");
+      throw new Error('Failed to initialize ApiClient instances');
     }
     return ApiClient.instances[mode];
   }
@@ -173,7 +174,13 @@ export class ApiClient {
       } as any;
     }
     if (typeof error === 'object' && error !== null && 'message' in error) {
-      const err = error as { message?: string; statusCode?: number; status?: number; timestamp?: string; errors?: string[] };
+      const err = error as {
+        message?: string;
+        statusCode?: number;
+        status?: number;
+        timestamp?: string;
+        errors?: string[];
+      };
       return {
         success: false,
         message: err.message,

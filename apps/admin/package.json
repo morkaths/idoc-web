@@ -9,10 +9,16 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
     "preview": "vite preview",
-    "format:check": "prettier --check .",
-    "format": "prettier --write .",
-    "knip": "knip"
+    "start": "npm run preview",
+    "check:lint": "eslint .",
+    "check:type": "tsc --noEmit",
+    "check:format": "prettier --check .",
+    "check": "npm run check:lint && npm run check:type && npm run check:format",
+    "format:write": "prettier --write .",
+    "format": "npm run format:write",
+    "clean": "rimraf dist",
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "prepare": "husky"
   }
 }

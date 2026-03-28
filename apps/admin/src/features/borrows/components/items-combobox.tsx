@@ -33,10 +33,8 @@ export function ItemCombobox({ value, onChange, error, initialItem }: ItemCombob
         query: debouncedQuery,
     }), [page, debouncedQuery]);
     const shouldFetch = open || !!value;
-    const { data, isLoading } = useBooks(params, { enabled: shouldFetch }); // Ensure enabled logic is added if not present in hook, but assuming consistency. Note: original code didn't have enabled logic in useBooks call which is inefficient, adding it.
+    const { data, isLoading } = useBooks(params, { enabled: shouldFetch });
     const [items, setItems] = useState<Item[]>([]);
-
-    // Cache all seen items
     const [itemMap, setItemMap] = useState<Map<string, Item>>(() => {
         const map = new Map<string, Item>();
         if (initialItem) map.set(initialItem.id, initialItem);
@@ -50,7 +48,6 @@ export function ItemCombobox({ value, onChange, error, initialItem }: ItemCombob
 
     useEffect(() => {
         if (data?.data) {
-            // Update cache map
             setItemMap(prev => {
                 const next = new Map(prev);
                 data.data.forEach(i => next.set(i.id, i));

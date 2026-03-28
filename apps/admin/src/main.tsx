@@ -10,9 +10,7 @@ import { handleServerError } from '@/lib/handle-server-error';
 import { DirectionProvider } from './context/direction-provider';
 import { FontProvider } from './context/font-provider';
 import { ThemeProvider } from './context/theme-provider';
-// Generated Routes
 import { routeTree } from './routeTree.gen';
-// Styles
 import './styles/globals.css';
 
 const queryClient = new QueryClient({
@@ -20,7 +18,6 @@ const queryClient = new QueryClient({
     queries: {
       retry: (failureCount, error) => {
         if (env.app.mode === 'development') {
-          console.log({ failureCount, error });
           return false;
         }
         if (failureCount > 3 && env.app.mode === 'production') return false;

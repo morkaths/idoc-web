@@ -1,16 +1,16 @@
-import { Devtools } from "../dev-tools";
+import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
-import { Providers } from "../providers";
 import { getMessages, setRequestLocale, getTimeZone } from 'next-intl/server';
-import { notFound } from "next/navigation";
+import { Devtools } from '../dev-tools';
+import { Providers } from '../providers';
 
 export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
+  return locales.map((locale: string) => ({ locale }));
 }
 
 export default async function LocaleLayout({
   children,
-  params
+  params,
 }: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;

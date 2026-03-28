@@ -11,7 +11,7 @@ import {
 import { Button } from "@repo/ui/components/button";
 import { Languages } from "lucide-react";
 import { type Locale } from '@/i18n';
-import { SUPPORTED_LANGUAGES } from '@/constants/languages';
+import { Languages as SupportedLanguages, type Language } from '@/types';
 import { useLocale } from 'next-intl';
 
 export function LocaleSwitch() {
@@ -21,7 +21,7 @@ export function LocaleSwitch() {
 
     const segments = pathname.split('/').filter(Boolean);
     const firstSegment = segments[0];
-    const isFirstSegmentLocale = firstSegment && SUPPORTED_LANGUAGES.some(l => l.value === firstSegment);
+    const isFirstSegmentLocale = firstSegment && SupportedLanguages.some((l: Language) => l.value === firstSegment);
 
     const activeLocale = isFirstSegmentLocale ? (firstSegment as Locale) : currentLocale;
 
@@ -30,7 +30,7 @@ export function LocaleSwitch() {
 
         const segments = pathname.split('/').filter(Boolean);
         const firstSegment = segments[0];
-        const isFirstSegmentLocale = firstSegment && SUPPORTED_LANGUAGES.some(l => l.value === firstSegment);
+        const isFirstSegmentLocale = firstSegment && SupportedLanguages.some((l: Language) => l.value === firstSegment);
 
         let newPathname;
         if (isFirstSegmentLocale) {
@@ -43,7 +43,7 @@ export function LocaleSwitch() {
         router.push(newPathname);
     };
 
-    const enabledLanguages = SUPPORTED_LANGUAGES.filter(lang => lang.enabled);
+    const enabledLanguages = SupportedLanguages.filter((lang: Language) => lang.enabled);
 
     return (
         <DropdownMenu>
@@ -53,7 +53,7 @@ export function LocaleSwitch() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                {enabledLanguages.map((lang) => (
+                {enabledLanguages.map((lang: Language) => (
                     <DropdownMenuItem
                         key={lang.value}
                         onClick={() => handleLocaleChange(lang.value as Locale)}

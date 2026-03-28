@@ -19,11 +19,8 @@ export function BookGridItem({
 }: BookGridItemProps) {
   const { t, keys } = useLocale('books');
   const [imageError, setImageError] = useState(false);
-
-  // Use props directly for initial state, but sync back if props change
-  // Actually, we can just use book.bookmarkId directly unless we need optimistic updates
-  const [optimisticBookmarkId, setOptimisticBookmarkId] = useState<string | undefined>(book.bookmarkId);
-  const isBookmarked = !!(book.bookmarkId || optimisticBookmarkId);
+  const [bookmark, setBookmark] = useState(book.bookmark);
+  const isBookmarked = !!(book.bookmark || bookmark);
 
   const { setOpen, setCurrentBook } = useBookmarkContext();
   const { mutate: deleteBookmark, isPending: isDeleting } = useDeleteBookmark();
@@ -32,19 +29,19 @@ export function BookGridItem({
 
   // Sync optimistic state with props when props change
   useEffect(() => {
-    setOptimisticBookmarkId(book.bookmarkId);
-  }, [book.bookmarkId]);
+    setBookmark(book.bookmark);
+  }, [book.bookmark]);
 
   const handleToggleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isLoading) return;
 
     if (isBookmarked) {
-      const activeBookmarkId = book.bookmarkId || optimisticBookmarkId;
+      const activeBookmarkId = book.bookmark || bookmark;
       if (activeBookmarkId) {
         deleteBookmark(activeBookmarkId, {
           onSuccess: () => {
-            setOptimisticBookmarkId(undefined);
+            setBookmark(undefined);
             toast.success(t(keys.view.bookmark.removed));
           },
           onError: (error) => {

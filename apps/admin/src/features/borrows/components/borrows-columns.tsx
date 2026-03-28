@@ -1,12 +1,12 @@
+import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { BorrowStatus, type BorrowResponse } from '@/types';
+import { ImageOff } from 'lucide-react';
+import { Badge } from '@repo/ui/components/badge';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
-import { Badge } from '@repo/ui/components/badge';
 import { BorrowsTableRowActions } from './borrows-table-row-actions';
-import { useState } from 'react';
-import { ImageOff } from 'lucide-react';
 
 const BookCoverCell = ({ src, title }: { src?: string; title: string }) => {
   const [error, setError] = useState(false);
@@ -14,7 +14,7 @@ const BookCoverCell = ({ src, title }: { src?: string; title: string }) => {
   if (!src || error) {
     return (
       <div className='bg-muted/20 text-muted-foreground flex h-10 w-7 flex-shrink-0 items-center justify-center rounded-md border'>
-        <ImageOff className="h-4 w-4 opacity-50" />
+        <ImageOff className='h-4 w-4 opacity-50' />
       </div>
     );
   }
@@ -57,14 +57,16 @@ export const borrowsColumns: ColumnDef<BorrowResponse>[] = [
   {
     accessorKey: 'item',
     enableSorting: false,
+    meta: { className: 'ps-4' },
     header: ({ column }) => <DataTableColumnHeader column={column} title='Item' />,
     cell: ({ row, table }) => {
       const item = row.original.item;
       const title = item?.title ?? '-';
       const query = String(table.getState().globalFilter ?? '');
-      const authors = item?.authors && item.authors.length > 0
-        ? item.authors.map((a) => a.name).join(', ')
-        : 'Unknown Author';
+      const authors =
+        item?.authors && item.authors.length > 0
+          ? item.authors.map((a) => a.name).join(', ')
+          : 'Unknown Author';
       return (
         <div className='flex items-center gap-2 max-w-48'>
           <BookCoverCell src={item?.coverUrl} title={title} />
@@ -83,6 +85,7 @@ export const borrowsColumns: ColumnDef<BorrowResponse>[] = [
   {
     accessorKey: 'borrower',
     enableSorting: false,
+    meta: { className: 'ps-4' },
     header: ({ column }) => <DataTableColumnHeader column={column} title='Borrower' />,
     cell: ({ row, table }) => {
       const borrower = row.original.borrower;
@@ -104,74 +107,53 @@ export const borrowsColumns: ColumnDef<BorrowResponse>[] = [
   {
     accessorKey: 'renewals',
     enableSorting: false,
-    header: ({ column }) => (
-      <div className='text-center w-full'>
-        <DataTableColumnHeader column={column} title='Renewals' />
-      </div>
-    ),
+    meta: { className: 'ps-4' },
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Renewals' />,
     cell: ({ row }) => {
       const count = row.original.renewals?.length ?? 0;
-      return <span className='block text-center w-full'>{count}</span>;
+      return <span>{count}</span>;
     },
   },
   {
     accessorKey: 'borrowTime',
-    header: ({ column }) => (
-      <div className="text-center w-full">
-        <DataTableColumnHeader column={column} title='Borrow Date' />
-      </div>
-    ),
+    meta: { className: 'ps-4' },
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Borrow Date' />,
     cell: ({ row }) => {
       const d = row.getValue('borrowTime') as string | Date | undefined;
       const date = d ? (d instanceof Date ? d : new Date(String(d))) : null;
       return (
-        <span className="block text-center w-full">
-          {date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}
-        </span>
+        <span>{date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}</span>
       );
     },
   },
   {
     accessorKey: 'expireTime',
-    header: ({ column }) => (
-      <div className="text-center w-full">
-        <DataTableColumnHeader column={column} title='Expire Date' />
-      </div>
-    ),
+    meta: { className: 'ps-4' },
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Expire Date' />,
     cell: ({ row }) => {
       const d = row.getValue('expireTime') as string | Date | undefined;
       const date = d ? (d instanceof Date ? d : new Date(String(d))) : null;
       return (
-        <span className="block text-center w-full">
-          {date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}
-        </span>
+        <span>{date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}</span>
       );
     },
   },
   {
     accessorKey: 'returnTime',
-    header: ({ column }) => (
-      <div className="text-center w-full">
-        <DataTableColumnHeader column={column} title='Return Date' />
-      </div>
-    ),
+    meta: { className: 'ps-4' },
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Return Date' />,
     cell: ({ row }) => {
       const d = row.getValue('returnTime') as string | Date | undefined;
       const date = d ? (d instanceof Date ? d : new Date(String(d))) : null;
       return (
-        <span className="block text-center w-full">
-          {date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}
-        </span>
+        <span>{date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}</span>
       );
     },
   },
   {
     accessorKey: 'status',
-    header: ({ column }) => (
-      <div className="text-center w-full">
-        <DataTableColumnHeader column={column} title='Status' />
-      </div>
-    ),
+    meta: { className: 'ps-4' },
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Status' />,
     cell: ({ row }) => {
       const status = row.getValue('status') as string;
       let color: 'default' | 'destructive' | 'outline' = 'default';
@@ -189,11 +171,9 @@ export const borrowsColumns: ColumnDef<BorrowResponse>[] = [
           color = 'default';
       }
       return (
-        <div className="flex justify-center">
-          <Badge variant={color} className='text-xs capitalize'>
-            {status}
-          </Badge>
-        </div>
+        <Badge variant={color} className='text-xs capitalize'>
+          {status}
+        </Badge>
       );
     },
   },

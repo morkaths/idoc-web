@@ -33,12 +33,9 @@ export function UserCombobox({ value, onChange, error, initialUser }: UserCombob
         query: debouncedQuery,
     }), [page, debouncedQuery]);
 
-
-    // FETCH DATA
     const shouldFetch = open || !!value;
     const { data, isLoading } = useUsers(params, { enabled: shouldFetch });
     const [users, setUsers] = useState<User[]>([]);
-    // Cache all seen users to ensure selected items can always be displayed
     const [userMap, setUserMap] = useState<Map<string, User>>(() => {
         const map = new Map<string, User>();
         if (initialUser) map.set(initialUser.id, initialUser);
@@ -52,7 +49,6 @@ export function UserCombobox({ value, onChange, error, initialUser }: UserCombob
 
     useEffect(() => {
         if (data?.data) {
-            // Update cache map
             setUserMap(prev => {
                 const next = new Map(prev);
                 data.data.forEach(u => next.set(u.id, u));

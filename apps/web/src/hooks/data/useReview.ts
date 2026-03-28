@@ -9,7 +9,7 @@ export const useReviews = (
     params: FindParams = {},
     options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+    const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['reviews', params],
         queryFn: () => ReviewApi.find(params),
         enabled: true,
@@ -19,16 +19,20 @@ export const useReviews = (
     });
 
     return useMemo(() => ({
-        ...query,
+        status,
+        error,
+        isLoading,
+        isFetching,
+        refetch,
         data: {
-            data: query.data?.data || [],
-            pagination: query.data?.pagination,
+            data: rawData?.data || [],
+            pagination: rawData?.pagination,
         },
-    }), [query]);
+    }), [rawData, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useReview = (id: string, options?: Omit<UseQueryOptions<ReviewResponse, Error, ReviewResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<ReviewResponse, Error, ReviewResponse, QueryKey>({
+    const { data, status, error, isLoading, isFetching, refetch } = useQuery<ReviewResponse, Error, ReviewResponse, QueryKey>({
         queryKey: ['reviews', id],
         queryFn: () => ReviewApi.findById(id),
         enabled: !!id,
@@ -37,9 +41,13 @@ export const useReview = (id: string, options?: Omit<UseQueryOptions<ReviewRespo
     });
 
     return useMemo(() => ({
-        ...query,
-        data: query.data || null,
-    }), [query]);
+        status,
+        error,
+        isLoading,
+        isFetching,
+        refetch,
+        data: data || null,
+    }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useCreateReview = () => {

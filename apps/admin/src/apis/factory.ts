@@ -1,5 +1,5 @@
-import { ApiClient, type SecurityStrategy } from './config';
 import type { FindParams, Pagination } from '../types';
+import { ApiClient, type SecurityStrategy } from './config';
 
 export interface CrudEndpoints {
   find: string;
@@ -44,11 +44,7 @@ const defaultConfig: SecurityConfig = {
  * @template TRequest The type of the resource request data
  * @template TParams The type of additional query parameters (defaults to Record<string, unknown>)
  */
-export const apiFactory = <
-  TResponse,
-  TRequest,
-  TParams = Record<string, unknown>
->(
+export const apiFactory = <TResponse, TRequest, TParams = Record<string, unknown>>(
   endpoints: CrudEndpoints,
   resourceName: string,
   customConfig?: Partial<SecurityConfig>
@@ -56,7 +52,9 @@ export const apiFactory = <
   const config: SecurityConfig = { ...defaultConfig, ...customConfig };
 
   return {
-    find: async (params?: FindParams & TParams): Promise<{ data: TResponse[]; pagination?: Pagination }> => {
+    find: async (
+      params?: FindParams & TParams
+    ): Promise<{ data: TResponse[]; pagination?: Pagination }> => {
       const response = await ApiClient.get<TResponse[]>(endpoints.find, {
         security: config.find,
         params,
@@ -92,15 +90,19 @@ export const apiFactory = <
     },
 
     createMany: async <P = TParams>(data: TRequest[], params?: P): Promise<TResponse[]> => {
-      const response = await ApiClient.post<TResponse[]>(endpoints.createMany, { 
-        security: config.createMany, 
+      const response = await ApiClient.post<TResponse[]>(endpoints.createMany, {
+        security: config.createMany,
         data,
-        params
+        params,
       });
       return response.data ?? [];
     },
 
-    update: async <P = TParams>(id: string, data: Partial<TRequest>, params?: P): Promise<TResponse> => {
+    update: async <P = TParams>(
+      id: string,
+      data: Partial<TRequest>,
+      params?: P
+    ): Promise<TResponse> => {
       const response = await ApiClient.patch<TResponse>(endpoints.update(id), {
         security: config.update,
         data,
@@ -110,11 +112,15 @@ export const apiFactory = <
       throw new Error(response.message || `Failed to update ${resourceName.toLowerCase()}`);
     },
 
-    updateMany: async <P = TParams>(ids: string[], data: Partial<TRequest>[], params?: P): Promise<TResponse[]> => {
-      const response = await ApiClient.patch<TResponse[]>(endpoints.updateMany(ids), { 
-        security: config.updateMany, 
+    updateMany: async <P = TParams>(
+      ids: string[],
+      data: Partial<TRequest>[],
+      params?: P
+    ): Promise<TResponse[]> => {
+      const response = await ApiClient.patch<TResponse[]>(endpoints.updateMany(ids), {
+        security: config.updateMany,
         data,
-        params
+        params,
       });
       return response.data ?? [];
     },
@@ -128,9 +134,9 @@ export const apiFactory = <
     },
 
     deleteMany: async <P = TParams>(ids: string[], params?: P): Promise<boolean> => {
-      const response = await ApiClient.delete<null>(endpoints.deleteMany(ids), { 
+      const response = await ApiClient.delete<null>(endpoints.deleteMany(ids), {
         security: config.deleteMany,
-        params
+        params,
       });
       return response.success;
     },

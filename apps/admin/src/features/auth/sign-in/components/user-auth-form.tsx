@@ -48,25 +48,22 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
   function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
 
-    toast.promise(
-      auth.login(data.email, data.password),
-      {
-        loading: 'Signing in...',
-        success: (result) => {
-          setIsLoading(false);
-          if (result) {
-            const targetPath = redirectTo || '/';
-            navigate({ to: targetPath, replace: true });
-            return `Welcome back, ${data.email}!`;
-          }
-          return 'Invalid email or password';
-        },
-        error: (err) => {
-          setIsLoading(false);
-          return err?.message || 'Error';
-        },
-      }
-    );
+    toast.promise(auth.login(data.email, data.password), {
+      loading: 'Signing in...',
+      success: (result) => {
+        setIsLoading(false);
+        if (result) {
+          const targetPath = redirectTo || '/';
+          navigate({ to: targetPath, replace: true });
+          return `Welcome back, ${data.email}!`;
+        }
+        return 'Invalid email or password';
+      },
+      error: (err) => {
+        setIsLoading(false);
+        return err?.message || 'Error';
+      },
+    });
   }
 
   return (

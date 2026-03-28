@@ -36,11 +36,12 @@ export const tasksColumns: ColumnDef<Task>[] = [
     cell: ({ row }) => <div className='w-20'>{row.getValue('id')}</div>,
     enableSorting: false,
     enableHiding: false,
+    meta: { className: 'ps-4' },
   },
   {
     accessorKey: 'title',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Title' />,
-    meta: { className: 'ps-1', tdClassName: 'ps-4' },
+    meta: { className: 'ps-4' },
     cell: ({ row }) => {
       const label = labels.find((label) => label.value === row.original.label);
 
@@ -57,7 +58,7 @@ export const tasksColumns: ColumnDef<Task>[] = [
   {
     accessorKey: 'status',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Status' />,
-    meta: { className: 'ps-1', tdClassName: 'ps-4' },
+    meta: { className: 'ps-4' },
     cell: ({ row }) => {
       const status = statuses.find((status) => status.value === row.getValue('status'));
 
@@ -79,7 +80,7 @@ export const tasksColumns: ColumnDef<Task>[] = [
   {
     accessorKey: 'priority',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Priority' />,
-    meta: { className: 'ps-1', tdClassName: 'ps-3' },
+    meta: { className: 'ps-4' },
     cell: ({ row }) => {
       const priority = priorities.find((priority) => priority.value === row.getValue('priority'));
 

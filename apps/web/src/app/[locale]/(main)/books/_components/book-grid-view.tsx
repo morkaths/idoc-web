@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { BookResponse, Pagination as PaginationType } from "@/types";
-import { BookGridItems } from "@/components/book/book-grid-items";
-import { Pagination } from "@/components/pagination";
+import { BookResponse, Pagination as PaginationType } from '@/types';
+import { BookGridItems } from '@/components/book/book-grid-items';
+import { Pagination } from '@/components/pagination';
 
 export function BookGridView({
   data = [],
@@ -18,7 +18,7 @@ export function BookGridView({
   onPageChange?: (page: number) => void;
 }) {
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <BookGridItems data={data} loading={loading} error={error} />
       {pagination && onPageChange && (
         <Pagination pagination={pagination} onPageChange={onPageChange} />

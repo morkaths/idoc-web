@@ -75,7 +75,6 @@ export function UsersTable() {
   const users = usersData?.data ?? [];
   const userPagination = usersData?.pagination;
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: users,
     columns,

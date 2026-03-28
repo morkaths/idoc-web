@@ -1,14 +1,18 @@
-import type { Metadata } from "next";
-import { BookDetailView } from "./_components/view";
-import { BookApi } from "@/apis";
+import { BookApi } from '@/apis';
+import type { Metadata } from 'next';
+import { BookDetailView } from './_components/view';
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
   try {
     const { id } = await params;
     const book = await BookApi.findById(id);
     if (!book) {
       return {
-        title: "Book not found",
+        title: 'Book not found',
       };
     }
     return {
@@ -20,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
   } catch (error) {
     return {
-      title: "Error",
+      title: 'Error',
     };
   }
 }

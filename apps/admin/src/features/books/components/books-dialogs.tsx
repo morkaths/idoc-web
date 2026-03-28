@@ -1,10 +1,10 @@
+import { toast } from 'sonner';
 import { showSubmittedData } from '@/lib/show-submitted-data';
+import { useCreateBook, useDeleteBook, useUpdateBook } from '@/hooks/data/useBook';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ImportDialog } from '@/components/import-dialog';
 import { BooksMutateDialog } from './books-mutate-dialog';
 import { useBooksContext } from './books-provider';
-import { useCreateBook, useDeleteBook, useUpdateBook } from '@/hooks/data/useBook';
-import { toast } from 'sonner';
 
 export function BooksDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useBooksContext();
@@ -19,17 +19,14 @@ export function BooksDialogs() {
         open={open === 'create'}
         onOpenChange={() => setOpen('create')}
         onSubmit={async (data) => {
-          toast.promise(
-            createBookMut.mutateAsync(data),
-            {
-              loading: 'Creating book...',
-              success: () => {
-                setOpen(null);
-                return 'Book created successfully!';
-              },
-              error: (err) => err?.message || 'Failed to create book',
-            }
-          );
+          toast.promise(createBookMut.mutateAsync(data), {
+            loading: 'Creating book...',
+            success: () => {
+              setOpen(null);
+              return 'Book created successfully!';
+            },
+            error: (err) => err?.message || 'Failed to create book',
+          });
         }}
       />
 
@@ -52,18 +49,15 @@ export function BooksDialogs() {
             }}
             initialData={currentRow}
             onSubmit={async (data) => {
-              toast.promise(
-                updateBookMut.mutateAsync({ id: currentRow.id!, data }),
-                {
-                  loading: 'Updating book...',
-                  success: () => {
-                    setOpen(null);
-                    setTimeout(() => setCurrentRow(null), 500);
-                    return 'Book updated successfully!';
-                  },
-                  error: (err) => err?.message || 'Failed to update book',
-                }
-              );
+              toast.promise(updateBookMut.mutateAsync({ id: currentRow.id!, data }), {
+                loading: 'Updating book...',
+                success: () => {
+                  setOpen(null);
+                  setTimeout(() => setCurrentRow(null), 500);
+                  return 'Book updated successfully!';
+                },
+                error: (err) => err?.message || 'Failed to update book',
+              });
             }}
           />
 
@@ -78,19 +72,16 @@ export function BooksDialogs() {
               }, 500);
             }}
             handleConfirm={async () => {
-              toast.promise(
-                deleteBookMut.mutateAsync(currentRow.id!),
-                {
-                  loading: 'Deleting book...',
-                  success: () => {
-                    setOpen(null);
-                    setTimeout(() => setCurrentRow(null), 500);
-                    showSubmittedData(currentRow, 'The following book has been deleted:');
-                    return 'Book deleted successfully!';
-                  },
-                  error: (err) => err?.message || 'Failed to delete book',
-                }
-              );
+              toast.promise(deleteBookMut.mutateAsync(currentRow.id!), {
+                loading: 'Deleting book...',
+                success: () => {
+                  setOpen(null);
+                  setTimeout(() => setCurrentRow(null), 500);
+                  showSubmittedData(currentRow, 'The following book has been deleted:');
+                  return 'Book deleted successfully!';
+                },
+                error: (err) => err?.message || 'Failed to delete book',
+              });
             }}
             className='max-w-md'
             title={`Delete this book: ${currentRow.title || currentRow.id} ?`}

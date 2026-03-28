@@ -9,7 +9,7 @@ export const usePermissions = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['permissions', params],
     queryFn: () => PermissionApi.find(params),
     enabled: true,
@@ -19,16 +19,20 @@ export const usePermissions = (
   });
 
   return useMemo(() => ({
-    ...query,
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
     data: {
-      data: query.data?.data || [],
-      pagination: query.data?.pagination,
+      data: rawData?.data || [],
+      pagination: rawData?.pagination,
     },
-  }), [query]);
+  }), [rawData, status, error, isLoading, isFetching, refetch]);
 };
 
 export const usePermission = (id: string, options?: Omit<UseQueryOptions<PermissionResponse, Error, PermissionResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const query = useQuery<PermissionResponse, Error, PermissionResponse, QueryKey>({
+  const { data, status, error, isLoading, isFetching, refetch } = useQuery<PermissionResponse, Error, PermissionResponse, QueryKey>({
     queryKey: ['permissions', id],
     queryFn: () => PermissionApi.findById(id),
     enabled: !!id,
@@ -37,9 +41,13 @@ export const usePermission = (id: string, options?: Omit<UseQueryOptions<Permiss
   });
 
   return useMemo(() => ({
-    ...query,
-    data: query.data || null,
-  }), [query]);
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
+    data: data || null,
+  }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useCreatePermission = () => {

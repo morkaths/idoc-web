@@ -9,7 +9,7 @@ export const useRoles = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['roles', params],
     queryFn: () => RoleApi.find(params),
     enabled: true,
@@ -19,16 +19,20 @@ export const useRoles = (
   });
 
   return useMemo(() => ({
-    ...query,
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
     data: {
-      data: query.data?.data || [],
-      pagination: query.data?.pagination,
+      data: rawData?.data || [],
+      pagination: rawData?.pagination,
     },
-  }), [query]);
+  }), [rawData, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useRole = (id: string, options?: Omit<UseQueryOptions<RoleResponse, Error, RoleResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const query = useQuery<RoleResponse, Error, RoleResponse, QueryKey>({
+  const { data, status, error, isLoading, isFetching, refetch } = useQuery<RoleResponse, Error, RoleResponse, QueryKey>({
     queryKey: ['roles', id],
     queryFn: () => RoleApi.findById(id),
     enabled: !!id,
@@ -37,9 +41,13 @@ export const useRole = (id: string, options?: Omit<UseQueryOptions<RoleResponse,
   });
 
   return useMemo(() => ({
-    ...query,
-    data: query.data || null,
-  }), [query]);
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
+    data: data || null,
+  }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useCreateRole = () => {

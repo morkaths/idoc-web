@@ -65,14 +65,15 @@ export function TasksTable({ data }: DataTableProps) {
     ],
   });
 
+  type PaginationShape = { page?: number; pageIndex?: number; pageSize: number };
+  const paginationTyped = pagination as PaginationShape;
   const page =
-    typeof (pagination as any).page === 'number'
-      ? (pagination as any).page
-      : typeof (pagination as any).pageIndex === 'number'
-        ? (pagination as any).pageIndex + 1
+    typeof paginationTyped.page === 'number'
+      ? paginationTyped.page
+      : typeof paginationTyped.pageIndex === 'number'
+        ? paginationTyped.pageIndex + 1
         : 1;
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,

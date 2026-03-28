@@ -1,5 +1,5 @@
-import { Upload, X } from "lucide-react";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState } from 'react';
+import { Upload, X } from 'lucide-react';
 
 interface ImageUploadProps {
   value?: string;
@@ -11,7 +11,7 @@ interface ImageUploadProps {
 export function ImageUpload({
   value,
   onChange,
-  label = "Upload an image",
+  label = 'Upload an image',
   maxSizeMB = 4,
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -54,56 +54,56 @@ export function ImageUpload({
   const handleRemove = () => {
     setPreview(undefined);
     onChange(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return (
-    <div className="px-4">
+    <div className='px-4'>
       <div
-        className={`border-2 border-dashed border-border p-2 rounded-md flex flex-col items-center justify-center text-center cursor-pointer relative ${
-          preview ? "p-2" : "px-4 py-6"
+        className={`border-border relative flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-2 text-center ${
+          preview ? 'p-2' : 'px-4 py-6'
         }`}
         onClick={handleBoxClick}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
         {preview ? (
-          <div className="relative w-31 h-43">
+          <div className='relative h-43 w-31'>
             <img
               src={preview}
-              alt="Preview"
-              className="object-cover w-full h-full rounded-md border"
+              alt='Preview'
+              className='h-full w-full rounded-md border object-cover'
             />
             <button
-              type="button"
-              className="absolute top-1.5 right-1.5 bg-white/30 hover:bg-red-200 rounded-full p-1 shadow"
+              type='button'
+              className='absolute top-1.5 right-1.5 rounded-full bg-white/30 p-1 shadow hover:bg-red-200'
               onClick={(e) => {
                 e.stopPropagation();
                 handleRemove();
               }}
-              aria-label="Remove image"
+              aria-label='Remove image'
             >
-              <X className="w-4 h-4 text-red-500" />
+              <X className='h-4 w-4 text-red-500' />
             </button>
           </div>
         ) : (
           <>
-            <div className="mb-2 bg-muted rounded-full p-3">
-              <Upload className="h-5 w-5 text-muted-foreground" />
+            <div className='bg-muted mb-2 rounded-full p-3'>
+              <Upload className='text-muted-foreground h-5 w-5' />
             </div>
-            <p className="text-sm font-medium">{label}</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              <span className="text-primary font-medium cursor-pointer">Click to upload</span>
+            <p className='text-sm font-medium'>{label}</p>
+            <p className='text-muted-foreground mt-1 text-sm'>
+              <span className='text-primary cursor-pointer font-medium'>Click to upload</span>
             </p>
-            <p className="text-xs text-muted-foreground mt-1">({maxSizeMB}MB max)</p>
+            <p className='text-muted-foreground mt-1 text-xs'>({maxSizeMB}MB max)</p>
           </>
         )}
         <input
-          type="file"
-          id="imageUpload"
+          type='file'
+          id='imageUpload'
           ref={fileInputRef}
-          className="hidden"
-          accept="image/*"
+          className='hidden'
+          accept='image/*'
           onChange={(e) => handleFileSelect(e.target.files)}
         />
       </div>

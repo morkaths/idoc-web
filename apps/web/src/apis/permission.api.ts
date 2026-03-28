@@ -3,14 +3,16 @@ import type { PermissionResponse, PermissionRequest, FindParams, Pagination } fr
 import { ApiClient } from './config';
 
 export const PermissionApi = {
-  find: async (params?: FindParams): Promise<{ data: PermissionResponse[]; pagination?: Pagination }> => {
+  find: async (
+    params?: FindParams
+  ): Promise<{ data: PermissionResponse[]; pagination?: Pagination }> => {
     const response = await ApiClient.get<PermissionResponse[]>(
       API_CONFIG.endpoints.permission.find,
       { params }
     );
     return {
       data: response.data ?? [],
-      pagination: response.pagination
+      pagination: response.pagination,
     };
   },
 
@@ -41,9 +43,7 @@ export const PermissionApi = {
   },
 
   delete: async (id: string): Promise<boolean> => {
-    const response = await ApiClient.delete<null>(
-      API_CONFIG.endpoints.permission.delete(id)
-    );
+    const response = await ApiClient.delete<null>(API_CONFIG.endpoints.permission.delete(id));
     return response.success;
   },
 };

@@ -18,13 +18,15 @@ export const useBookmarks = (
         ...options,
     });
 
+    const stabilizedData = useMemo(() => ({
+        data: query.data?.data || [],
+        pagination: query.data?.pagination,
+    }), [query.data]);
+
     return useMemo(() => ({
         ...query,
-        data: {
-            data: query.data?.data || [],
-            pagination: query.data?.pagination,
-        },
-    }), [query]);
+        data: stabilizedData,
+    }), [query, stabilizedData]);
 };
 
 export const useBookmark = (id: string, options?: Omit<UseQueryOptions<BookmarkResponse, Error, BookmarkResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
@@ -36,10 +38,12 @@ export const useBookmark = (id: string, options?: Omit<UseQueryOptions<BookmarkR
         ...options,
     });
 
+    const data = useMemo(() => query.data || null, [query.data]);
+
     return useMemo(() => ({
         ...query,
-        data: query.data || null,
-    }), [query]);
+        data,
+    }), [query, data]);
 };
 
 export const useCreateBookmark = () => {
@@ -76,17 +80,19 @@ export const useDeleteBookmark = () => {
     });
 };
 
-export const useBookmarkStatus = (itemIds: string[], options?: Omit<UseQueryOptions<Record<string, string>, Error, Record<string, string>, QueryKey>, 'queryKey' | 'queryFn'>) => {
+export const useBookmarkStatus = (items: string[], options?: Omit<UseQueryOptions<Record<string, string>, Error, Record<string, string>, QueryKey>, 'queryKey' | 'queryFn'>) => {
     const query = useQuery<Record<string, string>, Error, Record<string, string>, QueryKey>({
-        queryKey: ['bookmarks', 'status', itemIds],
-        queryFn: () => BookmarkApi.status(itemIds),
-        enabled: itemIds.length > 0,
+        queryKey: ['bookmarks', 'status', items],
+        queryFn: () => BookmarkApi.status(items),
+        enabled: items.length > 0,
         staleTime: 5 * 60 * 1000,
         ...options,
     });
 
+    const data = useMemo(() => query.data || {}, [query.data]);
+
     return useMemo(() => ({
         ...query,
-        data: query.data || {},
-    }), [query]);
+        data,
+    }), [query, data]);
 };

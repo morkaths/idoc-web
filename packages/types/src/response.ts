@@ -136,6 +136,7 @@ export interface BookmarkResponse {
   id: string;
   user: UserResponse;
   item: BookResponse;
+  collections?: CollectionResponse[];
   page?: number;
   note?: string;
   createdAt?: Date | string;
@@ -147,7 +148,6 @@ export interface CollectionResponse {
   user: UserResponse;
   name: string;
   description?: string;
-  bookmarks?: BookmarkResponse[];
   itemCount?: number;
   isPublic?: boolean;
   createdAt?: Date | string;

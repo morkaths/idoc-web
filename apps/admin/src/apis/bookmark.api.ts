@@ -1,5 +1,5 @@
-import { useAuthStore } from '@/stores/auth-store';
 import { ApiEndpoint } from '@/config/api';
+import { useAuthStore } from '@/stores/auth-store';
 import type { BookmarkResponse, BookmarkRequest } from '../types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';

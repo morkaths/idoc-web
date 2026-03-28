@@ -52,7 +52,6 @@ export function CategoriesCombobox({
 
     useEffect(() => {
         if (data?.data) {
-            // Update cache map
             setCategoryMap(prev => {
                 const next = new Map(prev);
                 data.data.forEach(c => next.set(c.id, c));

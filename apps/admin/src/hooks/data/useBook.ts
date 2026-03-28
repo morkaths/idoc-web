@@ -9,7 +9,7 @@ export const useBooks = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['books', params],
     queryFn: () => BookApi.find(params),
     enabled: true,
@@ -18,17 +18,23 @@ export const useBooks = (
     ...options
   });
 
+  const data = useMemo(() => ({
+    data: rawData?.data || [],
+    pagination: rawData?.pagination,
+  }), [rawData]);
+
   return useMemo(() => ({
-    ...query,
-    data: {
-      data: query.data?.data || [],
-      pagination: query.data?.pagination,
-    }
-  }), [query]);
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
+    data,
+  }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useBook = (id: string, options?: Omit<UseQueryOptions<BookResponse, Error, BookResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const query = useQuery<BookResponse, Error, BookResponse, QueryKey>({
+  const { data, status, error, isLoading, isFetching, refetch } = useQuery<BookResponse, Error, BookResponse, QueryKey>({
     queryKey: ['books', id],
     queryFn: () => BookApi.findById(id),
     enabled: !!id,
@@ -37,9 +43,13 @@ export const useBook = (id: string, options?: Omit<UseQueryOptions<BookResponse,
   });
 
   return useMemo(() => ({
-    ...query,
-    data: query.data || null,
-  }), [query]);
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
+    data: data || null,
+  }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useCreateBook = () => {

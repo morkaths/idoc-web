@@ -31,7 +31,7 @@ export const ENDPOINTS = {
     resend: '/auth/verify/resend',
     changePassword: '/auth/password/change',
     forgotPassword: '/auth/password/forgot',
-    resetPassword:  '/auth/password/reset',
+    resetPassword: '/auth/password/reset',
   },
   users: crud('/users'),
   roles: crud('/roles'),

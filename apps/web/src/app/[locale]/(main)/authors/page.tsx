@@ -1,6 +1,3 @@
 export default function AuthorsPage() {
-  return (
-    <div className="container py-8">
-    </div>
-  );
+  return <div className='container py-8'></div>;
 }

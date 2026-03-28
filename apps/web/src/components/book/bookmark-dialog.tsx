@@ -28,13 +28,13 @@ export function BookmarkDialog({
     const { mutate: createCollection } = useCreateCollection();
     const { mutate: createBookmark } = useCreateBookmark();
 
-    const handleSelectCollection = (collectionId?: string) => {
+    const handleSelectCollection = (collection?: string) => {
         if (!bookId) return;
 
         createBookmark(
             {
-                itemId: bookId,
-                collectionId,
+                item: bookId,
+                collections: collection ? [collection] : [],
             },
             {
                 onSuccess: () => {

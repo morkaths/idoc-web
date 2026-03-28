@@ -26,6 +26,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@repo/ui/components/sidebar';
+import { useDirection } from '@/context/direction-provider';
 import {
   type NavCollapsible,
   type NavItem,
@@ -112,6 +113,7 @@ function SidebarMenuCollapsible({ item, href }: { item: NavCollapsible; href: st
 }
 
 function SidebarMenuCollapsedDropdown({ item, href }: { item: NavCollapsible; href: string }) {
+  const { dir } = useDirection();
   return (
     <SidebarMenuItem>
       <DropdownMenu>
@@ -120,17 +122,25 @@ function SidebarMenuCollapsedDropdown({ item, href }: { item: NavCollapsible; hr
             {item.icon && <item.icon />}
             <span>{item.title}</span>
             {item.badge && <NavBadge>{item.badge}</NavBadge>}
-            <ChevronRight className='ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+            <ChevronRight className='ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 rtl:rotate-180' />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
-        <DropdownMenuContent side='right' align='start' sideOffset={4}>
+        <DropdownMenuContent
+          side={dir === 'rtl' ? 'left' : 'right'}
+          align='start'
+          sideOffset={4}
+          className='min-w-52'
+        >
           <DropdownMenuLabel>
             {item.title} {item.badge ? `(${item.badge})` : ''}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {item.items.map((sub) => (
             <DropdownMenuItem key={`${sub.title}-${sub.url}`} asChild>
-              <Link to={sub.url} className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}>
+              <Link
+                to={sub.url}
+                className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}
+              >
                 {sub.icon && <sub.icon />}
                 <span className='max-w-52 text-wrap'>{sub.title}</span>
                 {sub.badge && <span className='ms-auto text-xs'>{sub.badge}</span>}

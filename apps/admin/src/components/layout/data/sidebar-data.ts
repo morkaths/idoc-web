@@ -22,7 +22,7 @@ import {
   Library,
   Tag,
   UserPen,
-  Bookmark
+  Bookmark,
 } from 'lucide-react';
 import { ClerkLogo } from '@/assets/clerk-logo';
 import { type SidebarData } from '../types';

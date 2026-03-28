@@ -9,7 +9,7 @@ export const useBorrows = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['borrows', params],
     queryFn: () => BorrowApi.find(params),
     enabled: true,
@@ -19,19 +19,23 @@ export const useBorrows = (
   });
 
   return useMemo(() => ({
-    ...query,
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
     data: {
-      data: query.data?.data || [],
-      pagination: query.data?.pagination,
+      data: rawData?.data || [],
+      pagination: rawData?.pagination,
     },
-  }), [query]);
+  }), [rawData, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useBorrowHistory = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['borrows', 'history', params],
     queryFn: () => BorrowApi.history(params),
     enabled: true,
@@ -41,16 +45,20 @@ export const useBorrowHistory = (
   });
 
   return useMemo(() => ({
-    ...query,
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
     data: {
-      data: query.data?.data || [],
-      pagination: query.data?.pagination,
+      data: rawData?.data || [],
+      pagination: rawData?.pagination,
     },
-  }), [query]);
+  }), [rawData, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useBorrow = (id: string, options?: Omit<UseQueryOptions<BorrowResponse, Error, BorrowResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const query = useQuery<BorrowResponse, Error, BorrowResponse, QueryKey>({
+  const { data, status, error, isLoading, isFetching, refetch } = useQuery<BorrowResponse, Error, BorrowResponse, QueryKey>({
     queryKey: ['borrows', id],
     queryFn: () => BorrowApi.findById(id),
     enabled: !!id,
@@ -59,9 +67,13 @@ export const useBorrow = (id: string, options?: Omit<UseQueryOptions<BorrowRespo
   });
 
   return useMemo(() => ({
-    ...query,
-    data: query.data || null,
-  }), [query]);
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
+    data: data || null,
+  }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useCreateBorrow = () => {

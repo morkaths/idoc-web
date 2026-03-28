@@ -1,27 +1,7 @@
-import countries from 'flag-icons/country.json';
-
 export enum Environment {
     Development = 'development',
     Production = 'production',
 }
-
-export enum LanguageCode {
-    Vietnamese = 'vn',
-    English = 'gb',
-    Japanese = 'jp',
-    Korean = 'kr',
-    Chinese = 'cn',
-    French = 'fr',
-    German = 'de',
-    Spanish = 'es',
-}
-
-export const COUNTRIES = countries;
-
-export const LANGUAGE = countries.map(country => ({
-    value: country.code,
-    label: country.name
-}));
 
 export enum UserStatus {
     Inactive = 0,
@@ -44,7 +24,16 @@ export enum NotificationType {
 }
 
 export enum BorrowStatus {
+    Pending = 'pending',
+    Rejected = 'rejected',
     Active = 'active',
     Returned = 'returned',
-    Overdue = 'overdue'
+    Overdue = 'overdue',
 }
+
+export enum ReviewStatus {
+    Pending = 'pending',
+    Approved = 'approved',
+    Rejected = 'rejected',
+}
+

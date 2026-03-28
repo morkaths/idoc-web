@@ -12,15 +12,11 @@ const AUTH_PATHS = ['/sign-in', '/sign-up'];
 export function authMiddleware(req: NextRequest): NextResponse | null {
     const { pathname } = req.nextUrl;
     const token = req.cookies.get(env.cookie.token)?.value;
-
-    // Loại bỏ tiền tố ngôn ngữ (vd: /vi/library -> /library) để kiểm tra route
     const pathWithoutLocale = pathname.replace(new RegExp(`^/(${locales.join('|')})`), '') || '/';
-
+    
     const isAuthPage = AUTH_PATHS.some((path) => pathWithoutLocale.startsWith(path));
-
-    // Nếu đã đăng nhập mà truy cập trang auth (login/register), redirect về trang chủ hoặc dashboard
     if (token && isAuthPage) {
-        const locale = locales.find((l) => pathname.startsWith(`/${l}`)) || defaultLocale;
+        const locale = locales.find((l: string) => pathname.startsWith(`/${l}`)) || defaultLocale;
         return NextResponse.redirect(new URL(`/${locale}/`, req.url));
     }
 

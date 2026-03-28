@@ -31,6 +31,7 @@ export const rolesColumns: ColumnDef<RoleResponse>[] = [
   },
   {
     accessorKey: 'code',
+    meta: { className: 'ps-4' },
     header: ({ column }) => <DataTableColumnHeader column={column} title='Code' />,
     cell: ({ row, table }) => {
       const code = String(row.getValue('code') ?? '');
@@ -44,8 +45,9 @@ export const rolesColumns: ColumnDef<RoleResponse>[] = [
   },
   {
     accessorKey: 'name',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
     enableSorting: false,
+    meta: { className: 'ps-4' },
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
     cell: ({ row, table }) => {
       const name = row.original.name ?? '';
       const query = String(table.getState().globalFilter ?? '');
@@ -58,19 +60,20 @@ export const rolesColumns: ColumnDef<RoleResponse>[] = [
   },
   {
     accessorKey: 'permissions',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Permissions' />,
     enableSorting: false,
+    meta: { className: 'ps-4' },
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Permissions' />,
     cell: ({ row }) => {
       const permissions = row.original.permissions ?? [];
       return (
         <div className='flex flex-wrap gap-1 max-w-100'>
           {permissions.length === 0
-            ? <span className="text-xs text-muted-foreground">No permissions</span>
+            ? <span className='text-xs text-muted-foreground'>No permissions</span>
             : permissions.slice(0, 3).map((p) => (
-              <span key={p.id} className="px-2 py-0.5 rounded bg-muted text-xs">{p.name}</span>
+              <span key={p.id} className='px-2 py-0.5 rounded bg-muted text-xs'>{p.name}</span>
             ))}
           {permissions.length > 3 && (
-            <span className="text-xs text-muted-foreground">+{permissions.length - 3} more</span>
+            <span className='text-xs text-muted-foreground'>+{permissions.length - 3} more</span>
           )}
         </div>
       );

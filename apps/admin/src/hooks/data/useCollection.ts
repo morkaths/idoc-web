@@ -9,7 +9,7 @@ export const useCollections = (
     params: FindParams = {},
     options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+    const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['collections', params],
         queryFn: () => CollectionApi.find(params),
         enabled: true,
@@ -18,17 +18,23 @@ export const useCollections = (
         ...options,
     });
 
+    const data = useMemo(() => ({
+        data: rawData?.data || [],
+        pagination: rawData?.pagination,
+    }), [rawData]);
+
     return useMemo(() => ({
-        ...query,
-        data: {
-            data: query.data?.data || [],
-            pagination: query.data?.pagination,
-        },
-    }), [query]);
+        status,
+        error,
+        isLoading,
+        isFetching,
+        refetch,
+        data,
+    }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useCollection = (id: string, options?: Omit<UseQueryOptions<CollectionResponse, Error, CollectionResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<CollectionResponse, Error, CollectionResponse, QueryKey>({
+    const { data, status, error, isLoading, isFetching, refetch } = useQuery<CollectionResponse, Error, CollectionResponse, QueryKey>({
         queryKey: ['collections', id],
         queryFn: () => CollectionApi.findById(id),
         enabled: !!id,
@@ -37,9 +43,13 @@ export const useCollection = (id: string, options?: Omit<UseQueryOptions<Collect
     });
 
     return useMemo(() => ({
-        ...query,
-        data: query.data || null,
-    }), [query]);
+        status,
+        error,
+        isLoading,
+        isFetching,
+        refetch,
+        data: data || null,
+    }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useCreateCollection = () => {

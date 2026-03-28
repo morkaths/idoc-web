@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
+import { useAuthStore } from '@/stores/auth-store';
 import useDialogState from '@/hooks/ui/useDialogState';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import {
@@ -18,11 +19,12 @@ import {
   useSidebar,
 } from '@repo/ui/components/sidebar';
 import { SignOutDialog } from '@/components/sign-out-dialog';
-import { useAuthStore } from '@/stores/auth-store';
+import { useDirection } from '@/context/direction-provider';
 
 export function NavUser() {
   const user = useAuthStore((state) => state.auth.user);
   const { isMobile } = useSidebar();
+  const { dir } = useDirection();
   const [open, setOpen] = useDialogState();
 
   if (!user) {
@@ -41,7 +43,9 @@ export function NavUser() {
               >
                 <Avatar className='h-8 w-8 rounded-lg'>
                   <AvatarImage src='/avatars/01.png' alt={user?.username || user?.email} />
-                  <AvatarFallback className='rounded-lg'>{(user?.username || user?.email || 'U').charAt(0).toUpperCase()}</AvatarFallback>
+                  <AvatarFallback className='rounded-lg'>
+                    {(user?.username || user?.email || 'U').charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-start text-sm leading-tight'>
                   <span className='truncate font-semibold'>{user?.username || user?.email}</span>
@@ -52,7 +56,7 @@ export function NavUser() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
-              side={isMobile ? 'bottom' : 'right'}
+              side={isMobile ? 'bottom' : dir === 'rtl' ? 'left' : 'right'}
               align='end'
               sideOffset={4}
             >
@@ -60,7 +64,9 @@ export function NavUser() {
                 <div className='flex items-center gap-2 px-1 py-1.5 text-start text-sm'>
                   <Avatar className='h-8 w-8 rounded-lg'>
                     <AvatarImage src='/avatars/01.png' alt={user?.username || user?.email} />
-                    <AvatarFallback className='rounded-lg'>{(user?.username || user?.email || 'U').charAt(0).toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className='rounded-lg'>
+                      {(user?.username || user?.email || 'U').charAt(0).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   <div className='grid flex-1 text-start text-sm leading-tight'>
                     <span className='truncate font-semibold'>{user?.username || user?.email}</span>

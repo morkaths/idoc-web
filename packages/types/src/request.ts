@@ -127,18 +127,18 @@ export const ReviewRequestSchema = z.object({
 
 export const BookmarkRequestSchema = z.object({
   id: z.string().optional(),
-  user: z.string(),
-  item: z.string(),
+  user: z.string().trim().optional(),
+  item: z.string().trim(),
+  collections: z.array(z.string().trim()).optional(),
   page: z.number().int().min(0).optional(),
   note: z.string().trim().optional(),
 });
 
 export const CollectionRequestSchema = z.object({
   id: z.string().optional(),
-  user: z.string().trim(),
+  user: z.string().trim().optional(),
   name: z.string().trim().min(1).max(100),
   description: z.string().trim().max(500).optional(),
-  itemCount: z.number().int().min(0).optional(),
   isPublic: z.boolean().optional()
 });
 

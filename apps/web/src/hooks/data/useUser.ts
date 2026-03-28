@@ -9,7 +9,7 @@ export const useUsers = (
   params: FindParams = {},
   options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-  const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
     queryKey: ['users', params],
     queryFn: () => UserApi.find(params),
     enabled: true,
@@ -19,16 +19,20 @@ export const useUsers = (
   });
 
   return useMemo(() => ({
-    ...query,
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
     data: {
-      data: query.data?.data || [],
-      pagination: query.data?.pagination,
+      data: rawData?.data || [],
+      pagination: rawData?.pagination,
     },
-  }), [query]);
+  }), [rawData, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useUser = (id: string, options?: Omit<UseQueryOptions<UserResponse, Error, UserResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const query = useQuery<UserResponse, Error, UserResponse, QueryKey>({
+  const { data, status, error, isLoading, isFetching, refetch } = useQuery<UserResponse, Error, UserResponse, QueryKey>({
     queryKey: ['users', id],
     queryFn: () => UserApi.findById(id),
     enabled: !!id,
@@ -37,9 +41,13 @@ export const useUser = (id: string, options?: Omit<UseQueryOptions<UserResponse,
   });
 
   return useMemo(() => ({
-    ...query,
-    data: query.data || null,
-  }), [query]);
+    status,
+    error,
+    isLoading,
+    isFetching,
+    refetch,
+    data: data || null,
+  }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useCreateUser = () => {

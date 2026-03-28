@@ -3,11 +3,14 @@ import type { AuthenticationResponse, UserResponse, UserRequest } from '../types
 import { ApiClient } from './config';
 
 export const AuthApi = {
-  login: async (data: { identifier: string; password: string }): Promise<AuthenticationResponse> => {
-    const response = await ApiClient.post<AuthenticationResponse>(
-      API_CONFIG.endpoints.auth.login,
-      { mode: 'public', data }
-    );
+  login: async (data: {
+    identifier: string;
+    password: string;
+  }): Promise<AuthenticationResponse> => {
+    const response = await ApiClient.post<AuthenticationResponse>(API_CONFIG.endpoints.auth.login, {
+      mode: 'public',
+      data,
+    });
     if (response.success && response.data) return response.data;
     throw new Error(response.message || 'Login failed');
   },
@@ -15,7 +18,7 @@ export const AuthApi = {
   loginGoogle: async (credentials: string): Promise<AuthenticationResponse> => {
     const response = await ApiClient.post<AuthenticationResponse>(
       API_CONFIG.endpoints.auth.loginGoogle,
-      { mode: "public", data: { credentials } }
+      { mode: 'public', data: { credentials } }
     );
     if (response.success && response.data) return response.data;
     throw new Error(response.message || 'Login with Google failed');
@@ -31,10 +34,10 @@ export const AuthApi = {
   },
 
   verify: async (data: { token: string }): Promise<UserResponse> => {
-    const response = await ApiClient.post<UserResponse>(
-      API_CONFIG.endpoints.auth.verify,
-      { mode: 'public', data }
-    );
+    const response = await ApiClient.post<UserResponse>(API_CONFIG.endpoints.auth.verify, {
+      mode: 'public',
+      data,
+    });
     if (response.success && response.data) return response.data;
     throw new Error(response.message || 'Verification failed');
   },
@@ -49,19 +52,18 @@ export const AuthApi = {
   },
 
   logout: async (): Promise<boolean> => {
-    const response = await ApiClient.post<{ success: boolean }>(
-      API_CONFIG.endpoints.auth.logout,
-      { mode: 'private' }
-    );
+    const response = await ApiClient.post<{ success: boolean }>(API_CONFIG.endpoints.auth.logout, {
+      mode: 'private',
+    });
     return response.success || false;
   },
 
   update: async (data: Partial<UserResponse>): Promise<UserResponse> => {
-    const response = await ApiClient.patch<UserResponse>(
-      API_CONFIG.endpoints.auth.update,
-      { mode: 'private', data }
-    );
+    const response = await ApiClient.patch<UserResponse>(API_CONFIG.endpoints.auth.update, {
+      mode: 'private',
+      data,
+    });
     if (response.success && response.data) return response.data;
     throw new Error(response.message || 'User update failed');
-  }
+  },
 };

@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router';
+import { useAuthStore } from '@/stores/auth-store';
 import useDialogState from '@/hooks/ui/useDialogState';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import { Button } from '@repo/ui/components/button';
@@ -13,7 +14,6 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { SignOutDialog } from '@/components/sign-out-dialog';
-import { useAuthStore } from '@/stores/auth-store';
 
 export function ProfileDropdown() {
   const user = useAuthStore((state) => state.auth.user);
@@ -21,12 +21,12 @@ export function ProfileDropdown() {
 
   if (!user) {
     return (
-      <div className="flex gap-2">
-        <Button asChild variant="default">
-          <Link to="/sign-in">Sign in</Link>
+      <div className='flex gap-2'>
+        <Button asChild variant='default'>
+          <Link to='/sign-in'>Sign in</Link>
         </Button>
-        <Button asChild variant="outline">
-          <Link to="/sign-up">Sign up</Link>
+        <Button asChild variant='outline'>
+          <Link to='/sign-up'>Sign up</Link>
         </Button>
       </div>
     );

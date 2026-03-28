@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BorrowRequestSchema, type BorrowResponse, type BorrowRequest } from "@/types";
+import { BorrowRequestSchema, type BorrowResponse, type BorrowRequest, BorrowStatus } from "@/types";
 import { Button } from "@repo/ui/components/button";
 import {
     Dialog,
@@ -19,8 +19,6 @@ import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/c
 import { UserCombobox } from './users-combobox';
 import { ItemCombobox } from './items-combobox';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@repo/ui/components/select';
-
-import { BorrowStatus } from "@/types/enum";
 
 type BorrowsMutateDialogProps = {
     open: boolean;

@@ -1,7 +1,9 @@
+'use client';
+
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MailPlus, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
@@ -53,14 +55,12 @@ export function UsersInviteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-md'>
+      <DialogContent className='sm:max-w-md max-h-[90vh] overflow-y-auto'>
         <DialogHeader className='text-start'>
-          <DialogTitle className='flex items-center gap-2'>
-            <MailPlus /> Invite User
-          </DialogTitle>
+          <DialogTitle>Invite User</DialogTitle>
           <DialogDescription>
-            Invite new user to join your team by sending them an email invitation. Assign a role to
-            define their access level.
+            Invite new user to join your team by sending them an email invitation.
+            Assign a role to define their access level.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type Row } from '@tanstack/react-table';
-import type { BorrowResponse } from '@/types';
+import { type BorrowResponse, UserStatus } from '@/types';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -10,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
-import { UserStatus } from '@/types/enum';
 import { useBorrowsContext } from './borrows-provider';
 
 type BorrowsTableRowActionsProps<TData> = {

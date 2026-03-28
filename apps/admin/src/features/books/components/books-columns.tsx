@@ -1,13 +1,12 @@
+import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
-import type { BookResponse } from '@/types';
+import { Languages, type BookResponse } from '@/types';
+import { ImageOff } from 'lucide-react';
 import { Badge } from '@repo/ui/components/badge';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
 import { BooksTableRowActions } from './books-table-row-actions';
-import { useState } from 'react';
-
-import { ImageOff } from 'lucide-react';
 
 const BookCoverCell = ({ src, title }: { src?: string; title: string }) => {
   const [error, setError] = useState(false);
@@ -15,7 +14,7 @@ const BookCoverCell = ({ src, title }: { src?: string; title: string }) => {
   if (!src || error) {
     return (
       <div className='bg-muted/20 text-muted-foreground flex h-15 w-10 items-center justify-center rounded-md border'>
-        <ImageOff className="h-4 w-4 opacity-50" />
+        <ImageOff className='h-4 w-4 opacity-50' />
       </div>
     );
   }
@@ -24,7 +23,7 @@ const BookCoverCell = ({ src, title }: { src?: string; title: string }) => {
     <img
       src={src}
       alt={title}
-      className='h-15 w-10 rounded object-cover border'
+      className='h-15 w-10 rounded border object-cover'
       style={{ borderRadius: 'var(--radius-img)' }}
       loading='lazy'
       onError={() => setError(true)}
@@ -61,6 +60,7 @@ export const booksColumns: ColumnDef<BookResponse>[] = [
     header: ({ column }) => <DataTableColumnHeader column={column} title='ISBN' />,
     enableSorting: false,
     enableHiding: false,
+    meta: { className: 'ps-4' },
     cell: ({ row, table }) => {
       const isbn = String(row.getValue('isbn') ?? '');
       const query = String(table.getState().globalFilter ?? '');
@@ -76,6 +76,7 @@ export const booksColumns: ColumnDef<BookResponse>[] = [
     header: ({ column }) => <DataTableColumnHeader column={column} title='Cover' />,
     enableSorting: false,
     enableHiding: true,
+    meta: { className: 'ps-4' },
     cell: ({ row }) => {
       const src = (row.getValue('coverUrl') ?? row.original.coverUrl) as string | undefined;
       const title = String(row.getValue('title') ?? '');
@@ -85,7 +86,7 @@ export const booksColumns: ColumnDef<BookResponse>[] = [
   {
     accessorKey: 'title',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Title' />,
-    meta: { className: 'ps-1', tdClassName: 'ps-4' },
+    meta: { className: 'ps-4' },
     cell: ({ row, table }) => {
       const title = row.getValue('title') as string;
       const query = String(table.getState().globalFilter ?? '');
@@ -106,6 +107,7 @@ export const booksColumns: ColumnDef<BookResponse>[] = [
   {
     accessorKey: 'slug',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Slug' />,
+    meta: { className: 'ps-4' },
     cell: ({ row, table }) => {
       const slug = String(row.getValue('slug') ?? '');
       const query = String(table.getState().globalFilter ?? '');
@@ -119,16 +121,15 @@ export const booksColumns: ColumnDef<BookResponse>[] = [
   {
     accessorKey: 'publisher',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Publish' />,
+    meta: { className: 'ps-4' },
     cell: ({ row }) => {
       const publisher = row.getValue('publisher') as string | undefined;
       const d = row.original.publishedDate as string | Date | undefined;
       const date = d ? (d instanceof Date ? d : new Date(String(d))) : null;
       return (
-        <div className="flex flex-col">
-          <span className='max-w-32 truncate sm:max-w-50 md:max-w-70'>
-            {publisher || '-'}
-          </span>
-          <span className="text-xs text-muted-foreground">
+        <div className='flex flex-col'>
+          <span className='max-w-32 truncate sm:max-w-50 md:max-w-70'>{publisher || '-'}</span>
+          <span className='text-muted-foreground text-xs'>
             {date && !isNaN(date.getTime()) ? date.toLocaleDateString() : '-'}
           </span>
         </div>
@@ -138,7 +139,7 @@ export const booksColumns: ColumnDef<BookResponse>[] = [
   {
     accessorKey: 'price',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Price' />,
-    meta: { className: 'ps-1', tdClassName: 'ps-4' },
+    meta: { className: 'ps-4' },
     enableHiding: true,
     cell: ({ row }) => {
       const p = row.getValue('price') as number | undefined;
@@ -178,13 +179,19 @@ export const booksColumns: ColumnDef<BookResponse>[] = [
   {
     accessorKey: 'language',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Language' />,
-    meta: { className: 'ps-1', tdClassName: 'ps-4' },
+    meta: { className: 'ps-4' },
     enableHiding: true,
     cell: ({ row }) => {
-      const lang = row.getValue('language') as string;
+      const langValue = row.getValue('language') as string;
+      const langConfig = Languages.find((l) => l.value === langValue);
+      const flagCode = langConfig?.flag || String(langValue).toLowerCase();
       return (
         <div className='flex items-center justify-center'>
-          <span className={`fi fi-${String(lang).toLowerCase()}`} aria-hidden />
+          <span 
+            className={`fi fi-${flagCode}`} 
+            title={langConfig?.label || langValue} 
+            aria-hidden 
+          />
         </div>
       );
     },
@@ -192,7 +199,7 @@ export const booksColumns: ColumnDef<BookResponse>[] = [
   {
     accessorKey: 'categories',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Categories' />,
-    meta: { className: 'ps-1' },
+    meta: { className: 'ps-4' },
     enableSorting: false,
     cell: ({ row }) => {
       const cats = row.getValue('categories') as { slug?: string }[] | undefined;

@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
-import { type RoleResponse, type PermissionResponse, RoleRequest, RoleRequestSchema } from '@/types';
+import { type RoleResponse, type PermissionResponse, type RoleRequest, RoleRequestSchema } from '@/types';
 import { PermissionsCombobox } from './permissions-combobox';
 
 type RolesMutateDialogProps = {

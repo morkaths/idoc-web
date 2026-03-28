@@ -105,20 +105,17 @@ export function AuthorsTable() {
       pageIndex: 0,
       pageSize: pagination.pageSize ?? 10,
     }));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalFilter]);
 
   useEffect(() => {
     ensurePageInRange(table.getPageCount());
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [table.getPageCount(), ensurePageInRange]);
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
-      <DataTableToolbar
-        table={table}
-        searchPlaceholder='Search authors...'
-      />
+      <DataTableToolbar table={table} searchPlaceholder='Search authors...' />
       <div className='overflow-hidden rounded-md border'>
         <Table>
           <TableHeader>

@@ -9,7 +9,7 @@ export const useBookmarks = (
     params: FindParams = {},
     options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+    const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['bookmarks', params],
         queryFn: () => BookmarkApi.find(params),
         enabled: true,
@@ -19,16 +19,20 @@ export const useBookmarks = (
     });
 
     return useMemo(() => ({
-        ...query,
+        status,
+        error,
+        isLoading,
+        isFetching,
+        refetch,
         data: {
-            data: query.data?.data || [],
-            pagination: query.data?.pagination,
+            data: rawData?.data || [],
+            pagination: rawData?.pagination,
         },
-    }), [query]);
+    }), [rawData, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useBookmark = (id: string, options?: Omit<UseQueryOptions<BookmarkResponse, Error, BookmarkResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<BookmarkResponse, Error, BookmarkResponse, QueryKey>({
+    const { data, status, error, isLoading, isFetching, refetch } = useQuery<BookmarkResponse, Error, BookmarkResponse, QueryKey>({
         queryKey: ['bookmarks', id],
         queryFn: () => BookmarkApi.findById(id),
         enabled: !!id,
@@ -37,9 +41,13 @@ export const useBookmark = (id: string, options?: Omit<UseQueryOptions<BookmarkR
     });
 
     return useMemo(() => ({
-        ...query,
-        data: query.data || null,
-    }), [query]);
+        status,
+        error,
+        isLoading,
+        isFetching,
+        refetch,
+        data: data || null,
+    }), [data, status, error, isLoading, isFetching, refetch]);
 };
 
 export const useCreateBookmark = () => {
@@ -77,7 +85,7 @@ export const useDeleteBookmark = () => {
 };
 
 export const useBookmarkStatus = (itemIds: string[], options?: Omit<UseQueryOptions<Record<string, string | null>, Error, Record<string, string | null>, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<Record<string, string | null>, Error, Record<string, string | null>, QueryKey>({
+    const { data, status, error, isLoading, isFetching, refetch } = useQuery<Record<string, string | null>, Error, Record<string, string | null>, QueryKey>({
         queryKey: ['bookmarks', 'status', itemIds],
         queryFn: () => BookmarkApi.status(itemIds),
         enabled: itemIds.length > 0,
@@ -86,7 +94,11 @@ export const useBookmarkStatus = (itemIds: string[], options?: Omit<UseQueryOpti
     });
 
     return useMemo(() => ({
-        ...query,
-        data: query.data || {},
-    }), [query]);
+        status,
+        error,
+        isLoading,
+        isFetching,
+        refetch,
+        data: data || {},
+    }), [data, status, error, isLoading, isFetching, refetch]);
 };

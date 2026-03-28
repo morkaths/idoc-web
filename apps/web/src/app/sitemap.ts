@@ -12,8 +12,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/sign-up',
     ];
 
-    const sitemaps = locales.flatMap((locale) =>
-        routes.map((route) => ({
+    const sitemaps = locales.flatMap((locale: string) =>
+        routes.map((route: string) => ({
             url: `${baseUrl}/${locale}${route}`,
             lastModified: new Date(),
             changeFrequency: 'weekly' as const,

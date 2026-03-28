@@ -15,6 +15,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@repo/ui/components/sidebar';
+import { useDirection } from '@/context/direction-provider';
 
 type TeamSwitcherProps = {
   teams: {
@@ -26,6 +27,7 @@ type TeamSwitcherProps = {
 
 export function TeamSwitcher({ teams }: TeamSwitcherProps) {
   const { isMobile } = useSidebar();
+  const { dir } = useDirection();
   const [activeTeam, setActiveTeam] = React.useState(teams[0]);
 
   return (
@@ -50,7 +52,7 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
           <DropdownMenuContent
             className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
             align='start'
-            side={isMobile ? 'bottom' : 'right'}
+            side={isMobile ? 'bottom' : dir === 'rtl' ? 'left' : 'right'}
             sideOffset={4}
           >
             <DropdownMenuLabel className='text-muted-foreground text-xs'>Teams</DropdownMenuLabel>

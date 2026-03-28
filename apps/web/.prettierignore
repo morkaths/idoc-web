@@ -1,0 +1,14 @@
+.next/
+node_modules/
+public/
+package.json
+tsconfig.json
+next.config.ts
+.prettierrc
+README.md
+eslint.config.mjs
+postcss.config.cjs
+components.json
+next-env.d.ts
+global.d.ts
+**/*.json

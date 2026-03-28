@@ -1,5 +1,5 @@
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '@repo/ui/components/select';
-import { LANGUAGE } from '@/types';
+import { Languages } from '@/types';
 
 export function LanguageSelect({
   value,
@@ -14,14 +14,14 @@ export function LanguageSelect({
   name?: string;
   disabledValues?: string[];
 }) {
-  const selected = LANGUAGE.find(opt => opt.value === value);
+  const selected = Languages.find(opt => opt.value === value);
 
   return (
     <Select value={value} onValueChange={onChange} name={name}>
       <SelectTrigger id={id} className="w-full">
         {selected ? (
           <span className="flex items-center gap-2 min-w-0 flex-1 text-left">
-            <span className={`fi fi-${selected.value} shrink-0`} />
+            <span className={`fi fi-${selected.flag} shrink-0`} />
             <span className="truncate">{selected.label}</span>
           </span>
         ) : (
@@ -30,14 +30,14 @@ export function LanguageSelect({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {LANGUAGE.map(opt => (
+          {Languages.map(opt => (
             <SelectItem
               key={opt.value}
               value={opt.value}
               disabled={disabledValues.includes(opt.value)}
             >
               <span className="flex items-center gap-2 min-w-0 flex-1 text-left">
-                <span className={`fi fi-${opt.value} shrink-0`} />
+                <span className={`fi fi-${opt.flag} shrink-0`} />
                 <span className="truncate">{opt.label}</span>
               </span>
             </SelectItem>

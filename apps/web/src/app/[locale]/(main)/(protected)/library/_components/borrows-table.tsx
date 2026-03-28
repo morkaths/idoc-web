@@ -1,7 +1,8 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
-import { useRouter } from "next/navigation";
+import { cn } from '@/lib/utils';
 import {
   type SortingState,
   type VisibilityState,
@@ -9,8 +10,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { cn } from '@/lib/utils';
 import { useBorrowHistory } from '@/hooks/data/useBorrow';
+import { KEYS, useLocale } from '@/hooks/ui/useLocale';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
   Table,
@@ -22,7 +23,6 @@ import {
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
 import { borrowsColumns } from './borrows-columns';
-import { KEYS, useLocale } from '@/hooks/ui/useLocale';
 import BorrowsTableBulkActions from './borrows-table-bulk-actions';
 
 export function BorrowsTable() {
@@ -111,20 +111,15 @@ export function BorrowsTable() {
       pageIndex: 0,
       pageSize: pagination.pageSize ?? 10,
     }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalFilter]);
 
   useEffect(() => {
     ensurePageInRange(table.getPageCount());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [table.getPageCount(), ensurePageInRange]);
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
-      <DataTableToolbar
-        table={table}
-        searchPlaceholder={t(keys.search.placeholder)}
-      />
+      <DataTableToolbar table={table} searchPlaceholder={t(keys.search.placeholder)} />
       <div className='overflow-hidden rounded-md border'>
         <Table>
           <TableHeader>
@@ -134,6 +129,7 @@ export function BorrowsTable() {
                   <TableHead
                     key={header.id}
                     colSpan={header.colSpan}
+                    className={cn(header.column.columnDef.meta?.className)}
                   >
                     {header.isPlaceholder
                       ? null
@@ -151,6 +147,7 @@ export function BorrowsTable() {
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
+                      className={cn(cell.column.columnDef.meta?.className)}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>

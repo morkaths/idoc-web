@@ -29,7 +29,7 @@ import {
 } from '@repo/ui/components/select';
 import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
-import { UserRequest, UserRequestSchema, UserStatus, type RoleResponse, type UserResponse } from '@/types';
+import { type UserRequest, UserRequestSchema, UserStatus, type RoleResponse, type UserResponse } from '@/types';
 import { RolesCombobox } from './roles-combobox';
 
 const UserFormSchema = UserRequestSchema.extend({

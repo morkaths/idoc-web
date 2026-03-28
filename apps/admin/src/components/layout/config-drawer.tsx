@@ -8,12 +8,18 @@ import { IconLayoutFull } from '@/assets/custom/icon-layout-full';
 import { IconSidebarFloating } from '@/assets/custom/icon-sidebar-floating';
 import { IconSidebarInset } from '@/assets/custom/icon-sidebar-inset';
 import { IconSidebarSidebar } from '@/assets/custom/icon-sidebar-sidebar';
-import { themeColors, themeConfig } from '@/components/layout/data/theme-data';
+import { cn } from '@/lib/utils';
 import { useDirection } from '@/context/direction-provider';
 import { type Collapsible, useLayout } from '@/context/layout-provider';
 import { useTheme } from '@/context/theme-provider';
-import { cn } from '@/lib/utils';
 import { Button } from '@repo/ui/components/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/select';
 import {
   Sheet,
   SheetContent,
@@ -25,13 +31,7 @@ import {
 } from '@repo/ui/components/sheet';
 import { useSidebar } from '@repo/ui/components/sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui/components/select';
+import { themeColors, themeConfig } from '@/components/layout/data/theme-data';
 
 export function ConfigDrawer() {
   const { setOpen } = useSidebar();
@@ -61,38 +61,42 @@ export function ConfigDrawer() {
           <Palette aria-hidden='true' />
         </Button>
       </SheetTrigger>
-      <SheetContent className='flex w-[400px] flex-col gap-0 p-0 sm:w-[540px]'>
+      <SheetContent
+        dir='ltr'
+        className='flex w-[400px] flex-col gap-0 p-0 sm:w-[540px]'
+        aria-describedby='config-drawer-description'
+      >
         <SheetHeader className='p-4 pb-2 text-start'>
           <SheetTitle>Theme Settings</SheetTitle>
           <SheetDescription id='config-drawer-description'>
             Customize the specific layout and visualization.
           </SheetDescription>
         </SheetHeader>
-        
-        <div className="flex-1 overflow-hidden">
-          <Tabs defaultValue="theme" className="flex h-full flex-col">
-            <div className="px-4">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="theme">
-                  <Palette className="mr-2 h-4 w-4" />
+
+        <div className='flex-1 overflow-hidden'>
+          <Tabs defaultValue='theme' className='flex h-full flex-col'>
+            <div className='px-4'>
+              <TabsList className='grid w-full grid-cols-2'>
+                <TabsTrigger value='theme'>
+                  <Palette className='mr-2 h-4 w-4' />
                   Theme
                 </TabsTrigger>
-                <TabsTrigger value="layout">
-                  <Layout className="mr-2 h-4 w-4" />
+                <TabsTrigger value='layout'>
+                  <Layout className='mr-2 h-4 w-4' />
                   Layout
                 </TabsTrigger>
               </TabsList>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4">
-              <TabsContent value="theme" className="mt-0 space-y-6">
+            <div className='flex-1 overflow-y-auto p-4'>
+              <TabsContent value='theme' className='mt-0 space-y-6'>
                 <ModeConfig />
                 <FontConfig />
                 <ColorConfig />
                 <RadiusConfig />
               </TabsContent>
 
-              <TabsContent value="layout" className="mt-0 space-y-6">
+              <TabsContent value='layout' className='mt-0 space-y-6'>
                 <SidebarConfig />
                 <LayoutConfig />
                 <DirConfig />
@@ -106,7 +110,7 @@ export function ConfigDrawer() {
             variant='destructive'
             onClick={handleReset}
             aria-label='Reset all settings to default values'
-            className="w-full"
+            className='w-full'
           >
             Reset Preferences
           </Button>
@@ -201,23 +205,23 @@ function ModeConfig() {
   return (
     <div>
       <SectionTitle title='Mode' />
-      <div className="grid grid-cols-2 gap-2">
+      <div className='grid grid-cols-2 gap-2'>
         <Button
           variant={mode === 'light' ? 'default' : 'outline'}
-          size="sm"
+          size='sm'
           onClick={() => setMode('light')}
-          className="w-full justify-center gap-2"
+          className='w-full justify-center gap-2'
         >
-          <Sun className="size-4" />
+          <Sun className='size-4' />
           Light
         </Button>
         <Button
           variant={mode === 'dark' ? 'default' : 'outline'}
-          size="sm"
+          size='sm'
           onClick={() => setMode('dark')}
-          className="w-full justify-center gap-2"
+          className='w-full justify-center gap-2'
         >
-          <Moon className="size-4" />
+          <Moon className='size-4' />
           Dark
         </Button>
       </div>
@@ -236,21 +240,20 @@ function FontConfig() {
         onReset={() => setFont(themeConfig.defaults.font)}
       />
       <Select value={font} onValueChange={setFont}>
-        <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a font" />
+        <SelectTrigger className='w-full'>
+          <SelectValue placeholder='Select a font' />
         </SelectTrigger>
         <SelectContent>
-            {availableFonts.map((f) => (
-                <SelectItem key={f.value} value={f.value}>
-                    <span style={{ fontFamily: f.value }}>{f.label}</span>
-                </SelectItem>
-            ))}
+          {availableFonts.map((f) => (
+            <SelectItem key={f.value} value={f.value}>
+              <span style={{ fontFamily: f.value }}>{f.label}</span>
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>
   );
 }
-
 
 function RadiusConfig() {
   const { radius, setRadius } = useTheme();
@@ -262,13 +265,13 @@ function RadiusConfig() {
         showReset={radius !== themeConfig.defaults.radius}
         onReset={() => setRadius(themeConfig.defaults.radius)}
       />
-      <div className="grid grid-cols-5 gap-2">
+      <div className='grid grid-cols-5 gap-2'>
         {themeConfig.radiuses.map((r) => (
           <Button
             key={r}
             variant={radius === r ? 'default' : 'outline'}
-            size="sm"
-            className="w-full"
+            size='sm'
+            className='w-full'
             onClick={() => setRadius(r)}
           >
             {r === '0' ? '0' : parseFloat(r)}
@@ -286,68 +289,60 @@ function ColorConfig() {
     const randomIndex = Math.floor(Math.random() * availableColors.length);
     setColor(availableColors[randomIndex]);
   };
-  
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
+      <div className='mb-2 flex items-center justify-between'>
         <SectionTitle title='Color' className='mb-0' />
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={handleRandom}
-          className="h-7 text-xs gap-1.5"
-        >
-          <Dices className="size-3.5" />
+        <Button variant='outline' size='sm' onClick={handleRandom} className='h-7 gap-1.5 text-xs'>
+          <Dices className='size-3.5' />
           Random
         </Button>
       </div>
-      
+
       <Select value={color} onValueChange={setColor}>
-        <SelectTrigger className="w-full">
-           <SelectValue placeholder="Select a color">
-             {themeColors[color] && (
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center -space-x-1.5">
-                    {[
-                      themeColors[color].styles[resolvedMode].primary,
-                      themeColors[color].styles[resolvedMode].secondary,
-                      themeColors[color].styles[resolvedMode].accent,
-                      themeColors[color].styles[resolvedMode].card,
-                    ].map((col, idx) => (
-                      <div 
-                        key={idx}
-                        className="h-3.5 w-3.5 rounded-full ring-1 ring-border shadow-sm z-10" 
-                        style={{ backgroundColor: col }} 
-                      />
-                    ))}
-                  </div>
-                  <span className="font-medium">{themeColors[color].label}</span>
+        <SelectTrigger className='w-full'>
+          <SelectValue placeholder='Select a color'>
+            {themeColors[color] && (
+              <div className='flex items-center gap-3'>
+                <div className='flex items-center -space-x-1.5'>
+                  {[
+                    themeColors[color].styles[resolvedMode].primary,
+                    themeColors[color].styles[resolvedMode].secondary,
+                    themeColors[color].styles[resolvedMode].accent,
+                    themeColors[color].styles[resolvedMode].card,
+                  ].map((col, idx) => (
+                    <div
+                      key={idx}
+                      className='ring-border z-10 h-3.5 w-3.5 rounded-full shadow-sm ring-1'
+                      style={{ backgroundColor: col }}
+                    />
+                  ))}
                 </div>
-             )}
-           </SelectValue>
+                <span className='font-medium'>{themeColors[color].label}</span>
+              </div>
+            )}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {availableColors.map((key) => {
             const config = themeColors[key];
             if (!config) return null;
             const colors = config.styles[resolvedMode];
-            
+
             return (
               <SelectItem key={key} value={key}>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center -space-x-1.5">
-                    {[
-                      colors.primary,
-                      colors.secondary,
-                      colors.accent,
-                      colors.card,
-                    ].map((col, idx) => (
-                      <div 
-                        key={idx}
-                        className="h-3.5 w-3.5 rounded-full ring-1 ring-border shadow-sm z-10" 
-                        style={{ backgroundColor: col }} 
-                      />
-                    ))}
+                <div className='flex items-center gap-3'>
+                  <div className='flex items-center -space-x-1.5'>
+                    {[colors.primary, colors.secondary, colors.accent, colors.card].map(
+                      (col, idx) => (
+                        <div
+                          key={idx}
+                          className='ring-border z-10 h-3.5 w-3.5 rounded-full shadow-sm ring-1'
+                          style={{ backgroundColor: col }}
+                        />
+                      )
+                    )}
                   </div>
                   <span>{config.label}</span>
                 </div>
