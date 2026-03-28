@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { AuthorApi } from '@/apis/author.api';
-import type { Author, AuthorRequest, FindParams, Pagination } from '@/types';
+import type { AuthorResponse, AuthorRequest, FindParams, Pagination } from '@/types';
 import { useMemo } from 'react';
 
-type PaginationResponse = { data: Author[]; pagination?: Pagination };
+type PaginationResponse = { data: AuthorResponse[]; pagination?: Pagination };
 
 export const useAuthors = (
   params: FindParams = {},
@@ -27,8 +27,8 @@ export const useAuthors = (
   }), [query]);
 };
 
-export const useAuthor = (id: string, options?: Omit<UseQueryOptions<Author, Error, Author, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const query = useQuery<Author, Error, Author, QueryKey>({
+export const useAuthor = (id: string, options?: Omit<UseQueryOptions<AuthorResponse, Error, AuthorResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
+  const query = useQuery<AuthorResponse, Error, AuthorResponse, QueryKey>({
     queryKey: ['authors', id],
     queryFn: () => AuthorApi.findById(id),
     enabled: !!id,

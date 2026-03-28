@@ -42,7 +42,7 @@ export interface UserResponse {
   updatedAt?: Date | string;
 }
 
-export interface Author {
+export interface AuthorResponse {
   id: string;
   name: string;
   avatar?: string;
@@ -75,7 +75,7 @@ export interface Book {
   slug?: string;
   description?: string;
   categories?: Category[];
-  authors?: Author[];
+  authors?: AuthorResponse[];
   publisher?: string;
   publishedDate?: Date | string;
   edition?: string;

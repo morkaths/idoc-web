@@ -1,10 +1,10 @@
 import { API_CONFIG } from '@/config/api';
-import type { Author, AuthorRequest, FindParams, Pagination } from '../types';
+import type { AuthorResponse, AuthorRequest, FindParams, Pagination } from '../types';
 import { ApiClient } from './config';
 
 export const AuthorApi = {
-  find: async (params?: FindParams): Promise<{ data: Author[]; pagination?: Pagination }> => {
-    const response = await ApiClient.get<Author[]>(
+  find: async (params?: FindParams): Promise<{ data: AuthorResponse[]; pagination?: Pagination }> => {
+    const response = await ApiClient.get<AuthorResponse[]>(
       API_CONFIG.endpoints.author.find,
       { mode: 'public', params }
     );
@@ -14,8 +14,8 @@ export const AuthorApi = {
     };
   },
 
-  findById: async (id: string): Promise<Author> => {
-    const response = await ApiClient.get<Author>(
+  findById: async (id: string): Promise<AuthorResponse> => {
+    const response = await ApiClient.get<AuthorResponse>(
       API_CONFIG.endpoints.author.findById(id),
       { mode: 'public' }
     );
@@ -23,8 +23,8 @@ export const AuthorApi = {
     throw new Error(response.message || 'Author not found');
   },
 
-  create: async (data: AuthorRequest): Promise<Author> => {
-    const response = await ApiClient.post<Author>(
+  create: async (data: AuthorRequest): Promise<AuthorResponse> => {
+    const response = await ApiClient.post<AuthorResponse>(
       API_CONFIG.endpoints.author.create,
       { mode: 'private', data }
     );
@@ -32,8 +32,8 @@ export const AuthorApi = {
     throw new Error(response.message || 'Failed to create author');
   },
 
-  update: async (id: string, data: Partial<AuthorRequest>): Promise<Author> => {
-    const response = await ApiClient.patch<Author>(
+  update: async (id: string, data: Partial<AuthorRequest>): Promise<AuthorResponse> => {
+    const response = await ApiClient.patch<AuthorResponse>(
       API_CONFIG.endpoints.author.update(id),
       { mode: 'private', data }
     );
