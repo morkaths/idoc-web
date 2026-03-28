@@ -360,10 +360,11 @@
         "error": "Failed to bookmark book. Please try again.",
         "success": "Book added to your folder",
         "removed": "Book removed from your folder",
-        "readingList": "Reading List",
-        "orAddToFolder": "Or add to Folder"
+        "default": "Favourite books"
       },
       "folder": {
+        "add": "Add Folder",
+        "create": "Create new folder",
         "empty": "No folders found.",
         "description": "We couldn't find any folders matching your search criteria. Please try changing your filters or keywords."
       }

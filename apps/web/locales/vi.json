@@ -357,9 +357,12 @@
         "title": "Đánh dấu sách",
         "error": "Không thể đánh dấu sách. Vui lòng thử lại.",
         "success": "Đã thêm sách vào bộ sưu tập",
-        "removed": "Đã xóa sách khỏi bộ sưu tập"
+        "removed": "Đã xóa sách khỏi bộ sưu tập",
+        "default": "Sách yêu thích"
       },
-      "collection": {
+      "folder": {
+        "add": "Thêm vào thư mục",
+        "create": "Tạo thư mục mới",
         "empty": "Không tìm thấy bộ sưu tập.",
         "description": "Chúng tôi không tìm thấy bộ sưu tập nào phù hợp với tiêu chí tìm kiếm của bạn. Vui lòng thử thay đổi bộ lọc hoặc từ khóa."
       }
