@@ -7,17 +7,43 @@ import { useReviews } from '@/hooks/data/useReview';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Avatar, AvatarFallback } from '@repo/ui/components/avatar';
 import { Pagination } from '@/components/pagination';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/select';
+import { Badge } from '@repo/ui/components/badge';
 
 interface BookReviewsProps {
   bookId?: string;
   rating?: number;
   totalReviews?: number;
+  enabled?: boolean;
 }
 
-export function BookReviews({ bookId, rating = 0, totalReviews = 0 }: BookReviewsProps) {
+export function BookReviews({ bookId, rating = 0, totalReviews = 0, enabled = true }: BookReviewsProps) {
   const { t, keys } = useLocale('book');
   const [page, setPage] = useState(1);
-  const { data, isLoading, isError } = useReviews({ itemId: bookId, page }, { enabled: !!bookId });
+  const [sort, setSort] = useState('newest');
+
+  const sortParams = {
+    newest: { sortBy: 'createdAt', sortOrder: 'desc' },
+    oldest: { sortBy: 'createdAt', sortOrder: 'asc' },
+    highestRating: { sortBy: 'rating', sortOrder: 'desc' },
+    lowestRating: { sortBy: 'rating', sortOrder: 'asc' },
+  }[sort] || { sortBy: 'createdAt', sortOrder: 'desc' };
+
+  const { data, isLoading, isError } = useReviews(
+    {
+      item: bookId,
+      page,
+      sortBy: sortParams.sortBy,
+      sortOrder: sortParams.sortOrder,
+    },
+    { enabled: !!bookId && enabled }
+  );
   const reviews = data?.data || [];
   const pagination = data?.pagination;
 
@@ -49,6 +75,25 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0 }: BookReview
         </div>
         {/* Reviews list */}
         <div className='space-y-6'>
+          {/* List Header & Sort */}
+          <div className='flex items-center justify-between'>
+            <h3 className='text-lg font-bold'>{t(keys.tabs.reviews.label)}</h3>
+            <div className='flex items-center gap-2'>
+              <span className='text-muted-foreground text-sm'>{t(keys.reviews.sort.label)}</span>
+              <Select value={sort} onValueChange={(val) => { setSort(val); setPage(1); }}>
+                <SelectTrigger className='w-[180px]'>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='newest'>{t(keys.reviews.sort.newest)}</SelectItem>
+                  <SelectItem value='oldest'>{t(keys.reviews.sort.oldest)}</SelectItem>
+                  <SelectItem value='highestRating'>{t(keys.reviews.sort.highestRating)}</SelectItem>
+                  <SelectItem value='lowestRating'>{t(keys.reviews.sort.lowestRating)}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           {isLoading ? (
             <div className='text-muted-foreground flex flex-col items-center justify-center rounded-xl border-2 border-dashed py-12'>
               <Loader2 className='text-muted-foreground h-8 w-8 animate-spin' />

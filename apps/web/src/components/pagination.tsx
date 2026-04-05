@@ -31,6 +31,11 @@ export function Pagination({ pagination, onPageChange, className }: Props) {
       <PaginationLink
         href="#"
         isActive={isActive}
+        size="default"
+        className={cn(
+          "w-auto min-w-9 px-2 h-9",
+          !isActive && "border-transparent"
+        )}
         onClick={(e) => { e.preventDefault(); if (p !== page) onPageChange(p); }}
       >
         {label ?? p}

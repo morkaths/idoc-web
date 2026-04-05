@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Image from "next/image";
+import { AppImage as Image } from "../app-image";
 import { Icon } from '@iconify/react';
 import { BookResponse, BookmarkResponse } from "@/types";
 import { cn } from "@/lib/utils";

@@ -100,7 +100,12 @@ export function BookTabs({ book }: { book?: BookResponse }) {
       name: t(keys.tabs.reviews.label),
       value: 'reviews',
       content: (
-        <BookReviews bookId={book?.id} rating={book?.rating} totalReviews={book?.totalReviews} />
+        <BookReviews
+          bookId={book?.id}
+          rating={book?.rating}
+          totalReviews={book?.totalReviews}
+          enabled={activeTab === 'reviews'}
+        />
       ),
     },
     {

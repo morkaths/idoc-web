@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 import { BookResponse, BookmarkResponse } from "@/types";
-import Image from 'next/image';
+import { AppImage as Image } from '../app-image';
 import { useState, useEffect, useMemo } from 'react';
 import { useDeleteBookmark } from "@/hooks/data/useBookmark";
 import { toast } from 'sonner';

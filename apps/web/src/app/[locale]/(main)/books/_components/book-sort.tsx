@@ -42,8 +42,8 @@ export default function BookSort({ sort, onSort, onReset }: BookSortProps) {
     { value: 'createdAt', label: t(keys.sidebar.sort.fields.createdAt) },
     { value: 'updatedAt', label: t(keys.sidebar.sort.fields.updatedAt) },
     { value: 'publishedYear', label: t(keys.sidebar.sort.fields.publishedYear) },
-    { value: 'price', label: t(keys.sidebar.sort.fields.price) },
-    { value: 'pages', label: t(keys.sidebar.sort.fields.pages) },
+    { value: 'rating', label: t(keys.sidebar.sort.fields.rating) },
+    { value: 'totalReviews', label: t(keys.sidebar.sort.fields.totalReviews) }
   ];
 
   return (

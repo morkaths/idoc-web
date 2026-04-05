@@ -337,8 +337,8 @@
           "createdAt": "作成日",
           "updatedAt": "更新日",
           "publishedYear": "出版年",
-          "price": "価格",
-          "pages": "ページ数"
+          "rating": "評価",
+          "totalReviews": "レビュー数"
         },
         "order": {
           "asc": "昇順",
@@ -356,15 +356,15 @@
       "bookmark": {
         "title": "ブックマーク",
         "error": "ブックマークに失敗しました。もう一度お試しください。",
-        "success": "コレクションに追加されました",
-        "removed": "コレクションから削除されました",
+        "success": "フォルダに追加されました",
+        "removed": "フォルダから削除されました",
         "default": "お気に入りの本"
       },
       "folder": {
         "add": "フォルダに追加",
         "create": "新しいフォルダを作成",
-        "empty": "コレクションが見つかりません。",
-        "description": "検索条件に一致するコレクションが見つかりませんでした。フィルターやキーワードを変更してみてください。"
+        "empty": "フォルダが見つかりません。",
+        "description": "検索条件に一致するフォルダが見つかりませんでした。フィルターやキーワードを変更してみてください。"
       }
     }
   },
@@ -372,7 +372,7 @@
     "by": "著者:",
     "author": "不明な著者",
     "actions": {
-      "addToCollection": "コレクションに追加",
+      "addToFolder": "フォルダに追加",
       "borrow": "今すぐ借りる"
     },
     "borrow": {
@@ -398,6 +398,13 @@
     },
     "reviews": {
       "total": "{count}件のレビューに基づく",
+      "sort": {
+        "label": "並び替え",
+        "newest": "最新",
+        "oldest": "最古",
+        "highestRating": "最高評価",
+        "lowestRating": "最低評価"
+      },
       "error": {
         "fetch": "レビューを読み込めませんでした",
         "tryAgain": "後でもう一度お試しください"
@@ -406,6 +413,16 @@
         "title": "まだレビューはありません。",
         "description": "あなたの創造的な感想を最初に共有しましょう。"
       }
+    },
+    "bookmarks": {
+      "title": "フォルダに追加",
+      "description": "この書籍を個人フォルダに整理します。",
+      "placeholder": "フォルダを選択",
+      "empty": "フォルダが見つかりません。",
+      "create": "新しいフォルダを作成",
+      "success": "正常にフォルダに追加されました！",
+      "removed": "フォルダから削除されました",
+      "error": "フォルダの更新に失敗しました"
     },
     "tabs": {
       "info": {

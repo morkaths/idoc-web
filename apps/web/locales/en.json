@@ -339,8 +339,8 @@
           "createdAt": "Created At",
           "updatedAt": "Updated At",
           "publishedYear": "Published Year",
-          "price": "Price",
-          "pages": "Pages"
+          "rating": "Rating",
+          "totalReviews": "Total Reviews"
         },
         "order": {
           "asc": "Ascending",
@@ -374,7 +374,7 @@
     "by": "By",
     "author": "Unknown Author",
     "actions": {
-      "addToFolder": "Add to Folder",
+      "addToBookmark": "Add to Folder",
       "borrow": "Borrow Now"
     },
     "borrow": {
@@ -400,6 +400,13 @@
     },
     "reviews": {
       "total": "Based on {count} reviews",
+      "sort": {
+        "label": "Sort by",
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "highestRating": "Highest Rating",
+        "lowestRating": "Lowest Rating"
+      },
       "error": {
         "fetch": "Could not load reviews",
         "tryAgain": "Please try again later"
@@ -408,6 +415,16 @@
         "title": "No reviews yet.",
         "description": "Be the first to share your creative thoughts."
       }
+    },
+    "bookmarks": {
+      "title": "Add to Folder",
+      "description": "Organize this book into your personal folders.",
+      "placeholder": "Choose a folder",
+      "empty": "No folders found.",
+      "create": "Create New Folder",
+      "success": "Added to folder successfully!",
+      "removed": "Removed from folder",
+      "error": "Failed to update folder"
     },
     "tabs": {
       "info": {

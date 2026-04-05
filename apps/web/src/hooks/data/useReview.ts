@@ -9,7 +9,7 @@ export const useReviews = (
     params: FindParams = {},
     options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
+    const { data: rawData, status, error, isLoading, isFetching, refetch, isError } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
         queryKey: ['reviews', params],
         queryFn: () => ReviewApi.find(params),
         enabled: true,
@@ -23,6 +23,7 @@ export const useReviews = (
         error,
         isLoading,
         isFetching,
+        isError,
         refetch,
         data: {
             data: rawData?.data || [],
@@ -32,7 +33,7 @@ export const useReviews = (
 };
 
 export const useReview = (id: string, options?: Omit<UseQueryOptions<ReviewResponse, Error, ReviewResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const { data, status, error, isLoading, isFetching, refetch } = useQuery<ReviewResponse, Error, ReviewResponse, QueryKey>({
+    const { data, status, error, isLoading, isFetching, refetch, isError } = useQuery<ReviewResponse, Error, ReviewResponse, QueryKey>({
         queryKey: ['reviews', id],
         queryFn: () => ReviewApi.findById(id),
         enabled: !!id,
@@ -45,6 +46,7 @@ export const useReview = (id: string, options?: Omit<UseQueryOptions<ReviewRespo
         error,
         isLoading,
         isFetching,
+        isError,
         refetch,
         data: data || null,
     }), [data, status, error, isLoading, isFetching, refetch]);

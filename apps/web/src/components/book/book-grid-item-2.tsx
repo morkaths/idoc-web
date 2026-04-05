@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 import { BookResponse } from "@/types";
-import Image from 'next/image';
+import { AppImage as Image } from '../app-image';
 import { Button } from '@repo/ui/components/button';
 
 type BookGridItemProps = {

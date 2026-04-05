@@ -10,7 +10,7 @@ import {
   CardTitle,
   CardFooter,
 } from "@repo/ui/components/card";
-import Image from "next/image";
+import { AppImage as Image } from "../app-image";
 import Link from "next/link";
 
 interface TeamProps {

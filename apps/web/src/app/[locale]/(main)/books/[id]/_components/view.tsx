@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { AppImage as Image } from '@/components/app-image';
 import { type BookResponse } from '@/types';
 import { useRouter, useParams } from 'next/navigation';
 import { useState } from 'react';
@@ -16,6 +16,7 @@ import { Button } from '@repo/ui/components/button';
 import { Skeleton } from '@repo/ui/components/skeleton';
 import { BookTabs } from './book-tabs';
 import { BorrowBookDialog } from './borrow-book-dialog';
+import { AddBookmarkDialog } from './add-bookmark-dialog';
 
 interface BookDetailViewProps {
   id: string;
@@ -159,6 +160,7 @@ export function BookDetailView({ id }: BookDetailViewProps) {
   const user = session?.user;
   const { data: book, isLoading, error } = useBook(id);
   const [openBorrow, setOpenBorrow] = useState(false);
+  const [openAddToFolder, setOpenAddToFolder] = useState(false);
   const createBorrowMut = useCreateBorrow();
 
   if (isLoading) return <BookDetailSkeleton key='skeleton' />;
@@ -170,6 +172,14 @@ export function BookDetailView({ id }: BookDetailViewProps) {
       return;
     }
     setOpenBorrow(true);
+  };
+
+  const handleAddBookmarkClick = () => {
+    if (!user) {
+      router.push(`/sign-in?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    setOpenAddToFolder(true);
   };
 
   return (
@@ -203,20 +213,20 @@ export function BookDetailView({ id }: BookDetailViewProps) {
             {t(keys.by)}{' '}
             {book.authors?.length
               ? book.authors.map((a, i) => (
-                  <span key={i}>
-                    <span className='text-muted-foreground hover:text-primary cursor-pointer font-semibold underline transition-colors'>
-                      {a.name}
-                    </span>
-                    {i < (book.authors?.length || 0) - 1 && ', '}
+                <span key={i}>
+                  <span className='text-muted-foreground hover:text-primary cursor-pointer font-semibold underline transition-colors'>
+                    {a.name}
                   </span>
-                ))
+                  {i < (book.authors?.length || 0) - 1 && ', '}
+                </span>
+              ))
               : t(keys.author)}
           </div>
           {/* Actions */}
           <div className='flex gap-2'>
-            <Button variant='outline'>
+            <Button variant='outline' onClick={handleAddBookmarkClick}>
               <Plus className='h-4 w-4' />
-              {t(keys.actions.addToFolder)}
+              {t(keys.bookmarks.title)}
             </Button>
             <Button variant='default' onClick={handleBorrowClick}>
               <Bookmark className='h-4 w-4' />
@@ -242,6 +252,11 @@ export function BookDetailView({ id }: BookDetailViewProps) {
                   }
                 );
               }}
+            />
+            <AddBookmarkDialog
+              bookId={book.id!}
+              open={openAddToFolder}
+              onOpenChange={setOpenAddToFolder}
             />
           </div>
         </div>

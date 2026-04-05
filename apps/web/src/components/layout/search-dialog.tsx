@@ -15,7 +15,7 @@ import { ScrollArea } from '@repo/ui/components/scroll-area';
 import { useBooks } from '@/hooks/data/useBook';
 import { useAuthors } from '@/hooks/data/useAuthor';
 import { useDebounce } from '@/hooks/ui/useDebounce';
-import Image from 'next/image';
+import { AppImage as Image } from '../app-image';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 
 const SearchBookCover = ({ title, src }: { title: string; src?: string }) => {
