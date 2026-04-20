@@ -24,10 +24,10 @@ export const AuthApi = {
     throw new Error(response.message || 'Login failed');
   },
 
-  refresh: async (refreshToken: string): Promise<AuthenticationResponse> => {
+  refresh: async (): Promise<AuthenticationResponse> => {
     const response = await ApiClient.post<AuthenticationResponse>(
       ApiEndpoint.endpoints.auth.refresh,
-      { security: 'public', data: { refreshToken } }
+      { security: 'public' }
     );
     if (response.success && response.data) return response.data;
     throw new Error(response.message || 'Refresh token failed');

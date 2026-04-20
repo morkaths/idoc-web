@@ -70,7 +70,7 @@ const createInstance = (withCredentials = false): AxiosInstance => {
   const instance = axios.create({
     baseURL: API_CONFIG.baseURL,
     timeout: API_CONFIG.timeout,
-    withCredentials,
+    withCredentials: true, // Always send credentials/cookies
     paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
   });
 
@@ -182,6 +182,11 @@ export const ApiClient = {
         url,
         ...axiosOptions,
       });
+
+      if (response.data) {
+        response.data.headers = response.headers as Record<string, string | string[]>;
+      }
+
       return response.data;
     } catch (error: any) {
       if (error.success === false) return error;

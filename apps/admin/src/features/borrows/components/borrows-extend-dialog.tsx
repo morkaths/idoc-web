@@ -1,6 +1,7 @@
 'use client';
 
 import { z } from 'zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from "@repo/ui/components/button";
@@ -44,6 +45,7 @@ export function BorrowsExtendDialog({
     note,
     onSubmit,
 }: BorrowsExtendDialogProps) {
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const form = useForm<ExtendForm>({
         resolver: zodResolver(ExtendFormSchema),
         defaultValues: {
@@ -67,118 +69,126 @@ export function BorrowsExtendDialog({
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(async (data) => {
-                            const from = expireTime ? new Date(expireTime) : undefined;
-                            const to = data.newExpireTime ? new Date(data.newExpireTime) : undefined;
-                            let extraDays = 0;
-                            if (from && to) {
-                                const diff = Math.ceil((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24));
-                                extraDays = diff > 0 ? diff : 0;
+                            if (isSubmitting) return;
+                            setIsSubmitting(true);
+                            try {
+                                const from = expireTime ? new Date(expireTime) : undefined;
+                                const to = data.newExpireTime ? new Date(data.newExpireTime) : undefined;
+                                let extraDays = 0;
+                                if (from && to) {
+                                    const diff = Math.ceil((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24));
+                                    extraDays = diff > 0 ? diff : 0;
+                                }
+                                if (extraDays < 1) {
+                                    form.setError("newExpireTime", { message: "Expire date must be at least 1 day after current expire date." });
+                                    setIsSubmitting(false);
+                                    return;
+                                }
+                                await onSubmit({
+                                    extraDays,
+                                    note: data.note,
+                                });
+                                onOpenChange(false);
+                                form.reset();
+                            } finally {
+                                setIsSubmitting(false);
                             }
-                            if (extraDays < 1) {
-                                form.setError("newExpireTime", { message: "Expire date must be at least 1 day after current expire date." });
-                                return;
-                            }
-                            onSubmit({
-                                extraDays,
-                                note: data.note,
-                            });
-                            onOpenChange(false);
-                            form.reset();
                         })}
                         className='space-y-4 px-0.5'
                     >
-                        <FormField
-                            control={form.control}
-                            name="borrowTime"
-                            render={({ field }) => (
-                                <div className="grid gap-3">
-                                    <FormLabel htmlFor="borrowTime">Borrow Date</FormLabel>
-                                    <FormControl>
-                                        <DatePicker
-                                            selected={field.value ? new Date(field.value) : undefined}
-                                            onSelect={field.onChange}
-                                            disabled
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </div>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="extraDays"
-                            render={() => {
-                                const from = expireTime ? new Date(expireTime) : undefined;
-                                // eslint-disable-next-line react-hooks/incompatible-library
-                                const toRaw = form.watch("newExpireTime");
-                                const to = toRaw ? new Date(toRaw) : undefined;
-                                let days = "";
-                                if (from && to) {
-                                    const diff = Math.ceil((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24));
-                                    days = diff > 0 ? diff.toString() : "0";
-                                }
-                                return (
+                        <fieldset disabled={isSubmitting} className='space-y-4'>
+                            <FormField
+                                control={form.control}
+                                name="borrowTime"
+                                render={({ field }) => (
                                     <div className="grid gap-3">
-                                        <FormLabel htmlFor="extraDays">Extra Days</FormLabel>
+                                        <FormLabel htmlFor="borrowTime">Borrow Date</FormLabel>
                                         <FormControl>
-                                            <Input
-                                                id="extraDays"
-                                                type="number"
-                                                value={days}
+                                            <DatePicker
+                                                selected={field.value ? new Date(field.value) : undefined}
+                                                onSelect={field.onChange}
                                                 disabled
-                                                placeholder="Number of days to extend"
-                                                tabIndex={-1}
                                             />
                                         </FormControl>
                                         <FormMessage />
                                     </div>
-                                );
-                            }}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="newExpireTime"
-                            render={({ field }) => (
-                                <div className="grid gap-3">
-                                    <FormLabel htmlFor="newExpireTime">Borrow Range</FormLabel>
-                                    <FormControl>
-                                        <BorrowRangePicker
-                                            borrowTime={expireTime ? new Date(expireTime) : new Date()}
-                                            expireTime={field.value ? new Date(field.value) : undefined}
-                                            onChange={field.onChange}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </div>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="note"
-                            render={({ field }) => (
-                                <div className="grid gap-3 mb-3">
-                                    <FormLabel htmlFor="note">Note</FormLabel>
-                                    <FormControl>
-                                        <textarea
-                                            id="note"
-                                            className="min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </div>
-                            )}
-                        />
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button variant="outline" type="button">
-                                    Cancel
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="extraDays"
+                                render={() => {
+                                    const from = expireTime ? new Date(expireTime) : undefined;
+                                    const toRaw = form.watch("newExpireTime");
+                                    const to = toRaw ? new Date(toRaw) : undefined;
+                                    let days = "";
+                                    if (from && to) {
+                                        const diff = Math.ceil((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24));
+                                        days = diff > 0 ? diff.toString() : "0";
+                                    }
+                                    return (
+                                        <div className="grid gap-3">
+                                            <FormLabel htmlFor="extraDays">Extra Days</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    id="extraDays"
+                                                    type="number"
+                                                    value={days}
+                                                    disabled
+                                                    placeholder="Number of days to extend"
+                                                    tabIndex={-1}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </div>
+                                    );
+                                }}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="newExpireTime"
+                                render={({ field }) => (
+                                    <div className="grid gap-3">
+                                        <FormLabel htmlFor="newExpireTime">Borrow Range</FormLabel>
+                                        <FormControl>
+                                            <BorrowRangePicker
+                                                borrowTime={expireTime ? new Date(expireTime) : new Date()}
+                                                expireTime={field.value ? new Date(field.value) : undefined}
+                                                onChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </div>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="note"
+                                render={({ field }) => (
+                                    <div className="grid gap-3 mb-3">
+                                        <FormLabel htmlFor="note">Note</FormLabel>
+                                        <FormControl>
+                                            <textarea
+                                                id="note"
+                                                className="min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </div>
+                                )}
+                            />
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant="outline" type="button">
+                                        Cancel
+                                    </Button>
+                                </DialogClose>
+                                <Button type="submit" disabled={isSubmitting}>
+                                    {isSubmitting ? 'Extending...' : 'Extend'}
                                 </Button>
-                            </DialogClose>
-                            <Button type="submit">
-                                Extend
-                            </Button>
-                        </DialogFooter>
+                            </DialogFooter>
+                        </fieldset>
                     </form>
                 </Form>
             </DialogContent>

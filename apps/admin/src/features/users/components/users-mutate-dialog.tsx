@@ -1,6 +1,7 @@
 'use client';
 
 import { z } from 'zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@repo/ui/components/button';
@@ -62,6 +63,7 @@ export function UsersMutateDialog({
   onSubmit,
   roles,
 }: UsersMutateDialogProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<UserForm>({
     resolver: zodResolver(UserFormSchema),
     defaultValues: {
@@ -90,7 +92,9 @@ export function UsersMutateDialog({
         <Form {...form}>
           <form
             id='user-form'
-            onSubmit={form.handleSubmit((data) => {
+            onSubmit={form.handleSubmit(async (data) => {
+              if (isSubmitting) return;
+              setIsSubmitting(true);
               const { confirmPassword, ...rest } = data;
               const payload: UserRequest = {
                 ...rest,
@@ -101,119 +105,125 @@ export function UsersMutateDialog({
                 delete payload.password;
               }
 
-              onSubmit(payload);
-              onOpenChange(false);
-              form.reset();
+              try {
+                await onSubmit(payload);
+                onOpenChange(false);
+                form.reset();
+              } finally {
+                setIsSubmitting(false);
+              }
             })}
             className='space-y-4 px-0.5'
           >
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="username">Username</FormLabel>
-                  <FormControl>
-                    <Input id="username" placeholder="john_doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="email">Email</FormLabel>
-                  <FormControl>
-                    <Input id="email" placeholder="john.doe@gmail.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="status">Status</FormLabel>
-                  <Select
-                    onValueChange={(val) => field.onChange(Number(val))}
-                    value={field.value?.toString() ?? ''}
-                    defaultValue={field.value?.toString() ?? ''}
-                  >
+            <fieldset disabled={isSubmitting} className='space-y-4'>
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <div className="grid gap-3">
+                    <FormLabel htmlFor="username">Username</FormLabel>
                     <FormControl>
-                      <SelectTrigger id="status" className="w-full">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
+                      <Input id="username" placeholder="john_doe" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value={UserStatus.Active.toString()}>Active</SelectItem>
-                      <SelectItem value={UserStatus.Inactive.toString()}>Inactive</SelectItem>
-                      <SelectItem value={UserStatus.Banned.toString()}>Banned</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="roles"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="roles">Roles</FormLabel>
-                  <RolesCombobox
-                    roles={roles.map(r => ({
-                      id: String(r.id),
-                      code: r.code ?? '',
-                      name: r.name ?? ''
-                    }))}
-                    value={field.value || []}
-                    onChange={field.onChange}
-                  />
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="password">Password</FormLabel>
-                  <FormControl>
-                    <PasswordInput id="password" placeholder="e.g., S3cur3P@ssw0rd" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
-                  <FormControl>
-                    <PasswordInput id="confirmPassword" placeholder="e.g., S3cur3P@ssw0rd" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline" type="button">
-                  Cancel
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <div className="grid gap-3">
+                    <FormLabel htmlFor="email">Email</FormLabel>
+                    <FormControl>
+                      <Input id="email" placeholder="john.doe@gmail.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <div className="grid gap-3">
+                    <FormLabel htmlFor="status">Status</FormLabel>
+                    <Select
+                      onValueChange={(val) => field.onChange(Number(val))}
+                      value={field.value?.toString() ?? ''}
+                      defaultValue={field.value?.toString() ?? ''}
+                    >
+                      <FormControl>
+                        <SelectTrigger id="status" className="w-full">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={UserStatus.Active.toString()}>Active</SelectItem>
+                        <SelectItem value={UserStatus.Inactive.toString()}>Inactive</SelectItem>
+                        <SelectItem value={UserStatus.Banned.toString()}>Banned</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="roles"
+                render={({ field }) => (
+                  <div className="grid gap-3">
+                    <FormLabel htmlFor="roles">Roles</FormLabel>
+                    <RolesCombobox
+                      roles={roles.map(r => ({
+                        id: String(r.id),
+                        code: r.code ?? '',
+                        name: r.name ?? ''
+                      }))}
+                      value={field.value || []}
+                      onChange={field.onChange}
+                    />
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <div className="grid gap-3">
+                    <FormLabel htmlFor="password">Password</FormLabel>
+                    <FormControl>
+                      <PasswordInput id="password" placeholder="e.g., S3cur3P@ssw0rd" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <div className="grid gap-3">
+                    <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
+                    <FormControl>
+                      <PasswordInput id="confirmPassword" placeholder="e.g., S3cur3P@ssw0rd" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline" type="button">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button type='submit' disabled={isSubmitting}>
+                  {isSubmitting ? 'Saving...' : (initialData?.id ? 'Save changes' : 'Create')}
                 </Button>
-              </DialogClose>
-              <Button type='submit'>
-                {initialData?.id ? "Save changes" : "Create"}
-              </Button>
-            </DialogFooter>
+              </DialogFooter>
+            </fieldset>
           </form>
         </Form>
       </DialogContent>

@@ -236,7 +236,7 @@ export function BookDetailView({ id }: BookDetailViewProps) {
               open={openBorrow}
               onOpenChange={setOpenBorrow}
               onSubmit={(data) => {
-                toast.promise(
+                return toast.promise(
                   createBorrowMut.mutateAsync({
                     borrower: user!.id,
                     item: book.id!,

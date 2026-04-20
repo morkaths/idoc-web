@@ -25,7 +25,7 @@ const formSchema = z.object({
   }),
 });
 
-interface ForgotPasswordFormProps extends HTMLAttributes<HTMLFormElement> {}
+interface ForgotPasswordFormProps extends HTMLAttributes<HTMLFormElement> { }
 
 export function ForgotPasswordForm({ className, ...props }: ForgotPasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -38,21 +38,23 @@ export function ForgotPasswordForm({ className, ...props }: ForgotPasswordFormPr
     },
   });
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    if (isLoading) return;
     setIsLoading(true);
 
     // TODO: Implement actual forgot password API call here
     const promise = new Promise((resolve) => setTimeout(() => resolve(true), 2000));
 
-    toast.promise(promise, {
+    return toast.promise(promise, {
       loading: 'Sending reset link...',
       success: () => {
-        setIsLoading(false);
         return `If an account exists for ${data.email}, you will receive a reset link shortly.`;
       },
-      error: (err) => {
-        setIsLoading(false);
+      error: () => {
         return 'Something went wrong. Please try again.';
+      },
+      finally: () => {
+        setIsLoading(false);
       },
     });
   }
@@ -64,23 +66,27 @@ export function ForgotPasswordForm({ className, ...props }: ForgotPasswordFormPr
         className={cn('grid gap-3', className)}
         {...props}
       >
-        <FormField
-          control={form.control}
-          name='email'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder='name@example.com' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button className='mt-2' disabled={isLoading}>
-          {isLoading ? <Loader2 className='animate-spin' /> : <Send className='mr-2 h-4 w-4' />}
-          Send Reset Link
-        </Button>
+        <fieldset disabled={isLoading} className='contents'>
+          <div className='grid gap-3'>
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder='name@example.com' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button className='mt-2' disabled={isLoading}>
+              {isLoading ? <Loader2 className='animate-spin' /> : <Send className='mr-2 h-4 w-4' />}
+              Send Reset Link
+            </Button>
+          </div>
+        </fieldset>
       </form>
     </Form>
   );

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/ta
 import { BookGridItems } from '@/components/book/book-grid-items';
 import { BookRecommended } from './book-recommended';
 import { BookReviews } from './book-reviews';
+import { useFile } from '@/hooks/data/useFile';
 
 interface TabItem {
   name: string;
@@ -18,6 +19,7 @@ interface TabItem {
 export function BookTabs({ book }: { book?: BookResponse }) {
   const { t, keys } = useLocale('book');
   const [activeTab, setActiveTab] = useState('info');
+  const { data: fileData } = useFile(book?.file || '');
 
   const tabs: TabItem[] = [
     {
@@ -69,7 +71,11 @@ export function BookTabs({ book }: { book?: BookResponse }) {
                 Format
               </div>
               <div className='text-sm font-medium'>
-                {book?.file?.split('.').pop()?.toUpperCase() || 'N/A'}
+                {fileData
+                  ? fileData.originalname.split('.').pop()?.toUpperCase()
+                  : book?.file?.includes('.')
+                  ? book.file.split('.').pop()?.toUpperCase()
+                  : 'N/A'}
               </div>
             </div>
             <div className='space-y-1'>

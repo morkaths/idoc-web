@@ -19,8 +19,8 @@ export function BorrowsDialogs() {
                 key='borrow-create'
                 open={open === 'create'}
                 onOpenChange={() => setOpen('create')}
-                onSubmit={async (data) => {
-                    toast.promise(
+                onSubmit={(data) => {
+                    return toast.promise(
                         createBorrowMut.mutateAsync(data),
                         {
                             loading: 'Creating borrow...',
@@ -43,8 +43,8 @@ export function BorrowsDialogs() {
                         expireTime={currentRow.expireTime}
                         note={currentRow.note}
                         onOpenChange={() => setOpen('extend')}
-                        onSubmit={async (data) => {
-                            toast.promise(
+                        onSubmit={(data) => {
+                            return toast.promise(
                                 extendBorrowMut.mutateAsync({ id: currentRow!.id!, ...data }),
                                 {
                                     loading: 'Extending borrow...',
@@ -69,8 +69,8 @@ export function BorrowsDialogs() {
                             }, 500);
                         }}
                         initialData={currentRow}
-                        onSubmit={async (data) => {
-                            toast.promise(
+                        onSubmit={(data) => {
+                            return toast.promise(
                                 updateBorrowMut.mutateAsync({ id: currentRow.id!, data }),
                                 {
                                     loading: 'Updating borrow...',

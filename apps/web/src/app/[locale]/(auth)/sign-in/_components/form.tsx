@@ -55,15 +55,15 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
+    if (isLoading) return;
     setIsLoading(true);
     const formData = new FormData();
     formData.append('email', data.email);
     formData.append('password', data.password);
 
-    toast.promise(handleCredentialsLogin(formData), {
+    return toast.promise(handleCredentialsLogin(formData), {
       loading: t(keys.form.states.signIn.loading),
       success: async (result) => {
-        setIsLoading(false);
         if (result.success) {
           await update();
           router.refresh();
@@ -74,8 +74,10 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
         throw new Error(result.error || t(keys.form.states.signIn.error));
       },
       error: (err) => {
-        setIsLoading(false);
         return err?.message;
+      },
+      finally: () => {
+        setIsLoading(false);
       },
     });
   }
@@ -87,72 +89,76 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
         className={cn('grid gap-3', className)}
         {...props}
       >
-        <FormField
-          control={form.control}
-          name='email'
-          render={({ field, fieldState }) => (
-            <FormItem>
-              <FormLabel>{t(keys.form.email.label)}</FormLabel>
-              <FormControl>
-                <Input placeholder={t(keys.form.email.placeholder)} {...field} />
-              </FormControl>
-              <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='password'
-          render={({ field, fieldState }) => (
-            <FormItem className='relative'>
-              <FormLabel>{t(keys.form.password.label)}</FormLabel>
-              <FormControl>
-                <PasswordInput placeholder={t(keys.form.password.placeholder)} {...field} />
-              </FormControl>
-              <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
-              <Link
-                href='/forgot-password'
-                className='text-muted-foreground absolute end-0 -top-0.5 text-sm font-medium hover:opacity-75'
+        <fieldset disabled={isLoading} className='contents'>
+          <div className='grid gap-3'>
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>{t(keys.form.email.label)}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t(keys.form.email.placeholder)} {...field} />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field, fieldState }) => (
+                <FormItem className='relative'>
+                  <FormLabel>{t(keys.form.password.label)}</FormLabel>
+                  <FormControl>
+                    <PasswordInput placeholder={t(keys.form.password.placeholder)} {...field} />
+                  </FormControl>
+                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
+                  <Link
+                    href='/forgot-password'
+                    className='text-muted-foreground absolute end-0 -top-0.5 text-sm font-medium hover:opacity-75'
+                  >
+                    {t(keys.forgotPassword.title)}
+                  </Link>
+                </FormItem>
+              )}
+            />
+            <Button className='mt-2' disabled={isLoading}>
+              {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
+              {t(keys.signIn.submit)}
+            </Button>
+
+            <div className='relative my-2'>
+              <div className='absolute inset-0 flex items-center'>
+                <span className='w-full border-t' />
+              </div>
+              <div className='relative flex justify-center text-xs uppercase'>
+                <span className='bg-background text-muted-foreground px-2'>{t(keys.signIn.or)}</span>
+              </div>
+            </div>
+
+            <div className='grid grid-cols-2 gap-2'>
+              <Button
+                variant='outline'
+                type='button'
+                disabled={isLoading}
+                onClick={() => {
+                  setIsLoading(true);
+                  toast.promise(handleGoogleLogin(), {
+                    loading: t(keys.form.states.googleSignIn.loading),
+                    success: () => t(keys.form.states.googleSignIn.success),
+                    error: (err) => err.message || t(keys.form.states.googleSignIn.error),
+                  });
+                }}
               >
-                {t(keys.forgotPassword.title)}
-              </Link>
-            </FormItem>
-          )}
-        />
-        <Button className='mt-2' disabled={isLoading}>
-          {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
-          {t(keys.signIn.submit)}
-        </Button>
-
-        <div className='relative my-2'>
-          <div className='absolute inset-0 flex items-center'>
-            <span className='w-full border-t' />
+                <IconGmail className='mr-2 h-4 w-4' /> Google
+              </Button>
+              <Button variant='outline' type='button' disabled={isLoading}>
+                <IconFacebook className='h-4 w-4' /> Facebook
+              </Button>
+            </div>
           </div>
-          <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-background text-muted-foreground px-2'>{t(keys.signIn.or)}</span>
-          </div>
-        </div>
-
-        <div className='grid grid-cols-2 gap-2'>
-          <Button
-            variant='outline'
-            type='button'
-            disabled={isLoading}
-            onClick={() => {
-              setIsLoading(true);
-              toast.promise(handleGoogleLogin(), {
-                loading: t(keys.form.states.googleSignIn.loading),
-                success: () => t(keys.form.states.googleSignIn.success),
-                error: (err) => err.message || t(keys.form.states.googleSignIn.error),
-              });
-            }}
-          >
-            <IconGmail className='mr-2 h-4 w-4' /> Google
-          </Button>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconFacebook className='h-4 w-4' /> Facebook
-          </Button>
-        </div>
+        </fieldset>
       </form>
     </Form>
   );

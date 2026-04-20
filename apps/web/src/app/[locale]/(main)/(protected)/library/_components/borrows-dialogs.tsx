@@ -1,4 +1,4 @@
-import { showSubmittedData } from '@/lib/show-submitted-data';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { useExtendBorrow, useReturnBorrow } from '@/hooks/data/useBorrow';
 import { useCreateReview, useUpdateReview } from '@/hooks/data/useReview';
@@ -11,6 +11,7 @@ import { useBorrowsContext } from './borrows-provider';
 import { ReviewMutateDialog } from './review-mutate-dialog';
 
 export function BorrowsDialogs() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { t, keys } = useLocale('library');
   const { open, setOpen, currentRow, setCurrentRow } = useBorrowsContext();
   const extendBorrowMut = useExtendBorrow();
@@ -25,7 +26,7 @@ export function BorrowsDialogs() {
         open={open === 'export'}
         onOpenChange={() => setOpen('export')}
         onSubmit={async () => {
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 2000)), {
+          return toast.promise(new Promise((resolve) => setTimeout(resolve, 2000)), {
             loading: 'Exporting borrows...',
             success: () => {
               setOpen(null);
@@ -46,7 +47,7 @@ export function BorrowsDialogs() {
             note={currentRow.note}
             onOpenChange={() => setOpen('extend')}
             onSubmit={async (data) => {
-              toast.promise(extendBorrowMut.mutateAsync({ id: currentRow!.id!, ...data }), {
+              return toast.promise(extendBorrowMut.mutateAsync({ id: currentRow!.id!, ...data }), {
                 loading: t(keys.table.actions.extend.loading),
                 success: () => {
                   setOpen(null);
@@ -87,19 +88,19 @@ export function BorrowsDialogs() {
               const onError = (err: any) => {
                 toast.error(
                   err?.message ||
-                    (existingReview
-                      ? t(keys.table.actions.review.update.error)
-                      : t(keys.table.actions.review.create.error))
+                  (existingReview
+                    ? t(keys.table.actions.review.update.error)
+                    : t(keys.table.actions.review.create.error))
                 );
               };
 
               if (existingReview) {
-                await updateReviewMut
+                return updateReviewMut
                   .mutateAsync({ id: existingReview.id, data: payload })
                   .then(onSuccess)
                   .catch(onError);
               } else {
-                await createReviewMut
+                return createReviewMut
                   .mutateAsync({
                     item: currentRow.item.id,
                     user: currentRow.borrower.id,
@@ -122,16 +123,23 @@ export function BorrowsDialogs() {
               }, 500);
             }}
             handleConfirm={async () => {
-              toast.promise(returnBorrowMut.mutateAsync(currentRow.id!), {
-                loading: t(keys.table.actions.return.loading),
-                success: () => {
-                  setOpen(null);
-                  setTimeout(() => setCurrentRow(null), 500);
-                  return t(keys.table.actions.return.success);
-                },
-                error: (err) => err?.message || t(keys.table.actions.return.error),
-              });
+              if (isSubmitting) return;
+              setIsSubmitting(true);
+              try {
+                await toast.promise(returnBorrowMut.mutateAsync(currentRow.id!), {
+                  loading: t(keys.table.actions.return.loading),
+                  success: () => {
+                    setOpen(null);
+                    setTimeout(() => setCurrentRow(null), 500);
+                    return t(keys.table.actions.return.success);
+                  },
+                  error: (err) => err?.message || t(keys.table.actions.return.error),
+                });
+              } finally {
+                setIsSubmitting(false);
+              }
             }}
+            isLoading={isSubmitting}
             className='max-w-md'
             title={t(keys.table.actions.return.title, { borrowId: currentRow.id })}
             desc={t.rich(keys.table.actions.return.desc, {

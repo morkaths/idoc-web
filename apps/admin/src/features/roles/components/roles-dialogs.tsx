@@ -20,8 +20,8 @@ export function RolesDialogs() {
         open={open === 'create'}
         onOpenChange={(open) => setOpen(open ? 'create' : null)}
         permissions={permissions}
-        onSubmit={async (data) => {
-          toast.promise(
+        onSubmit={(data) => {
+          return toast.promise(
             createRoleMut.mutateAsync(data),
             {
               loading: 'Creating role...',
@@ -43,8 +43,8 @@ export function RolesDialogs() {
             onOpenChange={(open) => setOpen(open ? 'update' : null)}
             initialData={currentRow}
             permissions={permissions}
-            onSubmit={async (data) => {
-              toast.promise(
+            onSubmit={(data) => {
+              return toast.promise(
                 updateRoleMut.mutateAsync({ id: currentRow.id!, data }),
                 {
                   loading: 'Updating role...',

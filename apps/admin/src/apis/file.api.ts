@@ -1,8 +1,8 @@
-import axios from 'axios';
 import { ApiEndpoint } from '@/config/api';
 import type { FileResponse, FileRequest, FindParams, Pagination } from '@/types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
+import axios from 'axios';
 
 const factory = apiFactory<FileResponse, FileRequest>(ApiEndpoint.endpoints.files, 'File', {
   find: 'private',
@@ -28,11 +28,8 @@ export const FileApi = {
 
   upload: async (url: string, file: File): Promise<boolean> => {
     try {
-      const res = await axios.put(url, file, {
-        headers: {
-          'Content-Type': file.type,
-        },
-      });
+      const cleanAxios = axios.create();
+      const res = await cleanAxios.put(url, file);
       return res.status >= 200 && res.status < 300;
     } catch {
       return false;

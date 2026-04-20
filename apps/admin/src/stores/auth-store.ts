@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies';
 import { AuthApi } from '@/apis/auth.api';
-import type { UserResponse, UserRequest, AuthToken, AuthenticationResponse } from '@/types';
+import type { UserResponse, UserRequest, AuthToken } from '@/types';
 import env from '@/config/env';
 
 interface AuthState {
@@ -21,8 +21,8 @@ export const useAuthStore = create<AuthState>()((set) => {
   const tokenCookie = getCookie(env.cookie.token);
   const userCookie = getCookie(env.cookie.user);
 
-  let initToken = null;
-  let initUser = null;
+  let initToken: AuthToken | null = null;
+  let initUser: UserResponse | null = null;
 
   try {
     if (tokenCookie && tokenCookie !== 'undefined') {
@@ -40,88 +40,88 @@ export const useAuthStore = create<AuthState>()((set) => {
     // Ignore invalid cookie value
   }
 
+  let refreshPromise: Promise<boolean> | null = null;
+
+  /**
+   * Updates the authentication state and synchronizes with cookies.
+   * Removes refreshToken from the token object before storing it in a non-HttpOnly cookie for security.
+   * @param user The user profile data
+   * @param token The authentication tokens
+   */
+  const setAuthData = (user: UserResponse | null, token: AuthToken | null) => {
+    set((state) => ({
+      ...state,
+      auth: {
+        ...state.auth,
+        user,
+        token,
+      },
+    }));
+
+    if (user && token) {
+      const { refreshToken: _, ...tokenToStore } = token;
+      setCookie(env.cookie.token, JSON.stringify(tokenToStore));
+      setCookie(env.cookie.user, JSON.stringify(user));
+    } else {
+      removeCookie(env.cookie.token);
+      removeCookie(env.cookie.user);
+    }
+  };
 
   return {
     auth: {
       user: initUser,
       token: initToken,
       setUser: (user) => set((state) => ({ ...state, auth: { ...state.auth, user } })),
-      setToken: (token) =>
-        set((state) => {
-          if (token) {
-            setCookie(env.cookie.token, JSON.stringify(token));
-          } else {
-            removeCookie(env.cookie.token);
-          }
-          return { ...state, auth: { ...state.auth, token } };
-        }),
-      refresh: async () => {
-        const { token: currentToken } = useAuthStore.getState().auth;
-        const response: AuthenticationResponse = await AuthApi.refresh(currentToken?.refreshToken ?? '');
-
-        if (response?.token && response?.user) {
-          set((state) => ({
-            ...state,
-            auth: {
-              ...state.auth,
-              user: response.user,
-              token: response.token,
-            },
-          }));
-          setCookie(env.cookie.token, JSON.stringify(response.token));
-          setCookie(env.cookie.user, JSON.stringify(response.user));
-          return true;
+      setToken: (token) => {
+        if (token) {
+          const { refreshToken: _, ...tokenToStore } = token;
+          setCookie(env.cookie.token, JSON.stringify(tokenToStore));
+        } else {
+          removeCookie(env.cookie.token);
         }
-        return false;
+        set((state) => ({ ...state, auth: { ...state.auth, token } }));
+      },
+      refresh: async () => {
+        if (refreshPromise) {
+          return refreshPromise;
+        }
+
+        refreshPromise = (async () => {
+          try {
+            const data = await AuthApi.refresh();
+            setAuthData(data.user, data.token);
+            return true;
+          } catch (_error) {
+            return false;
+          } finally {
+            refreshPromise = null;
+          }
+        })();
+
+        return refreshPromise;
       },
       logout: async () => {
-        set((state) => ({
-          ...state,
-          auth: {
-            ...state.auth,
-            user: null,
-            token: null,
-          },
-        }));
-        removeCookie(env.cookie.token);
-        removeCookie(env.cookie.user);
+        setAuthData(null, null);
         return true;
       },
       login: async (identifier, password) => {
-        const response: AuthenticationResponse = await AuthApi.login({ identifier, password });
-
-        if (response?.token && response?.user) {
-          set((state) => ({
-            ...state,
-            auth: {
-              ...state.auth,
-              user: response.user,
-              token: response.token,
-            },
-          }));
-          setCookie(env.cookie.token, JSON.stringify(response.token));
-          setCookie(env.cookie.user, JSON.stringify(response.user));
+        try {
+          const data = await AuthApi.login({ identifier, password });
+          setAuthData(data.user, data.token);
           return true;
+        } catch (_error) {
+          return false;
         }
-
-        return false;
       },
       register: async (data) => {
-        const response = await AuthApi.register(data);
-        if (response) {
-          set((state) => ({
-            ...state,
-            auth: {
-              ...state.auth,
-              user: response.user,
-              token: response.token,
-            },
-          }));
-          setCookie(env.cookie.token, JSON.stringify(response.token));
-          setCookie(env.cookie.user, JSON.stringify(response.user));
+        try {
+          const responseData = await AuthApi.register(data);
+          setAuthData(responseData.user, responseData.token);
           return true;
+        } catch (_error) {
+          return false;
         }
-        return false;
       },
     },
   };

@@ -20,8 +20,8 @@ export function UsersDialogs() {
         open={open === 'add'}
         onOpenChange={(open) => setOpen(open ? 'add' : null)}
         roles={roles}
-        onSubmit={async (data) => {
-          toast.promise(
+        onSubmit={(data) => {
+          return toast.promise(
             createUserMut.mutateAsync(data),
             {
               loading: 'Creating user...',
@@ -53,8 +53,8 @@ export function UsersDialogs() {
             onOpenChange={(open) => setOpen(open ? 'edit' : null)}
             initialData={currentRow}
             roles={roles}
-            onSubmit={async (data) => {
-              toast.promise(
+            onSubmit={(data) => {
+              return toast.promise(
                 updateUserMut.mutateAsync({ id: currentRow.id!, data }),
                 {
                   loading: 'Updating user...',

@@ -18,8 +18,8 @@ export function BooksDialogs() {
         key='book-create'
         open={open === 'create'}
         onOpenChange={() => setOpen('create')}
-        onSubmit={async (data) => {
-          toast.promise(createBookMut.mutateAsync(data), {
+        onSubmit={(data) => {
+          return toast.promise(createBookMut.mutateAsync(data), {
             loading: 'Creating book...',
             success: () => {
               setOpen(null);
@@ -48,8 +48,8 @@ export function BooksDialogs() {
               }, 500);
             }}
             initialData={currentRow}
-            onSubmit={async (data) => {
-              toast.promise(updateBookMut.mutateAsync({ id: currentRow.id!, data }), {
+            onSubmit={(data) => {
+              return toast.promise(updateBookMut.mutateAsync({ id: currentRow.id!, data }), {
                 loading: 'Updating book...',
                 success: () => {
                   setOpen(null);

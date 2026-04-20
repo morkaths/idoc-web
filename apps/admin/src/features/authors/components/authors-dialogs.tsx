@@ -17,8 +17,8 @@ export function AuthorsDialogs() {
         key='author-create'
         open={open === 'create'}
         onOpenChange={() => setOpen('create')}
-        onSubmit={async (data) => {
-          toast.promise(createAuthorMut.mutateAsync(data), {
+        onSubmit={(data) => {
+          return toast.promise(createAuthorMut.mutateAsync(data), {
             loading: 'Creating author...',
             success: () => {
               setOpen(null);
@@ -47,8 +47,8 @@ export function AuthorsDialogs() {
               }, 500);
             }}
             initialData={currentRow}
-            onSubmit={async (data) => {
-              toast.promise(updateAuthorMut.mutateAsync({ id: currentRow.id!, data }), {
+            onSubmit={(data) => {
+              return toast.promise(updateAuthorMut.mutateAsync({ id: currentRow.id!, data }), {
                 loading: 'Updating author...',
                 success: () => {
                   setOpen(null);

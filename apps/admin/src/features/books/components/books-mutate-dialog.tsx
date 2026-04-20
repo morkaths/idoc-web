@@ -49,6 +49,7 @@ export function BooksMutateDialog({
 }: BooksMutateDialogProps) {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const uploadImage = useUploadImage();
   const uploadFile = useUploadPresignedFile();
   const confirmUpload = useCompletePresignUploadFile();
@@ -99,6 +100,9 @@ export function BooksMutateDialog({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(async (data) => {
+              if (isSubmitting) return;
+              setIsSubmitting(true);
+
               let coverUrl = data.coverUrl;
               let fileValue = data.file;
 
@@ -108,12 +112,7 @@ export function BooksMutateDialog({
                   coverUrl = await uploadImage.mutateAsync({ file: coverFile, folder: 'books' });
                   toast.success('Cover image uploaded!', { id: 'upload-cover' });
                 }
-              } catch {
-                toast.error('Upload cover image failed!', { id: 'upload-cover' });
-                return;
-              }
 
-              try {
                 if (files.length > 0) {
                   toast.loading('Uploading book file...', { id: 'upload-file' });
                   const key = await uploadFile.mutateAsync({ file: files[0], folder: 'books' });
@@ -121,21 +120,21 @@ export function BooksMutateDialog({
                   fileValue = fileResult.id;
                   toast.success('Book file uploaded!', { id: 'upload-file' });
                 }
-              } catch {
-                toast.error('Upload book file failed!', { id: 'upload-file' });
-                return;
-              }
 
-              onSubmit({
-                ...data,
-                id: initialData?.id,
-                coverUrl,
-                file: fileValue,
-              });
-              onOpenChange(false);
-              form.reset();
+                await onSubmit({
+                  ...data,
+                  id: initialData?.id,
+                  coverUrl,
+                  file: fileValue,
+                });
+                onOpenChange(false);
+                form.reset();
+              } finally {
+                setIsSubmitting(false);
+              }
             })}
           >
+            <fieldset disabled={isSubmitting} className='space-y-4'>
             <div className='grid grid-cols-1 gap-3 md:grid-cols-4'>
               {/* Cột trái: Upload ảnh, chiếm 1 cột và 3 hàng */}
               <div className='flex flex-col items-center justify-start md:row-span-3'>
@@ -377,7 +376,7 @@ export function BooksMutateDialog({
                 value={files}
                 onChange={handleFileUpload}
                 label='Upload documents'
-                accept='.pdf,.doc,.docx,.zip'
+                accept='.pdf,.doc,.docx,.zip,.epub'
                 maxSizeMB={100}
               />
               {file && (
@@ -403,11 +402,12 @@ export function BooksMutateDialog({
               </DialogClose>
               <Button
                 type='submit'
-                disabled={uploadImage.isPending || uploadFile.isPending || confirmUpload.isPending}
+                disabled={isSubmitting}
               >
-                {initialData?.id ? 'Save changes' : 'Create'}
+                {isSubmitting ? 'Saving...' : (initialData?.id ? 'Save changes' : 'Create')}
               </Button>
-            </DialogFooter>
+              </DialogFooter>
+            </fieldset>
           </form>
         </Form>
       </DialogContent>

@@ -48,16 +48,13 @@ const createInstance = (withCredentials = false): AxiosInstance => {
           !originalRequest.url?.includes('refresh')
         ) {
           const { auth } = useAuthStore.getState();
-          const refreshToken = auth.token?.refreshToken;
 
-          if (refreshToken) {
-            originalRequest._retry = true;
-            const refreshed = await auth.refresh();
-            if (refreshed) {
-              const newToken = useAuthStore.getState().auth.token?.accessToken;
-              originalRequest.headers.Authorization = `Bearer ${newToken}`;
-              return instance.request(originalRequest);
-            }
+          originalRequest._retry = true;
+          const refreshed = await auth.refresh();
+          if (refreshed) {
+            const newToken = useAuthStore.getState().auth.token?.accessToken;
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            return instance.request(originalRequest);
           }
 
           // If no refresh token or refresh failed, logout and redirect
@@ -94,7 +91,7 @@ const createInstance = (withCredentials = false): AxiosInstance => {
 const getInstance = (strategy: SecurityStrategy): AxiosInstance => {
   if (!instances) {
     instances = {
-      public: createInstance(false),
+      public: createInstance(true),
       private: createInstance(true),
     };
   }

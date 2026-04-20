@@ -61,16 +61,16 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
+    if (isLoading) return;
     setIsLoading(true);
     const formData = new FormData();
     formData.append('email', data.email);
     formData.append('username', data.username);
     formData.append('password', data.password);
 
-    toast.promise(handleRegister(formData), {
+    return toast.promise(handleRegister(formData), {
       loading: t(keys.form.states.signUp.loading),
       success: (result) => {
-        setIsLoading(false);
         if (result.success) {
           router.replace('/sign-in');
           return t(keys.form.states.signUp.success);
@@ -78,8 +78,10 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
         throw new Error(result.error || t(keys.form.states.signUp.error));
       },
       error: (err) => {
-        setIsLoading(false);
         return err.message;
+      },
+      finally: () => {
+        setIsLoading(false);
       },
     });
   }
@@ -91,92 +93,96 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
         className={cn('grid gap-3', className)}
         {...props}
       >
-        <FormField
-          control={form.control}
-          name='username'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t(keys.form.username.label)}</FormLabel>
-              <FormControl>
-                <Input placeholder={t(keys.form.username.placeholder)} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='email'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t(keys.form.email.label)}</FormLabel>
-              <FormControl>
-                <Input placeholder={t(keys.form.email.placeholder)} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='password'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t(keys.form.password.label)}</FormLabel>
-              <FormControl>
-                <PasswordInput placeholder={t(keys.form.password.placeholder)} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='confirmPassword'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t(keys.form.confirmPassword.label)}</FormLabel>
-              <FormControl>
-                <PasswordInput placeholder={t(keys.form.confirmPassword.placeholder)} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button className='mt-2' disabled={isLoading}>
-          {t(keys.signUp.submit)}
-        </Button>
+        <fieldset disabled={isLoading} className='contents'>
+          <div className='grid gap-3'>
+            <FormField
+              control={form.control}
+              name='username'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t(keys.form.username.label)}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t(keys.form.username.placeholder)} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t(keys.form.email.label)}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t(keys.form.email.placeholder)} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t(keys.form.password.label)}</FormLabel>
+                  <FormControl>
+                    <PasswordInput placeholder={t(keys.form.password.placeholder)} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='confirmPassword'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t(keys.form.confirmPassword.label)}</FormLabel>
+                  <FormControl>
+                    <PasswordInput placeholder={t(keys.form.confirmPassword.placeholder)} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button className='mt-2' disabled={isLoading}>
+              {t(keys.signUp.submit)}
+            </Button>
 
-        <div className='relative my-2'>
-          <div className='absolute inset-0 flex items-center'>
-            <span className='w-full border-t' />
-          </div>
-          <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-background text-muted-foreground px-2'>{t(keys.signIn.or)}</span>
-          </div>
-        </div>
+            <div className='relative my-2'>
+              <div className='absolute inset-0 flex items-center'>
+                <span className='w-full border-t' />
+              </div>
+              <div className='relative flex justify-center text-xs uppercase'>
+                <span className='bg-background text-muted-foreground px-2'>{t(keys.signIn.or)}</span>
+              </div>
+            </div>
 
-        <div className='grid grid-cols-2 gap-2'>
-          <Button
-            variant='outline'
-            className='w-full'
-            type='button'
-            disabled={isLoading}
-            onClick={() => {
-              setIsLoading(true);
-              toast.promise(handleGoogleLogin(), {
-                loading: t(keys.form.states.googleSignIn.loading),
-                success: () => t(keys.form.states.googleSignIn.success),
-                error: (err) => err.message || t(keys.form.states.googleSignIn.error),
-              });
-            }}
-          >
-            <IconGmail className='h-4 w-4' /> Google
-          </Button>
-          <Button variant='outline' className='w-full' type='button' disabled={isLoading}>
-            <IconFacebook className='h-4 w-4' /> Facebook
-          </Button>
-        </div>
+            <div className='grid grid-cols-2 gap-2'>
+              <Button
+                variant='outline'
+                className='w-full'
+                type='button'
+                disabled={isLoading}
+                onClick={() => {
+                  setIsLoading(true);
+                  toast.promise(handleGoogleLogin(), {
+                    loading: t(keys.form.states.googleSignIn.loading),
+                    success: () => t(keys.form.states.googleSignIn.success),
+                    error: (err) => err.message || t(keys.form.states.googleSignIn.error),
+                  });
+                }}
+              >
+                <IconGmail className='h-4 w-4' /> Google
+              </Button>
+              <Button variant='outline' className='w-full' type='button' disabled={isLoading}>
+                <IconFacebook className='h-4 w-4' /> Facebook
+              </Button>
+            </div>
+          </div>
+        </fieldset>
       </form>
     </Form>
   );

@@ -176,6 +176,7 @@ export interface BaseResponse {
   status: number;
   message?: string;
   timestamp: string;
+  headers?: Record<string, string | string[]>;
 }
 
 export interface ApiResponse<T> extends BaseResponse {
@@ -194,7 +195,8 @@ export interface AuthenticationResponse {
 
 export interface AuthToken {
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
   accessTokenExpiresIn: number;
+  refreshTokenExpiresIn: number;
   authenticated: boolean;
 }

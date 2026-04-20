@@ -18,8 +18,8 @@ export function CategoriesDialogs() {
         key='category-create'
         open={open === 'create'}
         onOpenChange={() => setOpen('create')}
-        onSubmit={async (data) => {
-          toast.promise(
+        onSubmit={(data) => {
+          return toast.promise(
             createCategoryMut.mutateAsync(data),
             {
               loading: 'Creating category...',
@@ -51,8 +51,8 @@ export function CategoriesDialogs() {
               }, 500);
             }}
             initialData={currentRow}
-            onSubmit={async (data) => {
-              toast.promise(
+            onSubmit={(data) => {
+              return toast.promise(
                 updateCategoryMut.mutateAsync({ id: currentRow.id!, data }),
                 {
                   loading: 'Updating category...',

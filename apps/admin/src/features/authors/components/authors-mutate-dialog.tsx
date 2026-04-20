@@ -35,6 +35,7 @@ export function AuthorsMutateDialog({
   onSubmit,
 }: AuthorsMutateDialogProps) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const uploadImage = useUploadImage();
   const form = useForm<AuthorRequest>({
     resolver: zodResolver(AuthorRequestSchema),
@@ -61,6 +62,9 @@ export function AuthorsMutateDialog({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(async (data) => {
+              if (isSubmitting) return;
+              setIsSubmitting(true);
+
               let avatar = data.avatar || '';
               try {
                 if (avatarFile) {
@@ -68,119 +72,121 @@ export function AuthorsMutateDialog({
                   avatar = await uploadImage.mutateAsync({ file: avatarFile, folder: 'authors' });
                   toast.success('Avatar uploaded!', { id: 'upload-image' });
                 }
-              } catch {
-                toast.error('Upload avatar failed!', { id: 'upload-image' });
-                return;
+
+                let dob: Date | undefined = undefined;
+                if (data.dob instanceof Date) {
+                  dob = data.dob;
+                } else if (typeof data.dob === 'string' || typeof data.dob === 'number') {
+                  const d = new Date(data.dob);
+                  dob = isNaN(d.getTime()) ? undefined : d;
+                }
+
+                await onSubmit({
+                  ...data,
+                  id: initialData?.id,
+                  avatar,
+                  dob,
+                });
+                onOpenChange(false);
+                form.reset();
+                setAvatarFile(null);
+              } finally {
+                setIsSubmitting(false);
               }
-              let dob: Date | undefined = undefined;
-              if (data.dob instanceof Date) {
-                dob = data.dob;
-              } else if (typeof data.dob === 'string' || typeof data.dob === 'number') {
-                const d = new Date(data.dob);
-                dob = isNaN(d.getTime()) ? undefined : d;
-              }
-              onSubmit({
-                ...data,
-                id: initialData?.id,
-                avatar,
-                dob,
-              });
-              onOpenChange(false);
-              form.reset();
-              setAvatarFile(null);
             })}
           >
-            <div className='mb-3 grid grid-cols-1 md:grid-cols-3'>
-              {/* Avatar bên trái, chiếm 3 dòng */}
-              <div className='flex flex-col items-center justify-start md:row-span-3'>
-                <FormLabel className='mb-3'>Avatar</FormLabel>
-                <ImageUpload
-                  value={form.getValues('avatar')}
-                  onChange={(file, previewUrl) => {
-                    setAvatarFile(file);
-                    form.setValue('avatar', previewUrl || '');
-                  }}
-                  label='Upload avatar'
-                  maxSizeMB={4}
-                />
-              </div>
-
-              <div className='grid grid-cols-1 gap-3 md:col-span-2'>
-                <FormField
-                  control={form.control}
-                  name='name'
-                  render={({ field }) => (
-                    <div className='grid gap-3'>
-                      <FormLabel htmlFor='name'>Name</FormLabel>
-                      <FormControl>
-                        <Input id='name' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </div>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='dob'
-                  render={({ field }) => (
-                    <div className='grid gap-3'>
-                      <FormLabel htmlFor='dob'>Birth Date</FormLabel>
-                      <FormControl>
-                        <DatePicker
-                          selected={field.value ? new Date(field.value) : undefined}
-                          onSelect={field.onChange}
-                          placeholder='Pick a date'
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </div>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='nationality'
-                  render={({ field }) => (
-                    <div className='grid gap-3'>
-                      <FormLabel htmlFor='nationality'>Nationality</FormLabel>
-                      <FormControl>
-                        <LanguageSelect
-                          id='nationality'
-                          value={field.value || ''}
-                          onChange={field.onChange}
-                          name={field.name}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </div>
-                  )}
-                />
-              </div>
-            </div>
-
-            <FormField
-              control={form.control}
-              name='bio'
-              render={({ field }) => (
-                <div className='mb-3 grid gap-3'>
-                  <FormLabel htmlFor='bio'>Bio</FormLabel>
-                  <FormControl>
-                    <Textarea id='bio' {...field} rows={3} />
-                  </FormControl>
-                  <FormMessage />
+            <fieldset disabled={isSubmitting} className='space-y-4'>
+              <div className='mb-3 grid grid-cols-1 md:grid-cols-3'>
+                <div className='flex flex-col items-center justify-start md:row-span-3'>
+                  <FormLabel className='mb-3'>Avatar</FormLabel>
+                  <ImageUpload
+                    value={form.getValues('avatar')}
+                    onChange={(file, previewUrl) => {
+                      setAvatarFile(file);
+                      form.setValue('avatar', previewUrl || '');
+                    }}
+                    label='Upload avatar'
+                    maxSizeMB={4}
+                  />
                 </div>
-              )}
-            />
 
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant='outline' type='button'>
-                  Cancel
+                <div className='grid grid-cols-1 gap-3 md:col-span-2'>
+                  <FormField
+                    control={form.control}
+                    name='name'
+                    render={({ field }) => (
+                      <div className='grid gap-3'>
+                        <FormLabel htmlFor='name'>Name</FormLabel>
+                        <FormControl>
+                          <Input id='name' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='dob'
+                    render={({ field }) => (
+                      <div className='grid gap-3'>
+                        <FormLabel htmlFor='dob'>Birth Date</FormLabel>
+                        <FormControl>
+                          <DatePicker
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={field.onChange}
+                            placeholder='Pick a date'
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='nationality'
+                    render={({ field }) => (
+                      <div className='grid gap-3'>
+                        <FormLabel htmlFor='nationality'>Nationality</FormLabel>
+                        <FormControl>
+                          <LanguageSelect
+                            id='nationality'
+                            value={field.value || ''}
+                            onChange={field.onChange}
+                            name={field.name}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <FormField
+                control={form.control}
+                name='bio'
+                render={({ field }) => (
+                  <div className='mb-3 grid gap-3'>
+                    <FormLabel htmlFor='bio'>Bio</FormLabel>
+                    <FormControl>
+                      <Textarea id='bio' {...field} rows={3} />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant='outline' type='button'>
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button type='submit' disabled={isSubmitting}>
+                  {isSubmitting ? 'Saving...' : (initialData?.id ? 'Save changes' : 'Create')}
                 </Button>
-              </DialogClose>
-              <Button type='submit' disabled={uploadImage.isPending}>
-                {initialData?.id ? 'Save changes' : 'Create'}
-              </Button>
-            </DialogFooter>
+              </DialogFooter>
+            </fieldset>
           </form>
         </Form>
       </DialogContent>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@repo/ui/components/button';
@@ -38,6 +39,7 @@ export function RolesMutateDialog({
   onSubmit,
   permissions,
 }: RolesMutateDialogProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<RoleRequest>({
     resolver: zodResolver(RoleRequestSchema),
     defaultValues: {
@@ -62,67 +64,75 @@ export function RolesMutateDialog({
         <Form {...form}>
           <form
             id='role-form'
-            onSubmit={form.handleSubmit((data) => {
-              onSubmit({
-                ...data,
-                id: initialData?.id,
-              });
-              onOpenChange(false);
-              form.reset();
+            onSubmit={form.handleSubmit(async (data) => {
+              if (isSubmitting) return;
+              setIsSubmitting(true);
+              try {
+                await onSubmit({
+                  ...data,
+                  id: initialData?.id,
+                });
+                onOpenChange(false);
+                form.reset();
+              } finally {
+                setIsSubmitting(false);
+              }
             })}
             className='space-y-4 px-0.5'
           >
-            <FormField
-              control={form.control}
-              name="code"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="code">Code</FormLabel>
-                  <FormControl>
-                    <Input id="code" placeholder="e.g., admin" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="name">Name</FormLabel>
-                  <FormControl>
-                    <Input id="name" placeholder="e.g., Administrator" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="permissions"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="permissions">Permissions</FormLabel>
-                  <PermissionsCombobox
-                    permissions={permissions}
-                    value={field.value || []}
-                    onChange={field.onChange}
-                  />
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline" type="button">
-                  Cancel
+            <fieldset disabled={isSubmitting} className='space-y-4'>
+              <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <div className="grid gap-3">
+                    <FormLabel htmlFor="code">Code</FormLabel>
+                    <FormControl>
+                      <Input id="code" placeholder="e.g., admin" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <div className="grid gap-3">
+                    <FormLabel htmlFor="name">Name</FormLabel>
+                    <FormControl>
+                      <Input id="name" placeholder="e.g., Administrator" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="permissions"
+                render={({ field }) => (
+                  <div className="grid gap-3">
+                    <FormLabel htmlFor="permissions">Permissions</FormLabel>
+                    <PermissionsCombobox
+                      permissions={permissions}
+                      value={field.value || []}
+                      onChange={field.onChange}
+                    />
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline" type="button">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button type='submit' disabled={isSubmitting}>
+                  {isSubmitting ? 'Saving...' : (initialData?.id ? 'Save changes' : 'Create')}
                 </Button>
-              </DialogClose>
-              <Button type='submit'>
-                {initialData?.id ? "Save changes" : "Create"}
-              </Button>
-            </DialogFooter>
+              </DialogFooter>
+            </fieldset>
           </form>
         </Form>
       </DialogContent>

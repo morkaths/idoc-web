@@ -10,6 +10,8 @@ const envSchema = z.object({
   API_KEY: z.string().optional(),
   TOKEN_COOKIE_KEY: z.string().default('authtoken'),
   USER_COOKIE_KEY: z.string().default('authuser'),
+  ACCESS_TOKEN_COOKIE_NAME: z.string().default('accessToken'),
+  REFRESH_TOKEN_COOKIE_NAME: z.string().default('refreshToken'),
   AUTH_SECRET: isServer ? z.string().min(1, 'AUTH_SECRET is required') : z.string().optional(),
   GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID is required'),
   GOOGLE_CLIENT_SECRET: isServer ? z.string().min(1, 'GOOGLE_CLIENT_SECRET is required') : z.string().optional(),
@@ -23,6 +25,8 @@ const processEnv = {
   API_KEY: process.env.NEXT_PUBLIC_API_KEY,
   TOKEN_COOKIE_KEY: process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY,
   USER_COOKIE_KEY: process.env.NEXT_PUBLIC_USER_COOKIE_KEY,
+  ACCESS_TOKEN_COOKIE_NAME: process.env.NEXT_PUBLIC_ACCESS_TOKEN_COOKIE_NAME || process.env.ACCESS_TOKEN_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_NAME: process.env.NEXT_PUBLIC_REFRESH_TOKEN_COOKIE_NAME || process.env.REFRESH_TOKEN_COOKIE_NAME,
   AUTH_SECRET: process.env.AUTH_SECRET,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET,
@@ -58,6 +62,8 @@ export const env = {
   cookie: {
     token: _env.TOKEN_COOKIE_KEY,
     user: _env.USER_COOKIE_KEY,
+    accessToken: _env.ACCESS_TOKEN_COOKIE_NAME,
+    refreshToken: _env.REFRESH_TOKEN_COOKIE_NAME,
   },
   auth: {
     secret: _env.AUTH_SECRET,

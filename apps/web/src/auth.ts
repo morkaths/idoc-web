@@ -3,6 +3,25 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import env from "@/config/env";
 import { AuthApi } from "@/apis/auth.api";
+import { AuthenticationResponse } from "@repo/types";
+
+/**
+ * Extracts the refresh token from the API response payload or set-cookie headers.
+ * @param data The authentication response data
+ * @param headers The response headers
+ * @returns The refresh token if found, otherwise undefined
+ */
+const extractRefreshToken = (data: AuthenticationResponse, headers?: Record<string, string | string[]>): string | undefined => {
+  if (data.token.refreshToken) return data.token.refreshToken;
+  
+  if (headers && headers['set-cookie']) {
+    const cookiesArr = Array.isArray(headers['set-cookie']) ? headers['set-cookie'] : [headers['set-cookie']];
+    const rtCookie = cookiesArr.find((c: string) => c.toLowerCase().includes('refreshtoken='));
+    if (rtCookie) return rtCookie.split(';')[0]?.split('=')[1];
+  }
+  
+  return undefined;
+};
 
 export const authConfig = {
   providers: [
@@ -16,19 +35,21 @@ export const authConfig = {
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
-          const result = await AuthApi.login({
+          const response = await AuthApi.login({
             identifier: credentials.email as string,
             password: credentials.password as string,
           });
 
-          if (result && result.user && result.token) {
-            const returnedData = {
-              ...result.user,
-              accessToken: result.token.accessToken,
-              refreshToken: result.token.refreshToken,
-              accessTokenExpiresIn: result.token.accessTokenExpiresIn,
+          if (response && response.success && response.data) {
+            const { data, headers } = response;
+            const refreshToken = extractRefreshToken(data, headers);
+
+            return {
+              ...data.user,
+              accessToken: data.token.accessToken,
+              accessTokenExpiresIn: data.token.accessTokenExpiresIn,
+              refreshToken: refreshToken,
             };
-            return returnedData as any;
           }
           throw new CredentialsSignin();
         } catch (error) {
@@ -43,28 +64,28 @@ export const authConfig = {
   ],
   callbacks: {
     async session({ session, token }) {
-      if (token) {
-        session.user = { ...session.user, ...token.user } as any;
-        session.accessToken = token.accessToken;
-        session.refreshToken = token.refreshToken;
-        session.error = token.error;
+      if (token && token.user) {
+        session.user = { ...session.user, ...token.user as any };
+        session.accessToken = token.accessToken as string;
+        session.error = token.error as string;
       }
       return session;
     },
     async jwt({ token, user, account }) {
       if (user) {
         if (account?.provider === "google") {
-          const response = await AuthApi.loginGoogle(account.id_token!).catch((err) => {
-            return null;
-          });
+          const response = await AuthApi.loginGoogle(account.id_token!).catch(() => null);
 
-          if (response && response.token) {
+          if (response && response.success && response.data) {
+            const { data, headers } = response;
+            const refreshToken = extractRefreshToken(data, headers);
+
             return {
               ...token,
-              user: response.user as any,
-              accessToken: response.token.accessToken,
-              refreshToken: response.token.refreshToken,
-              expiresAt: Date.now() + (response.token.accessTokenExpiresIn * 1000),
+              user: data.user,
+              accessToken: data.token.accessToken,
+              refreshToken: refreshToken,
+              expiresAt: Date.now() + (data.token.accessTokenExpiresIn * 1000),
               error: undefined,
             };
           }
@@ -72,7 +93,7 @@ export const authConfig = {
         }
         return {
           ...token,
-          user: user as any,
+          user: user,
           accessToken: (user as any).accessToken,
           refreshToken: (user as any).refreshToken,
           expiresAt: Date.now() + ((user as any).accessTokenExpiresIn * 1000),
@@ -81,26 +102,61 @@ export const authConfig = {
       }
 
       // Return previous token if the access token has not expired yet
-      if (token.expiresAt && Date.now() < token.expiresAt) {
+      if (token.expiresAt && Date.now() < (token.expiresAt as number)) {
         return token;
       }
 
       // Access token has expired, try to update it
       try {
-        const result = await AuthApi.refresh(token.refreshToken as string);
-        if (!result || !result.token) {
-          return null;
+        const { cookies } = await import('next/headers');
+        const cookieStore = await cookies();
+        const refreshTokenToUse = (token.refreshToken as string) || cookieStore.get(env.cookie.refreshToken)?.value;
+
+        if (!refreshTokenToUse) {
+          return { ...token, error: "RefreshAccessTokenError", accessToken: undefined };
         }
+
+        const result = await AuthApi.refresh(refreshTokenToUse);
+        if (!result || !result.success || !result.data) {
+          return { ...token, error: "RefreshAccessTokenError", accessToken: undefined };
+        }
+
+        const { data, headers } = result;
+        const newRefreshToken = extractRefreshToken(data, headers);
+
+        try {
+          const cookieOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax' as const,
+            path: '/',
+          };
+
+          cookieStore.set(env.cookie.accessToken, data.token.accessToken, {
+            ...cookieOptions,
+            maxAge: data.token.accessTokenExpiresIn,
+          });
+
+          if (newRefreshToken) {
+            cookieStore.set(env.cookie.refreshToken, newRefreshToken, {
+              ...cookieOptions,
+              maxAge: data.token.refreshTokenExpiresIn,
+            });
+          }
+        } catch (e) {
+          // Ignore cookie errors on server side background refresh if runtime limits it
+        }
+
         return {
           ...token,
-          accessToken: result.token.accessToken,
-          refreshToken: result.token.refreshToken,
-          expiresAt: Date.now() + (result.token.accessTokenExpiresIn * 1000),
+          accessToken: data.token.accessToken,
+          refreshToken: newRefreshToken || (token.refreshToken as string),
+          expiresAt: Date.now() + (data.token.accessTokenExpiresIn * 1000),
           error: undefined,
         };
       } catch (error) {
-        console.error("[Auth] Refresh token failed with exception:", error);
-        return null;
+        console.error("[Auth] Refresh token failed:", error);
+        return { ...token, error: "RefreshTokenError" };
       }
     }
   },
