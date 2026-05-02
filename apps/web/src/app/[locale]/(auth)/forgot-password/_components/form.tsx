@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState, HTMLAttributes } from 'react';
+
+import { useState, type HTMLAttributes } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,11 +25,10 @@ const formSchema = z.object({
   }),
 });
 
-interface ForgotPasswordFormProps extends HTMLAttributes<HTMLFormElement> { }
+type ForgotPasswordFormProps = HTMLAttributes<HTMLFormElement>;
 
 export function ForgotPasswordForm({ className, ...props }: ForgotPasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

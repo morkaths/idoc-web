@@ -1,11 +1,11 @@
 import { type ColumnDef } from '@tanstack/react-table';
-import { RoleCode, UserStatus, type UserResponse } from '@/types';
+import { RoleType, UserStatus, type UserResponse } from '@/types';
+import { ShieldCheck, User2, UserCog } from 'lucide-react';
+import { Badge } from '@repo/ui/components/badge';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
 import { UsersTableRowActions } from './users-table-row-actions';
-import { BriefcaseBusiness, ShieldCheck, User2, UserCog } from 'lucide-react';
-import { Badge } from '@repo/ui/components/badge';
 
 export const usersColumns: ColumnDef<UserResponse>[] = [
   {
@@ -67,10 +67,10 @@ export const usersColumns: ColumnDef<UserResponse>[] = [
       const status = row.original.status;
       let label = 'Inactive';
       let className = 'bg-gray-100 text-gray-500 border border-gray-200';
-      if (status === UserStatus.Active) {
+      if (status === UserStatus.ACTIVE) {
         label = 'Active';
         className = 'bg-green-100 text-green-700 border border-green-200';
-      } else if (status === UserStatus.Banned) {
+      } else if (status === UserStatus.BANNED) {
         label = 'Banned';
         className = 'bg-red-100 text-red-700 border border-red-200';
       }
@@ -82,32 +82,22 @@ export const usersColumns: ColumnDef<UserResponse>[] = [
     },
   },
   {
-    accessorKey: 'roles',
+    accessorKey: 'role',
     meta: { className: 'ps-4' },
     header: ({ column }) => <DataTableColumnHeader column={column} title='Role' />,
     cell: ({ row }) => {
-      const roles = row.original.roles ?? [];
-      const maxShow = 2;
+      const role = row.original.role;
+      let icon = <User2 className='mr-1 h-3.5 w-3.5' />;
+      if (role === RoleType.ADMIN) icon = <ShieldCheck className='mr-1 h-3.5 w-3.5' />;
+      else if (role === RoleType.STAFF) icon = <UserCog className='mr-1 h-3.5 w-3.5' />;
+
       return (
         <div className='max-w-65 overflow-x-auto'>
           <div className='flex items-center gap-1 whitespace-nowrap'>
-            {roles.slice(0, maxShow).map((role) => {
-              let icon = <User2 className='w-3.5 h-3.5 mr-1' />;
-              if (role.code === RoleCode.Admin) icon = <ShieldCheck className='w-3.5 h-3.5 mr-1' />;
-              else if (role.code === RoleCode.Manager) icon = <BriefcaseBusiness className='w-3.5 h-3.5 mr-1' />;
-              else if (role.code === RoleCode.Staff) icon = <UserCog className='w-3.5 h-3.5 mr-1' />;
-              return (
-                <Badge key={role.id} variant='outline' className='text-xs flex items-center'>
-                  {icon}
-                  {role.name}
-                </Badge>
-              );
-            })}
-            {roles.length > maxShow && (
-              <Badge variant='outline' className='text-xs'>
-                +{roles.length - maxShow}
-              </Badge>
-            )}
+            <Badge variant='outline' className='flex items-center text-xs capitalize'>
+              {icon}
+              {role.toLowerCase()}
+            </Badge>
           </div>
         </div>
       );

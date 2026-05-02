@@ -1,87 +1,102 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
+import { type UseQueryOptions, type UseMutationOptions } from '@tanstack/react-query';
 import { CategoryApi } from '@/apis';
-import type { FindParams, CategoryResponse, Pagination, CategoryRequest } from '@/types';
-import { useMemo } from 'react';
+import type { FindParams, CategoryResponse, CategoryRequest, ApiResponse, PageResponse } from '@/types';
+import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation } from './factory';
 
-type PaginationResponse = { data: CategoryResponse[]; pagination?: Pagination };
-
+/**
+ * Hook to fetch categories with pagination
+ * @param params Search/filter parameters
+ * @param options Query options
+ */
 export const useCategories = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<ApiResponse<PageResponse<CategoryResponse>>, Error>, 'queryKey' | 'queryFn'>
 ) => {
-  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
-    queryKey: ['categories', params],
-    queryFn: () => CategoryApi.find(params),
-    enabled: true,
-    refetchOnWindowFocus: false,
-    staleTime: 60 * 60 * 1000,
-    ...options,
-  });
-
-  const stabilizedData = useMemo(() => ({
-    data: rawData?.data || [],
-    pagination: rawData?.pagination,
-  }), [rawData]);
-
-  return useMemo(() => ({
-    status,
-    error,
-    isLoading,
-    isFetching,
-    refetch,
-    data: stabilizedData,
-  }), [stabilizedData, status, error, isLoading, isFetching, refetch]);
+  return useListQuery<CategoryResponse>(
+    ['categories', params],
+    () => CategoryApi.find(params),
+    options
+  );
 };
 
-export const useCategory = (id: string, options?: Omit<UseQueryOptions<CategoryResponse, Error, CategoryResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<CategoryResponse, Error, CategoryResponse, QueryKey>({
-    queryKey: ['categories', id],
-    queryFn: () => CategoryApi.findById(id),
-    enabled: !!id,
-    staleTime: 10 * 60 * 1000,
-    ...options,
-  });
-
-  const data = useMemo(() => rawData || null, [rawData]);
-
-  return useMemo(() => ({
-    status,
-    error,
-    isLoading,
-    isFetching,
-    refetch,
-    data,
-  }), [data, status, error, isLoading, isFetching, refetch]);
+/**
+ * Hook to search categories
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchCategories = (
+  params: FindParams = {},
+  options?: Omit<UseQueryOptions<ApiResponse<PageResponse<CategoryResponse>>, Error>, 'queryKey' | 'queryFn'>
+) => {
+  return useListQuery<CategoryResponse>(
+    ['categories', 'search', params],
+    () => CategoryApi.search(params),
+    options
+  );
 };
 
-export const useCreateCategory = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (data: CategoryRequest) => CategoryApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-    },
-  });
+/**
+ * Hook to fetch a single category by ID
+ * @param id Category ID
+ * @param options Query options
+ */
+export const useCategory = (
+  id: string,
+  options?: Omit<UseQueryOptions<ApiResponse<CategoryResponse>, Error>, 'queryKey' | 'queryFn'>
+) => {
+  return useItemQuery<CategoryResponse>(
+    ['categories', id],
+    () => CategoryApi.findById(id),
+    {
+      enabled: !!id,
+      ...options,
+    }
+  );
 };
 
-export const useUpdateCategory = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CategoryRequest> }) =>
-      CategoryApi.update(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['categories', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-    },
-  });
+/**
+ * Hook to create a new category
+ * @param options Mutation options
+ */
+export const useCreateCategory = <TContext = unknown>(
+  options?: UseMutationOptions<ApiResponse<CategoryResponse>, Error, CategoryRequest, TContext>
+) => {
+  return useCreateMutation<CategoryRequest, CategoryResponse, TContext>(
+    (data) => CategoryApi.create(data),
+    [['categories']],
+    options
+  );
 };
 
-export const useDeleteCategory = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => CategoryApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-    },
-  });
+/**
+ * Hook to update an existing category
+ * @param options Mutation options
+ */
+export const useUpdateCategory = <TContext = unknown>(
+  options?: UseMutationOptions<
+    ApiResponse<CategoryResponse>,
+    Error,
+    { id: string; data: Partial<CategoryRequest> },
+    TContext
+  >
+) => {
+  return useUpdateMutation<CategoryRequest, CategoryResponse, TContext>(
+    ({ id, data }) => CategoryApi.update(id, data),
+    (variables) => [['categories'], ['categories', variables.id]],
+    options
+  );
+};
+
+/**
+ * Hook to delete a category
+ * @param options Mutation options
+ */
+export const useDeleteCategory = <TContext = unknown>(
+  options?: UseMutationOptions<ApiResponse<void>, Error, string, TContext>
+) => {
+  return useDeleteMutation<TContext>(
+    (id) => CategoryApi.delete(id),
+    [['categories']],
+    options
+  );
 };

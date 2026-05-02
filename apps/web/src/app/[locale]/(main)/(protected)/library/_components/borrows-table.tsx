@@ -1,8 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import { BorrowStatus } from '@/types';
 import {
   type SortingState,
   type VisibilityState,
@@ -13,6 +14,7 @@ import {
 import { useBorrowHistory } from '@/hooks/data/useBorrow';
 import { KEYS, useLocale } from '@/hooks/ui/useLocale';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
+import { buildBorrowFindParams } from './borrow-query.utils';
 import {
   Table,
   TableBody,
@@ -33,6 +35,19 @@ export function BorrowsTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const search = useMemo(() => Object.fromEntries(searchParams.entries()), [searchParams]);
+
+  const navigate = useCallback(
+    (opts: any) => {
+      const params = typeof opts.search === 'function' ? opts.search(search) : opts.search;
+      const queryString = new URLSearchParams(params as Record<string, string>).toString();
+      router.replace(`${pathname}?${queryString}`, { scroll: false });
+    },
+    [router, pathname, search]
+  );
+
   const {
     globalFilter,
     onGlobalFilterChange,
@@ -42,35 +57,20 @@ export function BorrowsTable() {
     onPaginationChange,
     ensurePageInRange,
   } = useTableUrlState({
+    search,
+    navigate,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'q' },
-    search: {},
-    navigate: (opts) => {
-      if (opts?.search) {
-        const params = new URLSearchParams(opts.search as Record<string, string>).toString();
-        router.replace(`?${params}`);
-      }
-    },
+    columnFilters: [{ columnId: 'status', searchKey: 'status', type: 'array' }],
   });
 
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
 
-  const borrowParams = useMemo(() => {
-    const apiSort = sorting[0]
-      ? {
-        sortBy: String(sorting[0].id),
-        sortOrder: sorting[0].desc ? 'desc' : 'asc',
-      }
-      : undefined;
-
-    return {
-      page,
-      limit,
-      query: globalFilter ?? '',
-      ...(apiSort || {}),
-    };
-  }, [page, limit, globalFilter, sorting]);
+  const borrowParams = useMemo(
+    () => buildBorrowFindParams(page, limit, globalFilter ?? '', sorting, columnFilters),
+    [page, limit, globalFilter, sorting, columnFilters]
+  );
 
   // fetch server-side page
   const { data: borrowsData, isFetching: isBorrowsFetching } = useBorrowHistory(borrowParams);
@@ -111,7 +111,7 @@ export function BorrowsTable() {
       pageIndex: 0,
       pageSize: pagination.pageSize ?? 10,
     }));
-  }, [globalFilter]);
+  }, [globalFilter, onPaginationChange, pagination.pageSize]);
 
   useEffect(() => {
     ensurePageInRange(table.getPageCount());
@@ -119,7 +119,21 @@ export function BorrowsTable() {
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
-      <DataTableToolbar table={table} searchPlaceholder={t(keys.search.placeholder)} />
+      <DataTableToolbar
+        table={table}
+        searchPlaceholder={t(keys.search.placeholder)}
+        filters={[
+          {
+            columnId: 'status',
+            title: t(keys.table.columns.status),
+            options: [
+              { label: 'Borrowed', value: BorrowStatus.BORROWED },
+              { label: 'Returned', value: BorrowStatus.RETURNED },
+              { label: 'Overdue', value: BorrowStatus.OVERDUE },
+            ],
+          },
+        ]}
+      />
       <div className='overflow-hidden rounded-md border'>
         <Table>
           <TableHeader>

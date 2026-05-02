@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AppImage as Image } from "../app-image";
 import { Icon } from '@iconify/react';
-import { BookResponse, BookmarkResponse } from "@/types";
+import { type BookResponse } from "@/types";
 import { cn } from "@/lib/utils";
 import { useDeleteBookmark } from "@/hooks/data/useBookmark";
 import { toast } from 'sonner';
@@ -18,31 +18,28 @@ type BookListItemProps = {
 export function BookListItem({ book, onClick, className }: BookListItemProps) {
   const { t, keys } = useLocale('books');
   const [imageError, setImageError] = useState(false);
-  const [bookmark, setBookmark] = useState(book.bookmark);
-  const isBookmarked = !!(bookmark || book.bookmark);
+  const [localBookmarkId, setLocalBookmarkId] = useState<string | undefined | null>(null);
+  const bookmarkId = localBookmarkId !== null ? localBookmarkId : book.bookmarkId;
+  const isBookmarked = !!bookmarkId;
 
   const { setOpen, setCurrentBook } = useBookmarkContext();
   const { mutate: deleteBookmark, isPending: isDeleting } = useDeleteBookmark();
 
   const isLoading = isDeleting;
 
-  // Sync state with props
-  useEffect(() => {
-    setBookmark(book.bookmark);
-  }, [book.bookmark]);
-
   const handleToggleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isLoading) return;
 
     if (isBookmarked) {
-      if (book.bookmark) {
-        deleteBookmark(book.bookmark, {
+      const activeBookmarkId = book.bookmarkId || bookmarkId;
+      if (activeBookmarkId) {
+        deleteBookmark(activeBookmarkId, {
           onSuccess: () => {
+            setLocalBookmarkId(undefined);
             toast.success(t(keys.view.bookmark.removed));
           },
-          onError: (error) => {
-            console.error("Failed to unbookmark:", error);
+          onError: () => {
             toast.error(t(keys.view.bookmark.error));
           }
         });

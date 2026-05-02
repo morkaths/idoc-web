@@ -3,7 +3,7 @@ import React from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { ChevronRightIcon, CircleSmallIcon } from "lucide-react";
 import Link from "next/link";
-import { NavItem } from "./data/nav-data";
+import { type NavItem } from "./data/nav-data";
 
 type NavigationItem = {
     name: string;

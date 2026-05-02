@@ -1,6 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table';
-import type { AuthorResponse } from '@/types';
-import { Languages } from '@/types';
+import { type AuthorResponse, Languages } from '@/types';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
@@ -81,17 +80,17 @@ export const authorsColumns: ColumnDef<AuthorResponse>[] = [
       const nationality = row.original.nationality ?? '';
       const langConfig = Languages.find((l) => l.value === nationality);
       const flagCode = langConfig?.flag || String(nationality).toLowerCase();
-      
+
       if (!nationality) {
         return <span className='text-muted-foreground'>—</span>;
       }
 
       return (
         <div className='flex items-center justify-start'>
-          <span 
-            className={`fi fi-${flagCode} text-lg`} 
-            title={langConfig?.label || nationality} 
-            aria-hidden 
+          <span
+            className={`fi fi-${flagCode} text-lg`}
+            title={langConfig?.label || nationality}
+            aria-hidden
           />
         </div>
       );

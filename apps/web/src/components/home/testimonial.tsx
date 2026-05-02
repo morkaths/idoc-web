@@ -1,7 +1,8 @@
 "use client";
 import { motion } from "motion/react";
 import React from "react";
-import { Testimonial, TESTIMONIALS } from "./data/testimonial-data";
+import Image from "next/image";
+import { type Testimonial, TESTIMONIALS } from "./data/testimonial-data";
 
 
 const firstColumn = TESTIMONIALS.slice(0, 3);
@@ -70,7 +71,7 @@ export const TestimonialsColumn = (props: {
               >
                 <div>{text}</div>
                 <div className="mt-5 flex items-center gap-2">
-                  <img
+                  <Image
                     alt={name}
                     className="h-10 w-10 rounded-full"
                     height={40}

@@ -11,7 +11,7 @@ import {
 import { Button } from "@repo/ui/components/button";
 import { CheckCircleIcon, StarIcon } from "lucide-react";
 import Link from "next/link";
-import { Plan, PLANS } from "./data/plan-data";
+import { type Plan, PLANS } from "./data/plan-data";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@repo/ui/components/carousel";
 
 export type FREQUENCY = "monthly" | "yearly";
@@ -57,10 +57,7 @@ export function FrequencyToggle({
     );
 }
 
-// Pricing plan interface
-interface PricingSectionProps extends React.ComponentProps<"div"> {
-}
-export function PricingSection({ ...props }: PricingSectionProps) {
+export function PricingSection({ ...props }: React.ComponentProps<"div">) {
     const [frequency, setFrequency] = React.useState<"monthly" | "yearly">("monthly");
     return (
         <div
@@ -78,7 +75,7 @@ export function PricingSection({ ...props }: PricingSectionProps) {
                     Plans that Scale with You
                 </h2>
                 <p className="text-center text-muted-foreground text-sm md:text-base">
-                    Whether you're just starting out or growing fast, our flexible pricing has you covered — with no hidden costs.
+                    Whether you&apos;re just starting out or growing fast, our flexible pricing has you covered — with no hidden costs.
                 </p>
             </div>
 

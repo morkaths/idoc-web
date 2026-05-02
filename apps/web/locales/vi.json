@@ -327,6 +327,13 @@
           "searchPlaceholder": "Tìm kiếm thể loại...",
           "empty": "Không tìm thấy thể loại.",
           "loading": "Đang tải thể loại..."
+        },
+        "languages": {
+          "label": "Ngôn ngữ",
+          "placeholder": "Chọn ngôn ngữ...",
+          "searchPlaceholder": "Tìm kiếm ngôn ngữ...",
+          "empty": "Không tìm thấy ngôn ngữ.",
+          "loading": "Đang tải ngôn ngữ..."
         }
       },
       "sort": {
@@ -336,7 +343,7 @@
           "title": "Tiêu đề",
           "createdAt": "Ngày tạo",
           "updatedAt": "Ngày cập nhật",
-          "publishedYear": "Năm xuất bản",
+          "publishedDate": "Ngày xuất bản",
           "rating": "Đánh giá",
           "totalReviews": "Lượt đánh giá"
         },
@@ -378,11 +385,11 @@
     "borrow": {
       "title": "Mượn sách",
       "description": "Nhập thông tin mượn sách bên dưới.",
-      "expireTime": {
+      "dueDate": {
         "label": "Ngày hết hạn",
         "placeholder": "Chọn ngày hết hạn"
       },
-      "note": {
+      "notes": {
         "label": "Ghi chú",
         "placeholder": "Ghi chú (không bắt buộc)"
       },
@@ -509,11 +516,11 @@
       "entity": "bản mượn",
       "columns": {
         "cover": "Ảnh bìa",
-        "item": "Vật phẩm",
+        "book": "Sách",
         "renewals": "Gia hạn",
-        "borrowTime": "Ngày mượn",
-        "expireTime": "Ngày hết hạn",
-        "returnTime": "Ngày trả",
+        "borrowedDate": "Ngày mượn",
+        "dueDate": "Ngày hết hạn",
+        "returnDate": "Ngày trả",
         "status": "Trạng thái"
       },
       "states": {
@@ -534,13 +541,36 @@
           "success": "Gia hạn thành công!",
           "error": "Gia hạn thất bại. Vui lòng thử lại.",
           "fields": {
-            "borrowDate": "Ngày mượn",
+            "borrowedDate": "Ngày mượn",
             "extraDays": "Số ngày thêm",
             "borrowRange": "Khoảng mượn",
-            "note": "Ghi chú",
+            "notes": "Ghi chú",
             "placeholder": "Số ngày cần gia hạn",
-            "error": "Ngày hết hạn mới phải sau ngày hết hạn hiện tại ít nhất 1 ngày."
+            "error": "Ngày hết hạn mới phải sau ngày hết hạn hiện tại ít nhất 1 ngày.",
+            "maxError": "Thời gian gia hạn không được quá 30 ngày."
           }
+        },
+        "mutate": {
+          "create": {
+            "title": "Thêm bản mượn",
+            "description": "Nhập thông tin cho bản mượn mới.",
+            "submit": "Tạo mới"
+          },
+          "update": {
+            "title": "Chỉnh sửa bản mượn",
+            "description": "Cập nhật thông tin bản mượn bên dưới.",
+            "submit": "Lưu thay đổi"
+          },
+          "fields": {
+            "book": "Sách",
+            "dueDate": "Ngày hết hạn",
+            "notes": "Ghi chú",
+            "placeholder": "Chọn một ngày"
+          },
+          "loading": "Đang lưu...",
+          "success": "Lưu thành công!",
+          "error": "Lưu thất bại. Vui lòng thử lại.",
+          "cancel": "Hủy"
         },
         "review": {
           "label": "Đánh giá",
@@ -606,7 +636,10 @@
         "export": {
           "label": "Xuất",
           "tooltip": "Xuất các bản mượn đã chọn",
-          "confirmDesc": "Bạn có chắc muốn xuất các bản mượn đã chọn?"
+          "confirmDesc": "Bạn có chắc muốn xuất các bản mượn đã chọn?",
+          "loading": "Đang xuất bản mượn...",
+          "success": "Xuất bản mượn thành công!",
+          "error": "Lỗi khi xuất bản mượn. Vui lòng thử lại."
         }
       }
     },

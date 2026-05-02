@@ -1,4 +1,4 @@
-import { UserResponse } from '@repo/types';
+import { type UserResponse } from '@repo/types';
 import 'next-auth';
 import 'next-auth/jwt';
 
@@ -8,7 +8,7 @@ declare module 'next-auth' {
         accessToken?: string;
         refreshToken?: string;
         error?: 'RefreshAccessTokenError' | 'InvalidCredentials' | string;
-        [key: string]: any;
+        [key: string]: unknown;
     }
 }
 
@@ -19,6 +19,6 @@ declare module 'next-auth/jwt' {
         refreshToken?: string;
         expiresAt?: number;
         error?: 'RefreshAccessTokenError' | 'InvalidCredentials' | string;
-        [key: string]: any;
+        [key: string]: unknown;
     }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { BookResponse } from "@/types";
+import { type BookResponse } from "@/types";
 import { Skeleton } from "@repo/ui/components/skeleton";
 
 import { SearchX } from "lucide-react";

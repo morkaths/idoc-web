@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import type { FindParams } from '@/types';
+import type { FilterItem, FindParams } from '@/types';
 
 /**
  * Custom hook để quản lý URL query parameters theo chuẩn FindParams
@@ -25,13 +25,25 @@ export function useQueryParams() {
         if (page) result.page = Number(page);
         if (limit) result.limit = Number(limit);
         if (query) result.query = query;
-        if (sortBy && sortOrder) result.sorts = [{ [sortBy]: sortOrder }];
+        if (sortBy && sortOrder) result.sorts = [{ field: sortBy, direction: sortOrder as 'asc' | 'desc' }];
+
+        const filters: FilterItem[] = [];
 
         searchParams.forEach((value, key) => {
             if (!['page', 'limit', 'query', 'sortBy', 'sortOrder'].includes(key)) {
-                result[key] = value.includes(',') ? value.split(',').filter(Boolean) : value;
+                const values = value.includes(',') ? value.split(',').filter(Boolean) : value;
+                filters.push({
+                    field: key,
+                    value: values,
+                    operator: Array.isArray(values) ? 'in' : 'eq',
+                });
+                result[key] = values;
             }
         });
+
+        if (filters.length > 0) {
+            result.filters = filters;
+        }
 
         return result;
     }, [searchParams]);
@@ -53,27 +65,43 @@ export function useQueryParams() {
                 }
 
                 if (key === 'sorts' && Array.isArray(value) && value.length > 0) {
-                    const sort = value[0] as Record<string, string>;
-                    const [sortBy, sortOrder] = Object.entries(sort)[0] || [];
-                    if (sortBy && sortOrder) {
-                        newParams.set('sortBy', sortBy);
-                        newParams.set('sortOrder', sortOrder);
+                    const sort = value[0] as import('@/types').SortItem;
+                    if (sort.field && sort.direction) {
+                        newParams.set('sortBy', sort.field);
+                        newParams.set('sortOrder', sort.direction);
                     }
+                } else if (key === 'filters' && Array.isArray(value)) {
+                    value.forEach((filter: any) => {
+                        if (filter.field && filter.value !== undefined && filter.value !== null) {
+                            if (Array.isArray(filter.value)) {
+                                newParams.set(filter.field, filter.value.join(','));
+                            } else {
+                                newParams.set(filter.field, String(filter.value));
+                            }
+                        }
+                    });
                 } else if (Array.isArray(value)) {
-                    value.length ? newParams.set(key, value.join(',')) : newParams.delete(key);
+                    if (value.length) {
+                        newParams.set(key, value.join(','));
+                    } else {
+                        newParams.delete(key);
+                    }
                 } else {
                     newParams.set(key, String(value));
                 }
             });
 
-            // Auto-reset page về 1 khi các params khác thay đổi
             const hasNonPageUpdate = Object.keys(updates).some(key => key !== 'page');
             if (hasNonPageUpdate && !options.preservePage) {
                 newParams.set('page', '1');
             }
 
             const url = `${pathname}?${newParams.toString()}`;
-            options.replace ? router.replace(url) : router.push(url);
+            if (options.replace) {
+                router.replace(url);
+            } else {
+                router.push(url);
+            }
         },
         [searchParams, pathname, router]
     );

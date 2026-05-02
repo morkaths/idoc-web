@@ -24,6 +24,7 @@ const getEnv = () => {
 const parsed = envSchema.safeParse(getEnv());
 
 if (!parsed.success) {
+  /* eslint-disable no-console */
   console.error('[.ENV] Invalid Environment Variables:');
   const formattedError = parsed.error.format();
   Object.entries(formattedError).forEach(([key, value]) => {
@@ -31,6 +32,7 @@ if (!parsed.success) {
       console.error(`   [${key}]: ${value._errors.join(', ')}`);
     }
   });
+  /* eslint-enable no-console */
   if (typeof process !== 'undefined' && process.exit) {
     process.exit(1);
   } else {

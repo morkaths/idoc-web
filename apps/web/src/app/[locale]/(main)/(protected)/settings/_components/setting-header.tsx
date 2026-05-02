@@ -21,7 +21,7 @@ export default function SettingHeader() {
         <div className='flex flex-col items-start gap-6 md:flex-row md:items-center'>
           <div className='relative'>
             <Avatar className='h-24 w-24'>
-              <AvatarImage src={profile?.profile?.avatar || ''} alt={user.username || 'User'} />
+              <AvatarImage src={profile?.avatar || ''} alt={user.username || 'User'} />
               <AvatarFallback className='text-2xl'>
                 {(user.username || user.email || 'U').charAt(0).toUpperCase()}
               </AvatarFallback>
@@ -48,11 +48,11 @@ export default function SettingHeader() {
             <div className='text-muted-foreground flex flex-wrap gap-4 text-sm'>
               <div className='flex items-center gap-1'>
                 <Calendar className='size-4' />
-                {profile?.profile?.dob ? new Date(profile.profile.dob).toLocaleDateString() : 'N/A'}
+                {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : 'N/A'}
               </div>
               <div className='flex items-center gap-1'>
                 <MapPin className='size-4' />
-                {profile?.profile?.address ? profile.profile.address : 'N/A'}
+                {profile?.status ? profile.status : 'N/A'}
               </div>
             </div>
           </div>

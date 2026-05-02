@@ -19,7 +19,22 @@ const createInstance = (withCredentials = false): AxiosInstance => {
     baseURL: ApiEndpoint.meta.baseURL,
     timeout: ApiEndpoint.meta.timeout,
     withCredentials,
-    paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
+    paramsSerializer: (params) => {
+      const processed: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(params)) {
+        if (
+          Array.isArray(value) &&
+          value.length > 0 &&
+          typeof value[0] === 'object' &&
+          value[0] !== null
+        ) {
+          processed[key] = JSON.stringify(value);
+        } else {
+          processed[key] = value;
+        }
+      }
+      return qs.stringify(processed, { arrayFormat: 'repeat', skipNulls: true });
+    },
   });
 
   instance.interceptors.request.use((config) => {
@@ -64,24 +79,14 @@ const createInstance = (withCredentials = false): AxiosInstance => {
             toast.error('Session expired. Please log in again.');
           }
         }
-        return Promise.reject({
-          success: false,
-          message: error?.response?.data?.message ?? error?.message,
-          statusCode: error?.response?.status ?? 500,
-        });
+        return Promise.reject(error);
       }
     );
   } else {
     // For public instance, just reject errors normally
     instance.interceptors.response.use(
       (res) => res,
-      (error) => {
-        return Promise.reject({
-          success: false,
-          message: error?.response?.data?.message ?? error?.message,
-          statusCode: error?.response?.status ?? 500,
-        });
-      }
+      (error) => Promise.reject(error)
     );
   }
 
@@ -112,9 +117,14 @@ export const ApiClient = {
         url,
         ...axiosOptions,
       });
+
+      if (response.data && 'success' in response.data && response.data.success === false) {
+        throw response.data;
+      }
+
       return response.data;
     } catch (error) {
-      return error as ApiResponse<T>;
+      throw error;
     }
   },
 

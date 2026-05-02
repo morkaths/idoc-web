@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
+import { useDirection } from '@/context/direction-provider';
 import useDialogState from '@/hooks/ui/useDialogState';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import {
@@ -19,7 +20,6 @@ import {
   useSidebar,
 } from '@repo/ui/components/sidebar';
 import { SignOutDialog } from '@/components/sign-out-dialog';
-import { useDirection } from '@/context/direction-provider';
 
 export function NavUser() {
   const user = useAuthStore((state) => state.auth.user);

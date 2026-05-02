@@ -35,7 +35,7 @@ export function BorrowRangePicker({ borrowTime, expireTime, onChange }: BorrowRa
           >
             {borrowTime && range?.to
               ? `${borrowTime.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
-              : t(keys.borrow.expireTime.placeholder)}
+              : t(keys.borrow.dueDate.placeholder)}
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>

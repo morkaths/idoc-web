@@ -2,9 +2,8 @@ import { ApiEndpoint } from '@/config/api';
 import type { CategoryResponse, CategoryRequest, FindParams } from '../types';
 import { apiFactory } from './factory';
 
-const factory = apiFactory<CategoryResponse, CategoryRequest>(
+const factory = apiFactory<CategoryResponse, CategoryRequest, { lang?: string }>(
   ApiEndpoint.endpoints.categories,
-  'Category',
   { find: 'public', findById: 'public' }
 );
 

@@ -10,6 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
+import { BorrowStatus } from '@/types';
 import { useBorrows } from '@/hooks/data/useBorrow';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
@@ -23,6 +24,7 @@ import {
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
 import { borrowsColumns as columns } from './borrows-columns';
 import BorrowsTableBulkActions from './borrows-table-bulk-actions';
+import { buildBorrowFindParams } from './borrows-query.utils';
 
 const route = getRouteApi('/_authenticated/borrows/');
 
@@ -43,29 +45,17 @@ export function BorrowsTable() {
     search: route.useSearch(),
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: true, key: 'q' },
-    // Thêm filter nếu cần
-    // columnFilters: [],
+    globalFilter: { enabled: true, key: 'query' },
+    columnFilters: [{ columnId: 'status', searchKey: 'status', type: 'array' }],
   });
 
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
 
-  const borrowParams = useMemo(() => {
-    const apiSort = sorting[0]
-      ? {
-        sortBy: String(sorting[0].id),
-        sortOrder: sorting[0].desc ? 'desc' : 'asc',
-      }
-      : undefined;
-
-    return {
-      page,
-      limit,
-      query: globalFilter ?? '',
-      ...(apiSort || {}),
-    };
-  }, [page, limit, globalFilter, sorting]);
+  const borrowParams = useMemo(
+    () => buildBorrowFindParams(page, limit, globalFilter ?? '', sorting, columnFilters),
+    [page, limit, globalFilter, sorting, columnFilters]
+  );
 
   // fetch server-side page
   const { data: borrowsData, isFetching: isBorrowsFetching } = useBorrows(borrowParams);
@@ -99,15 +89,8 @@ export function BorrowsTable() {
   });
 
   useEffect(() => {
-    if (!onPaginationChange) return;
     setRowSelection({});
-    onPaginationChange((prev) => ({
-      ...prev,
-      pageIndex: 0,
-      pageSize: pagination.pageSize ?? 10,
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalFilter]);
+  }, [globalFilter, columnFilters]);
 
   useEffect(() => {
     ensurePageInRange(table.getPageCount());
@@ -119,6 +102,18 @@ export function BorrowsTable() {
       <DataTableToolbar
         table={table}
         searchPlaceholder='Search borrows...'
+        filters={[
+          {
+            columnId: 'status',
+            title: 'Status',
+            options: [
+              { label: 'Borrowed', value: BorrowStatus.BORROWED },
+              { label: 'Returned', value: BorrowStatus.RETURNED },
+              { label: 'Overdue', value: BorrowStatus.OVERDUE },
+              { label: 'Canceled', value: BorrowStatus.CANCELED },
+            ],
+          },
+        ]}
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>

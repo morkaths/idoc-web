@@ -1,18 +1,18 @@
+import { AuthApi } from '@/apis/auth.api';
+import env from '@/config/env';
+import type { UserResponse, UserRequest, TokenResponse } from '@/types';
 import { create } from 'zustand';
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies';
-import { AuthApi } from '@/apis/auth.api';
-import type { UserResponse, UserRequest, AuthToken } from '@/types';
-import env from '@/config/env';
 
-interface AuthState {
+export interface AuthState {
   auth: {
     user: UserResponse | null;
-    token: AuthToken | null;
+    token: TokenResponse | null;
     setUser: (user: UserResponse | null) => void;
-    setToken: (token: AuthToken | null) => void;
+    setToken: (token: TokenResponse | null) => void;
     refresh: () => Promise<boolean>;
     logout: () => Promise<boolean>;
-    login: (identifier: string, password: string) => Promise<boolean>;
+    login: (email: string, password: string) => Promise<boolean>;
     register: (data: Partial<UserRequest>) => Promise<boolean>;
   };
 }
@@ -21,12 +21,12 @@ export const useAuthStore = create<AuthState>()((set) => {
   const tokenCookie = getCookie(env.cookie.token);
   const userCookie = getCookie(env.cookie.user);
 
-  let initToken: AuthToken | null = null;
+  let initToken: TokenResponse | null = null;
   let initUser: UserResponse | null = null;
 
   try {
     if (tokenCookie && tokenCookie !== 'undefined') {
-      initToken = JSON.parse(tokenCookie) as AuthToken;
+      initToken = JSON.parse(tokenCookie) as TokenResponse;
     }
   } catch (_e) {
     // Ignore invalid cookie value
@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>()((set) => {
    * @param user The user profile data
    * @param token The authentication tokens
    */
-  const setAuthData = (user: UserResponse | null, token: AuthToken | null) => {
+  const setAuthData = (user: UserResponse | null, token: TokenResponse | null) => {
     set((state) => ({
       ...state,
       auth: {
@@ -89,9 +89,12 @@ export const useAuthStore = create<AuthState>()((set) => {
 
         refreshPromise = (async () => {
           try {
-            const data = await AuthApi.refresh();
-            setAuthData(data.user, data.token);
-            return true;
+            const response = await AuthApi.refresh();
+            if (response.data) {
+              setAuthData(response.data.user, response.data.token);
+              return true;
+            }
+            return false;
           } catch (_error) {
             return false;
           } finally {
@@ -105,20 +108,26 @@ export const useAuthStore = create<AuthState>()((set) => {
         setAuthData(null, null);
         return true;
       },
-      login: async (identifier, password) => {
+      login: async (email, password) => {
         try {
-          const data = await AuthApi.login({ identifier, password });
-          setAuthData(data.user, data.token);
-          return true;
+          const response = await AuthApi.login({ email, password });
+          if (response.data) {
+            setAuthData(response.data.user, response.data.token);
+            return true;
+          }
+          return false;
         } catch (_error) {
           return false;
         }
       },
       register: async (data) => {
         try {
-          const responseData = await AuthApi.register(data);
-          setAuthData(responseData.user, responseData.token);
-          return true;
+          const response = await AuthApi.register(data);
+          if (response.data) {
+            setAuthData(response.data.user, response.data.token);
+            return true;
+          }
+          return false;
         } catch (_error) {
           return false;
         }

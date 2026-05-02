@@ -48,7 +48,7 @@ const formSchema = z
 export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { t, tCommon, keys } = useLocale('auth');
+  const { t, keys } = useLocale('auth');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

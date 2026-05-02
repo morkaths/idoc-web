@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next';
+import { type MetadataRoute } from 'next';
 import { locales } from '@/i18n';
 import env from '@/config/env';
 

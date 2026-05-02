@@ -1,5 +1,5 @@
 import {
-  LucideProps,
+  type LucideProps,
   HomeIcon,
   StarIcon,
   UserIcon,
@@ -8,11 +8,10 @@ import {
   LibraryIcon,
   BookmarkIcon,
   BookOpenIcon,
-  HistoryIcon,
   Tag,
   Sparkles
 } from "lucide-react";
-import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { type ForwardRefExoticComponent, type RefAttributes } from "react";
 import { useLocale } from "@/hooks/ui/useLocale";
 
 export type NavDropdownItem = {

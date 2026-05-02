@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { BookResponse } from '@/types';
+import { type BookResponse } from '@/types';
 import { BookmarkDialog } from './bookmark-dialog';
 
 type BookmarkContextType = {

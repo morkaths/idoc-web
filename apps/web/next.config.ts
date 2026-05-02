@@ -48,6 +48,16 @@ const nextConfig: NextConfig = {
         hostname: 'i.pinimg.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'storage.efferd.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'randomuser.me',
+        pathname: '/**',
+      },
     ],
   },
 };

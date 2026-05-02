@@ -40,7 +40,6 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
       handleClose();
     },
     onError: (err) => {
-      console.error(err);
       toast.error(err.message || 'Failed to update password');
     },
   });

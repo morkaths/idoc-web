@@ -5,7 +5,7 @@ export const locales = [...Locales];
 export type Locale = (typeof Locales)[number];
 export const defaultLocale: Locale = 'en';
 
-function deepMerge<T extends Record<string, any>>(target: T, source: Record<string, any>): T {
+function deepMerge<T extends Record<string, unknown>>(target: T, source: Record<string, unknown>): T {
   const output = { ...target };
 
   if (target && typeof target === 'object' && source && typeof source === 'object') {
@@ -15,12 +15,15 @@ function deepMerge<T extends Record<string, any>>(target: T, source: Record<stri
 
       if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
         if (targetValue && typeof targetValue === 'object' && !Array.isArray(targetValue)) {
-          output[key as keyof T] = deepMerge(targetValue, sourceValue);
+          output[key as keyof T] = deepMerge(
+            targetValue as Record<string, unknown>,
+            sourceValue as Record<string, unknown>
+          ) as T[keyof T];
         } else {
-          output[key as keyof T] = sourceValue;
+          output[key as keyof T] = sourceValue as T[keyof T];
         }
       } else {
-        output[key as keyof T] = sourceValue;
+        output[key as keyof T] = sourceValue as T[keyof T];
       }
     });
   }
@@ -46,6 +49,7 @@ export default getRequestConfig(async ({ locale: incomingLocale }) => {
   try {
     currentMessages = (await import(`../locales/${locale}.json`)).default;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(`[i18n] Failed to load messages for ${locale}`, error);
   }
 
@@ -55,6 +59,7 @@ export default getRequestConfig(async ({ locale: incomingLocale }) => {
     timeZone: 'Asia/Ho_Chi_Minh',
     onError(error) {
       if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
         console.error(`[i18n-error] ${error.message}`);
       }
     },

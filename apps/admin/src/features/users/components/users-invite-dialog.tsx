@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { RoleType } from '@/types';
 import { Send } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -23,13 +24,18 @@ import {
   FormMessage,
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/select';
 import { Textarea } from '@repo/ui/components/textarea';
-import { type RoleResponse } from '@/types';
-import { RolesCombobox } from './roles-combobox';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Email is required.' }),
-  roles: z.array(z.string()).min(1, 'Select at least one role'),
+  role: z.nativeEnum(RoleType),
   desc: z.string().optional(),
 });
 
@@ -39,43 +45,39 @@ type UserInviteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: UserInviteForm) => void;
-  roles: RoleResponse[];
 };
 
-export function UsersInviteDialog({
-  open,
-  onOpenChange,
-  onSubmit,
-  roles
-}: UserInviteDialogProps) {
+export function UsersInviteDialog({ open, onOpenChange, onSubmit }: UserInviteDialogProps) {
   const form = useForm<UserInviteForm>({
     resolver: zodResolver(formSchema),
-    defaultValues: { email: '', roles: [], desc: '' },
+    defaultValues: { email: '', role: RoleType.USER, desc: '' },
   });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-md max-h-[90vh] overflow-y-auto'>
+      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-md'>
         <DialogHeader className='text-start'>
           <DialogTitle>Invite User</DialogTitle>
           <DialogDescription>
-            Invite new user to join your team by sending them an email invitation.
-            Assign a role to define their access level.
+            Invite new user to join your team by sending them an email invitation. Assign a role to
+            define their access level.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
             id='user-invite-form'
-            onSubmit={form.handleSubmit(data => {
+            onSubmit={form.handleSubmit((data) => {
               onSubmit?.({
                 ...data,
                 email: data.email,
-                roles: data.roles,
+                role: data.role,
                 desc: data.desc,
               });
               onOpenChange(false);
               form.reset();
-            })} className='space-y-4'>
+            })}
+            className='space-y-4'
+          >
             <FormField
               control={form.control}
               name='email'
@@ -91,14 +93,26 @@ export function UsersInviteDialog({
             />
             <FormField
               control={form.control}
-              name='roles'
+              name='role'
               render={({ field }) => (
                 <FormItem>
-                  <RolesCombobox
-                    roles={roles}
-                    value={field.value || []}
-                    onChange={field.onChange}
-                  />
+                  <FormLabel>Role</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger id='role' className='w-full'>
+                        <SelectValue placeholder='Select role' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={RoleType.ADMIN}>{RoleType.ADMIN}</SelectItem>
+                      <SelectItem value={RoleType.USER}>{RoleType.USER}</SelectItem>
+                      <SelectItem value={RoleType.STAFF}>{RoleType.STAFF}</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

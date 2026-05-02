@@ -36,7 +36,7 @@ import {
     EPUB_FONTS, 
     EPUB_THEMES, 
     EPUB_FLOWS, 
-    ThemeOption
+    type ThemeOption
 } from './data/setting-data';
 
 import { useReaderSettings } from '../../context/reader-provider';

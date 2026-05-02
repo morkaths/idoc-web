@@ -39,13 +39,13 @@ export function SignInView() {
         </p>
         <p className='text-muted-foreground px-8 text-center text-sm'>
           {t(keys.signIn.terms)}{' '}
-          <a href='/terms' className='hover:text-primary underline underline-offset-4'>
+          <Link href='/terms' className='hover:text-primary underline underline-offset-4'>
             {t(keys.signIn.tos)}
-          </a>{' '}
+          </Link>{' '}
           {t(keys.signIn.and)}{' '}
-          <a href='/privacy' className='hover:text-primary underline underline-offset-4'>
+          <Link href='/privacy' className='hover:text-primary underline underline-offset-4'>
             {t(keys.signIn.privacy)}
-          </a>
+          </Link>
           .
         </p>
       </CardFooter>

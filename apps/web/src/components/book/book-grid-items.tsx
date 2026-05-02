@@ -1,6 +1,6 @@
 "use client";
 
-import { BookResponse } from "@/types";
+import { type BookResponse } from "@/types";
 import { useRouter } from "next/navigation";
 import paths from "@/config/path";
 import { Skeleton } from "@repo/ui/components/skeleton";

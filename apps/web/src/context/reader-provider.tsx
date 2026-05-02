@@ -1,7 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
-import { Theme, Flow } from '../components/viewers/data/setting-data';
+import React, { createContext, useContext, useEffect, useState, type ReactNode, useCallback } from 'react';
+import { type Theme, type Flow } from '../components/viewers/data/setting-data';
 
 interface ReaderSettings {
   fontSize: number;
@@ -32,29 +32,24 @@ const ReaderContext = createContext<ReaderContextType | undefined>(undefined);
 const STORAGE_KEY = 'idoc-reader-settings';
 
 export function ReaderProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<ReaderSettings>(DEFAULT_SETTINGS);
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  // Load settings từ localStorage khi khởi tạo
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setSettings({ ...DEFAULT_SETTINGS, ...parsed });
-      } catch (e) {
-        console.error('Lỗi nạp cài đặt từ localStorage:', e);
+  const [settings, setSettings] = useState<ReaderSettings>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+        } catch (_e) {
+          // Silently fail if settings are corrupted
+        }
       }
     }
-    setIsInitialized(true);
-  }, []);
+    return DEFAULT_SETTINGS;
+  });
 
   // Lưu settings vào localStorage mỗi khi thay đổi
   useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    }
-  }, [settings, isInitialized]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  }, [settings]);
 
   const setFontSize = useCallback((fontSize: number) => setSettings(s => ({ ...s, fontSize })), []);
   const setFontFamily = useCallback((fontFamily: string) => setSettings(s => ({ ...s, fontFamily })), []);
@@ -71,8 +66,8 @@ export function ReaderProvider({ children }: { children: ReactNode }) {
     if (typeof window === 'undefined') return;
     try {
       localStorage.setItem(key, locations);
-    } catch (e) {
-      console.warn('Lỗi khi lưu EPUB locations vào storage:', e);
+    } catch (_e) {
+      // Silently fail if storage is full or restricted
     }
   }, []);
 

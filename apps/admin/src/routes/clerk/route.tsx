@@ -4,8 +4,8 @@ import { ExternalLink, Key } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert';
 import { Separator } from '@repo/ui/components/separator';
 import { SidebarTrigger } from '@repo/ui/components/sidebar';
-import { ConfigDrawer } from '@/components/layout/config-drawer';
 import { AuthenticatedLayout } from '@/components/layout/authenticated-layout';
+import { ConfigDrawer } from '@/components/layout/config-drawer';
 import { Main } from '@/components/layout/main';
 import { ThemeSwitch } from '@/components/layout/theme-switch';
 

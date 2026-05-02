@@ -1,14 +1,9 @@
 'use server';
 
-import { UserResponse } from '@/types';
+import { type UserRequest } from '@/types';
 import { AuthApi } from '@/apis/auth.api';
 
-/**
- * Cập nhật thông tin người dùng
- * @param data - Thông tin cần cập nhật
- * @returns Kết quả thành công cùng dữ liệu mới hoặc thông báo lỗi
- */
-export async function updateUser(data: Partial<UserResponse>) {
+export async function updateUser(data: Partial<UserRequest>) {
   try {
     const result = await AuthApi.update(data);
     if (result) {

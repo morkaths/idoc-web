@@ -1,25 +1,20 @@
-import NextAuth, { NextAuthConfig, CredentialsSignin } from "next-auth";
+import NextAuth, { type NextAuthConfig, CredentialsSignin } from "next-auth";
 import Google from "next-auth/providers/google";
+import { type JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 import env from "@/config/env";
 import { AuthApi } from "@/apis/auth.api";
-import { AuthenticationResponse } from "@repo/types";
+import { type AuthResponse } from "@repo/types";
 
-/**
- * Extracts the refresh token from the API response payload or set-cookie headers.
- * @param data The authentication response data
- * @param headers The response headers
- * @returns The refresh token if found, otherwise undefined
- */
-const extractRefreshToken = (data: AuthenticationResponse, headers?: Record<string, string | string[]>): string | undefined => {
+const extractRefreshToken = (data: AuthResponse, headers?: Record<string, string | string[]>): string | undefined => {
   if (data.token.refreshToken) return data.token.refreshToken;
-  
+
   if (headers && headers['set-cookie']) {
     const cookiesArr = Array.isArray(headers['set-cookie']) ? headers['set-cookie'] : [headers['set-cookie']];
     const rtCookie = cookiesArr.find((c: string) => c.toLowerCase().includes('refreshtoken='));
     if (rtCookie) return rtCookie.split(';')[0]?.split('=')[1];
   }
-  
+
   return undefined;
 };
 
@@ -36,7 +31,7 @@ export const authConfig = {
 
         try {
           const response = await AuthApi.login({
-            identifier: credentials.email as string,
+            email: credentials.email as string,
             password: credentials.password as string,
           });
 
@@ -52,7 +47,7 @@ export const authConfig = {
             };
           }
           throw new CredentialsSignin();
-        } catch (error) {
+        } catch (_error) {
           throw new CredentialsSignin();
         }
       },
@@ -65,7 +60,7 @@ export const authConfig = {
   callbacks: {
     async session({ session, token }) {
       if (token && token.user) {
-        session.user = { ...session.user, ...token.user as any };
+        session.user = { ...session.user, ...(token.user as unknown as Record<string, unknown>) };
         session.accessToken = token.accessToken as string;
         session.error = token.error as string;
       }
@@ -74,7 +69,10 @@ export const authConfig = {
     async jwt({ token, user, account }) {
       if (user) {
         if (account?.provider === "google") {
-          const response = await AuthApi.loginGoogle(account.id_token!).catch(() => null);
+          const response = await AuthApi.loginGoogle({
+            token: account.id_token!,
+            provider: 'google',
+          }).catch(() => null);
 
           if (response && response.success && response.data) {
             const { data, headers } = response;
@@ -87,18 +85,18 @@ export const authConfig = {
               refreshToken: refreshToken,
               expiresAt: Date.now() + (data.token.accessTokenExpiresIn * 1000),
               error: undefined,
-            };
+            } as JWT;
           }
           return null;
         }
         return {
           ...token,
           user: user,
-          accessToken: (user as any).accessToken,
-          refreshToken: (user as any).refreshToken,
-          expiresAt: Date.now() + ((user as any).accessTokenExpiresIn * 1000),
+          accessToken: (user as Record<string, unknown>).accessToken as string,
+          refreshToken: (user as Record<string, unknown>).refreshToken as string,
+          expiresAt: Date.now() + (((user as Record<string, unknown>).accessTokenExpiresIn as number) * 1000),
           error: undefined,
-        };
+        } as JWT;
       }
 
       // Return previous token if the access token has not expired yet
@@ -113,12 +111,12 @@ export const authConfig = {
         const refreshTokenToUse = (token.refreshToken as string) || cookieStore.get(env.cookie.refreshToken)?.value;
 
         if (!refreshTokenToUse) {
-          return { ...token, error: "RefreshAccessTokenError", accessToken: undefined };
+          return { ...token, error: "RefreshAccessTokenError", accessToken: undefined } as JWT;
         }
 
-        const result = await AuthApi.refresh(refreshTokenToUse);
+        const result = await AuthApi.refresh();
         if (!result || !result.success || !result.data) {
-          return { ...token, error: "RefreshAccessTokenError", accessToken: undefined };
+          return { ...token, error: "RefreshAccessTokenError", accessToken: undefined } as JWT;
         }
 
         const { data, headers } = result;
@@ -143,7 +141,7 @@ export const authConfig = {
               maxAge: data.token.refreshTokenExpiresIn,
             });
           }
-        } catch (e) {
+        } catch (_e) {
           // Ignore cookie errors on server side background refresh if runtime limits it
         }
 
@@ -153,10 +151,11 @@ export const authConfig = {
           refreshToken: newRefreshToken || (token.refreshToken as string),
           expiresAt: Date.now() + (data.token.accessTokenExpiresIn * 1000),
           error: undefined,
-        };
+        } as JWT;
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("[Auth] Refresh token failed:", error);
-        return { ...token, error: "RefreshTokenError" };
+        return { ...token, error: "RefreshTokenError" } as JWT;
       }
     }
   },

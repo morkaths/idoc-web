@@ -22,7 +22,7 @@ export async function generateMetadata({
         images: book.coverUrl ? [book.coverUrl] : [],
       },
     };
-  } catch (error) {
+  } catch {
     return {
       title: 'Error',
     };

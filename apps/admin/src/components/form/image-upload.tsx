@@ -17,6 +17,11 @@ export function ImageUpload({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | undefined>(value);
 
+  // Sync preview with value when value changes (e.g., form reset or initial data load)
+  React.useEffect(() => {
+    setPreview(value);
+  }, [value]);
+
   const handleBoxClick = () => fileInputRef.current?.click();
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -43,15 +48,18 @@ export function ImageUpload({
       alert(`File size must be less than ${maxSizeMB}MB`);
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setPreview(e.target?.result as string);
-      onChange(file, e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+
+    // Use object URL for preview instead of base64 to avoid long strings
+    const previewUrl = URL.createObjectURL(file);
+    setPreview(previewUrl);
+    onChange(file, previewUrl);
   };
 
   const handleRemove = () => {
+    // If it's a blob URL, we should revoke it
+    if (preview?.startsWith('blob:')) {
+      URL.revokeObjectURL(preview);
+    }
     setPreview(undefined);
     onChange(null);
     if (fileInputRef.current) fileInputRef.current.value = '';

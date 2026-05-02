@@ -1,87 +1,81 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { ReviewApi } from '@/apis/review.api';
-import type { ReviewResponse, ReviewRequest, FindParams, Pagination } from '@/types';
-import { useMemo } from 'react';
+import type { ReviewResponse, ReviewRequest, FindParams } from '@/types';
+import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type ListQueryOptions, type ItemQueryOptions, type CreateMutationOptions, type UpdateMutationOptions, type DeleteMutationOptions } from './factory';
 
-type PaginationResponse = { data: ReviewResponse[]; pagination?: Pagination };
-
+/**
+ * Hook to fetch reviews with pagination
+ * @param params Search/filter parameters
+ * @param options Query options
+ */
 export const useReviews = (
     params: FindParams = {},
-    options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
+    options?: ListQueryOptions<ReviewResponse>
 ) => {
-    const { data: rawData, status, error, isLoading, isFetching, refetch, isError } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
-        queryKey: ['reviews', params],
-        queryFn: () => ReviewApi.find(params),
-        enabled: true,
-        refetchOnWindowFocus: false,
-        staleTime: 5 * 60 * 1000,
-        ...options,
-    });
-
-    return useMemo(() => ({
-        status,
-        error,
-        isLoading,
-        isFetching,
-        isError,
-        refetch,
-        data: {
-            data: rawData?.data || [],
-            pagination: rawData?.pagination,
-        },
-    }), [rawData, status, error, isLoading, isFetching, refetch]);
+    return useListQuery<ReviewResponse>(
+        ['reviews', params],
+        () => ReviewApi.find(params),
+        options
+    );
 };
 
-export const useReview = (id: string, options?: Omit<UseQueryOptions<ReviewResponse, Error, ReviewResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const { data, status, error, isLoading, isFetching, refetch, isError } = useQuery<ReviewResponse, Error, ReviewResponse, QueryKey>({
-        queryKey: ['reviews', id],
-        queryFn: () => ReviewApi.findById(id),
-        enabled: !!id,
-        staleTime: 10 * 60 * 1000,
-        ...options,
-    });
-
-    return useMemo(() => ({
-        status,
-        error,
-        isLoading,
-        isFetching,
-        isError,
-        refetch,
-        data: data || null,
-    }), [data, status, error, isLoading, isFetching, refetch]);
+/**
+ * Hook to fetch a single review by ID
+ * @param id Review ID
+ * @param options Query options
+ */
+export const useReview = (
+    id: string,
+    options?: ItemQueryOptions<ReviewResponse>
+) => {
+    return useItemQuery<ReviewResponse>(
+        ['reviews', id],
+        () => ReviewApi.findById(id),
+        {
+            enabled: !!id,
+            ...options,
+        }
+    );
 };
 
-export const useCreateReview = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (newReview: ReviewRequest) => ReviewApi.create(newReview),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['reviews'] });
-        },
-    });
+/**
+ * Hook to create a new review
+ * @param options Mutation options
+ */
+export const useCreateReview = <TContext = unknown>(
+    options?: CreateMutationOptions<ReviewRequest, ReviewResponse, TContext>
+) => {
+    return useCreateMutation<ReviewRequest, ReviewResponse, TContext>(
+        (newReview) => ReviewApi.create(newReview),
+        [['reviews']],
+        options
+    );
 };
 
-export const useUpdateReview = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ id, data }: { id: string; data: Partial<ReviewRequest> }) => ReviewApi.update(id, data),
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['reviews', variables.id] });
-            queryClient.invalidateQueries({ queryKey: ['reviews'] });
-        },
-    });
+/**
+ * Hook to update an existing review
+ * @param options Mutation options
+ */
+export const useUpdateReview = <TContext = unknown>(
+    options?: UpdateMutationOptions<ReviewRequest, ReviewResponse, TContext>
+) => {
+    return useUpdateMutation<ReviewRequest, ReviewResponse, TContext>(
+        ({ id, data }) => ReviewApi.update(id, data),
+        (variables) => [['reviews'], ['reviews', variables.id]],
+        options
+    );
 };
 
-export const useDeleteReview = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (id: string) => ReviewApi.delete(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['reviews'] });
-        },
-    });
+/**
+ * Hook to delete a review
+ * @param options Mutation options
+ */
+export const useDeleteReview = <TContext = unknown>(
+    options?: DeleteMutationOptions<TContext>
+) => {
+    return useDeleteMutation<TContext>(
+        (id) => ReviewApi.delete(id),
+        [['reviews']],
+        options
+    );
 };
+

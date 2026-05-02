@@ -32,13 +32,13 @@ export function SignUpView() {
       <CardFooter>
         <p className='text-muted-foreground px-8 text-center text-sm'>
           {t(keys.signUp.terms)}{' '}
-          <a href='/terms' className='hover:text-primary underline underline-offset-4'>
+          <Link href='/terms' className='hover:text-primary underline underline-offset-4'>
             {t(keys.signUp.tos)}
-          </a>{' '}
+          </Link>{' '}
           {t(keys.signUp.and)}{' '}
-          <a href='/privacy' className='hover:text-primary underline underline-offset-4'>
+          <Link href='/privacy' className='hover:text-primary underline underline-offset-4'>
             {t(keys.signUp.privacy)}
-          </a>
+          </Link>
           .
         </p>
       </CardFooter>

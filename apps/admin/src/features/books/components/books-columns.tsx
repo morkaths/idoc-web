@@ -1,35 +1,11 @@
-import { useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Languages, type BookResponse } from '@/types';
-import { ImageOff } from 'lucide-react';
 import { Badge } from '@repo/ui/components/badge';
 import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
+import { BookCoverCell } from './book-cover-cell';
 import { BooksTableRowActions } from './books-table-row-actions';
-
-const BookCoverCell = ({ src, title }: { src?: string; title: string }) => {
-  const [error, setError] = useState(false);
-
-  if (!src || error) {
-    return (
-      <div className='bg-muted/20 text-muted-foreground flex h-15 w-10 items-center justify-center rounded-md border'>
-        <ImageOff className='h-4 w-4 opacity-50' />
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={src}
-      alt={title}
-      className='h-15 w-10 rounded border object-cover'
-      style={{ borderRadius: 'var(--radius-img)' }}
-      loading='lazy'
-      onError={() => setError(true)}
-    />
-  );
-};
 
 export const booksColumns: ColumnDef<BookResponse>[] = [
   {
@@ -187,10 +163,10 @@ export const booksColumns: ColumnDef<BookResponse>[] = [
       const flagCode = langConfig?.flag || String(langValue).toLowerCase();
       return (
         <div className='flex items-center justify-center'>
-          <span 
-            className={`fi fi-${flagCode}`} 
-            title={langConfig?.label || langValue} 
-            aria-hidden 
+          <span
+            className={`fi fi-${flagCode}`}
+            title={langConfig?.label || langValue}
+            aria-hidden
           />
         </div>
       );

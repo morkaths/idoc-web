@@ -1,89 +1,81 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { FolderApi } from '@/apis/folder.api';
-import type { FolderResponse, FolderRequest, FindParams, Pagination } from '@/types';
-import { useMemo } from 'react';
+import type { FolderResponse, FolderRequest, FindParams } from '@/types';
+import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type ListQueryOptions, type ItemQueryOptions, type CreateMutationOptions, type UpdateMutationOptions, type DeleteMutationOptions } from './factory';
 
-type PaginationResponse = { data: FolderResponse[]; pagination?: Pagination };
-
+/**
+ * Hook to fetch folders with pagination
+ * @param params Search/filter parameters
+ * @param options Query options
+ */
 export const useFolders = (
     params: FindParams = {},
-    options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
+    options?: ListQueryOptions<FolderResponse>
 ) => {
-    const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
-        queryKey: ['folders', params],
-        queryFn: () => FolderApi.find(params),
-        enabled: true,
-        refetchOnWindowFocus: false,
-        staleTime: 5 * 60 * 1000,
-        ...options,
-    });
-
-    const stabilizedData = useMemo(() => ({
-        data: rawData?.data || [],
-        pagination: rawData?.pagination,
-    }), [rawData]);
-
-    return useMemo(() => ({
-        status,
-        error,
-        isLoading,
-        isFetching,
-        refetch,
-        data: stabilizedData,
-    }), [stabilizedData, status, error, isLoading, isFetching, refetch]);
+    return useListQuery<FolderResponse>(
+        ['folders', params],
+        () => FolderApi.find(params),
+        options
+    );
 };
 
-export const useFolder = (id: string, options?: Omit<UseQueryOptions<FolderResponse, Error, FolderResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<FolderResponse, Error, FolderResponse, QueryKey>({
-        queryKey: ['folders', id],
-        queryFn: () => FolderApi.findById(id),
-        enabled: !!id,
-        staleTime: 10 * 60 * 1000,
-        ...options,
-    });
-
-    const data = useMemo(() => rawData || null, [rawData]);
-
-    return useMemo(() => ({
-        status,
-        error,
-        isLoading,
-        isFetching,
-        refetch,
-        data,
-    }), [data, status, error, isLoading, isFetching, refetch]);
+/**
+ * Hook to fetch a single folder by ID
+ * @param id Folder ID
+ * @param options Query options
+ */
+export const useFolder = (
+    id: string,
+    options?: ItemQueryOptions<FolderResponse>
+) => {
+    return useItemQuery<FolderResponse>(
+        ['folders', id],
+        () => FolderApi.findById(id),
+        {
+            enabled: !!id,
+            ...options,
+        }
+    );
 };
 
-export const useCreateFolder = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (data: FolderRequest) => FolderApi.create(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['folders'] });
-        },
-    });
+/**
+ * Hook to create a new folder
+ * @param options Mutation options
+ */
+export const useCreateFolder = <TContext = unknown>(
+    options?: CreateMutationOptions<FolderRequest, FolderResponse, TContext>
+) => {
+    return useCreateMutation<FolderRequest, FolderResponse, TContext>(
+        (data) => FolderApi.create(data),
+        [['folders']],
+        options
+    );
 };
 
-export const useUpdateFolder = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ id, data }: { id: string; data: Partial<FolderRequest> }) => FolderApi.update(id, data),
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['folders', variables.id] });
-            queryClient.invalidateQueries({ queryKey: ['folders'] });
-        },
-    });
+/**
+ * Hook to update an existing folder
+ * @param options Mutation options
+ */
+export const useUpdateFolder = <TContext = unknown>(
+    options?: UpdateMutationOptions<FolderRequest, FolderResponse, TContext>
+) => {
+    return useUpdateMutation<FolderRequest, FolderResponse, TContext>(
+        ({ id, data }) => FolderApi.update(id, data),
+        (variables) => [['folders'], ['folders', variables.id]],
+        options
+    );
 };
 
-export const useDeleteFolder = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (id: string) => FolderApi.delete(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['folders'] });
-        },
-    });
+/**
+ * Hook to delete a folder
+ * @param options Mutation options
+ */
+export const useDeleteFolder = <TContext = unknown>(
+    options?: DeleteMutationOptions<TContext>
+) => {
+    return useDeleteMutation<TContext>(
+        (id) => FolderApi.delete(id),
+        [['folders']],
+        options
+    );
 };
+

@@ -10,7 +10,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
     const pathname = headersList.get('x-current-path') || '';
     const firstSegment = pathname.split('/')[1];
     const locale =
-      firstSegment && locales.includes(firstSegment as any) ? firstSegment : defaultLocale;
+      firstSegment && (locales as readonly string[]).includes(firstSegment) ? firstSegment : defaultLocale;
 
     redirect(`/${locale}/sign-in`);
   }

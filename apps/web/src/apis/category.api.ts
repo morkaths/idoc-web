@@ -1,12 +1,17 @@
 import { API_CONFIG } from '@/config/api';
-import type { CategoryRequest, CategoryResponse } from '../types';
+import type { CategoryRequest, CategoryResponse, FindParams } from '../types';
 import { apiFactory } from './factory';
 
-export const CategoryApi = apiFactory<CategoryResponse, CategoryRequest>(
+const factory = apiFactory<CategoryResponse, CategoryRequest, { lang?: string }>(
   API_CONFIG.endpoints.categories,
-  'Category',
   {
     find: 'public',
     findById: 'public',
   }
 );
+
+export const CategoryApi = {
+  ...factory,
+  find: (params?: FindParams) => factory.find({ ...params, lang: 'all' }),
+  findById: (id: string) => factory.findById(id, { lang: 'all' }),
+};

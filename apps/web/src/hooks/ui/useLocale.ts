@@ -11,13 +11,13 @@ type DeepKeys<T> = {
  * Recursively maps JSON object structure to dot-notation definition strings.
  * e.g. { auth: { login: "..." } } -> { auth: { login: "auth.login" } }
  */
-const createKeyMap = (obj: any, prefix = ''): any =>
+const createKeyMap = (obj: Record<string, unknown>, prefix = ''): Record<string, unknown> =>
     Object.keys(obj).reduce((acc, key) => {
         const value = obj[key];
         const path = prefix ? `${prefix}.${key}` : key;
-        acc[key] = typeof value === 'object' ? createKeyMap(value, path) : path;
+        acc[key] = typeof value === 'object' && value !== null ? createKeyMap(value as Record<string, unknown>, path) : path;
         return acc;
-    }, {} as any);
+    }, {} as Record<string, unknown>);
 
 // --- Constants ---
 export const KEYS = createKeyMap(en) as DeepKeys<typeof en>;

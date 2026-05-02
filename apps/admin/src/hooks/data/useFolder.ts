@@ -1,87 +1,70 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { FolderApi } from '@/apis/folder.api';
-import type { FolderResponse, FolderRequest, FindParams, Pagination } from '@/types';
-import { useMemo } from 'react';
-
-type PaginationResponse = { data: FolderResponse[]; pagination?: Pagination };
+import type { FolderResponse, FolderRequest, FindParams } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+} from './factory';
 
 export const useFolders = (
-    params: FindParams = {},
-    options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
+  params: FindParams = {},
+  options?: ListQueryOptions<FolderResponse>
 ) => {
-    const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
-        queryKey: ['folders', params],
-        queryFn: () => FolderApi.find(params),
-        enabled: true,
-        refetchOnWindowFocus: false,
-        staleTime: 5 * 60 * 1000,
-        ...options,
-    });
-
-    const data = useMemo(() => ({
-        data: rawData?.data || [],
-        pagination: rawData?.pagination,
-    }), [rawData]);
-
-    return useMemo(() => ({
-        status,
-        error,
-        isLoading,
-        isFetching,
-        refetch,
-        data,
-    }), [data, status, error, isLoading, isFetching, refetch]);
+  return useListQuery(
+    ['folders', params],
+    () => FolderApi.find(params),
+    options
+  );
 };
 
-export const useFolder = (id: string, options?: Omit<UseQueryOptions<FolderResponse, Error, FolderResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const { data, status, error, isLoading, isFetching, refetch } = useQuery<FolderResponse, Error, FolderResponse, QueryKey>({
-        queryKey: ['folders', id],
-        queryFn: () => FolderApi.findById(id),
-        enabled: !!id,
-        staleTime: 10 * 60 * 1000,
-        ...options,
-    });
-
-    return useMemo(() => ({
-        status,
-        error,
-        isLoading,
-        isFetching,
-        refetch,
-        data: data || null,
-    }), [data, status, error, isLoading, isFetching, refetch]);
+export const useFolder = (
+  id: string,
+  options?: ItemQueryOptions<FolderResponse>
+) => {
+  return useItemQuery(
+    ['folders', id],
+    () => FolderApi.findById(id),
+    {
+      enabled: !!id,
+      ...options,
+    }
+  );
 };
 
-export const useCreateFolder = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (data: FolderRequest) => FolderApi.create(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['folders'] });
-        },
-    });
+export const useCreateFolder = (
+  options?: CreateMutationOptions<FolderRequest, FolderResponse>
+) => {
+  return useCreateMutation(
+    (data) => FolderApi.create(data),
+    [['folders']],
+    options
+  );
 };
 
-export const useUpdateFolder = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ id, data }: { id: string; data: Partial<FolderRequest> }) => FolderApi.update(id, data),
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['folders', variables.id] });
-            queryClient.invalidateQueries({ queryKey: ['folders'] });
-        },
-    });
+export const useUpdateFolder = (
+  options?: UpdateMutationOptions<FolderRequest, FolderResponse>
+) => {
+  return useUpdateMutation(
+    ({ id, data }) => FolderApi.update(id, data),
+    (variables) => [['folders', variables.id], ['folders']],
+    options
+  );
 };
 
-export const useDeleteFolder = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (id: string) => FolderApi.delete(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['folders'] });
-        },
-    });
+export const useDeleteFolder = (
+  options?: DeleteMutationOptions
+) => {
+  return useDeleteMutation(
+    (id) => FolderApi.delete(id),
+    [['folders']],
+    options
+  );
 };
+

@@ -20,7 +20,7 @@ export function BookmarkDialog({
     onOpenChange,
     bookId,
 }: BookmarkDialogProps) {
-    const { t, keys, KEYS } = useLocale('books');
+    const { t, keys } = useLocale('books');
     const { data: folders, isLoading } = useFolders({ limit: 100 }, { enabled: open, staleTime: 0 });
     const [newFolderName, setNewFolderName] = useState('');
     const [isCreating, setIsCreating] = useState(false);
@@ -28,21 +28,20 @@ export function BookmarkDialog({
     const { mutate: createFolder, status: createFolderStatus } = useCreateFolder();
     const { mutate: createBookmark } = useCreateBookmark();
 
-    const handleSelectFolder = (folder?: string) => {
+    const handleSelectFolder = (folderId?: string) => {
         if (!bookId) return;
 
         createBookmark(
             {
-                item: bookId,
-                folder: folder,
+                bookId: bookId,
+                folderId: folderId,
             },
             {
                 onSuccess: () => {
                     onOpenChange(false);
                     toast.success(t(keys.view.bookmark.success));
                 },
-                onError: (error) => {
-                    console.error("Failed to bookmark:", error);
+                onError: () => {
                     toast.error(t(keys.view.bookmark.error));
                 }
             }
@@ -64,8 +63,9 @@ export function BookmarkDialog({
                         toast.error('Failed to create folder. Please try again.');
                     }
                 },
-                onError: (err: any) => {
-                    toast.error(err?.message || 'An error occurred while creating the folder.');
+                onError: (err: unknown) => {
+                    const error = err as Error;
+                    toast.error(error?.message || 'An error occurred while creating the folder.');
                 }
             }
         );
@@ -114,9 +114,6 @@ export function BookmarkDialog({
                                             >
                                                 <Icon icon="mdi:folder-outline" className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-primary" />
                                                 <span className="truncate">{folder.name}</span>
-                                                <span className="ml-auto text-xs text-muted-foreground flex-shrink-0">
-                                                    {folder.itemCount || 0} {t(folder.itemCount === 1 ? KEYS.common.item : KEYS.common.items)}
-                                                </span>
                                             </Button>
                                         ))}
                                     </div>

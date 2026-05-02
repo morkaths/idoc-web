@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check:lint": "next lint --dir src",
+    "check:lint": "eslint .",
     "check:type": "tsc --noEmit",
     "check:format": "prettier --check .",
     "check": "npm run check:lint && npm run check:type && npm run check:format",

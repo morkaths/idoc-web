@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useId, useMemo, useState } from 'react';
-import { UserResponse } from '@/types';
+import { type UserResponse } from '@/types';
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
 import { useUsers } from '@/hooks/data/useUser';
 import { useDebounce } from '@/hooks/ui/useDebounce';

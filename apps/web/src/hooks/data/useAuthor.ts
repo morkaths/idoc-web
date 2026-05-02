@@ -1,85 +1,58 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
+import { type UseQueryOptions } from '@tanstack/react-query';
 import { AuthorApi } from '@/apis/author.api';
-import type { AuthorResponse, AuthorRequest, FindParams, Pagination } from '@/types';
-import { useMemo } from 'react';
-
-type PaginationResponse = { data: AuthorResponse[]; pagination?: Pagination };
+import type { AuthorResponse, AuthorRequest, FindParams, ApiResponse, PageResponse } from '@/types';
+import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation } from './factory';
 
 export const useAuthors = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<ApiResponse<PageResponse<AuthorResponse>>, Error>, 'queryKey' | 'queryFn'>
 ) => {
-  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
-    queryKey: ['authors', params],
-    queryFn: () => AuthorApi.find(params),
-    enabled: true,
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000,
-    ...options
-  });
-
-  return useMemo(() => ({
-    status,
-    error,
-    isLoading,
-    isFetching,
-    refetch,
-    data: {
-      data: rawData?.data || [],
-      pagination: rawData?.pagination,
-    },
-  }), [rawData, status, error, isLoading, isFetching, refetch]);
+  return useListQuery(
+    ['authors', params],
+    () => AuthorApi.find(params),
+    options
+  );
 };
 
-export const useAuthor = (id: string, options?: Omit<UseQueryOptions<AuthorResponse, Error, AuthorResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const { data, status, error, isLoading, isFetching, refetch } = useQuery<AuthorResponse, Error, AuthorResponse, QueryKey>({
-    queryKey: ['authors', id],
-    queryFn: () => AuthorApi.findById(id),
-    enabled: !!id,
-    staleTime: 10 * 60 * 1000,
-    ...options
-  });
+export const useSearchAuthors = (
+  params: FindParams = {},
+  options?: Omit<UseQueryOptions<ApiResponse<PageResponse<AuthorResponse>>, Error>, 'queryKey' | 'queryFn'>
+) => {
+  return useListQuery(
+    ['authors', 'search', params],
+    () => AuthorApi.search(params),
+    options
+  );
+};
 
-  return useMemo(() => ({
-    status,
-    error,
-    isLoading,
-    isFetching,
-    refetch,
-    data: data || null,
-  }), [data, status, error, isLoading, isFetching, refetch]);
+export const useAuthor = (
+  id: string, 
+  options?: Omit<UseQueryOptions<ApiResponse<AuthorResponse>, Error>, 'queryKey' | 'queryFn'>
+) => {
+  return useItemQuery(
+    ['authors', id],
+    () => AuthorApi.findById(id),
+    { enabled: !!id, ...options }
+  );
 };
 
 export const useCreateAuthor = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: AuthorRequest) => AuthorApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['authors'] });
-    },
-  });
+  return useCreateMutation(
+    (data: AuthorRequest) => AuthorApi.create(data),
+    [['authors']]
+  );
 };
 
 export const useUpdateAuthor = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<AuthorRequest> }) => AuthorApi.update(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['authors', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['authors'] });
-    },
-  });
+  return useUpdateMutation(
+    ({ id, data }: { id: string; data: Partial<AuthorRequest> }) => AuthorApi.update(id, data),
+    (variables) => [['authors', variables.id], ['authors']]
+  );
 };
 
 export const useDeleteAuthor = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => AuthorApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['authors'] });
-    },
-  });
+  return useDeleteMutation(
+    (id: string) => AuthorApi.delete(id),
+    [['authors']]
+  );
 };

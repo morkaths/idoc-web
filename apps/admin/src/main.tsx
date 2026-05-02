@@ -4,7 +4,6 @@ import { AxiosError } from 'axios';
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import env from '@/config/env';
-import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth-store';
 import { handleServerError } from '@/lib/handle-server-error';
 import { DirectionProvider } from './context/direction-provider';
@@ -29,28 +28,24 @@ const queryClient = new QueryClient({
     mutations: {
       onError: (error) => {
         handleServerError(error);
-
-        if (error instanceof AxiosError) {
-          if (error.response?.status === 304) {
-            toast.error('Content not modified!');
-          }
-        }
       },
     },
   },
   queryCache: new QueryCache({
     onError: (error) => {
+      const isRedirectError = error instanceof AxiosError && [401, 403, 500].includes(error.response?.status ?? 0);
+      if (!isRedirectError) {
+        handleServerError(error);
+      }
+
       if (error instanceof AxiosError) {
         if (error.response?.status === 401) {
-          toast.error('Session expired!');
           useAuthStore.getState().auth.logout();
-          const redirect = `${router.history.location.href}`;
+          const redirect = router.state.location.pathname;
           router.navigate({ to: '/sign-in', search: { redirect } });
-        }
-        if (error.response?.status === 500) {
+        } else if (error.response?.status === 500) {
           router.navigate({ to: '/500' });
-        }
-        if (error.response?.status === 403) {
+        } else if (error.response?.status === 403) {
           router.navigate({ to: '/403' });
         }
       }
@@ -62,7 +57,7 @@ const queryClient = new QueryClient({
 const router = createRouter({
   routeTree,
   basepath: '/admin',
-  context: { queryClient },
+  context: { queryClient, auth: undefined! }, // auth will be injected by the provider or used in beforeLoad
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
 });
@@ -72,6 +67,11 @@ declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;
   }
+}
+
+function App() {
+  const { auth } = useAuthStore();
+  return <RouterProvider router={router} context={{ queryClient, auth }} />;
 }
 
 // Render the app
@@ -84,7 +84,7 @@ if (!rootElement.innerHTML) {
         <ThemeProvider>
           <FontProvider>
             <DirectionProvider>
-              <RouterProvider router={router} />
+              <App />
             </DirectionProvider>
           </FontProvider>
         </ThemeProvider>

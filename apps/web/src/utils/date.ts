@@ -1,8 +1,7 @@
-export function formatDate(date: any) {
+export function formatDate(date: Date | string | { $date: string }) {
     if (!date) return 'N/A';
 
-    // Xử lý định dạng MongoDB { $date: string }
-    const rawDate = typeof date === 'object' && date.$date ? date.$date : date;
+    const rawDate = typeof date === 'object' && '$date' in date ? (date as { $date: string }).$date : date;
 
     const d = new Date(rawDate);
     if (isNaN(d.getTime())) return 'N/A';

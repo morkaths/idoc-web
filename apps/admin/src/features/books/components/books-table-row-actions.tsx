@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type Row } from '@tanstack/react-table';
-import { BookResponse } from '@/types';
+import type { BookResponse } from '@/types';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {

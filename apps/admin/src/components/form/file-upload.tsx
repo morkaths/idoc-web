@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { FileResponse } from '@/types';
+import type { FileResponse } from '@/types';
 import { Upload } from 'lucide-react';
 import { FileItem } from './file-item';
 

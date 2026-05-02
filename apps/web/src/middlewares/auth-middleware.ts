@@ -5,13 +5,13 @@ import env from '@/config/env';
 const AUTH_PATHS = ['/sign-in', '/sign-up'];
 
 /**
- * Kiểm tra quyền truy cập của người dùng dựa trên token và route
- * @param req - Đối tượng NextRequest
- * @returns NextResponse nếu cần redirect, ngược lại trả về null
+ * Checks user access rights based on token and route.
+ * @param req - The NextRequest object.
+ * @returns NextResponse if redirect is needed, otherwise null.
  */
 export function authMiddleware(req: NextRequest): NextResponse | null {
     const { pathname } = req.nextUrl;
-    const token = req.cookies.get(env.cookie.token)?.value;
+    const token = req.cookies.get(env.cookie.accessToken)?.value;
     const pathWithoutLocale = pathname.replace(new RegExp(`^/(${locales.join('|')})`), '') || '/';
     
     const isAuthPage = AUTH_PATHS.some((path) => pathWithoutLocale.startsWith(path));

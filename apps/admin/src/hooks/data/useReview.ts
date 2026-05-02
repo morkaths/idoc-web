@@ -1,85 +1,70 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { ReviewApi } from '@/apis/review.api';
-import type { ReviewResponse, ReviewRequest, FindParams, Pagination } from '@/types';
-import { useMemo } from 'react';
-
-type PaginationResponse = { data: ReviewResponse[]; pagination?: Pagination };
+import type { ReviewResponse, ReviewRequest, FindParams } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+} from './factory';
 
 export const useReviews = (
-    params: FindParams = {},
-    options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
+  params: FindParams = {},
+  options?: ListQueryOptions<ReviewResponse>
 ) => {
-    const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
-        queryKey: ['reviews', params],
-        queryFn: () => ReviewApi.find(params),
-        enabled: true,
-        refetchOnWindowFocus: false,
-        staleTime: 5 * 60 * 1000,
-        ...options,
-    });
-
-    return useMemo(() => ({
-        status,
-        error,
-        isLoading,
-        isFetching,
-        refetch,
-        data: {
-            data: rawData?.data || [],
-            pagination: rawData?.pagination,
-        },
-    }), [rawData, status, error, isLoading, isFetching, refetch]);
+  return useListQuery(
+    ['reviews', params],
+    () => ReviewApi.find(params),
+    options
+  );
 };
 
-export const useReview = (id: string, options?: Omit<UseQueryOptions<ReviewResponse, Error, ReviewResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const { data, status, error, isLoading, isFetching, refetch } = useQuery<ReviewResponse, Error, ReviewResponse, QueryKey>({
-        queryKey: ['reviews', id],
-        queryFn: () => ReviewApi.findById(id),
-        enabled: !!id,
-        staleTime: 10 * 60 * 1000,
-        ...options,
-    });
-
-    return useMemo(() => ({
-        status,
-        error,
-        isLoading,
-        isFetching,
-        refetch,
-        data: data || null,
-    }), [data, status, error, isLoading, isFetching, refetch]);
+export const useReview = (
+  id: string,
+  options?: ItemQueryOptions<ReviewResponse>
+) => {
+  return useItemQuery(
+    ['reviews', id],
+    () => ReviewApi.findById(id),
+    {
+      enabled: !!id,
+      ...options,
+    }
+  );
 };
 
-export const useCreateReview = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (data: ReviewRequest) => ReviewApi.create(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['reviews'] });
-        },
-    });
+export const useCreateReview = (
+  options?: CreateMutationOptions<ReviewRequest, ReviewResponse>
+) => {
+  return useCreateMutation(
+    (data) => ReviewApi.create(data),
+    [['reviews']],
+    options
+  );
 };
 
-export const useUpdateReview = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ id, data }: { id: string; data: Partial<ReviewRequest> }) => ReviewApi.update(id, data),
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['reviews', variables.id] });
-            queryClient.invalidateQueries({ queryKey: ['reviews'] });
-        },
-    });
+export const useUpdateReview = (
+  options?: UpdateMutationOptions<ReviewRequest, ReviewResponse>
+) => {
+  return useUpdateMutation(
+    ({ id, data }) => ReviewApi.update(id, data),
+    (variables) => [['reviews', variables.id], ['reviews']],
+    options
+  );
 };
 
-export const useDeleteReview = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (id: string) => ReviewApi.delete(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['reviews'] });
-        },
-    });
+export const useDeleteReview = (
+  options?: DeleteMutationOptions
+) => {
+  return useDeleteMutation(
+    (id) => ReviewApi.delete(id),
+    [['reviews']],
+    options
+  );
 };
+

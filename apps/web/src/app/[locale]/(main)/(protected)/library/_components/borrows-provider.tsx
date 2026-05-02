@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { BorrowResponse } from '@/types';
 import useDialogState from '@/hooks/ui/useDialogState';
 
-type DialogType = 'export' | 'return' | 'extend' | 'history' | 'review';
+type DialogType = 'create' | 'edit' | 'return' | 'extend' | 'history' | 'review' | 'export';
 
 type BorrowsContextType = {
   open: DialogType | null;

@@ -49,7 +49,9 @@ export const categoriesColumns: ColumnDef<CategoryResponse>[] = [
     meta: { className: 'ps-4' },
     header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
     cell: ({ row, table }) => {
-      const translations = row.original.translations as { lang: string; name: string }[] | undefined;
+      const translations = row.original.translations as
+        | { lang: string; name: string }[]
+        | undefined;
       const translation = translations?.find((t) => t.lang === 'en') ?? translations?.[0];
       const name = translation?.name ?? '';
       const query = String(table.getState().globalFilter ?? '');
@@ -66,16 +68,30 @@ export const categoriesColumns: ColumnDef<CategoryResponse>[] = [
     meta: { className: 'ps-4' },
     header: ({ column }) => <DataTableColumnHeader column={column} title='Description' />,
     cell: ({ row, table }) => {
-      const translations = row.original.translations as { lang: string; description?: string }[] | undefined;
+      const translations = row.original.translations as
+        | { lang: string; description?: string }[]
+        | undefined;
       const translation = translations?.find((t) => t.lang === 'en') ?? translations?.[0];
       const description = translation?.description ?? '';
       const query = String(table.getState().globalFilter ?? '');
       return (
-        <div className='max-w-70 truncate text-xs text-muted-foreground'>
+        <div className='text-muted-foreground max-w-70 truncate text-xs'>
           <Highlight text={description} query={query} />
         </div>
       );
     },
+  },
+  {
+    id: 'lang',
+    accessorKey: 'translations',
+    header: 'Language',
+    enableSorting: false,
+    enableHiding: true,
+    filterFn: (row, id, value: string[]) => {
+      const translations = row.getValue(id) as Array<{ lang: string }>;
+      return translations?.some((t) => value.includes(t.lang)) ?? false;
+    },
+    cell: () => null,
   },
   {
     id: 'actions',

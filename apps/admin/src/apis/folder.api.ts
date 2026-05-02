@@ -4,6 +4,5 @@ import { apiFactory } from './factory';
 
 export const FolderApi = apiFactory<FolderResponse, FolderRequest>(
   ApiEndpoint.endpoints.folders,
-  'Folder',
   { find: 'public', findById: 'public' }
 );

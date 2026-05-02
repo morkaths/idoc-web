@@ -1,10 +1,18 @@
+import axios from 'axios';
 import { ApiEndpoint } from '@/config/api';
-import type { FileResponse, FileRequest, FindParams, Pagination } from '@/types';
+import type {
+  FileResponse,
+  FileRequest,
+  FindParams,
+  PresignedUploadResponse,
+  PresignedUploadRequest,
+  ApiResponse,
+  PageResponse,
+} from '@/types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
-import axios from 'axios';
 
-const factory = apiFactory<FileResponse, FileRequest>(ApiEndpoint.endpoints.files, 'File', {
+const factory = apiFactory<FileResponse, FileRequest>(ApiEndpoint.endpoints.files, {
   find: 'private',
   findById: 'private',
   delete: 'private',
@@ -15,64 +23,63 @@ export const FileApi = {
 
   findByUser: async (
     params?: FindParams
-  ): Promise<{ data: FileResponse[]; pagination?: Pagination }> => {
-    const response = await ApiClient.get<FileResponse[]>(ApiEndpoint.endpoints.files.findByUser, {
+  ): Promise<ApiResponse<PageResponse<FileResponse>>> => {
+    return ApiClient.get<PageResponse<FileResponse>>(ApiEndpoint.endpoints.files.findByUser, {
       security: 'private',
       params,
     });
-    return {
-      data: response.data ?? [],
-      pagination: response.pagination,
-    };
   },
 
-  upload: async (url: string, file: File): Promise<boolean> => {
+  upload: async (file: File, folder: string = 'general'): Promise<ApiResponse<FileResponse>> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', folder);
+    return ApiClient.post<FileResponse>(ApiEndpoint.endpoints.files.upload, {
+      security: 'private',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  uploadPresigned: async (
+    request: PresignedUploadRequest
+  ): Promise<ApiResponse<PresignedUploadResponse>> => {
+    return ApiClient.post<PresignedUploadResponse>(ApiEndpoint.endpoints.files.uploadPresigned, {
+      security: 'private',
+      data: request,
+    });
+  },
+
+  uploadToPresignedUrl: async (url: string, file: File): Promise<boolean> => {
     try {
       const cleanAxios = axios.create();
-      const res = await cleanAxios.put(url, file);
+      const res = await cleanAxios.put(url, file, {
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
       return res.status >= 200 && res.status < 300;
     } catch {
       return false;
     }
   },
 
-  uploadPresigned: async (
-    filename: string,
-    mimetype: string,
-    folder?: string
-  ): Promise<{ url: string; objectname: string }> => {
-    const response = await ApiClient.post<{ url: string; objectname: string }>(
-      ApiEndpoint.endpoints.files.uploadPresigned,
+  completePresignedUpload: async (uploadId: string): Promise<ApiResponse<FileResponse>> => {
+    return ApiClient.post<FileResponse>(
+      ApiEndpoint.endpoints.files.completePresignedUpload(uploadId),
       {
         security: 'private',
-        data: { filename, mimetype, folder },
       }
     );
-    if (response.success && response.data)
-      return {
-        url: response.data.url,
-        objectname: response.data.objectname,
-      };
-    throw new Error('Failed to get upload URL');
   },
 
-  completePresignedUpload: async (objectname: string): Promise<FileResponse> => {
-    const response = await ApiClient.post<FileResponse>(
-      ApiEndpoint.endpoints.files.completePresignedUpload,
-      {
-        security: 'private',
-        data: { objectname },
-      }
-    );
-    if (response.success && response.data) return response.data;
-    throw new Error('Failed to complete upload');
-  },
-
-  download: async (id: string): Promise<Blob> => {
-    const response = await ApiClient.get(ApiEndpoint.endpoints.files.download(id), {
+  download: async (id: string): Promise<ApiResponse<Blob>> => {
+    return ApiClient.get<Blob>(ApiEndpoint.endpoints.files.download(id), {
       security: 'private',
       responseType: 'blob',
     });
-    return response.data as Blob;
   },
 };
+

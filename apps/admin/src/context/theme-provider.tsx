@@ -180,7 +180,9 @@ export function ThemeProvider({
   const setMode = (t: Mode) => {
     try {
       setCookie(storageKey, t, THEME_COOKIE_MAX_AGE);
-    } catch {}
+    } catch {
+      // Ignore cookie error
+    }
     _setMode(t);
   };
 
@@ -188,21 +190,27 @@ export function ThemeProvider({
     if (!themeColors[p]) return; // Guard
     try {
       setCookie(colorStorageKey, p, THEME_COOKIE_MAX_AGE);
-    } catch {}
+    } catch {
+      // Ignore cookie error
+    }
     _setColor(p);
   };
 
   const setRadius = (r: string) => {
     try {
       setCookie('idoc_admin_radius', r, THEME_COOKIE_MAX_AGE);
-    } catch {}
+    } catch {
+      // Ignore cookie error
+    }
     _setRadius(r);
   };
 
   const setFont = (f: string) => {
     try {
       setCookie('idoc_admin_font', f, THEME_COOKIE_MAX_AGE);
-    } catch {}
+    } catch {
+      // Ignore cookie error
+    }
     _setFont(f);
   };
 
@@ -212,7 +220,9 @@ export function ThemeProvider({
       removeCookie(colorStorageKey);
       removeCookie('idoc_admin_radius');
       removeCookie('idoc_admin_font');
-    } catch {}
+    } catch {
+      // Ignore cookie error
+    }
     _setMode(DEFAULT_MODE);
     _setColor(DEFAULT_COLOR);
     _setRadius(themeConfig.defaults.radius);

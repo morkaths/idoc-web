@@ -4,7 +4,6 @@ import { apiFactory } from './factory';
 
 export const ReviewApi = apiFactory<ReviewResponse, ReviewRequest>(
   API_CONFIG.endpoints.reviews,
-  'Review',
   {
     find: 'public',
     findById: 'public',

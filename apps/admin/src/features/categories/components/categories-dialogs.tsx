@@ -1,10 +1,11 @@
+import { toast } from 'sonner';
 import { showSubmittedData } from '@/lib/show-submitted-data';
+import { getErrorMessage } from '@/lib/handle-server-error';
+import { useCreateCategory, useDeleteCategory, useUpdateCategory } from '@/hooks/data/useCategory';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ImportDialog } from '@/components/import-dialog';
 import { CategoriesMutateDialog } from './categories-mutate-dialog';
 import { useCategoriesContext } from './categories-provider';
-import { useCreateCategory, useDeleteCategory, useUpdateCategory } from '@/hooks/data/useCategory';
-import { toast } from 'sonner';
 
 export function CategoriesDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useCategoriesContext();
@@ -18,18 +19,17 @@ export function CategoriesDialogs() {
         key='category-create'
         open={open === 'create'}
         onOpenChange={() => setOpen('create')}
-        onSubmit={(data) => {
-          return toast.promise(
-            createCategoryMut.mutateAsync(data),
-            {
-              loading: 'Creating category...',
-              success: () => {
-                setOpen(null);
-                return 'Category created successfully!';
-              },
-              error: (err) => err?.message || 'Failed to create category',
-            }
-          );
+        onSubmit={async (data) => {
+          const promise = createCategoryMut.mutateAsync(data);
+          toast.promise(promise, {
+            loading: 'Creating category...',
+            success: (res) => {
+              setOpen(null);
+              return res.message;
+            },
+            error: (err) => getErrorMessage(err, 'Failed to create category'),
+          });
+          await promise;
         }}
       />
 
@@ -51,19 +51,18 @@ export function CategoriesDialogs() {
               }, 500);
             }}
             initialData={currentRow}
-            onSubmit={(data) => {
-              return toast.promise(
-                updateCategoryMut.mutateAsync({ id: currentRow.id!, data }),
-                {
-                  loading: 'Updating category...',
-                  success: () => {
-                    setOpen(null);
-                    setTimeout(() => setCurrentRow(null), 500);
-                    return 'Category updated successfully!';
-                  },
-                  error: (err) => err?.message || 'Failed to update category',
-                }
-              );
+            onSubmit={async (data) => {
+              const promise = updateCategoryMut.mutateAsync({ id: currentRow.id!, data });
+              toast.promise(promise, {
+                loading: 'Updating category...',
+                success: (res) => {
+                  setOpen(null);
+                  setTimeout(() => setCurrentRow(null), 500);
+                  return res.message;
+                },
+                error: (err) => getErrorMessage(err, 'Failed to update category'),
+              });
+              await promise;
             }}
           />
 
@@ -78,25 +77,23 @@ export function CategoriesDialogs() {
               }, 500);
             }}
             handleConfirm={() => {
-              toast.promise(
-                deleteCategoryMut.mutateAsync(currentRow.id!),
-                {
-                  loading: 'Deleting category...',
-                  success: () => {
-                    setOpen(null);
-                    setTimeout(() => setCurrentRow(null), 500);
-                    showSubmittedData(currentRow, 'The following category has been deleted:');
-                    return 'Category deleted successfully!';
-                  },
-                  error: (err) => err?.message || 'Failed to delete category',
-                }
-              );
+              toast.promise(deleteCategoryMut.mutateAsync(currentRow.id!), {
+                loading: 'Deleting category...',
+                success: (res) => {
+                  setOpen(null);
+                  setTimeout(() => setCurrentRow(null), 500);
+                  showSubmittedData(currentRow, 'The following category has been deleted:');
+                  return res.message;
+                },
+                error: (err) => getErrorMessage(err, 'Failed to delete category'),
+              });
             }}
             className='max-w-md'
             title={`Delete this category: ${currentRow.translations?.[0]?.name || currentRow.id} ?`}
             desc={
               <>
-                You are about to delete a category with the ID <strong>{currentRow.id}</strong>.<br />
+                You are about to delete a category with the ID <strong>{currentRow.id}</strong>.
+                <br />
                 This action cannot be undone.
               </>
             }

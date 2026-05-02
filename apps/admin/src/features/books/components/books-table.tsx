@@ -10,8 +10,10 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
-import { useBooks } from '@/hooks/data/useBook';
+import { useSearchBooks } from '@/hooks/data/useBook';
+import { useCategories } from '@/hooks/data/useCategory';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
+import { Languages } from '@/types';
 import {
   Table,
   TableBody,
@@ -23,6 +25,7 @@ import {
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
 import { booksColumns as columns } from './books-columns';
 import BooksTableBulkActions from './books-table-bulk-actions';
+import { buildBookFindParams } from './books-query.utils';
 
 const route = getRouteApi('/_authenticated/books/');
 
@@ -44,7 +47,7 @@ export function BooksTable() {
     search: route.useSearch(),
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: true, key: 'q' },
+    globalFilter: { enabled: true, key: 'query' },
     columnFilters: [
       { columnId: 'categories', searchKey: 'category', type: 'array' },
       { columnId: 'language', searchKey: 'language', type: 'array' },
@@ -54,35 +57,24 @@ export function BooksTable() {
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
 
-  const bookParams = useMemo(() => {
-    const apiSort = sorting[0]
-      ? {
-        sortBy: String(sorting[0].id),
-        sortOrder: sorting[0].desc ? 'desc' : 'asc',
-      }
-      : undefined;
-
-    return {
-      page,
-      limit,
-      query: globalFilter ?? '',
-      ...(apiSort || {}),
-    };
-  }, [page, limit, globalFilter, sorting]);
+  const bookParams = useMemo(
+    () => buildBookFindParams(page, limit, globalFilter ?? '', sorting, columnFilters),
+    [page, limit, globalFilter, sorting, columnFilters]
+  );
 
   // fetch server-side page
-  const { data: booksData, isFetching: isBooksFetching } = useBooks(bookParams);
+  const { data: booksData, isFetching: isBooksFetching } = useSearchBooks(bookParams);
   const books = booksData?.data ?? [];
   const bookPagination = booksData?.pagination;
 
-  // const { data: categoriesData } = useCategories();
-  // const categories = useMemo(() => {
-  //   const arr = categoriesData?.data ?? [];
-  //   return arr.map((cat) => ({
-  //     label: cat.slug ?? '',
-  //     value: cat.slug ?? '',
-  //   }));
-  // }, [categoriesData]);
+  const { data: categoriesData } = useCategories();
+  const categories = useMemo(() => {
+    const arr = categoriesData?.data ?? [];
+    return arr.map((cat) => ({
+      label: cat.slug ?? '',
+      value: cat.id ?? '',
+    }));
+  }, [categoriesData]);
 
   const table = useReactTable({
     data: books,
@@ -111,19 +103,11 @@ export function BooksTable() {
   });
 
   useEffect(() => {
-    if (!onPaginationChange) return;
     setRowSelection({});
-    onPaginationChange((prev) => ({
-      ...prev,
-      pageIndex: 0,
-      pageSize: pagination.pageSize ?? 10,
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalFilter]);
+  }, [globalFilter, columnFilters]);
 
   useEffect(() => {
     ensurePageInRange(table.getPageCount());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [table.getPageCount(), ensurePageInRange]);
 
   return (
@@ -131,13 +115,21 @@ export function BooksTable() {
       <DataTableToolbar
         table={table}
         searchPlaceholder='Search books...'
-      // filters={[
-      //   {
-      //     columnId: 'categories',
-      //     title: 'Category',
-      //     options: categories,
-      //   },
-      // ]}
+        filters={[
+          {
+            columnId: 'categories',
+            title: 'Category',
+            options: categories,
+          },
+          {
+            columnId: 'language',
+            title: 'Language',
+            options: Languages.filter((l) => l.enabled).map((l) => ({
+              label: l.label,
+              value: l.value,
+            })),
+          },
+        ]}
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>

@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react';
-import { BookResponse } from "@/types";
+import { type BookResponse } from "@/types";
 import { AppImage as Image } from '../app-image';
 import { Button } from '@repo/ui/components/button';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { BookResponse, FindParams } from '@/types';
+import { type BookResponse, type FindParams } from '@/types';
 import { useBookmarkStatus } from '@/hooks/data/useBookmark';
 import { useBorrowHistory } from '@/hooks/data/useBorrow';
 import { BookGridItems } from '@/components/book/book-grid-items';
@@ -14,7 +14,7 @@ export default function BookGridView({ filter }: { filter: Partial<FindParams> }
   const books: BookResponse[] = useMemo(() => {
     const seen = new Set<string>();
     return (data?.data || [])
-      .map((borrow) => borrow.item)
+      .map((borrow) => borrow.book)
       .filter((book): book is BookResponse => {
         if (!book || seen.has(book.id)) return false;
         seen.add(book.id);
@@ -29,7 +29,7 @@ export default function BookGridView({ filter }: { filter: Partial<FindParams> }
     if (!bookmarkStatus) return books;
     return books.map((book) => ({
       ...book,
-      bookmark: bookmarkStatus[book.id]?.id ?? book.bookmark,
+      bookmarkId: bookmarkStatus[book.id]?.id ?? book.bookmarkId,
     }));
   }, [books, bookmarkStatus]);
 

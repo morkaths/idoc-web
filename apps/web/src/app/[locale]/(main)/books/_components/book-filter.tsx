@@ -3,59 +3,43 @@
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FindParams } from '@/types';
+import { useEffect } from 'react';
+import { type BookFilterState, bookFilterFormSchema, DEFAULT_BOOK_FILTER } from './book-query.utils';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import { Form, FormField, FormLabel, FormControl, FormMessage } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
 import { CategoriesCombobox } from './categories-combobox';
-
-const FilterSchema = z.object({
-  search: z.string().optional(),
-  categories: z.array(z.string()).optional(),
-});
-
-type FilterForm = z.infer<typeof FilterSchema>;
+import { LanguagesCombobox } from './languages-combobox';
 
 export interface BookFilterProps {
-  filter?: Partial<FindParams>;
-  onFilter: (params: FindParams) => void;
+  filter: BookFilterState;
+  onFilter: (params: BookFilterState) => void;
   onReset: () => void;
 }
 
 export default function BookFilter({ filter, onFilter, onReset }: BookFilterProps) {
   const { t, keys } = useLocale('books');
 
-  const normalizedCategories = Array.isArray(filter?.categories)
-    ? filter.categories
-    : filter?.categories
-      ? [filter.categories as string]
-      : [];
-
-  const form = useForm<FilterForm>({
-    resolver: zodResolver(FilterSchema),
-    defaultValues: {
-      search: filter?.query || '',
-      categories: normalizedCategories,
-    },
+  const form = useForm<BookFilterState>({
+    resolver: zodResolver(bookFilterFormSchema),
+    defaultValues: filter,
   });
+
+  useEffect(() => {
+    form.reset(filter ?? DEFAULT_BOOK_FILTER);
+  }, [filter, form]);
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(async (data) => {
-          const params: FindParams = {
-            query: data.search,
-            categories: data.categories,
-          };
-          onFilter(params);
-        })}
+        onSubmit={form.handleSubmit(onFilter)}
         className='space-y-4'
       >
         {/* Search */}
         <FormField
           control={form.control}
-          name='search'
+          name='query'
           render={({ field }) => (
             <div className='grid gap-3'>
               <FormLabel htmlFor='search'>{t(keys.sidebar.filter.search.label)}</FormLabel>
@@ -84,6 +68,20 @@ export default function BookFilter({ filter, onFilter, onReset }: BookFilterProp
             </div>
           )}
         />
+        {/* Languages (multi-select) */}
+        <FormField
+          control={form.control}
+          name='languages'
+          render={({ field }) => (
+            <div className='grid gap-3'>
+              <FormLabel htmlFor='languages'>{t(keys.sidebar.filter.languages.label)}</FormLabel>
+              <FormControl>
+                <LanguagesCombobox value={field.value || []} onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </div>
+          )}
+        />
         {/* Reset & Submit */}
         <div className='flex gap-2'>
           <Button
@@ -91,7 +89,7 @@ export default function BookFilter({ filter, onFilter, onReset }: BookFilterProp
             type='button'
             className='flex-1'
             onClick={() => {
-              form.reset({ search: '', categories: [] });
+              form.reset(DEFAULT_BOOK_FILTER);
               onReset();
             }}
           >

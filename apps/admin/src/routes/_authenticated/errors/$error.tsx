@@ -13,8 +13,8 @@ function RouteComponent() {
   const { error } = Route.useParams();
 
   const errorMap: Record<string, React.ComponentType> = {
-    'unauthorized': UnauthorisedError,
-    'forbidden': ForbiddenError,
+    unauthorized: UnauthorisedError,
+    forbidden: ForbiddenError,
     'not-found': NotFoundError,
     'internal-server-error': GeneralError,
     'maintenance-error': MaintenanceError,

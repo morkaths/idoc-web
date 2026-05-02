@@ -10,7 +10,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
-import { useUsers } from '@/hooks/data/useUser';
+import { RoleType, UserStatus } from '@/types';
+import { useSearchUsers } from '@/hooks/data/useUser';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
   Table,
@@ -23,6 +24,7 @@ import {
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
 import { usersColumns as columns } from './users-columns';
 import UsersTableBulkActions from './users-table-bulk-actions';
+import { buildUserFindParams } from './users-query.utils';
 
 const route = getRouteApi('/_authenticated/users/');
 
@@ -44,7 +46,7 @@ export function UsersTable() {
     search: route.useSearch(),
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: true, key: 'q' },
+    globalFilter: { enabled: true, key: 'query' },
     columnFilters: [
       { columnId: 'status', searchKey: 'status', type: 'array' },
       { columnId: 'role', searchKey: 'role', type: 'array' },
@@ -54,24 +56,13 @@ export function UsersTable() {
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
 
-  const userParams = useMemo(() => {
-    const apiSort = sorting[0]
-      ? {
-          sortBy: String(sorting[0].id),
-          sortOrder: sorting[0].desc ? 'desc' : 'asc',
-        }
-      : undefined;
-
-    return {
-      page,
-      limit,
-      query: globalFilter ?? '',
-      ...(apiSort || {}),
-    };
-  }, [page, limit, globalFilter, sorting]);
+  const userParams = useMemo(
+    () => buildUserFindParams(page, limit, globalFilter ?? '', sorting, columnFilters),
+    [page, limit, globalFilter, sorting, columnFilters]
+  );
 
   // Fetch server-side page
-  const { data: usersData, isFetching: isUsersFetching } = useUsers(userParams);
+  const { data: usersData, isFetching: isUsersFetching } = useSearchUsers(userParams);
   const users = usersData?.data ?? [];
   const userPagination = usersData?.pagination;
 
@@ -102,19 +93,12 @@ export function UsersTable() {
   });
 
   useEffect(() => {
-    if (!onPaginationChange) return;
     setRowSelection({});
-    onPaginationChange((prev) => ({
-      ...prev,
-      pageIndex: 0,
-      pageSize: pagination.pageSize ?? 10,
-    }));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalFilter]);
+  }, [globalFilter, columnFilters]);
 
   useEffect(() => {
     ensurePageInRange(table.getPageCount());
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [table.getPageCount(), ensurePageInRange]);
 
   return (
@@ -122,18 +106,24 @@ export function UsersTable() {
       <DataTableToolbar
         table={table}
         searchPlaceholder='Search users...'
-        // filters={[
-        //   {
-        //     columnId: 'status',
-        //     title: 'Status',
-        //     options: [
-        //       { label: 'Active', value: 'active' },
-        //       { label: 'Inactive', value: 'inactive' },
-        //       { label: 'Invited', value: 'invited' },
-        //       { label: 'Suspended', value: 'suspended' },
-        //     ],
-        //   },
-        // ]}
+        filters={[
+          {
+            columnId: 'status',
+            title: 'Status',
+            options: Object.values(UserStatus).map((s) => ({
+              label: s,
+              value: s,
+            })),
+          },
+          {
+            columnId: 'role',
+            title: 'Role',
+            options: Object.values(RoleType).map((r) => ({
+              label: r,
+              value: r,
+            })),
+          },
+        ]}
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>

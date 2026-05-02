@@ -10,12 +10,11 @@ export function useScroll(threshold: number) {
 
   useEffect(() => {
     window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [onScroll]);
-
-  // also check on first load
-  useEffect(() => {
-    onScroll();
+    const timeoutId = setTimeout(onScroll, 0);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(timeoutId);
+    };
   }, [onScroll]);
 
   return scrolled;

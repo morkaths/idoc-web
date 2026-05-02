@@ -11,6 +11,10 @@ export interface ApiOptions extends Omit<AxiosRequestConfig, 'method' | 'url' | 
   security?: SecurityStrategy;
 }
 
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  _retry?: boolean;
+}
+
 let instances: { public: AxiosInstance; private: AxiosInstance } | null = null;
 let accessToken: string | null = null;
 let refreshPromise: Promise<string | null> | null = null;
@@ -33,29 +37,29 @@ const syncSession = async (): Promise<string | null> => {
   return refreshPromise;
 };
 
-const handleError = (error: any): ApiResponse<any> => {
+const handleError = (error: unknown): ApiResponse<undefined> => {
   const timestamp = new Date().toISOString();
 
   if (axios.isAxiosError(error) && error.response?.data) {
-    const serverResponse = error.response.data;
+    const serverResponse = error.response.data as Record<string, unknown>;
     return {
       success: false,
-      message: serverResponse.message || error.message,
-      status: serverResponse.status ?? error.response?.status ?? 500,
-      timestamp: serverResponse.timestamp || timestamp,
+      message: (serverResponse.message as string) || error.message,
+      status: (serverResponse.status as number) ?? error.response?.status ?? 500,
+      timestamp: (serverResponse.timestamp as string) || timestamp,
       errors: serverResponse.errors,
-    } as any;
+    } as unknown as ApiResponse<undefined>;
   }
 
   if (typeof error === 'object' && error !== null && 'message' in error) {
-    const err = error as any;
+    const err = error as Record<string, unknown>;
     return {
       success: false,
-      message: err.message,
-      status: err.status ?? err.statusCode ?? 500,
-      timestamp: err.timestamp || timestamp,
+      message: err.message as string,
+      status: (err.status as number) ?? (err.statusCode as number) ?? 500,
+      timestamp: (err.timestamp as string) || timestamp,
       errors: err.errors,
-    } as any;
+    } as unknown as ApiResponse<undefined>;
   }
 
   return {
@@ -63,21 +67,38 @@ const handleError = (error: any): ApiResponse<any> => {
     message: 'Unknown error',
     status: 500,
     timestamp,
-  } as any;
+  };
 };
 
 const createInstance = (withCredentials = false): AxiosInstance => {
   const instance = axios.create({
     baseURL: API_CONFIG.baseURL,
     timeout: API_CONFIG.timeout,
-    withCredentials: true, // Always send credentials/cookies
-    paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
+    withCredentials: true,
+    paramsSerializer: (params) => {
+      const processed: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(params)) {
+        if (
+          Array.isArray(value) &&
+          value.length > 0 &&
+          typeof value[0] === 'object' &&
+          value[0] !== null
+        ) {
+          processed[key] = JSON.stringify(value);
+        } else {
+          processed[key] = value;
+        }
+      }
+      return qs.stringify(processed, { arrayFormat: 'repeat', skipNulls: true });
+    },
   });
 
   // Request Interceptor
   instance.interceptors.request.use(
     async (config) => {
-      config.headers = config.headers || {};
+      if (!config.headers) {
+        config.headers = axios.AxiosHeaders.from({});
+      }
 
       // Handle locale
       if (config.params && config.params.lang) {
@@ -92,7 +113,7 @@ const createInstance = (withCredentials = false): AxiosInstance => {
           const headerList = await headers();
           const locale = headerList.get('Accept-Language');
           if (locale) config.headers['Accept-Language'] = locale;
-        } catch (e) {
+        } catch (_e) {
           // Ignore
         }
       }
@@ -122,15 +143,17 @@ const createInstance = (withCredentials = false): AxiosInstance => {
   instance.interceptors.response.use(
     (res) => res,
     async (error) => {
-      const originalRequest = error.config;
-      
+      const originalRequest = error.config as CustomAxiosRequestConfig;
+
       if (error?.response?.status === 401 && !originalRequest._retry && !isLoggingOut) {
         if (typeof window !== 'undefined') {
           originalRequest._retry = true;
           const newToken = await syncSession();
 
           if (newToken && newToken !== accessToken) {
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            if (originalRequest.headers) {
+              originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+            }
             return instance.request(originalRequest);
           } else {
             accessToken = null;
@@ -138,7 +161,9 @@ const createInstance = (withCredentials = false): AxiosInstance => {
               isLoggingOut = true;
               await signOut({ callbackUrl: '/sign-in' });
             } else {
-              delete originalRequest.headers.Authorization;
+              if (originalRequest.headers) {
+                delete originalRequest.headers['Authorization'];
+              }
               return instance.request(originalRequest);
             }
           }
@@ -184,13 +209,14 @@ export const ApiClient = {
       });
 
       if (response.data) {
-        response.data.headers = response.headers as Record<string, string | string[]>;
+        Object.assign(response.data, { headers: response.headers });
       }
 
       return response.data;
-    } catch (error: any) {
-      if (error.success === false) return error;
-      return handleError(error);
+    } catch (error: unknown) {
+      const err = error as Record<string, unknown>;
+      if (err && err.success === false) return err as unknown as ApiResponse<T>;
+      return handleError(error) as ApiResponse<T>;
     }
   },
 

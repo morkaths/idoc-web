@@ -1,87 +1,84 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
-import type { BookResponse, BookRequest, FindParams, Pagination } from '@/types';
-import { useMemo } from 'react';
-
-type PaginationResponse = { data: BookResponse[]; pagination?: Pagination };
+import type { BookResponse, BookRequest, FindParams } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+} from './factory';
 
 export const useBooks = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
+  options?: ListQueryOptions<BookResponse>
 ) => {
-  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
-    queryKey: ['books', params],
-    queryFn: () => BookApi.find(params),
-    enabled: true,
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000,
-    ...options
-  });
-
-  const data = useMemo(() => ({
-    data: rawData?.data || [],
-    pagination: rawData?.pagination,
-  }), [rawData]);
-
-  return useMemo(() => ({
-    status,
-    error,
-    isLoading,
-    isFetching,
-    refetch,
-    data,
-  }), [data, status, error, isLoading, isFetching, refetch]);
+  return useListQuery<BookResponse>(
+    ['books', params],
+    () => BookApi.find(params),
+    {
+      staleTime: 5 * 60 * 1000,
+      ...options,
+    }
+  );
 };
 
-export const useBook = (id: string, options?: Omit<UseQueryOptions<BookResponse, Error, BookResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const { data, status, error, isLoading, isFetching, refetch } = useQuery<BookResponse, Error, BookResponse, QueryKey>({
-    queryKey: ['books', id],
-    queryFn: () => BookApi.findById(id),
-    enabled: !!id,
-    staleTime: 10 * 60 * 1000,
-    ...options,
-  });
-
-  return useMemo(() => ({
-    status,
-    error,
-    isLoading,
-    isFetching,
-    refetch,
-    data: data || null,
-  }), [data, status, error, isLoading, isFetching, refetch]);
+export const useSearchBooks = (
+  params: FindParams = {},
+  options?: ListQueryOptions<BookResponse>
+) => {
+  return useListQuery<BookResponse>(
+    ['books', 'search', params],
+    () => BookApi.search(params),
+    {
+      ...options,
+    }
+  );
 };
 
-export const useCreateBook = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: BookRequest) => BookApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
-  });
+export const useBook = (
+  id: string,
+  options?: ItemQueryOptions<BookResponse>
+) => {
+  return useItemQuery<BookResponse>(
+    ['books', id],
+    () => BookApi.findById(id),
+    {
+      enabled: !!id,
+      ...options,
+    }
+  );
 };
 
-export const useUpdateBook = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<BookRequest> }) => BookApi.update(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['books', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
-  });
+export const useCreateBook = (
+  options?: CreateMutationOptions<BookRequest, BookResponse>
+) => {
+  return useCreateMutation<BookRequest, BookResponse>(
+    (data) => BookApi.create(data),
+    [['books']],
+    options
+  );
 };
 
-export const useDeleteBook = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => BookApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
-  });
+export const useUpdateBook = (
+  options?: UpdateMutationOptions<BookRequest, BookResponse>
+) => {
+  return useUpdateMutation<BookRequest, BookResponse>(
+    ({ id, data }) => BookApi.update(id, data),
+    (variables) => [['books', variables.id], ['books']],
+    options
+  );
 };
+
+export const useDeleteBook = (options?: DeleteMutationOptions) => {
+  return useDeleteMutation(
+    (id) => BookApi.delete(id),
+    [['books']],
+    options
+  );
+};
+

@@ -2,11 +2,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/context/theme-provider";
 import { Toaster } from "sonner";
-import { ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import { ReaderProvider } from "@/context/reader-provider";
 
 import { SessionProvider } from "next-auth/react";
-import { NextIntlClientProvider, AbstractIntlMessages } from 'next-intl';
+import { NextIntlClientProvider, type AbstractIntlMessages } from 'next-intl';
 
 import { AuthSync } from "@/components/auth-sync";
 

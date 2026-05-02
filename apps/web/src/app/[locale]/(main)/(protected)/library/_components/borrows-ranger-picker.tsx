@@ -6,16 +6,18 @@ import { type DateRange } from 'react-day-picker';
 import { Button } from '@repo/ui/components/button';
 import { Calendar } from '@repo/ui/components/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui/components/popover';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 type BorrowRangePickerProps = {
-  borrowTime: Date;
-  expireTime?: Date;
+  borrowedDate: Date;
+  dueDate?: Date;
   onChange: (expire: Date | undefined) => void;
 };
 
-export function BorrowRangePicker({ borrowTime, expireTime, onChange }: BorrowRangePickerProps) {
+export function BorrowRangePicker({ borrowedDate, dueDate, onChange }: BorrowRangePickerProps) {
+  const { t, keys } = useLocale('library');
   const [range, setRange] = useState<DateRange | undefined>(
-    expireTime ? { from: borrowTime, to: expireTime } : { from: borrowTime, to: undefined }
+    dueDate ? { from: borrowedDate, to: dueDate } : { from: borrowedDate, to: undefined }
   );
 
   useEffect(() => {
@@ -31,9 +33,9 @@ export function BorrowRangePicker({ borrowTime, expireTime, onChange }: BorrowRa
             id='borrow-range'
             className='w-full justify-between font-normal'
           >
-            {borrowTime && range?.to
-              ? `${borrowTime.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
-              : 'Pick expire date'}
+            {borrowedDate && range?.to
+              ? `${borrowedDate.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
+              : t(keys.table.actions.mutate.fields.placeholder)}
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>
@@ -43,12 +45,12 @@ export function BorrowRangePicker({ borrowTime, expireTime, onChange }: BorrowRa
             selected={range}
             onSelect={(r) => {
               setRange({
-                from: borrowTime,
+                from: borrowedDate,
                 to: r?.to || r?.from || undefined,
               });
             }}
-            disabled={(date) => date < borrowTime}
-            defaultMonth={borrowTime}
+            disabled={(date) => date < borrowedDate}
+            defaultMonth={borrowedDate}
           />
         </PopoverContent>
       </Popover>

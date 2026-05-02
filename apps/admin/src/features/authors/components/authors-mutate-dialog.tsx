@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AuthorRequestSchema, type AuthorResponse, type AuthorRequest } from '@/types';
 import { toast } from 'sonner';
+import { handleServerError } from '@/lib/handle-server-error';
 import { useUploadImage } from '@/hooks/data/useImage';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -25,7 +26,7 @@ type AuthorsMutateDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialData?: Partial<AuthorResponse>;
-  onSubmit: (data: AuthorRequest) => void;
+  onSubmit: (data: AuthorRequest & { id?: string }) => Promise<void>;
 };
 
 export function AuthorsMutateDialog({
@@ -69,8 +70,16 @@ export function AuthorsMutateDialog({
               try {
                 if (avatarFile) {
                   toast.loading('Uploading avatar...', { id: 'upload-image' });
-                  avatar = await uploadImage.mutateAsync({ file: avatarFile, folder: 'authors' });
-                  toast.success('Avatar uploaded!', { id: 'upload-image' });
+                  try {
+                    avatar = await uploadImage.mutateAsync({ file: avatarFile, folder: 'authors' });
+                    toast.success('Avatar uploaded!', { id: 'upload-image' });
+                  } catch (error) {
+                    handleServerError(error, {
+                      toastId: 'upload-image',
+                      fallback: 'Failed to upload avatar',
+                    });
+                    throw error;
+                  }
                 }
 
                 let dob: Date | undefined = undefined;
@@ -81,15 +90,24 @@ export function AuthorsMutateDialog({
                   dob = isNaN(d.getTime()) ? undefined : d;
                 }
 
-                await onSubmit({
-                  ...data,
-                  id: initialData?.id,
+                const { avatar: _unused, ...rest } = data;
+                const payload = {
+                  ...rest,
                   avatar,
                   dob,
+                };
+
+                await onSubmit({
+                  ...payload,
+                  id: initialData?.id,
                 });
                 onOpenChange(false);
                 form.reset();
                 setAvatarFile(null);
+              } catch (error) {
+                if (error instanceof Error && error.message !== 'upload-image') {
+                  handleServerError(error);
+                }
               } finally {
                 setIsSubmitting(false);
               }
@@ -97,18 +115,27 @@ export function AuthorsMutateDialog({
           >
             <fieldset disabled={isSubmitting} className='space-y-4'>
               <div className='mb-3 grid grid-cols-1 md:grid-cols-3'>
-                <div className='flex flex-col items-center justify-start md:row-span-3'>
-                  <FormLabel className='mb-3'>Avatar</FormLabel>
-                  <ImageUpload
-                    value={form.getValues('avatar')}
-                    onChange={(file, previewUrl) => {
-                      setAvatarFile(file);
-                      form.setValue('avatar', previewUrl || '');
-                    }}
-                    label='Upload avatar'
-                    maxSizeMB={4}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name='avatar'
+                  render={({ field }) => (
+                    <div className='flex flex-col items-center justify-start md:row-span-3'>
+                      <FormLabel className='mb-3'>Avatar</FormLabel>
+                      <FormControl>
+                        <ImageUpload
+                          value={field.value}
+                          onChange={(file, previewUrl) => {
+                            setAvatarFile(file);
+                            field.onChange(previewUrl || '');
+                          }}
+                          label='Upload avatar'
+                          maxSizeMB={4}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                  )}
+                />
 
                 <div className='grid grid-cols-1 gap-3 md:col-span-2'>
                   <FormField
@@ -183,7 +210,7 @@ export function AuthorsMutateDialog({
                   </Button>
                 </DialogClose>
                 <Button type='submit' disabled={isSubmitting}>
-                  {isSubmitting ? 'Saving...' : (initialData?.id ? 'Save changes' : 'Create')}
+                  {isSubmitting ? 'Saving...' : initialData?.id ? 'Save changes' : 'Create'}
                 </Button>
               </DialogFooter>
             </fieldset>

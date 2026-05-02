@@ -4,9 +4,9 @@ import { apiFactory } from './factory';
 
 export const AuthorApi = apiFactory<AuthorResponse, AuthorRequest>(
   API_CONFIG.endpoints.authors,
-  'Author',
   {
     find: 'public',
     findById: 'public',
   }
 );
+

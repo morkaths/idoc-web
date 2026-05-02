@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type Row } from '@tanstack/react-table';
-import { type BorrowResponse, UserStatus } from '@/types';
+import { type BorrowResponse } from '@/types';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -17,38 +17,7 @@ type BorrowsTableRowActionsProps<TData> = {
 };
 
 export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsProps<TData>) {
-  const original = row.original as unknown as BorrowResponse;
-  const safeBorrow = {
-    ...original,
-    renewals: original.renewals ?? [],
-    borrower: original.borrower
-      ? {
-        ...original.borrower,
-        id: String(original.borrower.id ?? ''),
-        status: typeof original.borrower.status === 'number'
-          ? original.borrower.status
-          : UserStatus.Active,
-        password: typeof original.borrower.password === 'string'
-          ? original.borrower.password
-          : '',
-        roles: Array.isArray(original.borrower.roles)
-          ? original.borrower.roles.map(role => ({
-            ...role,
-            id: typeof role.id === 'string'
-              ? role.id
-              : String(role.id ?? ''),
-          }))
-          : [],
-      }
-      : undefined,
-    item: original.item
-      ? {
-        ...original.item,
-        id: String(original.item.id ?? ''),
-      }
-      : undefined,
-  };
-  const borrow = safeBorrow as BorrowResponse;
+  const borrow = row.original as unknown as BorrowResponse;
   const ctx = useBorrowsContext();
   if (!ctx) throw new Error('BorrowsTableRowActions must be used inside BorrowsProvider');
   const { setOpen, setCurrentRow } = ctx;

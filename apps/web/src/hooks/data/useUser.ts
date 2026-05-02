@@ -1,83 +1,103 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { UserApi } from '@/apis';
-import type { FindParams, UserResponse, UserRequest, Pagination } from '@/types';
-import { useMemo } from 'react';
+import type { FindParams, UserResponse, UserRequest } from '@/types';
+import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type ListQueryOptions, type ItemQueryOptions, type CreateMutationOptions, type UpdateMutationOptions, type DeleteMutationOptions } from './factory';
 
-type PaginationResponse = { data: UserResponse[]; pagination?: Pagination };
-
+/**
+ * Hook to fetch users with pagination
+ * @param params Search/filter parameters
+ * @param options Query options
+ */
 export const useUsers = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
+  options?: ListQueryOptions<UserResponse>
 ) => {
-  const { data: rawData, status, error, isLoading, isFetching, refetch } = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
-    queryKey: ['users', params],
-    queryFn: () => UserApi.find(params),
-    enabled: true,
-    refetchOnWindowFocus: false,
-    staleTime: 60 * 60 * 1000,
-    ...options,
-  });
-
-  return useMemo(() => ({
-    status,
-    error,
-    isLoading,
-    isFetching,
-    refetch,
-    data: {
-      data: rawData?.data || [],
-      pagination: rawData?.pagination,
-    },
-  }), [rawData, status, error, isLoading, isFetching, refetch]);
+  return useListQuery<UserResponse>(
+    ['users', params],
+    () => UserApi.find(params),
+    {
+      staleTime: 60 * 60 * 1000,
+      ...options,
+    }
+  );
 };
 
-export const useUser = (id: string, options?: Omit<UseQueryOptions<UserResponse, Error, UserResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-  const { data, status, error, isLoading, isFetching, refetch } = useQuery<UserResponse, Error, UserResponse, QueryKey>({
-    queryKey: ['users', id],
-    queryFn: () => UserApi.findById(id),
-    enabled: !!id,
-    staleTime: 10 * 60 * 1000,
-    ...options,
-  });
-
-  return useMemo(() => ({
-    status,
-    error,
-    isLoading,
-    isFetching,
-    refetch,
-    data: data || null,
-  }), [data, status, error, isLoading, isFetching, refetch]);
+/**
+ * Hook to search users
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchUsers = (
+  params: FindParams = {},
+  options?: ListQueryOptions<UserResponse>
+) => {
+  return useListQuery<UserResponse>(
+    ['users', 'search', params],
+    () => UserApi.search(params),
+    {
+      staleTime: 60 * 60 * 1000,
+      ...options,
+    }
+  );
 };
 
-export const useCreateUser = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (newUser: UserRequest) => UserApi.create(newUser),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-  });
+/**
+ * Hook to fetch a single user by ID
+ * @param id User ID
+ * @param options Query options
+ */
+export const useUser = (
+  id: string,
+  options?: ItemQueryOptions<UserResponse>
+) => {
+  return useItemQuery<UserResponse>(
+    ['users', id],
+    () => UserApi.findById(id),
+    {
+      enabled: !!id,
+      ...options,
+    }
+  );
 };
 
-export const useUpdateUser = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<UserRequest> }) =>
-      UserApi.update(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['users', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-  });
+/**
+ * Hook to create a new user
+ * @param options Mutation options
+ */
+export const useCreateUser = <TContext = unknown>(
+  options?: CreateMutationOptions<UserRequest, UserResponse, TContext>
+) => {
+  return useCreateMutation<UserRequest, UserResponse, TContext>(
+    (newUser) => UserApi.create(newUser),
+    [['users']],
+    options
+  );
 };
 
-export const useDeleteUser = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => UserApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-  });
+/**
+ * Hook to update an existing user
+ * @param options Mutation options
+ */
+export const useUpdateUser = <TContext = unknown>(
+  options?: UpdateMutationOptions<UserRequest, UserResponse, TContext>
+) => {
+  return useUpdateMutation<UserRequest, UserResponse, TContext>(
+    ({ id, data }) => UserApi.update(id, data),
+    (variables) => [['users'], ['users', variables.id]],
+    options
+  );
 };
+
+/**
+ * Hook to delete a user
+ * @param options Mutation options
+ */
+export const useDeleteUser = <TContext = unknown>(
+  options?: DeleteMutationOptions<TContext>
+) => {
+  return useDeleteMutation<TContext>(
+    (id) => UserApi.delete(id),
+    [['users']],
+    options
+  );
+};
+

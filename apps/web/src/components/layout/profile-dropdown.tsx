@@ -29,6 +29,7 @@ export function ProfileDropdown() {
   const [open, setOpen] = useDialogState();
   const [isMounted, setIsMounted] = useState(false);
   const { t, keys } = useLocale('navigation');
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setIsMounted(true); }, []);
 
   if (!isMounted) {
@@ -58,7 +59,7 @@ export function ProfileDropdown() {
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
             <Avatar className='h-8 w-8'>
-              <AvatarImage src={user?.profile?.avatar || ''} alt={user?.username || 'User'} />
+              <AvatarImage src={user?.avatar || ''} alt={user?.username || 'User'} />
               <AvatarFallback>{user?.username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
             </Avatar>
           </Button>

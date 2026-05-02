@@ -1,8 +1,7 @@
 'use client';
 
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { useState, useMemo, useCallback, useEffect } from 'react';
-import { FindParams } from '@/types';
+import { useState, useMemo, useCallback } from 'react';
 import {
   ArrowDownAZ,
   FilterIcon,
@@ -20,66 +19,63 @@ import BookFilter from './book-filter';
 import BookSort from './book-sort';
 import { BookView } from './book-view';
 
-// Types
-interface FilterState extends Partial<FindParams> {
-  query?: string;
-  categories?: string[];
-}
-
-interface SortState {
-  sortBy: string;
-  sortOrder: 'desc' | 'asc';
-}
-
-// Helper: Parse URL params
-const parseFilter = (p: URLSearchParams): FilterState => ({
-  query: p.get('query') || undefined,
-  categories: p.get('categories')?.split(',').filter(Boolean),
-});
-
-const parseSort = (p: URLSearchParams): SortState => ({
-  sortBy: p.get('sortBy') || 'createdAt',
-  sortOrder: (p.get('sortOrder') as 'desc' | 'asc') || 'desc',
-});
+import {
+  type BookSortState,
+  type BookFilterState,
+  parseBookQuery,
+  buildBookQuery,
+  buildBookFindParams,
+  DEFAULT_BOOK_FILTER,
+  DEFAULT_BOOK_SORT,
+} from './book-query.utils';
 
 export function BooksView() {
   const { t, keys } = useLocale('books');
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  // View state
   const [view, setView] = useState<'grid' | 'list'>('grid');
+  const state = useMemo(() => parseBookQuery(searchParams), [searchParams]);
+  const { page, limit } = state;
 
-  // State - khởi tạo từ URL
-  const [filter, setFilter] = useState<FilterState>(() => parseFilter(searchParams));
-  const [sort, setSort] = useState<SortState>(() => parseSort(searchParams));
+  const filter = useMemo(
+    () => ({ query: state.query, categories: state.categories, languages: state.languages }),
+    [state]
+  );
+  const sort = useMemo(
+    () => ({ sortBy: state.sortBy, sortOrder: state.sortOrder }),
+    [state]
+  );
 
-  // Sync state → URL
-  useEffect(() => {
-    const p = new URLSearchParams();
-    if (filter.query) p.set('query', filter.query);
-    if (filter.categories?.length) p.set('categories', filter.categories.join(','));
-    if (sort.sortBy !== 'createdAt') p.set('sortBy', sort.sortBy);
-    if (sort.sortOrder !== 'desc') p.set('sortOrder', sort.sortOrder);
-    p.set('page', '1');
-    router.replace(`${pathname}?${p.toString()}`, { scroll: false });
-  }, [filter, sort, pathname, router]);
+  // Write filter changes to URL (resets page to 1)
+  const handleSetFilter = useCallback(
+    (next: BookFilterState) => {
+      router.replace(`${pathname}?${buildBookQuery(next, sort, 1, limit)}`, { scroll: false });
+    },
+    [router, pathname, sort, limit]
+  );
 
-  // Handlers
-  const handleSetFilter = useCallback((f: Partial<FindParams>) => {
-    setFilter({
-      query: (f.query as string) || undefined,
-      categories: Array.isArray(f.categories) ? f.categories : undefined,
-    });
-  }, []);
+  // Write sort changes to URL (resets page to 1)
+  const handleSetSort = useCallback(
+    (next: BookSortState) => {
+      router.replace(`${pathname}?${buildBookQuery(filter, next, 1, limit)}`, { scroll: false });
+    },
+    [router, pathname, filter, limit]
+  );
 
-  const handleSetSort = useCallback((s: Partial<SortState>) => {
-    setSort((prev) => ({ ...prev, ...s }));
-  }, []);
+  // Write page changes to URL
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      router.replace(`${pathname}?${buildBookQuery(filter, sort, newPage, limit)}`, { scroll: false });
+    },
+    [router, pathname, filter, sort, limit]
+  );
 
-  // Merge filter + sort
-  const activeFilter = useMemo<Partial<FindParams>>(() => ({ ...filter, ...sort }), [filter, sort]);
+  // Build the FindParams object to pass down to BookView
+  const findParams = useMemo(
+    () => buildBookFindParams(filter, sort, page, limit),
+    [filter, sort, page, limit]
+  );
 
   return (
     <main className='container flex gap-8 py-8'>
@@ -148,8 +144,8 @@ export function BooksView() {
           </div>
         </div>
 
-        {/* Danh sách sách */}
-        <BookView filter={activeFilter} view={view} />
+        {/* Book list */}
+        <BookView params={findParams} onPageChange={handlePageChange} view={view} />
       </section>
     </main>
   );
@@ -162,10 +158,10 @@ function FilterTabs({
   setSort,
   defaultValue = 'filter',
 }: {
-  filter: FilterState;
-  setFilter: (params: Partial<FindParams>) => void;
-  sort: SortState;
-  setSort: (params: { sortBy?: string; sortOrder?: 'desc' | 'asc' }) => void;
+  filter: BookFilterState;
+  setFilter: (params: BookFilterState) => void;
+  sort: BookSortState;
+  setSort: (params: BookSortState) => void;
   defaultValue?: string;
 }) {
   const { t, keys } = useLocale('books');
@@ -188,13 +184,17 @@ function FilterTabs({
         </TabsTrigger>
       </TabsList>
       <TabsContent value='filter'>
-        <BookFilter filter={filter} onFilter={setFilter} onReset={() => setFilter({})} />
+        <BookFilter
+          filter={filter}
+          onFilter={setFilter}
+          onReset={() => setFilter(DEFAULT_BOOK_FILTER)}
+        />
       </TabsContent>
       <TabsContent value='sort'>
         <BookSort
           sort={sort}
           onSort={setSort}
-          onReset={() => setSort({ sortBy: 'createdAt', sortOrder: 'desc' })}
+          onReset={() => setSort(DEFAULT_BOOK_SORT)}
         />
       </TabsContent>
     </Tabs>

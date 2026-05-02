@@ -1,7 +1,15 @@
 import Link from 'next/link';
 import { useLocale as useNextLocale } from 'next-intl';
-import { LogInIcon, UserPlus } from 'lucide-react';
-import { BadgeCheck, ChevronsUpDown, CreditCard, LogOut, Settings, Sparkles } from 'lucide-react';
+import { 
+  LogInIcon, 
+  UserPlus, 
+  BadgeCheck, 
+  ChevronsUpDown, 
+  CreditCard, 
+  LogOut, 
+  Settings, 
+  Sparkles 
+} from 'lucide-react';
 import useDialogState from '@/hooks/ui/useDialogState';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 import {

@@ -16,23 +16,16 @@ import {
 } from '@repo/ui/components/dialog';
 import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui/components/select';
 import { DatePicker } from '@/components/form/date-picker';
 import { ItemCombobox } from './items-combobox';
-import { UserCombobox } from './users-combobox';
+
+import { useLocale } from '@/hooks/ui/useLocale';
 
 type BorrowsMutateDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialData?: Partial<BorrowResponse>;
-  onSubmit: (data: Partial<BorrowRequest>) => void;
+  onSubmit: (data: BorrowRequest) => void;
 };
 
 export function BorrowsMutateDialog({
@@ -41,27 +34,29 @@ export function BorrowsMutateDialog({
   initialData,
   onSubmit,
 }: BorrowsMutateDialogProps) {
+  const { t, keys } = useLocale('library');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<BorrowRequest>({
     resolver: zodResolver(BorrowRequestSchema),
     defaultValues: {
-      borrower: initialData?.borrower?.id ?? '',
-      item: initialData?.item?.id ?? '',
-      expireTime: initialData?.expireTime ? new Date(initialData.expireTime) : undefined,
-      status: initialData?.status,
-      note: initialData?.note ?? '',
+      bookId: initialData?.book?.id ?? '',
+      dueDate: initialData?.dueDate ? new Date(initialData.dueDate) : undefined,
+      notes: initialData?.notes ?? '',
     },
   });
+
+  const mutateKeys = keys.table.actions.mutate;
+  const isEdit = !!initialData?.id;
 
   return (
     <Dialog modal={true} open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-100'>
         <DialogHeader>
-          <DialogTitle>{initialData?.id ? 'Edit Borrow' : 'Add Borrow'}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? t(mutateKeys.update.title) : t(mutateKeys.create.title)}
+          </DialogTitle>
           <DialogDescription>
-            {initialData?.id
-              ? 'Update the borrow information below.'
-              : 'Enter the information for the new borrow.'}
+            {isEdit ? t(mutateKeys.update.description) : t(mutateKeys.create.description)}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -70,11 +65,7 @@ export function BorrowsMutateDialog({
               if (isSubmitting) return;
               setIsSubmitting(true);
               try {
-                await onSubmit({
-                  id: initialData?.id,
-                  ...data,
-                  expireTime: data.expireTime ? new Date(data.expireTime) : undefined,
-                });
+                await onSubmit(data);
                 onOpenChange(false);
                 form.reset();
               } finally {
@@ -86,24 +77,10 @@ export function BorrowsMutateDialog({
             <fieldset disabled={isSubmitting} className='space-y-4'>
               <FormField
                 control={form.control}
-                name='borrower'
+                name='bookId'
                 render={({ field, fieldState }) => (
                   <div className='grid gap-3'>
-                    <FormLabel htmlFor='borrower'>User</FormLabel>
-                    <UserCombobox
-                      value={field.value}
-                      onChange={field.onChange}
-                      error={fieldState.error?.message}
-                    />
-                  </div>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='item'
-                render={({ field, fieldState }) => (
-                  <div className='grid gap-3'>
-                    <FormLabel htmlFor='item'>Item</FormLabel>
+                    <FormLabel htmlFor='bookId'>{t(mutateKeys.fields.book)}</FormLabel>
                     <ItemCombobox
                       value={field.value}
                       onChange={field.onChange}
@@ -114,15 +91,15 @@ export function BorrowsMutateDialog({
               />
               <FormField
                 control={form.control}
-                name='expireTime'
+                name='dueDate'
                 render={({ field }) => (
                   <div className='grid gap-3'>
-                    <FormLabel htmlFor='expireTime'>Expire Time</FormLabel>
+                    <FormLabel htmlFor='dueDate'>{t(mutateKeys.fields.dueDate)}</FormLabel>
                     <FormControl>
                       <DatePicker
                         selected={field.value ? new Date(field.value) : undefined}
                         onSelect={field.onChange}
-                        placeholder='Pick a date'
+                        placeholder={t(mutateKeys.fields.placeholder)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -131,36 +108,12 @@ export function BorrowsMutateDialog({
               />
               <FormField
                 control={form.control}
-                name='status'
+                name='notes'
                 render={({ field }) => (
                   <div className='mb-3 grid gap-3'>
-                    <FormLabel htmlFor='status'>Status</FormLabel>
+                    <FormLabel htmlFor='notes'>{t(mutateKeys.fields.notes)}</FormLabel>
                     <FormControl>
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger id='status' className='w-full'>
-                          <SelectValue placeholder='Select status' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value='active'>Active</SelectItem>
-                            <SelectItem value='returned'>Returned</SelectItem>
-                            <SelectItem value='overdue'>Overdue</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </div>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='note'
-                render={({ field }) => (
-                  <div className='mb-3 grid gap-3'>
-                    <FormLabel htmlFor='note'>Note</FormLabel>
-                    <FormControl>
-                      <Input id='note' {...field} />
+                      <Input id='notes' {...field} />
                     </FormControl>
                     <FormMessage />
                   </div>
@@ -170,11 +123,15 @@ export function BorrowsMutateDialog({
               <DialogFooter>
                 <DialogClose asChild>
                   <Button variant='outline' type='button'>
-                    Cancel
+                    {t(mutateKeys.cancel)}
                   </Button>
                 </DialogClose>
                 <Button type='submit' disabled={isSubmitting}>
-                  {isSubmitting ? 'Saving...' : (initialData?.id ? 'Save changes' : 'Create')}
+                  {isSubmitting
+                    ? t(mutateKeys.loading)
+                    : isEdit
+                      ? t(mutateKeys.update.submit)
+                      : t(mutateKeys.create.submit)}
                 </Button>
               </DialogFooter>
             </fieldset>

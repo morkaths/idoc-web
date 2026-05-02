@@ -58,18 +58,19 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
       if (currentBookmark) {
         await updateBookmarkMut.mutateAsync({
           id: currentBookmark.id,
-          data: { folder: selectedFolder || undefined },
+          data: { folderId: selectedFolder || undefined },
         });
       } else {
         await createBookmarkMut.mutateAsync({
-          item: bookId,
-          folder: selectedFolder,
+          bookId: bookId,
+          folderId: selectedFolder,
         });
       }
       toast.success(t(keys.bookmarks.success));
       onOpenChange(false);
-    } catch (error: any) {
-      toast.error(error?.message || t(keys.bookmarks.error));
+    } catch (error: unknown) {
+      const err = error as Record<string, unknown>;
+      toast.error((err?.message as string) || t(keys.bookmarks.error));
     } finally {
       setIsSubmitting(false);
     }
@@ -85,10 +86,15 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
       setShowCreateFolder(false);
       setNewFolderName('');
       toast.success('Folder created');
-    } catch (error: any) {
-      toast.error(error?.message || 'Failed to create folder');
+    } catch (error: unknown) {
+      const err = error as Record<string, unknown>;
+      toast.error((err?.message as string) || 'Failed to create folder');
     }
   };
+
+  const folderObj = currentBookmark?.folder as Record<string, unknown> | undefined;
+  const currentFolderId = (folderObj?.id as string) || (typeof currentBookmark?.folder === 'string' ? currentBookmark.folder : '');
+  const currentFolderName = (folderObj?.name as string) || folders.find(f => f.id === currentFolderId)?.name;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -97,7 +103,7 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
           <DialogTitle>{t(keys.bookmarks.title)}</DialogTitle>
           <DialogDescription>{t(keys.bookmarks.description)}</DialogDescription>
         </DialogHeader>
-
+ 
         <fieldset disabled={isSubmitting} className='contents'>
           <div className='grid gap-4 py-4'>
             {showCreateFolder ? (
@@ -118,7 +124,7 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
             ) : (
               <div className='flex items-center gap-2'>
                 <Select
-                  value={selectedFolder || (currentBookmark?.folder as any)?.id || ''}
+                  value={selectedFolder || currentFolderId || ''}
                   onValueChange={setSelectedFolder}
                 >
                   <SelectTrigger className='flex-1'>
@@ -151,8 +157,8 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
 
           <DialogFooter className='flex items-center justify-between sm:justify-between'>
             <div className='text-muted-foreground text-xs'>
-              {currentBookmark && (currentBookmark.folder as any)?.name && (
-                <span>Current: {(currentBookmark.folder as any).name}</span>
+              {currentFolderName && (
+                <span>Current: {currentFolderName}</span>
               )}
             </div>
             <div className='flex gap-2'>

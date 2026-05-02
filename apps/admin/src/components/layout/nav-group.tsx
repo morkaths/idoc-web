@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { Link, useLocation } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
+import { useDirection } from '@/context/direction-provider';
 import { Badge } from '@repo/ui/components/badge';
 import {
   Collapsible,
@@ -26,7 +27,6 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@repo/ui/components/sidebar';
-import { useDirection } from '@/context/direction-provider';
 import {
   type NavCollapsible,
   type NavItem,
@@ -137,10 +137,7 @@ function SidebarMenuCollapsedDropdown({ item, href }: { item: NavCollapsible; hr
           <DropdownMenuSeparator />
           {item.items.map((sub) => (
             <DropdownMenuItem key={`${sub.title}-${sub.url}`} asChild>
-              <Link
-                to={sub.url}
-                className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}
-              >
+              <Link to={sub.url} className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}>
                 {sub.icon && <sub.icon />}
                 <span className='max-w-52 text-wrap'>{sub.title}</span>
                 {sub.badge && <span className='ms-auto text-xs'>{sub.badge}</span>}

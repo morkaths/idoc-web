@@ -42,16 +42,14 @@ export function ReviewMutateDialog({
 }: ReviewMutateDialogProps) {
   const { t, keys } = useLocale('library');
   const { data: session } = useSession();
-
-  // Fetch existing review
   const { data: reviewsData } = useReviews(
     {
       filters: [
         { field: 'user', value: session?.user?.id },
-        { field: 'item', value: borrow.item?.id },
+        { field: 'book', value: borrow.book?.id },
       ],
     },
-    { enabled: !!session?.user?.id && !!borrow.item?.id && open }
+    { enabled: !!session?.user?.id && !!borrow.book?.id && open }
   );
   const existingReview = reviewsData?.data?.[0];
 
@@ -65,7 +63,6 @@ export function ReviewMutateDialog({
     },
   });
 
-  // Reset form when dialog opens or existing review changes
   useEffect(() => {
     if (open) {
       form.reset({
@@ -79,8 +76,8 @@ export function ReviewMutateDialog({
     try {
       setIsSubmitting(true);
       await onSubmit(data, existingReview);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      // Error is handled by the caller or assumed to be silent
     } finally {
       setIsSubmitting(false);
     }
@@ -94,8 +91,8 @@ export function ReviewMutateDialog({
             {existingReview ? t(keys.review.update) : t(keys.review.create)}
           </DialogTitle>
           <DialogDescription>
-            {borrow.item?.title
-              ? t(keys.review.description, { title: borrow.item.title })
+            {borrow.book?.title
+              ? t(keys.review.description, { title: borrow.book.title })
               : t(keys.review.fallback)}
           </DialogDescription>
         </DialogHeader>

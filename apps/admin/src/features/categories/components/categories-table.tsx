@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
-import { useCategories } from '@/hooks/data/useCategory';
+import { useSearchCategories } from '@/hooks/data/useCategory';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
   Table,
@@ -21,15 +21,19 @@ import {
   TableRow,
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
+import { Languages } from '@/types';
 import { categoriesColumns as columns } from './categories-columns';
 import CategoriesTableBulkActions from './categories-table-bulk-actions';
+import { buildCategoryFindParams } from './categories-query.utils';
 
 const route = getRouteApi('/_authenticated/categories/');
 
 export function CategoriesTable() {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    lang: false,
+  });
 
   const {
     globalFilter,
@@ -43,31 +47,22 @@ export function CategoriesTable() {
     search: route.useSearch(),
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: true, key: 'q' },
-    columnFilters: [],
+    globalFilter: { enabled: true, key: 'query' },
+    columnFilters: [
+      { columnId: 'lang', searchKey: 'lang', type: 'array' },
+    ],
   });
 
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
 
-  const categoryParams = useMemo(() => {
-    const apiSort = sorting[0]
-      ? {
-          sortBy: String(sorting[0].id),
-          sortOrder: sorting[0].desc ? 'desc' : 'asc',
-        }
-      : undefined;
-
-    return {
-      page,
-      limit,
-      query: globalFilter ?? '',
-      ...(apiSort || {}),
-    };
-  }, [page, limit, globalFilter, sorting]);
+  const categoryParams = useMemo(
+    () => buildCategoryFindParams(page, limit, globalFilter ?? '', sorting, columnFilters),
+    [page, limit, globalFilter, sorting, columnFilters]
+  );
 
   // fetch server-side page
-  const { data: categoriesData, isFetching: isCategoriesFetching } = useCategories(categoryParams);
+  const { data: categoriesData, isFetching: isCategoriesFetching } = useSearchCategories(categoryParams);
   const categories = categoriesData?.data ?? [];
   const categoryPagination = categoriesData?.pagination;
 
@@ -98,24 +93,29 @@ export function CategoriesTable() {
   });
 
   useEffect(() => {
-    if (!onPaginationChange) return;
     setRowSelection({});
-    onPaginationChange((prev) => ({
-      ...prev,
-      pageIndex: 0,
-      pageSize: pagination.pageSize ?? 10,
-    }));
-  }, [globalFilter]);
+  }, [globalFilter, columnFilters]);
 
+  const pageCount = table.getPageCount();
   useEffect(() => {
-    ensurePageInRange(table.getPageCount());
-  }, [table.getPageCount(), ensurePageInRange]);
+    ensurePageInRange(pageCount);
+  }, [pageCount, ensurePageInRange]);
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
       <DataTableToolbar
         table={table}
         searchPlaceholder='Search categories...'
+        filters={[
+          {
+            columnId: 'lang',
+            title: 'Language',
+            options: Languages.filter((l) => l.enabled).map((l) => ({
+              label: l.label,
+              value: l.value,
+            })),
+          },
+        ]}
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>

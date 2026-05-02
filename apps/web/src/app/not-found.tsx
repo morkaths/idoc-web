@@ -4,8 +4,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { ThemeProvider } from "@/context/theme-provider";
 import { getMessages } from 'next-intl/server';
 import { defaultLocale } from '@/i18n';
-import { fontVariables } from "@/config/fonts";
-import { cn } from "@/lib/utils";
 import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {

@@ -54,22 +54,23 @@ export function AuthorsCombobox({ value, onChange, initialAuthors = [] }: Author
 
   useEffect(() => {
     if (data?.data) {
-      // Update cache map
-      setAuthorMap((prev) => {
-        const next = new Map(prev);
-        data.data.forEach((a) => next.set(a.id, a));
-        return next;
-      });
-
-      if (page === 1) {
-        setAuthors(data.data);
-      } else {
-        setAuthors((prev) => {
-          const prevIds = new Set(prev.map((a) => a.id));
-          const newAuthors = data.data.filter((a) => !prevIds.has(a.id));
-          return [...prev, ...newAuthors];
+      Promise.resolve().then(() => {
+        setAuthorMap((prev) => {
+          const next = new Map(prev);
+          data.data.forEach((a) => next.set(a.id, a));
+          return next;
         });
-      }
+
+        if (page === 1) {
+          setAuthors(data.data);
+        } else {
+          setAuthors((prev) => {
+            const prevIds = new Set(prev.map((a) => a.id));
+            const newAuthors = data.data.filter((a) => !prevIds.has(a.id));
+            return [...prev, ...newAuthors];
+          });
+        }
+      });
     }
   }, [data, page]);
 

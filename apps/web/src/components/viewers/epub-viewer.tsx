@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { ReactReader, IReactReaderStyle, ReactReaderStyle } from "react-reader";
+import { ReactReader, type IReactReaderStyle, ReactReaderStyle } from "react-reader";
+import type { Rendition, Contents } from 'epubjs';
 import { List, Maximize, Minimize } from 'lucide-react';
 
 import { Button } from "@repo/ui/components/button";
@@ -15,7 +16,7 @@ import {
 
 import { API_CONFIG } from "@/config/api";
 import { useReaderSettings } from "../../context/reader-provider";
-import { Theme, EPUB_THEMES, ThemeOption } from "./data/setting-data";
+import { type Theme, EPUB_THEMES } from "./data/setting-data";
 import { EpubSettings } from "./epub-settings";
 
 const createReaderStyle = (): IReactReaderStyle => ({
@@ -59,10 +60,10 @@ const GOOGLE_FONTS_URL = "https://fonts.googleapis.com/css2?family=Roboto:wght@4
 const OPEN_DYSLEXIC_URL = "https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/header.min.css";
 
 /**
- * Đăng ký phông chữ ngoại vi vào tài liệu EPUB
+ * Đăng ký các font đặc biệt vào document bên trong iframe
  */
-const registerExternalFonts = (contents: any) => {
-    const head = contents.window.document.head;
+const registerExternalFonts = (contents: Contents) => {
+    const head = contents.document.head;
     if (!head) return;
 
     const link = contents.window.document.createElement("link");
@@ -79,10 +80,10 @@ const registerExternalFonts = (contents: any) => {
 /**
  * Áp dụng cấu hình giao diện (theme, font, size) vào rendition
  */
-const applyRenditionStyles = (rendition: any, theme: Theme, fontFamily: string, fontSize: number) => {
+const applyRenditionStyles = (rendition: Rendition, theme: Theme, fontFamily: string, fontSize: number) => {
     const activeTheme = EPUB_THEMES.find(t => t.value === theme) || EPUB_THEMES[0] || { fg: '#000', bg: '#fff' };
     const currentFont = fontFamily === 'Origin' ? 'inherit' : (fontFamily === 'OpenDyslexic' ? '"OpenDyslexic", sans-serif' : fontFamily);
-    
+
     // Sử dụng default() để ép áp dụng style vào body, tránh bug kẹt theme của epub.js
     rendition.themes.default({
         body: {
@@ -93,7 +94,7 @@ const applyRenditionStyles = (rendition: any, theme: Theme, fontFamily: string, 
             'padding': '20px 40px !important'
         }
     });
-    
+
     // Vẫn dùng fontSize API cho đồng bộ
     rendition.themes.fontSize(`${fontSize}%`);
 };
@@ -105,7 +106,7 @@ type EpubViewerProps = {
 
 export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
 
-    const { 
+    const {
         settings,
         getEpubLocations,
         saveEpubLocations
@@ -116,10 +117,10 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
     const absoluteFileUrl = useMemo(() => {
         if (!fileUrl) return "";
         if (fileUrl.startsWith("http")) return fileUrl;
-        
+
         const baseUrl = API_CONFIG.baseURL || "";
         const cleanBase = baseUrl.replace(/\/api$/, "");
-        
+
         if (fileUrl.startsWith("/")) {
             return `${cleanBase}${fileUrl}`;
         }
@@ -133,21 +134,21 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
         try {
             const url = new URL(absoluteFileUrl);
             base = `${url.origin}${url.pathname}`;
-        } catch (e) {
+        } catch {
             base = absoluteFileUrl.split('?')[0] || "";
         }
         return `epub_loc_${flow}_${base}`;
     }, [absoluteFileUrl, flow]);
 
     const [location, setLocation] = useState<string | number>(0);
-    const [toc, setToc] = useState<any[]>([]);
+    const [toc, setToc] = useState<{ href: string; label: string; level?: number }[]>([]);
     const [isTocOpen, setIsTocOpen] = useState(false);
     const [progress, setProgress] = useState(0);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(0);
     const [isCalculating, setIsCalculating] = useState(false);
     const [epubData, setEpubData] = useState<ArrayBuffer | string | null>(null);
-    const renditionRef = useRef<any>(null);
+    const renditionRef = useRef<Rendition | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const locationsInitializedRef = useRef<boolean>(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -163,10 +164,10 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
 
     const toggleFullscreen = () => {
         if (!containerRef.current) return;
-        
+
         if (!document.fullscreenElement) {
-            containerRef.current.requestFullscreen().catch(err => {
-                console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+            containerRef.current.requestFullscreen().catch(() => {
+                // Silently fail or handle error without console
             });
         } else {
             document.exitFullscreen();
@@ -185,9 +186,9 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
     // Tải file thủ công để tránh lỗi nhận diện URL có query params
     useEffect(() => {
         if (!absoluteFileUrl) return;
-        
+
         setEpubData(null); // Reset khi đổi sách
-        
+
         fetch(absoluteFileUrl)
             .then(res => {
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
@@ -196,108 +197,113 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
             .then(buffer => {
                 setEpubData(buffer);
             })
-            .catch(err => {
+            .catch(() => {
                 // Fallback về URL nếu fetch lỗi (CORS, v.v.)
                 setEpubData(absoluteFileUrl);
             });
     }, [absoluteFileUrl]);
 
-    const themeConfig = useMemo(() => 
-        EPUB_THEMES.find(t => t.value === theme) ?? EPUB_THEMES[0]!, 
+    const themeConfig = useMemo(() =>
+        EPUB_THEMES.find(t => t.value === theme) ?? EPUB_THEMES[0]!,
     [theme]);
 
     const handleLocationChange = useCallback((epubcfi: string | number) => {
         setLocation(epubcfi);
         const rendition = renditionRef.current;
         if (rendition?.book?.locations) {
-            const loc = rendition.book.locations;
+            const loc = rendition.book.locations as unknown as { 
+                percentageFromCfi?: (cfi: string) => number;
+                locationFromCfi?: (cfi: string) => number;
+            };
             try {
-                const percentage = typeof loc.percentageFromCfi === 'function' 
-                    ? loc.percentageFromCfi(epubcfi as string) 
+                const percentage = typeof loc.percentageFromCfi === 'function'
+                    ? loc.percentageFromCfi(epubcfi as string)
                     : 0;
                 setProgress(Math.round(percentage * 100));
-                
+
                 const current = typeof loc.locationFromCfi === 'function'
                     ? loc.locationFromCfi(epubcfi as string)
                     : null;
-                    
+
                 if (current !== null && current !== undefined) {
                     setCurrentPage(current + 1);
                 }
-            } catch (err) {
-                console.warn("Error calculating location:", err);
+            } catch {
+                // Fail silently
             }
         }
     }, []);
 
-    const getRendition = useCallback((rendition: any) => {
-        renditionRef.current = rendition;
-        if (!rendition) return;
+const getRendition = useCallback((rendition: Rendition) => {
+    renditionRef.current = rendition;
+    if (!rendition) return;
 
-        // Cấp quyền sandbox - CHỈ ĐĂNG KÝ 1 LẦN
-        rendition.hooks.content.register((contents: any) => {
-            const iframe = contents.window.frameElement;
-            if (iframe) {
-                iframe.setAttribute("sandbox", "allow-scripts allow-popups allow-forms");
-            }
-            registerExternalFonts(contents);
-        });
-
-        // Áp dụng styles ngay lập tức
-        applyRenditionStyles(rendition, settings.theme, settings.fontFamily, settings.fontSize);
-
-        // Logic nạp số trang (Chặn lặp bằng Ref - Tuyệt đối không tính lại khi đổi font/theme)
-        if (rendition.book && !locationsInitializedRef.current) {
-            rendition.book.ready.then(async () => {
-                const locations = rendition.book.locations;
-                
-                // 1. Thử nạp từ Cache
-                if (cacheKey) {
-                    const cached = getEpubLocations(cacheKey);
-                    if (cached && typeof locations.load === 'function') {
-                        try {
-                            locations.load(cached);
-                            const len = typeof locations.length === 'function' ? locations.length() : locations.length;
-                            setTotalPages(Number(len) || 0);
-                            locationsInitializedRef.current = true; // Khóa ngay lập tức
-                            setIsCalculating(false);
-                            return true;
-                        } catch (e) {
-                            console.warn("Failed to load cached locations:", e);
-                        }
-                    }
-                }
-                
-                // 2. Nếu không có cache, tính toán mới
-                if (locations && typeof locations.generate === 'function' && rendition.book.spine) {
-                    setIsCalculating(true);
-                    try {
-                        console.log("[EpubViewer] One-time location generation...");
-                        await locations.generate(2048);
-                        if (cacheKey && typeof locations.export === 'function') {
-                            const exported = locations.export();
-                            if (exported) saveEpubLocations(cacheKey, exported);
-                        }
-                    } catch (e) {
-                        console.error("Error during locations.generate:", e);
-                    } finally {
-                        setIsCalculating(false);
-                    }
-                }
-                return true;
-            }).then(() => {
-                const locations = rendition.book?.locations;
-                if (locations) {
-                    const len = typeof locations.length === 'function' ? locations.length() : locations.length;
-                    if (len > 0) setTotalPages(Number(len));
-                }
-                locationsInitializedRef.current = true; // Đánh dấu hoàn tất
-                
-                const startLoc = rendition.location?.start?.cfi;
-                if (startLoc) handleLocationChange(startLoc);
-            });
+    // Cấp quyền sandbox - CHỈ ĐĂNG KÝ 1 LẦN
+    rendition.hooks.content.register((contents: Contents) => {
+        const iframe = (contents as unknown as { window?: { frameElement?: Element } }).window?.frameElement;
+        if (iframe) {
+            iframe.setAttribute("sandbox", "allow-scripts allow-popups allow-forms");
         }
-    }, [cacheKey, getEpubLocations, saveEpubLocations, handleLocationChange, settings]); // settings deps ở đây ổn vì locationsInitializedRef sẽ chặn việc nạp lại
+        registerExternalFonts(contents);
+    });
+
+    // Áp dụng styles ngay lập tức
+    applyRenditionStyles(rendition, settings.theme, settings.fontFamily, settings.fontSize);
+
+    // Logic nạp số trang (Chặn lặp bằng Ref - Tuyệt đối không tính lại khi đổi font/theme)
+    if (rendition.book && !locationsInitializedRef.current) {
+        rendition.book.ready.then(async () => {
+            const locations = rendition.book.locations;
+
+            // 1. Thử nạp từ Cache
+            if (cacheKey) {
+                const cached = getEpubLocations(cacheKey);
+                if (cached && typeof locations.load === 'function') {
+                    try {
+                        locations.load(cached);
+                        const locs = locations as unknown as { length?: number | (() => number) };
+                        const len = typeof locs.length === 'function' ? locs.length() : locs.length;
+                        setTotalPages(Number(len) || 0);
+                        locationsInitializedRef.current = true; // Khóa ngay lập tức
+                        setIsCalculating(false);
+                        return true;
+                    } catch {
+                        // Failed to load cached locations
+                    }
+                }
+            }
+
+            // 2. Nếu không có cache, tính toán mới
+            if (locations && typeof locations.generate === 'function' && rendition.book.spine) {
+                setIsCalculating(true);
+                try {
+                    await locations.generate(2048);
+                    const locs = locations as unknown as { save?: () => string };
+                    if (cacheKey && typeof locs.save === 'function') {
+                        const exported = locs.save();
+                        if (exported) saveEpubLocations(cacheKey, exported);
+                    }
+                } catch {
+                    // Error during locations.generate
+                } finally {
+                    setIsCalculating(false);
+                }
+            }
+            return true;
+        }).then(() => {
+            const locations = rendition.book?.locations;
+            if (locations) {
+                const locs = locations as unknown as { length?: number | (() => number) };
+                const len = typeof locs.length === 'function' ? locs.length() : locs.length;
+                if (len !== undefined && Number(len) > 0) setTotalPages(Number(len));
+            }
+            locationsInitializedRef.current = true; // Đánh dấu hoàn tất
+
+            const startLoc = rendition.location?.start?.cfi;
+            if (startLoc) handleLocationChange(startLoc);
+        });
+    }
+}, [cacheKey, getEpubLocations, saveEpubLocations, handleLocationChange, settings]); // settings deps ở đây ổn vì locationsInitializedRef sẽ chặn việc nạp lại
 
     useEffect(() => {
         const rendition = renditionRef.current;
@@ -317,29 +323,29 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
     }, []);
 
     return (
-        <div 
+        <div
             ref={containerRef}
             className={`h-full w-full relative overflow-hidden rounded-md border transition-colors flex flex-col ${className || ""}`}
-            style={{ 
-                backgroundColor: themeConfig.bg, 
+            style={{
+                backgroundColor: themeConfig.bg,
                 borderColor: themeConfig.uiBorder,
-                ['--reader-bg' as any]: themeConfig.bg,
-                ['--reader-ui-fg' as any]: themeConfig.uiFg,
-                ['--reader-ui-border' as any]: themeConfig.uiBorder,
-            }}
+                '--reader-bg': themeConfig.bg,
+                '--reader-ui-fg': themeConfig.uiFg,
+                '--reader-ui-border': themeConfig.uiBorder,
+            } as React.CSSProperties}
         >
             {/* Custom Header Controls */}
             <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
                 <div className="pointer-events-auto">
                     <Sheet open={isTocOpen} onOpenChange={setIsTocOpen}>
                         <SheetTrigger asChild>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
+                            <Button
+                                variant="ghost"
+                                size="icon"
                                 className="h-9 w-9 backdrop-blur-sm transition-all border bg-background/50 rounded-md"
-                                style={{ 
-                                    color: themeConfig.uiFg, 
-                                    borderColor: themeConfig.uiBorder 
+                                style={{
+                                    color: themeConfig.uiFg,
+                                    borderColor: themeConfig.uiBorder
                                 }}
                             >
                                 <List className="h-5 w-5" />
@@ -360,7 +366,7 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
                                             key={index}
                                             onClick={() => handleTocClick(item.href)}
                                             className="w-full text-left px-4 py-2 text-sm rounded-md transition-colors truncate"
-                                            style={{ 
+                                            style={{
                                                 paddingLeft: `${(item.level || 0) * 12 + 16}px`,
                                                 color: themeConfig.fg,
                                             }}
@@ -381,13 +387,13 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
                 </div>
 
                 <div className="pointer-events-auto flex items-center gap-2">
-                    <Button 
-                        variant="ghost" 
-                        size="icon" 
+                    <Button
+                        variant="ghost"
+                        size="icon"
                         className="h-9 w-9 backdrop-blur-sm transition-all border bg-background/50 rounded-md"
-                        style={{ 
-                            color: themeConfig.uiFg, 
-                            borderColor: themeConfig.uiBorder 
+                        style={{
+                            color: themeConfig.uiFg,
+                            borderColor: themeConfig.uiBorder
                         }}
                         onClick={toggleFullscreen}
                     >
@@ -416,7 +422,7 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
                         url={epubData}
                         location={location}
                         locationChanged={handleLocationChange}
-                        tocChanged={(toc: any[]) => setToc(toc)}
+                        tocChanged={(toc) => setToc(toc)}
                         epubOptions={{
                             flow: flow === 'paginated' ? 'paginated' : 'scrolled',
                             manager: flow === 'paginated' ? 'default' : 'continuous',
@@ -431,22 +437,22 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
             </div>
 
             {/* Progress Bar & Status */}
-            <div 
+            <div
                 className="h-10 border-t flex items-center justify-between px-6 transition-colors z-10"
                 style={{ backgroundColor: themeConfig.bg, borderColor: themeConfig.uiBorder }}
             >
                 <div className="flex items-center gap-4 flex-1">
                     <div className="flex-1 h-1.5 bg-muted/30 rounded-full overflow-hidden relative">
-                        <div 
+                        <div
                             className={`absolute inset-y-0 left-0 transition-all duration-300 ease-out rounded-full ${isCalculating ? 'animate-pulse opacity-50' : ''}`}
-                            style={{ 
-                                width: isCalculating ? '100%' : `${progress}%`, 
+                            style={{
+                                width: isCalculating ? '100%' : `${progress}%`,
                                 backgroundColor: themeConfig.uiFg.replace('0.4', '0.8')
                             }}
                         />
                     </div>
                 </div>
-                
+
                 <div className="ml-4 flex items-center gap-3 text-[11px] font-bold tracking-widest uppercase opacity-80" style={{ color: themeConfig.fg }}>
                     {isCalculating ? (
                         <span className="animate-pulse italic">Processing...</span>

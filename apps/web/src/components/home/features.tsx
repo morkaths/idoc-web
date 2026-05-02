@@ -1,7 +1,7 @@
 import { GridPattern } from "@repo/ui/components/grid-pattern";
 import { cn } from "@/lib/utils";
 import type React from "react";
-import { FeatureType, FEATURES } from "./data/feature-data";
+import { type FeatureType, FEATURES } from "./data/feature-data";
 
 export default function FeatureSection() {
 	return (

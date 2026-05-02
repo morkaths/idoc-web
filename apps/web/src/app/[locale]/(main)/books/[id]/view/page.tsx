@@ -2,7 +2,6 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { API_CONFIG } from '@/config/api';
 import { ArrowLeft, Loader2, Lock } from 'lucide-react';
 import { useBook } from '@/hooks/data/useBook';
 import { useBorrowHistory, useRead } from '@/hooks/data/useBorrow';
@@ -17,7 +16,7 @@ export default function BookViewPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { data: book, isLoading: bookLoading } = useBook(params.id);
-  const { data: file, isLoading: fileLoading } = useFile(book?.file || '');
+  const { data: file, isLoading: fileLoading } = useFile(book?.fileId || '');
   const { data: borrows, isLoading: borrowsLoading } = useBorrowHistory(
     {
       item: params.id,
@@ -32,8 +31,8 @@ export default function BookViewPage() {
     enabled: !!activeBorrowId && !!session?.user,
   });
 
-  const { data: viewUrl, isLoading: viewUrlLoading } = useViewUrl(book?.file || '', ticket || '', {
-    enabled: !!book?.file && !!ticket,
+  const { data: viewUrl, isLoading: viewUrlLoading } = useViewUrl(book?.fileId || '', ticket || '', {
+    enabled: !!book?.fileId && !!ticket,
   });
 
   const handleBack = () => router.back();
@@ -133,7 +132,7 @@ export default function BookViewPage() {
 
       <FileViewer
         fileUrl={viewUrl}
-        mimeType={file?.mimetype}
+        contentType={file?.contentType}
         className='bg-background w-full flex-1 overflow-hidden rounded-md border'
       />
     </main>

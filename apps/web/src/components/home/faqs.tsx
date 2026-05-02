@@ -39,7 +39,7 @@ export function FaqsSection() {
 			</div>
 			<div className="flex h-16 items-center justify-center border-t">
 				<p className="text-muted-foreground">
-					Can't find what you're looking for?{" "}
+					Can&apos;t find what you&apos;re looking for?{" "}
 					<a className="text-primary hover:underline" href="#">
 						Contact Us
 					</a>
@@ -66,7 +66,7 @@ const questions = [
 		id: "item-3",
 		title: "What features does Efferd include?",
 		content:
-			"Efferd offers a collaborative workspace where you can design and build beautiful web applications, with reusable UI blocks, deployment automation, and comprehensive analytics all in one place. With Efferd, you can streamline your team’s workflow and deliver high-quality websites quickly and efficiently.",
+			"Efferd offers a collaborative workspace where you can design and build beautiful web applications, with reusable UI blocks, deployment automation, and comprehensive analytics all in one place. With Efferd, you can streamline your team&apos;s workflow and deliver high-quality websites quickly and efficiently.",
 	},
 	{
 		id: "item-4",

@@ -29,13 +29,13 @@ export const BorrowTimeline = ({ borrow, className }: BorrowTimelineProps) => {
   };
 
   // Created
-  if (borrow.createdAt) {
+  if (borrow.borrowedDate) {
     timelineData.push({
-      date: format(new Date(borrow.createdAt), 'PPP'),
+      date: format(new Date(borrow.borrowedDate), 'PPP'),
       title: t(keys.table.actions.history.timeline.borrowed.title),
       content: t.rich(keys.table.actions.history.timeline.borrowed.content, {
-        username: borrow.borrower?.username || borrow.borrower.username,
-        title: borrow.item?.title || borrow.item.title,
+        username: borrow.user?.username || 'Unknown',
+        title: borrow.book?.title || 'Unknown',
         ...richRenderer,
       }),
       type: 'create',
@@ -50,7 +50,7 @@ export const BorrowTimeline = ({ borrow, className }: BorrowTimelineProps) => {
         date: date ? format(date, 'PPP') : t(keys.table.actions.history.timeline.unknown),
         title: t(keys.table.actions.history.timeline.renewal.title, { index: index + 1 }),
         content: t.rich(keys.table.actions.history.timeline.renewal.content, {
-          date: renewal.newExpireTime ? format(new Date(renewal.newExpireTime), 'PPP') : '...',
+          date: renewal.newDueDate ? format(new Date(renewal.newDueDate), 'PPP') : '...',
           ...richRenderer,
         }),
         type: 'renew',
@@ -59,17 +59,17 @@ export const BorrowTimeline = ({ borrow, className }: BorrowTimelineProps) => {
   }
 
   // Return or Due
-  if (borrow.returnTime) {
+  if (borrow.returnDate) {
     timelineData.push({
-      date: format(new Date(borrow.returnTime), 'PPP'),
+      date: format(new Date(borrow.returnDate), 'PPP'),
       title: t(keys.table.actions.history.timeline.returned.title),
       content: t(keys.table.actions.history.timeline.returned.content),
       type: 'return',
     });
-  } else if (borrow.expireTime) {
-    const expireDate = new Date(borrow.expireTime);
-    const isOverdue = expireDate < new Date();
-    const dateStr = format(expireDate, 'PPP');
+  } else if (borrow.dueDate) {
+    const dueDate = new Date(borrow.dueDate);
+    const isOverdue = dueDate < new Date();
+    const dateStr = format(dueDate, 'PPP');
 
     if (isOverdue) {
       timelineData.push({

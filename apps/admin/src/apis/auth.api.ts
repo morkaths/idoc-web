@@ -1,92 +1,81 @@
 import { ApiEndpoint } from '@/config/api';
-import type { AuthenticationResponse, UserResponse, UserRequest } from '../types';
+import type { AuthResponse, UserRequest, ApiResponse } from '../types';
 import { ApiClient } from './config';
 
 export const AuthApi = {
-  register: async (data: Partial<UserRequest>): Promise<AuthenticationResponse> => {
-    const response = await ApiClient.post<AuthenticationResponse>(
+  register: async (data: Partial<UserRequest>): Promise<ApiResponse<AuthResponse>> => {
+    return ApiClient.post<AuthResponse>(
       ApiEndpoint.endpoints.auth.register,
       { security: 'public', data }
     );
-    if (response.success && response.data) return response.data;
-    throw new Error(response.message || 'Registration failed');
   },
 
   login: async (data: {
-    identifier: string;
+    email: string;
     password: string;
-  }): Promise<AuthenticationResponse> => {
-    const response = await ApiClient.post<AuthenticationResponse>(
+  }): Promise<ApiResponse<AuthResponse>> => {
+    return ApiClient.post<AuthResponse>(
       ApiEndpoint.endpoints.auth.login,
       { security: 'public', data }
     );
-    if (response.success && response.data) return response.data;
-    throw new Error(response.message || 'Login failed');
   },
 
-  refresh: async (): Promise<AuthenticationResponse> => {
-    const response = await ApiClient.post<AuthenticationResponse>(
+  refresh: async (): Promise<ApiResponse<AuthResponse>> => {
+    return ApiClient.post<AuthResponse>(
       ApiEndpoint.endpoints.auth.refresh,
       { security: 'public' }
     );
-    if (response.success && response.data) return response.data;
-    throw new Error(response.message || 'Refresh token failed');
   },
 
-  logout: async (): Promise<boolean> => {
-    const response = await ApiClient.post<{ success: boolean }>(ApiEndpoint.endpoints.auth.logout, {
+  logout: async (): Promise<ApiResponse<void>> => {
+    return ApiClient.post<void>(ApiEndpoint.endpoints.auth.logout, {
       security: 'private',
     });
-    return response.success;
   },
 
-  verify: async (data: { token: string }): Promise<UserResponse> => {
-    const response = await ApiClient.post<UserResponse>(ApiEndpoint.endpoints.auth.verify, {
+  verify: async (data: { email: string; otp: string }): Promise<ApiResponse<void>> => {
+    return ApiClient.put<void>(ApiEndpoint.endpoints.auth.verify, {
       security: 'public',
       data,
     });
-    if (response.success && response.data) return response.data;
-    throw new Error(response.message || 'Verify email failed');
   },
 
-  resend: async (data: { email: string }): Promise<boolean> => {
-    const response = await ApiClient.post<{ success: boolean }>(ApiEndpoint.endpoints.auth.resend, {
-      security: 'public',
-      data,
-    });
-    return response.success;
+  resend: async (data: { email: string }): Promise<ApiResponse<void>> => {
+    return ApiClient.post<void>(
+      `${ApiEndpoint.endpoints.auth.resend}?email=${data.email}`,
+      {
+        security: 'public',
+      }
+    );
   },
 
-  changePassword: async (data: { oldPassword: string; newPassword: string }): Promise<boolean> => {
-    const response = await ApiClient.post<{ success: boolean }>(
+  changePassword: async (data: { oldPassword: string; newPassword: string }): Promise<ApiResponse<void>> => {
+    return ApiClient.post<void>(
       ApiEndpoint.endpoints.auth.changePassword,
       {
         security: 'private',
         data,
       }
     );
-    return response.success;
   },
 
-  forgotPassword: async (data: { email: string }): Promise<boolean> => {
-    const response = await ApiClient.post<{ success: boolean }>(
+  forgotPassword: async (data: { email: string }): Promise<ApiResponse<void>> => {
+    return ApiClient.post<void>(
       ApiEndpoint.endpoints.auth.forgotPassword,
       {
         security: 'public',
         data,
       }
     );
-    return response.success;
   },
 
-  resetPassword: async (data: { token: string; newPassword: string }): Promise<boolean> => {
-    const response = await ApiClient.post<{ success: boolean }>(
+  resetPassword: async (data: { token: string; newPassword: string }): Promise<ApiResponse<void>> => {
+    return ApiClient.post<void>(
       ApiEndpoint.endpoints.auth.resetPassword,
       {
         security: 'public',
         data,
       }
     );
-    return response.success;
   },
 };

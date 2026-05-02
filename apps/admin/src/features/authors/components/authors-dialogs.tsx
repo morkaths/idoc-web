@@ -1,4 +1,5 @@
 import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/handle-server-error';
 import { useCreateAuthor, useDeleteAuthor, useUpdateAuthor } from '@/hooks/data/useAuthor';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ImportDialog } from '@/components/import-dialog';
@@ -16,23 +17,22 @@ export function AuthorsDialogs() {
       <AuthorsMutateDialog
         key='author-create'
         open={open === 'create'}
-        onOpenChange={() => setOpen('create')}
-        onSubmit={(data) => {
-          return toast.promise(createAuthorMut.mutateAsync(data), {
+        onOpenChange={(val) => setOpen(val ? 'create' : null)}
+        onSubmit={async (data) => {
+          const promise = createAuthorMut.mutateAsync(data);
+          toast.promise(promise, {
             loading: 'Creating author...',
-            success: () => {
-              setOpen(null);
-              return 'Author created successfully!';
-            },
-            error: (err) => err?.message || 'Failed to create author',
+            success: (res) => res.message,
+            error: (err) => getErrorMessage(err, 'Failed to create author'),
           });
+          await promise;
         }}
       />
 
       <ImportDialog
         key='authors-import'
         open={open === 'import'}
-        onOpenChange={() => setOpen('import')}
+        onOpenChange={(val) => setOpen(val ? 'import' : null)}
       />
 
       {currentRow && (
@@ -40,23 +40,19 @@ export function AuthorsDialogs() {
           <AuthorsMutateDialog
             key={`author-update-${currentRow.id}`}
             open={open === 'update'}
-            onOpenChange={() => {
-              setOpen('update');
-              setTimeout(() => {
-                setCurrentRow(null);
-              }, 500);
+            onOpenChange={(val) => {
+              setOpen(val ? 'update' : null);
+              if (!val) setTimeout(() => setCurrentRow(null), 500);
             }}
             initialData={currentRow}
-            onSubmit={(data) => {
-              return toast.promise(updateAuthorMut.mutateAsync({ id: currentRow.id!, data }), {
+            onSubmit={async (data) => {
+              const promise = updateAuthorMut.mutateAsync({ id: currentRow.id!, data });
+              toast.promise(promise, {
                 loading: 'Updating author...',
-                success: () => {
-                  setOpen(null);
-                  setTimeout(() => setCurrentRow(null), 500);
-                  return 'Author updated successfully!';
-                },
-                error: (err) => err?.message || 'Failed to update author',
+                success: (res) => res.message,
+                error: (err) => getErrorMessage(err, 'Failed to update author'),
               });
+              await promise;
             }}
           />
 
@@ -64,22 +60,20 @@ export function AuthorsDialogs() {
             key='author-delete'
             destructive
             open={open === 'delete'}
-            onOpenChange={() => {
-              setOpen('delete');
-              setTimeout(() => {
-                setCurrentRow(null);
-              }, 500);
+            onOpenChange={(val) => {
+              setOpen(val ? 'delete' : null);
+              if (!val) setTimeout(() => setCurrentRow(null), 500);
             }}
-            handleConfirm={() => {
-              toast.promise(deleteAuthorMut.mutateAsync(currentRow.id!), {
+            handleConfirm={async () => {
+              const promise = deleteAuthorMut.mutateAsync(currentRow.id!);
+              toast.promise(promise, {
                 loading: 'Deleting author...',
-                success: () => {
-                  setOpen(null);
-                  setTimeout(() => setCurrentRow(null), 500);
-                  return 'Author deleted successfully!';
-                },
-                error: (err) => err?.message || 'Failed to delete author',
+                success: (res) => res.message,
+                error: (err) => getErrorMessage(err, 'Failed to delete author'),
               });
+              await promise;
+              setOpen(null);
+              setTimeout(() => setCurrentRow(null), 500);
             }}
             className='max-w-md'
             title={`Delete this author: ${currentRow.name || currentRow.id} ?`}

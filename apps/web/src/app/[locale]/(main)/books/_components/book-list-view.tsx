@@ -1,6 +1,6 @@
 'use client';
 
-import { BookResponse, Pagination as PaginationType } from '@/types';
+import { type BookResponse, type Pagination as PaginationType } from '@/types';
 import { BookListItems } from '@/components/book/book-list-items';
 import { Pagination } from '@/components/pagination';
 

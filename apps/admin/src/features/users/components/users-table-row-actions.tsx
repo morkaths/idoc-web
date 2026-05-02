@@ -1,71 +1,71 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type Row } from '@tanstack/react-table';
+import { type UserResponse } from '@/types';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
 import { useUsersContext } from './users-provider';
-import { type UserResponse } from '@/types';
 
 type UsersTableRowActionsProps<TData> = {
-    row: Row<TData>;
+  row: Row<TData>;
 };
 
 export function UsersTableRowActions<TData>({ row }: UsersTableRowActionsProps<TData>) {
-    const user = row.original as UserResponse;
-    const ctx = useUsersContext();
-    if (!ctx) throw new Error('UsersTableRowActions must be used inside UsersProvider');
-    const { setOpen, setCurrentRow } = ctx;
+  const user = row.original as UserResponse;
+  const ctx = useUsersContext();
+  if (!ctx) throw new Error('UsersTableRowActions must be used inside UsersProvider');
+  const { setOpen, setCurrentRow } = ctx;
 
-    return (
-        <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-                <Button variant='ghost' className='data-[state=open]:bg-muted flex h-8 w-8 p-0'>
-                    <DotsHorizontalIcon className='h-4 w-4' />
-                    <span className='sr-only'>Open menu</span>
-                </Button>
-            </DropdownMenuTrigger>
+  return (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button variant='ghost' className='data-[state=open]:bg-muted flex h-8 w-8 p-0'>
+          <DotsHorizontalIcon className='h-4 w-4' />
+          <span className='sr-only'>Open menu</span>
+        </Button>
+      </DropdownMenuTrigger>
 
-            <DropdownMenuContent align='end' className='w-40'>
-                <DropdownMenuItem
-                    onClick={() => {
-                        setCurrentRow(user);
-                        setOpen('edit');
-                    }}
-                >
-                    Edit
-                </DropdownMenuItem>
+      <DropdownMenuContent align='end' className='w-40'>
+        <DropdownMenuItem
+          onClick={() => {
+            setCurrentRow(user);
+            setOpen('edit');
+          }}
+        >
+          Edit
+        </DropdownMenuItem>
 
-                <DropdownMenuItem
-                    onClick={() => {
-                        setCurrentRow(user);
-                        setOpen('invite');
-                    }}
-                >
-                    Invite
-                </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            setCurrentRow(user);
+            setOpen('invite');
+          }}
+        >
+          Invite
+        </DropdownMenuItem>
 
-                <DropdownMenuSeparator />
+        <DropdownMenuSeparator />
 
-                <DropdownMenuItem
-                    onClick={() => {
-                        setCurrentRow(user);
-                        setOpen('delete');
-                    }}
-                >
-                    Delete
-                    <span className='ml-auto'>
-                        <Trash2 size={16} />
-                    </span>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
+        <DropdownMenuItem
+          onClick={() => {
+            setCurrentRow(user);
+            setOpen('delete');
+          }}
+        >
+          Delete
+          <span className='ml-auto'>
+            <Trash2 size={16} />
+          </span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
 
 export default UsersTableRowActions;

@@ -1,100 +1,101 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
+import { type QueryKey } from '@tanstack/react-query';
 import { BookmarkApi } from '@/apis/bookmark.api';
-import type { BookmarkResponse, BookmarkRequest, FindParams, Pagination } from '@/types';
-import { useMemo } from 'react';
+import type { BookmarkResponse, BookmarkRequest, FindParams, ApiResponse, PageResponse } from '@/types';
+import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type CreateMutationOptions, type UpdateMutationOptions, type DeleteMutationOptions, type ListQueryOptions, type ItemQueryOptions } from './factory';
 
-type PaginationResponse = { data: BookmarkResponse[]; pagination?: Pagination };
-
+/**
+ * Hook to fetch bookmarks with pagination
+ * @param params Search/filter parameters
+ * @param options Query options
+ */
 export const useBookmarks = (
     params: FindParams = {},
-    options?: Omit<UseQueryOptions<PaginationResponse, Error, PaginationResponse, QueryKey>, 'queryKey' | 'queryFn'>
+    options?: ListQueryOptions<BookmarkResponse>
 ) => {
-    const query = useQuery<PaginationResponse, Error, PaginationResponse, QueryKey>({
-        queryKey: ['bookmarks', params],
-        queryFn: () => BookmarkApi.find(params),
-        enabled: true,
-        refetchOnWindowFocus: false,
-        staleTime: 5 * 60 * 1000,
-        ...options,
-    });
-
-    const stabilizedData = useMemo(() => ({
-        data: query.data?.data || [],
-        pagination: query.data?.pagination,
-    }), [query.data]);
-
-    return useMemo(() => ({
-        ...query,
-        data: stabilizedData,
-    }), [query, stabilizedData]);
+    return useListQuery<BookmarkResponse>(
+        ['bookmarks', params],
+        () => BookmarkApi.find(params),
+        options
+    );
 };
 
-export const useBookmark = (id: string, options?: Omit<UseQueryOptions<BookmarkResponse, Error, BookmarkResponse, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<BookmarkResponse, Error, BookmarkResponse, QueryKey>({
-        queryKey: ['bookmarks', id],
-        queryFn: () => BookmarkApi.findById(id),
-        enabled: !!id,
-        staleTime: 10 * 60 * 1000,
-        ...options,
-    });
-
-    const data = useMemo(() => query.data || null, [query.data]);
-
-    return useMemo(() => ({
-        ...query,
-        data,
-    }), [query, data]);
+/**
+ * Hook to fetch a single bookmark by ID
+ * @param id Bookmark ID
+ * @param options Query options
+ */
+export const useBookmark = (
+    id: string,
+    options?: ItemQueryOptions<BookmarkResponse>
+) => {
+    return useItemQuery<BookmarkResponse>(
+        ['bookmarks', id],
+        () => BookmarkApi.findById(id),
+        {
+            enabled: !!id,
+            ...options,
+        }
+    );
 };
 
-export const useCreateBookmark = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (data: BookmarkRequest) => BookmarkApi.create(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['bookmarks'] });
-            queryClient.invalidateQueries({ queryKey: ['books'] });
-        },
-    });
+/**
+ * Hook to create a new bookmark
+ * @param options Mutation options
+ */
+export const useCreateBookmark = <TContext = unknown>(
+    options?: CreateMutationOptions<BookmarkRequest, BookmarkResponse, TContext>
+) => {
+    return useCreateMutation<BookmarkRequest, BookmarkResponse, TContext>(
+        (data) => BookmarkApi.create(data),
+        [['bookmarks'], ['books']],
+        options
+    );
 };
 
-export const useUpdateBookmark = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ id, data }: { id: string; data: Partial<BookmarkRequest> }) => BookmarkApi.update(id, data),
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['bookmarks', variables.id] });
-            queryClient.invalidateQueries({ queryKey: ['bookmarks'] });
-        },
-    });
+/**
+ * Hook to update an existing bookmark
+ * @param options Mutation options
+ */
+export const useUpdateBookmark = <TContext = unknown>(
+    options?: UpdateMutationOptions<BookmarkRequest, BookmarkResponse, TContext>
+) => {
+    return useUpdateMutation<BookmarkRequest, BookmarkResponse, TContext>(
+        ({ id, data }) => BookmarkApi.update(id, data),
+        (variables) => [['bookmarks', variables.id], ['bookmarks']],
+        options
+    );
 };
 
-export const useDeleteBookmark = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (id: string) => BookmarkApi.delete(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['bookmarks'] });
-            queryClient.invalidateQueries({ queryKey: ['books'] });
-        },
-    });
+/**
+ * Hook to delete a bookmark
+ * @param options Mutation options
+ */
+export const useDeleteBookmark = <TContext = unknown>(
+    options?: DeleteMutationOptions<TContext>
+) => {
+    return useDeleteMutation<TContext>(
+        (id) => BookmarkApi.delete(id),
+        [['bookmarks'], ['books']],
+        options
+    );
 };
 
-export const useBookmarkStatus = (items: string[], options?: Omit<UseQueryOptions<Record<string, BookmarkResponse>, Error, Record<string, BookmarkResponse>, QueryKey>, 'queryKey' | 'queryFn'>) => {
-    const query = useQuery<Record<string, BookmarkResponse>, Error, Record<string, BookmarkResponse>, QueryKey>({
-        queryKey: ['bookmarks', 'status', items],
-        queryFn: () => BookmarkApi.status(items),
-        enabled: items.length > 0,
-        staleTime: 5 * 60 * 1000,
-        ...options,
-    });
-
-    const data = useMemo(() => query.data || {}, [query.data]);
-
-    return useMemo(() => ({
-        ...query,
-        data,
-    }), [query, data]);
+/**
+ * Hook to fetch bookmark status for a list of items
+ * @param items List of item IDs
+ * @param options Query options
+ */
+export const useBookmarkStatus = (
+    items: string[],
+    options?: ItemQueryOptions<Record<string, BookmarkResponse>>
+) => {
+    return useItemQuery<Record<string, BookmarkResponse>>(
+        ['bookmarks', 'status', items],
+        () => BookmarkApi.status(items),
+        {
+            enabled: items.length > 0,
+            ...options,
+        }
+    );
 };
+

@@ -7,7 +7,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@repo/ui/components/pagination";
-import { Pagination as PaginationType } from "@/types";
+import { type Pagination as PaginationType } from "@/types";
 import { cn } from "@repo/ui/lib/utils";
 import { useLocale } from '@/hooks/ui/useLocale';
 

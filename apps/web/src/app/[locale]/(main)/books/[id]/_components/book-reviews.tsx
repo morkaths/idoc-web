@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/select';
-import { Badge } from '@repo/ui/components/badge';
 
 interface BookReviewsProps {
   bookId?: string;
@@ -37,7 +36,7 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0, enabled = tr
 
   const { data, isLoading, isError } = useReviews(
     {
-      item: bookId,
+      bookId,
       page,
       sortBy: sortParams.sortBy,
       sortOrder: sortParams.sortOrder,

@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
-import { useAuthors } from '@/hooks/data/useAuthor';
+import { useSearchAuthors } from '@/hooks/data/useAuthor';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
   Table,
@@ -21,8 +21,10 @@ import {
   TableRow,
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
+import { Languages } from '@/types';
 import { authorsColumns as columns } from './authors-columns';
 import AuthorsTableBulkActions from './authors-table-bulk-actions';
+import { buildAuthorFindParams } from './authors-query.utils';
 
 const route = getRouteApi('/_authenticated/authors/');
 
@@ -43,31 +45,20 @@ export function AuthorsTable() {
     search: route.useSearch(),
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: true, key: 'q' },
-    columnFilters: [],
+    globalFilter: { enabled: true, key: 'query' },
+    columnFilters: [{ columnId: 'nationality', searchKey: 'nationality', type: 'array' }],
   });
 
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
 
-  const authorParams = useMemo(() => {
-    const apiSort = sorting[0]
-      ? {
-          sortBy: String(sorting[0].id),
-          sortOrder: sorting[0].desc ? 'desc' : 'asc',
-        }
-      : undefined;
-
-    return {
-      page,
-      limit,
-      query: globalFilter ?? '',
-      ...(apiSort || {}),
-    };
-  }, [page, limit, globalFilter, sorting]);
+  const authorParams = useMemo(
+    () => buildAuthorFindParams(page, limit, globalFilter ?? '', sorting, columnFilters),
+    [page, limit, globalFilter, sorting, columnFilters]
+  );
 
   // fetch server-side page
-  const { data: authorsData, isFetching: isAuthorsFetching } = useAuthors(authorParams);
+  const { data: authorsData, isFetching: isAuthorsFetching } = useSearchAuthors(authorParams);
   const authors = authorsData?.data ?? [];
   const authorPagination = authorsData?.pagination;
 
@@ -98,15 +89,8 @@ export function AuthorsTable() {
   });
 
   useEffect(() => {
-    if (!onPaginationChange) return;
     setRowSelection({});
-    onPaginationChange((prev) => ({
-      ...prev,
-      pageIndex: 0,
-      pageSize: pagination.pageSize ?? 10,
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalFilter]);
+  }, [globalFilter, columnFilters]);
 
   useEffect(() => {
     ensurePageInRange(table.getPageCount());
@@ -115,7 +99,20 @@ export function AuthorsTable() {
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
-      <DataTableToolbar table={table} searchPlaceholder='Search authors...' />
+      <DataTableToolbar
+        table={table}
+        searchPlaceholder='Search authors...'
+        filters={[
+          {
+            columnId: 'nationality',
+            title: 'Nationality',
+            options: Languages.filter((l) => l.enabled).map((l) => ({
+              label: l.label,
+              value: l.value,
+            })),
+          },
+        ]}
+      />
       <div className='overflow-hidden rounded-md border'>
         <Table>
           <TableHeader>

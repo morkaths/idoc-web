@@ -108,11 +108,6 @@ export const sidebarData: SidebarData = {
           icon: Users,
         },
         {
-          title: 'Roles',
-          url: '/roles',
-          icon: ShieldCheck,
-        },
-        {
           title: 'Apps',
           url: '/apps',
           icon: Package,

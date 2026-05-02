@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react';
-import { BookResponse, BookmarkResponse } from "@/types";
+import { type BookResponse } from "@/types";
 import { AppImage as Image } from '../app-image';
 import { useState, useEffect, useMemo } from 'react';
 import { useDeleteBookmark } from "@/hooks/data/useBookmark";
@@ -19,41 +19,32 @@ export function BookGridItem({
 }: BookGridItemProps) {
   const { t, keys } = useLocale('books');
   const [imageError, setImageError] = useState(false);
-  const [bookmark, setBookmark] = useState(book.bookmark);
-  const isBookmarked = !!(book.bookmark || bookmark);
+  const [localBookmarkId, setLocalBookmarkId] = useState<string | undefined | null>(null);
+  const bookmarkId = localBookmarkId !== null ? localBookmarkId : book.bookmarkId;
+  const isBookmarked = !!bookmarkId;
 
   const { setOpen, setCurrentBook } = useBookmarkContext();
   const { mutate: deleteBookmark, isPending: isDeleting } = useDeleteBookmark();
 
   const isLoading = isDeleting;
 
-  useEffect(() => {
-    setBookmark(book.bookmark);
-  }, [book.bookmark]);
-
   const handleToggleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isLoading) return;
 
     if (isBookmarked) {
-      const activeBookmark = book.bookmark || bookmark;
-      if (activeBookmark) {
-        const bookmarkId = typeof activeBookmark === 'string'
-          ? activeBookmark
-          : (activeBookmark as BookmarkResponse).id;
-
-        deleteBookmark(bookmarkId, {
+      const activeBookmarkId = book.bookmarkId || bookmarkId;
+      if (activeBookmarkId) {
+        deleteBookmark(String(activeBookmarkId), {
           onSuccess: () => {
-            setBookmark(undefined);
+            setLocalBookmarkId(undefined);
             toast.success(t(keys.view.bookmark.removed));
           },
-          onError: (error) => {
-            console.error("Failed to unbookmark:", error);
+          onError: () => {
             toast.error(t(keys.view.bookmark.error));
           }
         });
-      } else {
-        console.warn("Cannot unbookmark: Missing bookmark ID");
+
       }
     } else {
       setCurrentBook(book);

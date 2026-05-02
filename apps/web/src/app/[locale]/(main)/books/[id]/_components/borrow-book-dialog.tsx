@@ -20,15 +20,15 @@ import { Textarea } from '@repo/ui/components/textarea';
 import { BorrowRangePicker } from './borrows-ranger-picker';
 
 const BorrowFormSchema = z.object({
-  expireTime: z.date().refine(
+  dueDate: z.date().refine(
     (val) => {
       const now = new Date();
       now.setHours(0, 0, 0, 0);
       return val > now;
     },
-    { message: 'Expire date must be after today' }
+    { message: 'Due date must be after today' }
   ),
-  note: z.string().optional(),
+  notes: z.string().optional(),
 });
 type BorrowForm = z.infer<typeof BorrowFormSchema>;
 
@@ -44,8 +44,8 @@ export function BorrowBookDialog({ open, onOpenChange, onSubmit }: BorrowBookDia
   const form = useForm<BorrowForm>({
     resolver: zodResolver(BorrowFormSchema),
     defaultValues: {
-      expireTime: undefined,
-      note: '',
+      dueDate: undefined,
+      notes: '',
     },
   });
 
@@ -74,10 +74,10 @@ export function BorrowBookDialog({ open, onOpenChange, onSubmit }: BorrowBookDia
               <div className='mb-4 grid gap-4'>
                 <FormField
                   control={form.control}
-                  name='expireTime'
+                  name='dueDate'
                   render={({ field }) => (
                     <div className='grid gap-3'>
-                      <FormLabel>{t(keys.borrow.expireTime.label)}</FormLabel>
+                      <FormLabel>{t(keys.borrow.dueDate.label)}</FormLabel>
                       <FormControl>
                         <BorrowRangePicker
                           borrowTime={new Date()}
@@ -91,12 +91,12 @@ export function BorrowBookDialog({ open, onOpenChange, onSubmit }: BorrowBookDia
                 />
                 <FormField
                   control={form.control}
-                  name='note'
+                  name='notes'
                   render={({ field }) => (
                     <div className='grid gap-3'>
-                      <FormLabel>{t(keys.borrow.note.label)}</FormLabel>
+                      <FormLabel>{t(keys.borrow.notes.label)}</FormLabel>
                       <FormControl>
-                        <Textarea {...field} rows={2} placeholder={t(keys.borrow.note.placeholder)} />
+                        <Textarea {...field} rows={2} placeholder={t(keys.borrow.notes.placeholder)} />
                       </FormControl>
                       <FormMessage />
                     </div>

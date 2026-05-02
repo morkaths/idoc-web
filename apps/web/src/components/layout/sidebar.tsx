@@ -12,7 +12,6 @@ import { LayoutPanelLeft, Command } from "lucide-react";
 import Link from "next/link";
 import { NavbarMobile } from "./navbar-mobile";
 import { useNavData } from "./data/nav-data";
-import { Search } from "./search";
 import { NavUser } from "./nav-user";
 import { useEffect, useState } from "react";
 

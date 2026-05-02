@@ -2,6 +2,7 @@ import env from './env';
 
 const crud = (path: string) => ({
   find: path,
+  search: `${path}/search`,
   findById: (id: string) => `${path}/${id}`,
   findByIds: (ids: readonly string[]) => `${path}/bulk?ids=${ids.join(',')}`,
   create: path,
@@ -23,17 +24,20 @@ export const META = {
 
 export const ENDPOINTS = {
   auth: {
-    login: '/auth/login',
-    loginGoogle: '/auth/login/google',
-    register: '/auth/register',
+    login: '/auth/sign-in',
+    loginGoogle: '/auth/oauth/sign-in',
+    register: '/auth/sign-up',
     verify: '/auth/verify',
+    resend: '/auth/resend',
     refresh: '/auth/refresh',
-    logout: '/auth/logout',
+    logout: '/auth/sign-out',
+    forgotPassword: '/auth/password/forgot',
+    resetPassword: '/auth/password/reset',
+    changePassword: '/auth/password/change',
     update: '/auth/update',
   },
+
   users: crud('/users'),
-  roles: crud('/roles'),
-  permissions: crud('/permissions'),
   profiles: {
     ...crud('/profiles'),
     me: '/profiles/me',
@@ -42,12 +46,13 @@ export const ENDPOINTS = {
   categories: crud('/categories'),
   books: crud('/books'),
   borrows: {
-    ...crud('/borrows'),
-    history: '/borrows/history',
-    extend: (id: string) => `/borrows/${id}/extend`,
-    return: (id: string) => `/borrows/${id}/return`,
-    read: (id: string) => `/borrows/${id}/read`,
+    ...crud('/loans'),
+    history: '/loans/history',
+    extend: (id: string) => `/loans/${id}/extend`,
+    return: (id: string) => `/loans/${id}/return`,
+    view: (id: string) => `/loans/${id}/view-ticket`,
   },
+
   bookmarks: {
     ...crud('/bookmarks'),
     status: (ids: readonly string[]) => `/bookmarks/status?ids=${ids.join(',')}`,
@@ -60,7 +65,7 @@ export const ENDPOINTS = {
     download: (id: string) => `/files/${id}/download`,
     upload: '/files/upload',
     uploadPresigned: '/files/upload/presigned',
-    completePresignedUpload: '/files/upload/complete',
+    completePresignedUpload: (uploadId: string) => `/files/upload/complete/${uploadId}`,
     view: (id: string) => `/files/${id}/view`,
   },
   images: {

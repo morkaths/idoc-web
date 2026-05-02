@@ -11,7 +11,7 @@ import {
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
 } from "@repo/ui/components/navigation-menu"
-import { NavItem } from "../layout/data/nav-data"
+import { type NavItem } from "../layout/data/nav-data"
 import Image from "next/image"
 
 interface NavbarProps {

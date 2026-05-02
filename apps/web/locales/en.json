@@ -329,6 +329,13 @@
           "searchPlaceholder": "Search categories...",
           "empty": "No categories found.",
           "loading": "Loading categories..."
+        },
+        "languages": {
+          "label": "Language",
+          "placeholder": "Select languages...",
+          "searchPlaceholder": "Search languages...",
+          "empty": "No languages found.",
+          "loading": "Loading languages..."
         }
       },
       "sort": {
@@ -338,7 +345,7 @@
           "title": "Title",
           "createdAt": "Created At",
           "updatedAt": "Updated At",
-          "publishedYear": "Published Year",
+          "publishedDate": "Published Date",
           "rating": "Rating",
           "totalReviews": "Total Reviews"
         },
@@ -380,13 +387,13 @@
     "borrow": {
       "title": "Borrow Book",
       "description": "Enter the borrow book information below.",
-      "expireTime": {
-        "label": "Expire Time",
+      "dueDate": {
+        "label": "Expire Date",
         "placeholder": "Pick expire date"
       },
-      "note": {
-        "label": "Note",
-        "placeholder": "Note (optional)"
+      "notes": {
+        "label": "Notes",
+        "placeholder": "Notes (optional)"
       },
       "actions": {
         "cancel": "Cancel",
@@ -489,7 +496,7 @@
     "error": {
       "title": "Failed to access file",
       "description": "Creating a secure link or you don't have permission to view this file.",
-      
+
       "actions": {
         "goBack": "Go Back"
       }
@@ -509,11 +516,11 @@
       "entity": "borrow",
       "columns": {
         "cover": "Cover",
-        "item": "Item",
+        "book": "Book",
         "renewals": "Renewals",
-        "borrowTime": "Borrow Date",
-        "expireTime": "Expire Date",
-        "returnTime": "Return Date",
+        "borrowedDate": "Borrow Date",
+        "dueDate": "Expire Date",
+        "returnDate": "Return Date",
         "status": "Status"
       },
       "states": {
@@ -534,13 +541,36 @@
           "success": "Borrow extended successfully!",
           "error": "Failed to extend borrow. Please try again.",
           "fields": {
-            "borrowDate": "Borrow Date",
+            "borrowedDate": "Borrow Date",
             "extraDays": "Extra Days",
             "borrowRange": "Borrow Range",
-            "note": "Note",
+            "notes": "Notes",
             "placeholder": "Number of days to extend",
-            "error": "Expire date must be at least 1 day after current expire date."
+            "error": "Expire date must be at least 1 day after current expire date.",
+            "maxError": "The extension period cannot exceed 30 days."
           }
+        },
+        "mutate": {
+          "create": {
+            "title": "Add Borrow",
+            "description": "Enter the information for the new borrow.",
+            "submit": "Create"
+          },
+          "update": {
+            "title": "Edit Borrow",
+            "description": "Update the borrow information below.",
+            "submit": "Save changes"
+          },
+          "fields": {
+            "book": "Book",
+            "dueDate": "Due Date",
+            "notes": "Notes",
+            "placeholder": "Pick a date"
+          },
+          "loading": "Saving...",
+          "success": "Saved successfully!",
+          "error": "Failed to save. Please try again.",
+          "cancel": "Cancel"
         },
         "review": {
           "label": "Review",
@@ -605,7 +635,10 @@
         "export": {
           "label": "Export",
           "tooltip": "Export selected borrows",
-          "confirmDesc": "Are you sure you want to export the selected borrows?"
+          "confirmDesc": "Are you sure you want to export the selected borrows?",
+          "loading": "Exporting borrows...",
+          "success": "Borrows exported successfully!",
+          "error": "Failed to export borrows. Please try again."
         }
       }
     },

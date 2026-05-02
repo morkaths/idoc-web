@@ -23,19 +23,13 @@ export function PersonalTab() {
   const { data: profile } = useUser(user?.id?.toString() ?? '');
   const updateProfile = useUpdateUser();
 
-  const [fullname, setFullName] = useState('');
-  const [bio, setBio] = useState('');
+  const [fullnameState, setFullName] = useState<string | null>(null);
+  const [bioState, setBio] = useState<string | null>(null);
   const [address, setAddress] = useState('');
   const [dob, setDob] = useState<Date | undefined>(undefined);
 
-  useEffect(() => {
-    if (profile?.profile) {
-      setFullName(profile.profile.fullname || '');
-      setBio(profile.profile.bio || '');
-      setAddress(profile.profile.address || '');
-      setDob(profile.profile.dob ? new Date(profile.profile.dob) : undefined);
-    }
-  }, [profile]);
+  const fullname = fullnameState ?? profile?.username ?? '';
+  const bio = bioState ?? profile?.bio ?? '';
 
   const handleSave = () => {
     if (!profile?.id) return;
@@ -44,21 +38,16 @@ export function PersonalTab() {
       {
         id: profile.id,
         data: {
-          profile: {
-            fullname,
-            bio,
-            address,
-            dob,
-          },
+          username: fullname,
+          bio,
         },
       },
       {
         onSuccess: () => {
           toast.success('Profile updated successfully');
         },
-        onError: (error) => {
+        onError: () => {
           toast.error('Failed to update profile');
-          console.error(error);
         },
       }
     );
