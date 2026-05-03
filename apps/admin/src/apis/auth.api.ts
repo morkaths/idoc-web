@@ -21,10 +21,9 @@ export const AuthApi = {
   },
 
   refresh: async (): Promise<ApiResponse<AuthResponse>> => {
-    return ApiClient.post<AuthResponse>(
-      ApiEndpoint.endpoints.auth.refresh,
-      { security: 'public' }
-    );
+    return ApiClient.post<AuthResponse>(ApiEndpoint.endpoints.auth.refresh, {
+      security: 'public',
+    });
   },
 
   logout: async (): Promise<ApiResponse<void>> => {

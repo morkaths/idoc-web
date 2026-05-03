@@ -1,11 +1,21 @@
-import { type QueryKey } from '@tanstack/react-query';
 import { BookmarkApi } from '@/apis/bookmark.api';
-import type { BookmarkResponse, BookmarkRequest, FindParams, ApiResponse, PageResponse } from '@/types';
-import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type CreateMutationOptions, type UpdateMutationOptions, type DeleteMutationOptions, type ListQueryOptions, type ItemQueryOptions } from './factory';
+import type { BookmarkResponse, BookmarkRequest, FindParams } from '@/types';
+import {
+    useListQuery,
+    useItemQuery,
+    useCreateMutation,
+    useUpdateMutation,
+    useDeleteMutation,
+    type CreateMutationOptions,
+    type UpdateMutationOptions,
+    type DeleteMutationOptions,
+    type ListQueryOptions,
+    type ItemQueryOptions
+} from './factory';
 
 /**
- * Hook to fetch bookmarks with pagination
- * @param params Search/filter parameters
+ * Hook to fetch bookmarks
+ * @param params Filter parameters
  * @param options Query options
  */
 export const useBookmarks = (
@@ -31,10 +41,7 @@ export const useBookmark = (
     return useItemQuery<BookmarkResponse>(
         ['bookmarks', id],
         () => BookmarkApi.findById(id),
-        {
-            enabled: !!id,
-            ...options,
-        }
+        { enabled: !!id, ...options }
     );
 };
 
@@ -82,20 +89,17 @@ export const useDeleteBookmark = <TContext = unknown>(
 
 /**
  * Hook to fetch bookmark status for a list of items
- * @param items List of item IDs
+ * @param itemIds List of item IDs
  * @param options Query options
  */
 export const useBookmarkStatus = (
-    items: string[],
+    itemIds: string[],
     options?: ItemQueryOptions<Record<string, BookmarkResponse>>
 ) => {
     return useItemQuery<Record<string, BookmarkResponse>>(
-        ['bookmarks', 'status', items],
-        () => BookmarkApi.status(items),
-        {
-            enabled: items.length > 0,
-            ...options,
-        }
+        ['bookmarks', 'status', itemIds],
+        () => BookmarkApi.status(itemIds),
+        { enabled: itemIds.length > 0, ...options }
     );
 };
 

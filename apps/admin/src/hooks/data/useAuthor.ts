@@ -13,6 +13,11 @@ import {
   type DeleteMutationOptions,
 } from './factory';
 
+/**
+ * Hook to fetch authors with pagination
+ * @param params Search/filter parameters
+ * @param options Query options
+ */
 export const useAuthors = (
   params: FindParams = {},
   options?: ListQueryOptions<AuthorResponse>
@@ -20,13 +25,15 @@ export const useAuthors = (
   return useListQuery<AuthorResponse>(
     ['authors', params],
     () => AuthorApi.find(params),
-    {
-      staleTime: 5 * 60 * 1000,
-      ...options,
-    }
+    options
   );
 };
 
+/**
+ * Hook to search authors
+ * @param params Search parameters
+ * @param options Query options
+ */
 export const useSearchAuthors = (
   params: FindParams = {},
   options?: ListQueryOptions<AuthorResponse>
@@ -34,12 +41,15 @@ export const useSearchAuthors = (
   return useListQuery<AuthorResponse>(
     ['authors', 'search', params],
     () => AuthorApi.search(params),
-    {
-      ...options,
-    }
+    options
   );
 };
 
+/**
+ * Hook to fetch a single author by ID
+ * @param id Author ID
+ * @param options Query options
+ */
 export const useAuthor = (
   id: string,
   options?: ItemQueryOptions<AuthorResponse>
@@ -47,35 +57,46 @@ export const useAuthor = (
   return useItemQuery<AuthorResponse>(
     ['authors', id],
     () => AuthorApi.findById(id),
-    {
-      enabled: !!id,
-      ...options,
-    }
+    { enabled: !!id, ...options }
   );
 };
 
-export const useCreateAuthor = (
-  options?: CreateMutationOptions<AuthorRequest, AuthorResponse>
+/**
+ * Hook to create a new author
+ * @param options Mutation options
+ */
+export const useCreateAuthor = <TContext = unknown>(
+  options?: CreateMutationOptions<AuthorRequest, AuthorResponse, TContext>
 ) => {
-  return useCreateMutation<AuthorRequest, AuthorResponse>(
+  return useCreateMutation<AuthorRequest, AuthorResponse, TContext>(
     (data) => AuthorApi.create(data),
     [['authors']],
     options
   );
 };
 
-export const useUpdateAuthor = (
-  options?: UpdateMutationOptions<AuthorRequest, AuthorResponse>
+/**
+ * Hook to update an existing author
+ * @param options Mutation options
+ */
+export const useUpdateAuthor = <TContext = unknown>(
+  options?: UpdateMutationOptions<AuthorRequest, AuthorResponse, TContext>
 ) => {
-  return useUpdateMutation<AuthorRequest, AuthorResponse>(
+  return useUpdateMutation<AuthorRequest, AuthorResponse, TContext>(
     ({ id, data }) => AuthorApi.update(id, data),
     (variables) => [['authors', variables.id], ['authors']],
     options
   );
 };
 
-export const useDeleteAuthor = (options?: DeleteMutationOptions) => {
-  return useDeleteMutation(
+/**
+ * Hook to delete an author
+ * @param options Mutation options
+ */
+export const useDeleteAuthor = <TContext = unknown>(
+  options?: DeleteMutationOptions<TContext>
+) => {
+  return useDeleteMutation<TContext>(
     (id) => AuthorApi.delete(id),
     [['authors']],
     options

@@ -139,11 +139,12 @@ export const apiFactory = <TResponse, TRequest, TParams = object>(
       });
     },
 
-    deleteMany: async <P = TParams>(ids: string[], params?: P): Promise<ApiResponse<void>> => {
-      return ApiClient.delete<void>(endpoints.deleteMany(ids), {
+    deleteMany: async <P = TParams>(ids: string[], params?: P): Promise<ApiResponse<void | null>> => {
+      return ApiClient.delete<void | null>(endpoints.deleteMany(ids), {
         security: config.deleteMany,
         params,
       });
     },
+
   };
 };

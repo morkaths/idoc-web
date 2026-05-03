@@ -13,6 +13,11 @@ import {
   type DeleteMutationOptions,
 } from './factory';
 
+/**
+ * Hook to fetch bookmarks
+ * @param params Filter parameters
+ * @param options Query options
+ */
 export const useBookmarks = (
   params: FindParams = {},
   options?: ListQueryOptions<BookmarkResponse>
@@ -20,13 +25,15 @@ export const useBookmarks = (
   return useListQuery<BookmarkResponse>(
     ['bookmarks', params],
     () => BookmarkApi.find(params),
-    {
-      staleTime: 5 * 60 * 1000,
-      ...options,
-    }
+    options
   );
 };
 
+/**
+ * Hook to fetch a single bookmark by ID
+ * @param id Bookmark ID
+ * @param options Query options
+ */
 export const useBookmark = (
   id: string,
   options?: ItemQueryOptions<BookmarkResponse>
@@ -34,13 +41,14 @@ export const useBookmark = (
   return useItemQuery<BookmarkResponse>(
     ['bookmarks', id],
     () => BookmarkApi.findById(id),
-    {
-      enabled: !!id,
-      ...options,
-    }
+    { enabled: !!id, ...options }
   );
 };
 
+/**
+ * Hook to create a new bookmark
+ * @param options Mutation options
+ */
 export const useCreateBookmark = (
   options?: CreateMutationOptions<BookmarkRequest, BookmarkResponse>
 ) => {
@@ -51,6 +59,10 @@ export const useCreateBookmark = (
   );
 };
 
+/**
+ * Hook to update an existing bookmark
+ * @param options Mutation options
+ */
 export const useUpdateBookmark = (
   options?: UpdateMutationOptions<BookmarkRequest, BookmarkResponse>
 ) => {
@@ -61,6 +73,10 @@ export const useUpdateBookmark = (
   );
 };
 
+/**
+ * Hook to delete a bookmark
+ * @param options Mutation options
+ */
 export const useDeleteBookmark = (options?: DeleteMutationOptions) => {
   return useDeleteMutation(
     (id) => BookmarkApi.delete(id),
@@ -69,6 +85,11 @@ export const useDeleteBookmark = (options?: DeleteMutationOptions) => {
   );
 };
 
+/**
+ * Hook to fetch bookmark status
+ * @param itemIds List of item IDs
+ * @param options Query options
+ */
 export const useBookmarkStatus = (
   itemIds: string[],
   options?: ItemQueryOptions<Record<string, string | null>>
@@ -76,11 +97,7 @@ export const useBookmarkStatus = (
   return useItemQuery<Record<string, string | null>>(
     ['bookmarks', 'status', itemIds],
     () => BookmarkApi.status(itemIds),
-    {
-      enabled: itemIds.length > 0,
-      staleTime: 5 * 60 * 1000,
-      ...options,
-    }
+    { enabled: itemIds.length > 0, ...options }
   );
 };
 

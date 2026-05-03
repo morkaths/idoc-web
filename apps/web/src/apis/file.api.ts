@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_CONFIG } from '@/config/api';
+import { ApiEndpoint } from '@/config/api';
 import type {
   FileResponse as IFile,
   FindParams,
@@ -12,17 +12,20 @@ import type {
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
-const factory = apiFactory<IFile, FileRequest>(API_CONFIG.endpoints.files, {
-  find: 'private',
-  findById: 'private',
-  delete: 'private',
-});
+const factory = apiFactory<IFile, FileRequest>(
+  ApiEndpoint.endpoints.files,
+  {
+    find: 'private',
+    findById: 'private',
+    delete: 'private',
+  }
+);
 
 export const FileApi = {
   ...factory,
 
   findByUser: async (params?: FindParams): Promise<ApiResponse<PageResponse<IFile>>> => {
-    return ApiClient.get<PageResponse<IFile>>(API_CONFIG.endpoints.files.findByUser, {
+    return ApiClient.get<PageResponse<IFile>>(ApiEndpoint.endpoints.files.findByUser, {
       security: 'private',
       params,
     });
@@ -32,7 +35,7 @@ export const FileApi = {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', folder);
-    return ApiClient.post<IFile>(API_CONFIG.endpoints.files.upload, {
+    return ApiClient.post<IFile>(ApiEndpoint.endpoints.files.upload, {
       security: 'private',
       data: formData,
       headers: {
@@ -42,7 +45,7 @@ export const FileApi = {
   },
 
   completePresignedUpload: async (uploadId: string): Promise<ApiResponse<IFile>> => {
-    return ApiClient.post<IFile>(API_CONFIG.endpoints.files.completePresignedUpload(uploadId), {
+    return ApiClient.post<IFile>(ApiEndpoint.endpoints.files.completePresignedUpload(uploadId), {
       security: 'private',
     });
   },
@@ -64,21 +67,21 @@ export const FileApi = {
   uploadPresigned: async (
     request: PresignedUploadRequest
   ): Promise<ApiResponse<PresignedUploadResponse>> => {
-    return ApiClient.post<PresignedUploadResponse>(API_CONFIG.endpoints.files.uploadPresigned, {
+    return ApiClient.post<PresignedUploadResponse>(ApiEndpoint.endpoints.files.uploadPresigned, {
       security: 'private',
       data: request,
     });
   },
 
   download: async (id: string): Promise<ApiResponse<Blob>> => {
-    return ApiClient.get<Blob>(API_CONFIG.endpoints.files.download(id), {
+    return ApiClient.get<Blob>(ApiEndpoint.endpoints.files.download(id), {
       security: 'private',
       responseType: 'blob',
     });
   },
 
   getViewUrl: (id: string, ticket: string): string => {
-    return `${API_CONFIG.baseURL}${API_CONFIG.endpoints.files.view(id)}?ticket=${encodeURIComponent(ticket)}`;
+    return `${ApiEndpoint.meta.baseURL}${ApiEndpoint.endpoints.files.view(id)}?ticket=${encodeURIComponent(ticket)}`;
   },
 };
 

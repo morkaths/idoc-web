@@ -1,5 +1,5 @@
 import { BorrowApi } from '@/apis/borrow.api';
-import type { BorrowResponse, BorrowRequest, FindParams } from '@/types';
+import type { BorrowResponse, BorrowRequest, FindParams, RenewBorrowRequest } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -12,8 +12,12 @@ import {
   type UpdateMutationOptions,
   type DeleteMutationOptions,
 } from './factory';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+/**
+ * Hook to fetch borrows
+ * @param params Filter parameters
+ * @param options Query options
+ */
 export const useBorrows = (
   params: FindParams = {},
   options?: ListQueryOptions<BorrowResponse>
@@ -25,31 +29,42 @@ export const useBorrows = (
   );
 };
 
+/**
+ * Hook to fetch borrow history
+ * @param params Filter parameters
+ * @param options Query options
+ */
 export const useBorrowHistory = (
   params: FindParams = {},
   options?: ListQueryOptions<BorrowResponse>
 ) => {
-  return useListQuery(
+  return useListQuery<BorrowResponse>(
     ['borrows', 'history', params],
     () => BorrowApi.history(params),
     options
   );
 };
 
+/**
+ * Hook to fetch a single borrow by ID
+ * @param id Borrow ID
+ * @param options Query options
+ */
 export const useBorrow = (
   id: string,
   options?: ItemQueryOptions<BorrowResponse>
 ) => {
-  return useItemQuery(
+  return useItemQuery<BorrowResponse>(
     ['borrows', id],
     () => BorrowApi.findById(id),
-    {
-      enabled: !!id,
-      ...options,
-    }
+    { enabled: !!id, ...options }
   );
 };
 
+/**
+ * Hook to create a new borrow
+ * @param options Mutation options
+ */
 export const useCreateBorrow = (
   options?: CreateMutationOptions<BorrowRequest, BorrowResponse>
 ) => {
@@ -60,6 +75,10 @@ export const useCreateBorrow = (
   );
 };
 
+/**
+ * Hook to update an existing borrow
+ * @param options Mutation options
+ */
 export const useUpdateBorrow = (
   options?: UpdateMutationOptions<BorrowRequest, BorrowResponse>
 ) => {
@@ -70,6 +89,10 @@ export const useUpdateBorrow = (
   );
 };
 
+/**
+ * Hook to delete a borrow
+ * @param options Mutation options
+ */
 export const useDeleteBorrow = (
   options?: DeleteMutationOptions
 ) => {
@@ -80,32 +103,31 @@ export const useDeleteBorrow = (
   );
 };
 
-export const useExtendBorrow = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, extraDays, note }: { id: string; extraDays: number; note?: string }) =>
-      BorrowApi.extend(id, extraDays, note),
-    onSuccess: (res, variables) => {
-      if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ['borrows', variables.id] });
-        queryClient.invalidateQueries({ queryKey: ['borrows'] });
-      }
-    },
-  });
+/**
+ * Hook to extend a borrow
+ * @param options Mutation options
+ */
+export const useExtendBorrow = <TContext = unknown>(
+  options?: UpdateMutationOptions<RenewBorrowRequest, BorrowResponse, TContext>
+) => {
+  return useUpdateMutation<RenewBorrowRequest, BorrowResponse, TContext>(
+    ({ id, data }) => BorrowApi.extend(id, data),
+    (variables) => [['borrows'], ['borrows', variables.id]],
+    options
+  );
 };
 
-export const useReturnBorrow = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => BorrowApi.return(id),
-    onSuccess: (res, id) => {
-      if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ['borrows', id] });
-        queryClient.invalidateQueries({ queryKey: ['borrows'] });
-      }
-    },
-  });
+/**
+ * Hook to return a borrow
+ * @param options Mutation options
+ */
+export const useReturnBorrow = <TContext = unknown>(
+  options?: UpdateMutationOptions<void, BorrowResponse, TContext>
+) => {
+  return useUpdateMutation<void, BorrowResponse, TContext>(
+    ({ id }) => BorrowApi.return(id),
+    (variables) => [['borrows'], ['borrows', variables.id]],
+    options
+  );
 };
 

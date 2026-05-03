@@ -113,7 +113,7 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
                   <FormControl>
                     <PasswordInput placeholder={t(keys.form.password.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
+                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message, { min: 6 })}</FormMessage>
                   <Link
                     href='/forgot-password'
                     className='text-muted-foreground absolute end-0 -top-0.5 text-sm font-medium hover:opacity-75'

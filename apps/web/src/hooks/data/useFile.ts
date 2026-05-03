@@ -1,7 +1,16 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
+import { useQuery, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { FileApi } from '@/apis/file.api';
-import type { FileResponse, FindParams, ApiResponse, PageResponse } from '@/types';
-import { useListQuery, useItemQuery, useDeleteMutation, type ListQueryOptions, type ItemQueryOptions, type DeleteMutationOptions } from './factory';
+import type { FileResponse, FindParams } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type DeleteMutationOptions
+} from './factory';
 
 /**
  * Hook to fetch files with pagination
@@ -9,14 +18,14 @@ import { useListQuery, useItemQuery, useDeleteMutation, type ListQueryOptions, t
  * @param options Query options
  */
 export const useFiles = (
-    params: FindParams = {},
-    options?: ListQueryOptions<FileResponse>
+  params: FindParams = {},
+  options?: ListQueryOptions<FileResponse>
 ) => {
-    return useListQuery<FileResponse>(
-        ['files', params],
-        () => FileApi.find(params),
-        options
-    );
+  return useListQuery<FileResponse>(
+    ['files', params],
+    () => FileApi.find(params),
+    options
+  );
 };
 
 /**
@@ -25,14 +34,14 @@ export const useFiles = (
  * @param options Query options
  */
 export const useUserFiles = (
-    params: FindParams = {},
-    options?: ListQueryOptions<FileResponse>
+  params: FindParams = {},
+  options?: ListQueryOptions<FileResponse>
 ) => {
-    return useListQuery<FileResponse>(
-        ['files', 'user', params],
-        () => FileApi.findByUser(params),
-        options
-    );
+  return useListQuery<FileResponse>(
+    ['files', 'user', params],
+    () => FileApi.findByUser(params),
+    options
+  );
 };
 
 /**
@@ -41,77 +50,74 @@ export const useUserFiles = (
  * @param options Query options
  */
 export const useFile = (
-    id: string,
-    options?: ItemQueryOptions<FileResponse>
+  id: string,
+  options?: ItemQueryOptions<FileResponse>
 ) => {
-    return useItemQuery<FileResponse>(
-        ['files', id],
-        () => FileApi.findById(id),
-        {
-            enabled: !!id,
-            ...options,
-        }
-    );
+  return useItemQuery<FileResponse>(
+    ['files', id],
+    () => FileApi.findById(id),
+    {
+      enabled: !!id,
+      ...options,
+    }
+  );
 };
 
 /**
  * Hook to upload a file
+ * @param options Mutation options
  */
-export const useUploadFile = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async ({ file, folder }: { file: File; folder?: string }) => {
-            return await FileApi.upload(file, folder);
-        },
-        onSuccess: (response) => {
-            if (response.success) {
-                queryClient.invalidateQueries({ queryKey: ['files'] });
-            }
-        },
-    });
+export const useUploadFile = <TContext = unknown>(
+  options?: CreateMutationOptions<{ file: File; folder?: string }, FileResponse, TContext>
+) => {
+  return useCreateMutation<{ file: File; folder?: string }, FileResponse, TContext>(
+    ({ file, folder }) => FileApi.upload(file, folder),
+    [['files']],
+    options
+  );
 };
 
 /**
  * Hook to upload a file using presigned URL
+ * @param options Mutation options
  */
-export const useUploadPresignedFile = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ file, folder }: { file: File; folder?: string }) => {
-            const result = await FileApi.uploadPresigned({
-                fileName: file.name,
-                contentType: file.type,
-                folder
-            });
-            
-            if (!result.success || !result.data) {
-                throw new Error(result.message || 'Presigned upload failed');
-            }
-            
-            const success = await FileApi.uploadToPresignedUrl(result.data.uploadUrl, file);
-            if (!success) throw new Error('Upload to storage failed');
-            
-            return await FileApi.completePresignedUpload(result.data.uploadId);
-        },
-        onSuccess: (response) => {
-            if (response.success) {
-                queryClient.invalidateQueries({ queryKey: ['files'] });
-            }
-        },
-    });
+export const useUploadPresignedFile = <TContext = unknown>(
+  options?: CreateMutationOptions<{ file: File; folder?: string }, FileResponse, TContext>
+) => {
+  return useCreateMutation<{ file: File; folder?: string }, FileResponse, TContext>(
+    async ({ file, folder }) => {
+      const result = await FileApi.uploadPresigned({
+        fileName: file.name,
+        contentType: file.type,
+        folder
+      });
+
+      if (!result.success || !result.data) {
+        throw new Error(result.message || 'Presigned upload failed');
+      }
+
+      const success = await FileApi.uploadToPresignedUrl(result.data.uploadUrl, file);
+      if (!success) throw new Error('Upload to storage failed');
+
+      return await FileApi.completePresignedUpload(result.data.uploadId);
+    },
+    [['files']],
+    options
+  );
 };
 
 /**
  * Hook to delete a file
  * @param options Mutation options
  */
-export const useDeleteFile = (options?: DeleteMutationOptions) => {
-    return useDeleteMutation(
-        (id) => FileApi.delete(id),
-        [['files']],
-        options
-    );
+export const useDeleteFile = <TContext = unknown>(
+  options?: DeleteMutationOptions<TContext>
+) => {
+  return useDeleteMutation<TContext>(
+    (id) => FileApi.delete(id),
+    [['files']],
+    options
+  );
 };
 
 /**
@@ -121,16 +127,16 @@ export const useDeleteFile = (options?: DeleteMutationOptions) => {
  * @param options Query options
  */
 export const useViewUrl = (
-    id: string,
-    ticket: string,
-    options?: Omit<UseQueryOptions<string, Error, string, QueryKey>, 'queryKey' | 'queryFn'>
+  id: string,
+  ticket: string,
+  options?: Omit<UseQueryOptions<string, Error, string, QueryKey>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<string, Error, string, QueryKey>({
-        queryKey: ['files', 'view', id, ticket],
-        queryFn: () => FileApi.getViewUrl(id, ticket),
-        enabled: !!id && !!ticket,
-        staleTime: 5 * 60 * 1000,
-        ...options,
-    });
+  return useQuery<string, Error, string, QueryKey>({
+    queryKey: ['files', 'view', id, ticket],
+    queryFn: () => FileApi.getViewUrl(id, ticket),
+    enabled: !!id && !!ticket,
+    staleTime: 5 * 60 * 1000,
+    ...options,
+  });
 };
 

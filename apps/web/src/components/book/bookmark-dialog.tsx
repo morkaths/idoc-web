@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@repo/ui/components/dialog';
 import { Button } from '@repo/ui/components/button';
-import { useFolders, useCreateFolder } from '@/hooks/data/useFolder';
+import { useMyFolders, useCreateFolder } from '@/hooks/data/useFolder';
+
 import { useCreateBookmark } from '@/hooks/data/useBookmark';
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
@@ -8,6 +9,7 @@ import { Input } from '@repo/ui/components/input';
 import { ScrollArea } from '@repo/ui/components/scroll-area';
 import { toast } from 'sonner';
 import { useLocale } from '@/hooks/ui/useLocale';
+import { useSession } from 'next-auth/react';
 
 type BookmarkDialogProps = {
     open: boolean;
@@ -20,8 +22,10 @@ export function BookmarkDialog({
     onOpenChange,
     bookId,
 }: BookmarkDialogProps) {
+    const { data: session } = useSession();
     const { t, keys } = useLocale('books');
-    const { data: folders, isLoading } = useFolders({ limit: 100 }, { enabled: open, staleTime: 0 });
+    const { data: folders, isLoading } = useMyFolders({ limit: 100 }, { enabled: open && !!session?.user, staleTime: 0 });
+
     const [newFolderName, setNewFolderName] = useState('');
     const [isCreating, setIsCreating] = useState(false);
 
@@ -37,12 +41,17 @@ export function BookmarkDialog({
                 folderId: folderId,
             },
             {
-                onSuccess: () => {
-                    onOpenChange(false);
-                    toast.success(t(keys.view.bookmark.success));
+                onSuccess: (response) => {
+                    if (response.success) {
+                        onOpenChange(false);
+                        toast.success(t(keys.view.bookmark.success));
+                    } else {
+                        toast.error(response.message || t(keys.view.bookmark.error));
+                    }
                 },
-                onError: () => {
-                    toast.error(t(keys.view.bookmark.error));
+                onError: (err: unknown) => {
+                    const error = err as Error;
+                    toast.error(error?.message || t(keys.view.bookmark.error));
                 }
             }
         );
@@ -54,13 +63,13 @@ export function BookmarkDialog({
         createFolder(
             { name: newFolderName },
             {
-                onSuccess: (data) => {
-                    if (data) {
-                        handleSelectFolder(data.id);
+                onSuccess: (response) => {
+                    if (response.success && response.data) {
+                        handleSelectFolder(response.data.id);
                         setNewFolderName('');
                         setIsCreating(false);
                     } else {
-                        toast.error('Failed to create folder. Please try again.');
+                        toast.error(response.message || 'Failed to create folder. Please try again.');
                     }
                 },
                 onError: (err: unknown) => {

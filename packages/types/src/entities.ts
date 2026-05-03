@@ -1,10 +1,10 @@
-import { BorrowStatus, RoleType } from './enum';
+import { AuthProvider, BorrowStatus, RoleType } from './enum';
 
 // --- User & Authentication ---
 
 export interface OAuthResponse {
   id: string;
-  provider: string;
+  provider: AuthProvider;
   providerId: string;
 }
 
@@ -24,7 +24,6 @@ export interface UserResponse {
 
 export interface TokenResponse {
   accessToken: string;
-  refreshToken?: string;
   type: string;
   accessTokenExpiresIn: number;
   refreshTokenExpiresIn: number;

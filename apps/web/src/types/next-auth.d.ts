@@ -3,10 +3,17 @@ import 'next-auth';
 import 'next-auth/jwt';
 
 declare module 'next-auth' {
-    interface Session {
-        user?: UserResponse;
+    interface User extends UserResponse {
+        id: string;
+        email: string;
         accessToken?: string;
-        refreshToken?: string;
+        accessTokenExpiresIn?: number;
+        emailVerified: Date | null;
+    }
+
+    interface Session {
+        user?: User;
+        accessToken?: string;
         error?: 'RefreshAccessTokenError' | 'InvalidCredentials' | string;
         [key: string]: unknown;
     }
@@ -14,9 +21,8 @@ declare module 'next-auth' {
 
 declare module 'next-auth/jwt' {
     interface JWT {
-        user?: UserResponse;
+        user?: User;
         accessToken?: string;
-        refreshToken?: string;
         expiresAt?: number;
         error?: 'RefreshAccessTokenError' | 'InvalidCredentials' | string;
         [key: string]: unknown;

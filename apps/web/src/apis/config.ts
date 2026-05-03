@@ -1,8 +1,13 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
-import { getSession, signOut } from 'next-auth/react';
-import { API_CONFIG } from '@/config/api';
+import axios, {
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type InternalAxiosRequestConfig,
+  AxiosHeaders
+} from 'axios';
+import { getSession } from 'next-auth/react';
+import { ApiEndpoint } from '@/config/api';
 import env from '@/config/env';
-import type { ApiResponse } from '@/types';
+import type { ApiResponse, ApiErrorResponse } from '@/types';
 import qs from 'qs';
 
 export type SecurityStrategy = 'public' | 'private';
@@ -11,128 +16,201 @@ export interface ApiOptions extends Omit<AxiosRequestConfig, 'method' | 'url' | 
   security?: SecurityStrategy;
 }
 
-interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
+// Global states for session management
 let instances: { public: AxiosInstance; private: AxiosInstance } | null = null;
 let accessToken: string | null = null;
 let refreshPromise: Promise<string | null> | null = null;
 let isLoggingOut = false;
 
-const syncSession = async (): Promise<string | null> => {
+/**
+ * Synchronizes the authentication session with NextAuth.
+ */
+const syncSession = async (force = false): Promise<string | null> => {
   if (typeof window === 'undefined') return null;
-  if (refreshPromise) return refreshPromise;
 
-  refreshPromise = (async () => {
-    try {
-      const session = await getSession();
-      accessToken = session?.accessToken || null;
-      return accessToken;
-    } finally {
-      refreshPromise = null;
-    }
-  })();
+  if (!force && accessToken) {
+    return accessToken;
+  }
+
+  if (!refreshPromise) {
+    refreshPromise = (async () => {
+      try {
+        const session = await getSession();
+        const newToken = session?.accessToken || null;
+        accessToken = newToken;
+
+        if (newToken) {
+          isLoggingOut = false;
+        }
+
+        return newToken;
+      } catch (_error) {
+        accessToken = null;
+        return null;
+      } finally {
+        refreshPromise = null;
+      }
+    })();
+  }
 
   return refreshPromise;
 };
 
-const handleError = (error: unknown): ApiResponse<undefined> => {
+/**
+ * -----------------------------------------------------------------------------
+ * HELPER FUNCTIONS (SENIOR PATTERN)
+ * -----------------------------------------------------------------------------
+ */
+
+/**
+ * Standardizes error responses from the API or network.
+ */
+const handleError = (error: unknown): ApiErrorResponse => {
   const timestamp = new Date().toISOString();
 
   if (axios.isAxiosError(error) && error.response?.data) {
-    const serverResponse = error.response.data as Record<string, unknown>;
+    const serverData = error.response.data as ApiErrorResponse;
     return {
       success: false,
-      message: (serverResponse.message as string) || error.message,
-      status: (serverResponse.status as number) ?? error.response?.status ?? 500,
-      timestamp: (serverResponse.timestamp as string) || timestamp,
-      errors: serverResponse.errors,
-    } as unknown as ApiResponse<undefined>;
-  }
-
-  if (typeof error === 'object' && error !== null && 'message' in error) {
-    const err = error as Record<string, unknown>;
-    return {
-      success: false,
-      message: err.message as string,
-      status: (err.status as number) ?? (err.statusCode as number) ?? 500,
-      timestamp: (err.timestamp as string) || timestamp,
-      errors: err.errors,
-    } as unknown as ApiResponse<undefined>;
+      status: serverData.status ?? error.response.status ?? 500,
+      errorCode: serverData.errorCode || 'API_ERROR',
+      message: serverData.message || error.message,
+      path: serverData.path || '',
+      timestamp: serverData.timestamp || timestamp,
+      errors: serverData.errors,
+    };
   }
 
   return {
     success: false,
-    message: 'Unknown error',
     status: 500,
+    errorCode: error instanceof Error ? 'INTERNAL_ERROR' : 'UNKNOWN_ERROR',
+    message: error instanceof Error ? error.message : 'An unexpected error occurred',
+    path: '',
     timestamp,
   };
 };
 
-const createInstance = (withCredentials = false): AxiosInstance => {
+/**
+ * Applies locale information to the request headers.
+ */
+const applyLocaleHeader = (config: InternalAxiosRequestConfig) => {
+  const lang = config.params?.lang as string | undefined;
+  
+  if (lang) {
+    config.headers.set('Accept-Language', lang);
+    delete config.params.lang;
+    return;
+  }
+  
+  if (typeof window !== 'undefined') {
+    const locale = document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1];
+    if (locale) {
+      config.headers.set('Accept-Language', locale);
+    }
+  }
+};
+
+/**
+ * Forwards browser cookies when running on the server (SSR/Server Actions).
+ */
+const forwardServerCookies = async (config: InternalAxiosRequestConfig) => {
+  if (typeof window !== 'undefined') return;
+
+  try {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    const allCookies = cookieStore.getAll();
+    
+    if (allCookies.length > 0) {
+      const cookieString = allCookies
+        .map((c) => `${c.name}=${c.value}`)
+        .join('; ');
+      config.headers.set('Cookie', cookieString);
+    }
+  } catch (_error) {
+    // Not in a request context (e.g., build time)
+  }
+};
+
+/**
+ * Attaches the Authorization header if the instance requires it.
+ */
+const applyAuthHeader = async (config: InternalAxiosRequestConfig, useAuth: boolean) => {
+  if (!useAuth || typeof window === 'undefined') return;
+
+  const token = await syncSession();
+  if (token) {
+    config.headers.set('Authorization', `Bearer ${token}`);
+  }
+};
+
+/**
+ * Handles 401 Unauthorized errors by attempting to refresh the session.
+ */
+const handleUnauthorizedError = async (error: any, instance: AxiosInstance) => {
+  const originalRequest = error.config as CustomAxiosRequestConfig;
+
+  const shouldRetry = 
+    error.response?.status === 401 && 
+    !originalRequest._retry && 
+    !isLoggingOut && 
+    typeof window !== 'undefined';
+
+  if (shouldRetry) {
+    originalRequest._retry = true;
+    const newToken = await syncSession(true);
+
+    if (newToken) {
+      originalRequest.headers.set('Authorization', `Bearer ${newToken}`);
+      return instance.request(originalRequest);
+    }
+  }
+
+  return Promise.reject(handleError(error));
+};
+
+/**
+ * -----------------------------------------------------------------------------
+ * CORE AXIOS FACTORY
+ * -----------------------------------------------------------------------------
+ */
+
+const createInstance = (useAuth = false): AxiosInstance => {
   const instance = axios.create({
-    baseURL: API_CONFIG.baseURL,
-    timeout: API_CONFIG.timeout,
+    baseURL: ApiEndpoint.meta.baseURL,
+    timeout: ApiEndpoint.meta.timeout,
     withCredentials: true,
     paramsSerializer: (params) => {
       const processed: Record<string, unknown> = {};
-      for (const [key, value] of Object.entries(params)) {
-        if (
-          Array.isArray(value) &&
-          value.length > 0 &&
-          typeof value[0] === 'object' &&
-          value[0] !== null
-        ) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'object' && value[0] !== null) {
           processed[key] = JSON.stringify(value);
         } else {
           processed[key] = value;
         }
-      }
+      });
       return qs.stringify(processed, { arrayFormat: 'repeat', skipNulls: true });
     },
   });
 
-  // Request Interceptor
+  // Request Interceptor (Declarative Flow)
   instance.interceptors.request.use(
     async (config) => {
-      if (!config.headers) {
-        config.headers = axios.AxiosHeaders.from({});
-      }
+      if (!config.headers) config.headers = new AxiosHeaders();
 
-      // Handle locale
-      if (config.params && config.params.lang) {
-        config.headers['Accept-Language'] = config.params.lang;
-        delete config.params.lang;
-      } else if (typeof window !== 'undefined') {
-        const match = document.cookie.match(/NEXT_LOCALE=([^;]+)/);
-        if (match) config.headers['Accept-Language'] = match[1];
-      } else {
-        try {
-          const { headers } = await import('next/headers');
-          const headerList = await headers();
-          const locale = headerList.get('Accept-Language');
-          if (locale) config.headers['Accept-Language'] = locale;
-        } catch (_e) {
-          // Ignore
-        }
-      }
-
-      // API Key
+      applyLocaleHeader(config);
+      
       if (env.api.key) {
-        config.headers['x-api-key'] = env.api.key;
+        config.headers.set('x-api-key', env.api.key);
       }
 
-      // Authorization & Session sync
-      if (withCredentials) {
-        if (typeof window !== 'undefined' && !accessToken) {
-          await syncSession();
-        }
-
-        if (accessToken) {
-          config.headers['Authorization'] = `Bearer ${accessToken}`;
-        }
-      }
+      await forwardServerCookies(config);
+      await applyAuthHeader(config, useAuth);
 
       return config;
     },
@@ -141,41 +219,18 @@ const createInstance = (withCredentials = false): AxiosInstance => {
 
   // Response Interceptor
   instance.interceptors.response.use(
-    (res) => res,
-    async (error) => {
-      const originalRequest = error.config as CustomAxiosRequestConfig;
-
-      if (error?.response?.status === 401 && !originalRequest._retry && !isLoggingOut) {
-        if (typeof window !== 'undefined') {
-          originalRequest._retry = true;
-          const newToken = await syncSession();
-
-          if (newToken && newToken !== accessToken) {
-            if (originalRequest.headers) {
-              originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-            }
-            return instance.request(originalRequest);
-          } else {
-            accessToken = null;
-            if (withCredentials) {
-              isLoggingOut = true;
-              await signOut({ callbackUrl: '/sign-in' });
-            } else {
-              if (originalRequest.headers) {
-                delete originalRequest.headers['Authorization'];
-              }
-              return instance.request(originalRequest);
-            }
-          }
-        }
-      }
-
-      return Promise.reject(handleError(error));
-    }
+    (response) => response,
+    (error) => handleUnauthorizedError(error, instance)
   );
 
   return instance;
 };
+
+/**
+ * -----------------------------------------------------------------------------
+ * API CLIENT EXPORTS
+ * -----------------------------------------------------------------------------
+ */
 
 const getInstance = (strategy: SecurityStrategy): AxiosInstance => {
   if (!instances) {
@@ -190,6 +245,11 @@ const getInstance = (strategy: SecurityStrategy): AxiosInstance => {
 export const ApiClient = {
   setToken: (token: string | null) => {
     accessToken = token;
+    if (token) isLoggingOut = false;
+  },
+
+  setLoggingOut: (value: boolean) => {
+    isLoggingOut = value;
   },
 
   getAccessToken: () => accessToken,
@@ -208,37 +268,21 @@ export const ApiClient = {
         ...axiosOptions,
       });
 
-      if (response.data) {
-        Object.assign(response.data, { headers: response.headers });
-      }
-
       return response.data;
     } catch (error: unknown) {
-      const err = error as Record<string, unknown>;
-      if (err && err.success === false) return err as unknown as ApiResponse<T>;
-      return handleError(error) as ApiResponse<T>;
+      // Return formatted error if it's already an ApiErrorResponse
+      if (error && typeof error === 'object' && 'success' in error && (error as any).success === false) {
+        return error as unknown as ApiResponse<T>;
+      }
+      return handleError(error) as unknown as ApiResponse<T>;
     }
   },
 
-  get<T>(url: string, options?: ApiOptions) {
-    return ApiClient.request<T>('get', url, options);
-  },
-
-  post<T>(url: string, options?: ApiOptions) {
-    return ApiClient.request<T>('post', url, options);
-  },
-
-  put<T>(url: string, options?: ApiOptions) {
-    return ApiClient.request<T>('put', url, options);
-  },
-
-  patch<T>(url: string, options?: ApiOptions) {
-    return ApiClient.request<T>('patch', url, options);
-  },
-
-  delete<T>(url: string, options?: ApiOptions) {
-    return ApiClient.request<T>('delete', url, options);
-  },
+  get: <T>(url: string, options?: ApiOptions) => ApiClient.request<T>('get', url, options),
+  post: <T>(url: string, options?: ApiOptions) => ApiClient.request<T>('post', url, options),
+  put: <T>(url: string, options?: ApiOptions) => ApiClient.request<T>('put', url, options),
+  patch: <T>(url: string, options?: ApiOptions) => ApiClient.request<T>('patch', url, options),
+  delete: <T>(url: string, options?: ApiOptions) => ApiClient.request<T>('delete', url, options),
 };
 
 export const setAccessToken = ApiClient.setToken;

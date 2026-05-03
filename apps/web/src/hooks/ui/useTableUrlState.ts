@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import type { ColumnFiltersState, OnChangeFn, PaginationState } from '@tanstack/react-table';
 
 type SearchRecord = Record<string, unknown>;
@@ -27,7 +27,6 @@ type UseTableUrlStateParams = {
         columnId: string;
         searchKey: string;
         type?: 'string';
-        // Optional transformers for custom types
         serialize?: (value: unknown) => unknown;
         deserialize?: (value: unknown) => unknown;
       }
@@ -42,16 +41,12 @@ type UseTableUrlStateParams = {
 };
 
 type UseTableUrlStateReturn = {
-  // Global filter
   globalFilter?: string;
   onGlobalFilterChange?: OnChangeFn<string>;
-  // Column filters
   columnFilters: ColumnFiltersState;
   onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
-  // Pagination
   pagination: PaginationState;
   onPaginationChange: OnChangeFn<PaginationState>;
-  // Helpers
   ensurePageInRange: (pageCount: number, opts?: { resetTo?: 'first' | 'last' }) => void;
 };
 
@@ -64,16 +59,19 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     columnFilters: columnFiltersCfg = [],
   } = params;
 
-  const pageKey = paginationCfg?.pageKey ?? ('page' as string);
-  const pageSizeKey = paginationCfg?.pageSizeKey ?? ('pageSize' as string);
+  const pageKey = paginationCfg?.pageKey ?? 'page';
+  const pageSizeKey = paginationCfg?.pageSizeKey ?? 'pageSize';
   const defaultPage = paginationCfg?.defaultPage ?? 1;
   const defaultPageSize = paginationCfg?.defaultPageSize ?? 10;
 
-  const globalFilterKey = globalFilterCfg?.key ?? ('filter' as string);
+  const globalFilterKey = globalFilterCfg?.key ?? 'filter';
   const globalFilterEnabled = globalFilterCfg?.enabled ?? true;
   const trimGlobal = globalFilterCfg?.trim ?? true;
 
-  // Build initial column filters from the current search params
+  // Use refs to keep callbacks stable
+  const searchRef = useRef(search);
+  searchRef.current = search;
+
   const initialColumnFilters: ColumnFiltersState = useMemo(() => {
     const collected: ColumnFiltersState = [];
     for (const cfg of columnFiltersCfg) {
@@ -85,7 +83,6 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
           collected.push({ id: cfg.columnId, value });
         }
       } else {
-        // default to array type
         const value = (deserialize(raw) as unknown[]) ?? [];
         if (Array.isArray(value) && value.length > 0) {
           collected.push({ id: cfg.columnId, value });
@@ -97,94 +94,146 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialColumnFilters);
 
+  // Sync internal filter state if URL changes externally
+  useEffect(() => {
+    setColumnFilters(initialColumnFilters);
+  }, [initialColumnFilters]);
+
   const pagination: PaginationState = useMemo(() => {
     const rawPage = (search as SearchRecord)[pageKey];
     const rawPageSize = (search as SearchRecord)[pageSizeKey];
-    const pageNum = typeof rawPage === 'number' ? rawPage : defaultPage;
-    const pageSizeNum = typeof rawPageSize === 'number' ? rawPageSize : defaultPageSize;
-    return { pageIndex: Math.max(0, pageNum - 1), pageSize: pageSizeNum };
+    
+    // URL params are strings, need to parse them
+    const pageNum = typeof rawPage === 'string' 
+      ? parseInt(rawPage, 10) 
+      : (typeof rawPage === 'number' ? rawPage : defaultPage);
+      
+    const pageSizeNum = typeof rawPageSize === 'string'
+      ? parseInt(rawPageSize, 10)
+      : (typeof rawPageSize === 'number' ? rawPageSize : defaultPageSize);
+
+    return { 
+      pageIndex: isNaN(pageNum) ? 0 : Math.max(0, pageNum - 1), 
+      pageSize: isNaN(pageSizeNum) ? defaultPageSize : pageSizeNum 
+    };
   }, [search, pageKey, pageSizeKey, defaultPage, defaultPageSize]);
 
-  const onPaginationChange: OnChangeFn<PaginationState> = (updater) => {
-    const next = typeof updater === 'function' ? updater(pagination) : updater;
-    const nextPage = next.pageIndex + 1;
-    const nextPageSize = next.pageSize;
-    navigate({
-      search: (prev) => ({
-        ...(prev as SearchRecord),
-        [pageKey]: nextPage <= defaultPage ? undefined : nextPage,
-        [pageSizeKey]: nextPageSize === defaultPageSize ? undefined : nextPageSize,
-      }),
-    });
-  };
+  const paginationRef = useRef(pagination);
+  paginationRef.current = pagination;
 
-  const [globalFilter, setGlobalFilter] = useState<string | undefined>(() => {
-    if (!globalFilterEnabled) return undefined;
+  const onPaginationChange: OnChangeFn<PaginationState> = useCallback(
+    (updater) => {
+      const currentPagination = paginationRef.current;
+      const next = typeof updater === 'function' ? updater(currentPagination) : updater;
+      
+      // Don't navigate if values haven't actually changed to avoid unnecessary re-renders
+      if (next.pageIndex === currentPagination.pageIndex && next.pageSize === currentPagination.pageSize) {
+        return;
+      }
+
+      const nextPage = next.pageIndex + 1;
+      const nextPageSize = next.pageSize;
+
+      navigate({
+        search: (prev) => ({
+          ...(prev as SearchRecord),
+          [pageKey]: nextPage <= defaultPage ? undefined : nextPage,
+          [pageSizeKey]: nextPageSize === defaultPageSize ? undefined : nextPageSize,
+        }),
+      });
+    },
+    [pageKey, pageSizeKey, defaultPage, defaultPageSize, navigate]
+  );
+
+  const [globalFilter, setGlobalFilter] = useState<string>(() => {
+    if (!globalFilterEnabled) return '';
     const raw = (search as SearchRecord)[globalFilterKey];
     return typeof raw === 'string' ? raw : '';
   });
 
-  const onGlobalFilterChange: OnChangeFn<string> | undefined = globalFilterEnabled
-    ? (updater) => {
-        const next = typeof updater === 'function' ? updater(globalFilter ?? '') : updater;
-        const value = trimGlobal ? next.trim() : next;
-        setGlobalFilter(value);
+  // Sync global filter if URL changes
+  useEffect(() => {
+    if (globalFilterEnabled) {
+      const raw = (search as SearchRecord)[globalFilterKey];
+      const value = typeof raw === 'string' ? raw : '';
+      setGlobalFilter(value);
+    }
+  }, [search, globalFilterEnabled, globalFilterKey]);
+
+  const onGlobalFilterChange: OnChangeFn<string> | undefined = useMemo(
+    () =>
+      globalFilterEnabled
+        ? (updater: string | ((prev: string) => string)) => {
+            const next = typeof updater === 'function' ? updater(globalFilter) : updater;
+            const value = trimGlobal ? next.trim() : next;
+            
+            if (value === globalFilter) return;
+
+            setGlobalFilter(value);
+            navigate({
+              search: (prev) => ({
+                ...(prev as SearchRecord),
+                [pageKey]: undefined,
+                [globalFilterKey]: value ? value : undefined,
+              }),
+            });
+          }
+        : undefined,
+    [globalFilterEnabled, globalFilter, trimGlobal, navigate, pageKey, globalFilterKey]
+  );
+
+  const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> = useCallback(
+    (updater) => {
+      const next = typeof updater === 'function' ? updater(columnFilters) : updater;
+      setColumnFilters(next);
+
+      const patch: Record<string, unknown> = {};
+      for (const cfg of columnFiltersCfg) {
+        const found = next.find((f) => f.id === cfg.columnId);
+        const serialize = cfg.serialize ?? ((v: unknown) => v);
+        if (cfg.type === 'string') {
+          const value = typeof found?.value === 'string' ? (found.value as string) : '';
+          patch[cfg.searchKey] = value.trim() !== '' ? serialize(value) : undefined;
+        } else {
+          const value = Array.isArray(found?.value) ? (found!.value as unknown[]) : [];
+          patch[cfg.searchKey] = value.length > 0 ? serialize(value) : undefined;
+        }
+      }
+
+      navigate({
+        search: (prev) => ({
+          ...(prev as SearchRecord),
+          [pageKey]: undefined,
+          ...patch,
+        }),
+      });
+    },
+    [columnFilters, columnFiltersCfg, navigate, pageKey]
+  );
+
+  const ensurePageInRange = useCallback(
+    (pageCount: number, opts: { resetTo?: 'first' | 'last' } = { resetTo: 'first' }) => {
+      const currentSearch = searchRef.current;
+      const rawPage = currentSearch[pageKey];
+      const pageNum = typeof rawPage === 'string' 
+        ? parseInt(rawPage, 10) 
+        : (typeof rawPage === 'number' ? rawPage : defaultPage);
+      
+      if (pageCount > 0 && pageNum > pageCount) {
         navigate({
+          replace: true,
           search: (prev) => ({
             ...(prev as SearchRecord),
-            [pageKey]: undefined,
-            [globalFilterKey]: value ? value : undefined,
+            [pageKey]: opts.resetTo === 'last' ? pageCount : undefined,
           }),
         });
       }
-    : undefined;
-
-  const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> = (updater) => {
-    const next = typeof updater === 'function' ? updater(columnFilters) : updater;
-    setColumnFilters(next);
-
-    const patch: Record<string, unknown> = {};
-
-    for (const cfg of columnFiltersCfg) {
-      const found = next.find((f) => f.id === cfg.columnId);
-      const serialize = cfg.serialize ?? ((v: unknown) => v);
-      if (cfg.type === 'string') {
-        const value = typeof found?.value === 'string' ? (found.value as string) : '';
-        patch[cfg.searchKey] = value.trim() !== '' ? serialize(value) : undefined;
-      } else {
-        const value = Array.isArray(found?.value) ? (found!.value as unknown[]) : [];
-        patch[cfg.searchKey] = value.length > 0 ? serialize(value) : undefined;
-      }
-    }
-
-    navigate({
-      search: (prev) => ({
-        ...(prev as SearchRecord),
-        [pageKey]: undefined,
-        ...patch,
-      }),
-    });
-  };
-
-  const ensurePageInRange = (
-    pageCount: number,
-    opts: { resetTo?: 'first' | 'last' } = { resetTo: 'first' }
-  ) => {
-    const currentPage = (search as SearchRecord)[pageKey];
-    const pageNum = typeof currentPage === 'number' ? currentPage : defaultPage;
-    if (pageCount > 0 && pageNum > pageCount) {
-      navigate({
-        replace: true,
-        search: (prev) => ({
-          ...(prev as SearchRecord),
-          [pageKey]: opts.resetTo === 'last' ? pageCount : undefined,
-        }),
-      });
-    }
-  };
+    },
+    [pageKey, defaultPage, navigate]
+  );
 
   return {
-    globalFilter: globalFilterEnabled ? (globalFilter ?? '') : undefined,
+    globalFilter: globalFilterEnabled ? globalFilter : undefined,
     onGlobalFilterChange,
     columnFilters,
     onColumnFiltersChange,
@@ -193,3 +242,4 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     ensurePageInRange,
   };
 }
+

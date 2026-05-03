@@ -14,10 +14,7 @@ export const useUsers = (
   return useListQuery<UserResponse>(
     ['users', params],
     () => UserApi.find(params),
-    {
-      staleTime: 60 * 60 * 1000,
-      ...options,
-    }
+    options
   );
 };
 

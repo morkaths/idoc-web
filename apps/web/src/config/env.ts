@@ -7,6 +7,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_PORT: z.string().default('3000'),
   NEXT_PUBLIC_BASE_URL: z.string().default('http://localhost:3000'),
   NEXT_PUBLIC_API_URL: z.string().default('http://localhost:5000/api/v1'),
+  NEXT_PUBLIC_AGENT_URL: z.string().default('http://localhost:5000/api/v1'),
   NEXT_PUBLIC_API_KEY: z.string().optional(),
   NEXT_PUBLIC_TOKEN_COOKIE_KEY: z.string().default('idoc_authtoken'),
   NEXT_PUBLIC_REFRESH_TOKEN_COOKIE_KEY: z.string().default('idoc_refreshtoken'),
@@ -21,6 +22,7 @@ const processEnv = {
   NEXT_PUBLIC_PORT: process.env.NEXT_PUBLIC_PORT,
   NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  NEXT_PUBLIC_AGENT_URL: process.env.NEXT_PUBLIC_AGENT_URL,
   NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY,
   NEXT_PUBLIC_TOKEN_COOKIE_KEY: process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY,
   NEXT_PUBLIC_REFRESH_TOKEN_COOKIE_KEY: process.env.NEXT_PUBLIC_REFRESH_TOKEN_COOKIE_KEY,
@@ -56,6 +58,9 @@ export const env = {
   api: {
     url: _env.NEXT_PUBLIC_API_URL,
     key: _env.NEXT_PUBLIC_API_KEY,
+  },
+  agent: {
+    url: _env.NEXT_PUBLIC_AGENT_URL,
   },
   cookie: {
     accessToken: _env.NEXT_PUBLIC_TOKEN_COOKIE_KEY,

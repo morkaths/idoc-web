@@ -1,23 +1,51 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type QueryKey, type UseMutationOptions } from '@tanstack/react-query';
-import type { ApiResponse, PageResponse } from '@/types';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type UseQueryOptions,
+  type QueryKey,
+  type UseMutationOptions,
+} from '@tanstack/react-query';
 import { useMemo } from 'react';
+import type { ApiResponse, PageResponse } from '@/types';
 
-/**
- * Type aliases for hook options
- */
-export type ListQueryOptions<T> = Omit<UseQueryOptions<ApiResponse<PageResponse<T>>, Error>, 'queryKey' | 'queryFn'>;
-export type ItemQueryOptions<T> = Omit<UseQueryOptions<ApiResponse<T>, Error>, 'queryKey' | 'queryFn'>;
-export type CreateMutationOptions<TRequest, TResponse, TContext = unknown> = UseMutationOptions<ApiResponse<TResponse>, Error, TRequest, TContext>;
+export type ListQueryOptions<T> = Omit<
+  UseQueryOptions<ApiResponse<PageResponse<T>>, Error>,
+  'queryKey' | 'queryFn'
+>;
+
+export type ItemQueryOptions<T> = Omit<
+  UseQueryOptions<ApiResponse<T>, Error>,
+  'queryKey' | 'queryFn'
+>;
+
+export type CreateMutationOptions<TRequest, TResponse, TContext = unknown> = UseMutationOptions<
+  ApiResponse<TResponse>,
+  Error,
+  TRequest,
+  TContext
+>;
+
 export type UpdateMutationOptions<TRequest, TResponse, TContext = unknown> = UseMutationOptions<
   ApiResponse<TResponse>,
   Error,
   { id: string; data: Partial<TRequest> },
   TContext
 >;
-export type DeleteMutationOptions<TContext = unknown> = UseMutationOptions<ApiResponse<void>, Error, string, TContext>;
+
+export type DeleteMutationOptions<TContext = unknown> = UseMutationOptions<
+  ApiResponse<void>,
+  Error,
+  string,
+  TContext
+>;
 
 /**
  * Common hook factory for list queries (pagination)
+ * @param queryKey Query key
+ * @param queryFn Query function
+ * @param options Query options
+ * @returns ApiResponse<PageResponse<T>>
  */
 export const useListQuery = <T>(
   queryKey: QueryKey,
@@ -53,6 +81,10 @@ export const useListQuery = <T>(
 
 /**
  * Common hook factory for single item queries
+ * @param queryKey Query key
+ * @param queryFn Query function
+ * @param options Query options
+ * @returns ApiResponse<T>
  */
 export const useItemQuery = <T>(
   queryKey: QueryKey,
@@ -77,6 +109,10 @@ export const useItemQuery = <T>(
 
 /**
  * Common hook factory for create mutations
+ * @param mutationFn Mutation function
+ * @param invalidateKeys Query keys to invalidate
+ * @param options Mutation options
+ * @returns ApiResponse<TResponse>
  */
 export const useCreateMutation = <TRequest, TResponse, TContext = unknown>(
   mutationFn: (data: TRequest) => Promise<ApiResponse<TResponse>>,
@@ -99,6 +135,10 @@ export const useCreateMutation = <TRequest, TResponse, TContext = unknown>(
 
 /**
  * Common hook factory for update mutations
+ * @param mutationFn Mutation function
+ * @param invalidateKeys Query keys to invalidate
+ * @param options Mutation options
+ * @returns ApiResponse<TResponse>
  */
 export const useUpdateMutation = <TRequest, TResponse, TContext = unknown>(
   mutationFn: (args: { id: string; data: Partial<TRequest> }) => Promise<ApiResponse<TResponse>>,
@@ -122,6 +162,10 @@ export const useUpdateMutation = <TRequest, TResponse, TContext = unknown>(
 
 /**
  * Common hook factory for delete mutations
+ * @param mutationFn Mutation function
+ * @param invalidateKeys Query keys to invalidate
+ * @param options Mutation options
+ * @returns ApiResponse<void>
  */
 export const useDeleteMutation = <TContext = unknown>(
   mutationFn: (id: string) => Promise<ApiResponse<void>>,
@@ -141,4 +185,3 @@ export const useDeleteMutation = <TContext = unknown>(
     ...options,
   });
 };
-

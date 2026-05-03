@@ -1,9 +1,24 @@
-import { BookApi } from '@/apis';
-import type { BookResponse, BookRequest, FindParams } from '@/types';
-import { BookmarkApi } from '@/apis/bookmark.api';
-import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type ListQueryOptions, type ItemQueryOptions } from './factory';
-import { useSession } from 'next-auth/react';
 import { useMemo } from 'react';
+import { useSession } from 'next-auth/react';
+import { BookApi } from '@/apis';
+import { BookmarkApi } from '@/apis/bookmark.api';
+import type { BookResponse, BookRequest, FindParams, BookmarkResponse } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+} from './factory';
+
+export type EnrichedBook = BookResponse & {
+  bookmarkId?: string;
+};
 
 /**
  * Internal hook to enrich book list with bookmark status
@@ -19,7 +34,7 @@ function useBookListEnricher(booksQueryResult: ReturnType<typeof useListQuery<Bo
 
   const userId = session?.user?.id;
 
-  const { data: bookmarkData } = useItemQuery<Record<string, { id: string }>>(
+  const { data: bookmarkData } = useItemQuery<Record<string, BookmarkResponse>>(
     ['bookmarks', 'status', bookIds, userId],
     () => BookmarkApi.status(bookIds),
     {
@@ -28,13 +43,13 @@ function useBookListEnricher(booksQueryResult: ReturnType<typeof useListQuery<Bo
     }
   );
 
-  const enrichedBooks = useMemo(() => {
+  const enrichedBooks = useMemo<EnrichedBook[]>(() => {
     const content = booksQueryResult.data.data;
     if (!content || !Array.isArray(content)) return [];
-    
+
     return content.map(book => ({
       ...book,
-      bookmark: bookmarkData?.[book.id]?.id
+      bookmarkId: bookmarkData?.[book.id]?.id
     }));
   }, [booksQueryResult.data.data, bookmarkData]);
 
@@ -59,10 +74,7 @@ export const useBooks = (
   const booksQuery = useListQuery<BookResponse>(
     ['books', params],
     () => BookApi.find(params),
-    {
-      staleTime: 5 * 60 * 1000,
-      ...options
-    }
+    options
   );
 
   return useBookListEnricher(booksQuery);
@@ -80,10 +92,7 @@ export const useSearchBooks = (
   const booksQuery = useListQuery<BookResponse>(
     ['books', 'search', params],
     () => BookApi.search(params),
-    {
-      staleTime: 5 * 60 * 1000,
-      ...options
-    }
+    options
   );
 
   return useBookListEnricher(booksQuery);
@@ -94,47 +103,31 @@ export const useSearchBooks = (
  * @param id Book ID
  * @param options Query options
  */
-export const useBook = (
-  id: string, 
-  options?: ItemQueryOptions<BookResponse>
-) => {
-  const { data: session, status: authStatus } = useSession();
+export const useBook = (id: string | undefined, options?: Parameters<typeof useItemQuery<BookResponse>>[2]) => {
+  const { status: authStatus } = useSession();
 
-  // 1. Fetch book details
-  const bookQuery = useItemQuery<BookResponse>(
+  const query = useItemQuery<BookResponse>(
     ['books', id],
-    () => BookApi.findById(id),
-    {
-      enabled: !!id,
-      staleTime: 10 * 60 * 1000,
-      ...options
-    }
+    () => BookApi.findById(id!),
+    { ...options, enabled: !!id && options?.enabled !== false }
   );
 
-  // 2. Fetch bookmark status
-  const userId = session?.user?.id;
-  const { data: bookmarkData } = useItemQuery<Record<string, { id: string }>>(
-    ['bookmarks', 'status', id, userId],
-    () => BookmarkApi.status([id]),
-    {
-      enabled: !!id && authStatus === 'authenticated' && !!bookQuery.data,
-      staleTime: 5 * 60 * 1000,
-    }
+  const { data: bookmarkData } = useItemQuery<Record<string, BookmarkResponse>>(
+    ['bookmarks', 'status', [id]],
+    () => BookmarkApi.status([id!]),
+    { enabled: !!id && authStatus === 'authenticated' }
   );
 
-  // 3. Merge data
-  const enrichedBook = useMemo(() => {
-    const bookData = bookQuery.data;
-    if (!bookData) return null;
-    
+  const enrichedBook = useMemo<EnrichedBook | null>(() => {
+    if (!query.data) return null;
     return {
-      ...bookData,
-      bookmark: bookmarkData?.[id]?.id
+      ...query.data,
+      bookmarkId: bookmarkData?.[id!]?.id,
     };
-  }, [bookQuery.data, bookmarkData, id]);
+  }, [query.data, bookmarkData, id]);
 
   return {
-    ...bookQuery,
+    ...query,
     data: enrichedBook,
   };
 };
@@ -145,7 +138,7 @@ export const useBook = (
  * @param options Mutation options
  */
 export const useCreateBook = <TContext = unknown>(
-  options?: any
+  options?: CreateMutationOptions<BookRequest, BookResponse, TContext>
 ) => {
   return useCreateMutation<BookRequest, BookResponse, TContext>(
     (data) => BookApi.create(data),
@@ -159,7 +152,7 @@ export const useCreateBook = <TContext = unknown>(
  * @param options Mutation options
  */
 export const useUpdateBook = <TContext = unknown>(
-  options?: any
+  options?: UpdateMutationOptions<BookRequest, BookResponse, TContext>
 ) => {
   return useUpdateMutation<BookRequest, BookResponse, TContext>(
     ({ id, data }) => BookApi.update(id, data),
@@ -173,7 +166,7 @@ export const useUpdateBook = <TContext = unknown>(
  * @param options Mutation options
  */
 export const useDeleteBook = <TContext = unknown>(
-  options?: any
+  options?: DeleteMutationOptions<TContext>
 ) => {
   return useDeleteMutation<TContext>(
     (id) => BookApi.delete(id),

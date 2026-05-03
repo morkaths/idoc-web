@@ -47,7 +47,7 @@ export function BorrowsDialogs() {
             notes={currentRow.notes}
             onOpenChange={() => setOpen('extend')}
             onSubmit={(data) => {
-              return toast.promise(extendBorrowMut.mutateAsync({ id: currentRow!.id!, ...data }), {
+              return toast.promise(extendBorrowMut.mutateAsync({ id: currentRow!.id!, data }), {
                 loading: 'Extending borrow...',
                 success: (res) => {
                   setOpen(null);

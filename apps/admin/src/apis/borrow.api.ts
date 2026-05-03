@@ -5,15 +5,21 @@ import type {
   FindParams,
   ApiResponse,
   PageResponse,
+  RenewBorrowRequest,
 } from '../types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
-export const BorrowApi = {
-  ...apiFactory<BorrowResponse, BorrowRequest>(ApiEndpoint.endpoints.borrows, {
+const factory = apiFactory<BorrowResponse, BorrowRequest>(
+  ApiEndpoint.endpoints.borrows,
+  {
     find: 'public',
     findById: 'public',
-  }),
+  }
+)
+
+export const BorrowApi = {
+  ...factory,
 
   history: async (
     params?: FindParams
@@ -26,12 +32,11 @@ export const BorrowApi = {
 
   extend: async (
     id: string,
-    extraDays: number,
-    note?: string
+    request: Partial<RenewBorrowRequest>
   ): Promise<ApiResponse<BorrowResponse>> => {
     return ApiClient.put<BorrowResponse>(ApiEndpoint.endpoints.borrows.extend(id), {
       security: 'private',
-      data: { extraDays, note },
+      data: request,
     });
   },
 

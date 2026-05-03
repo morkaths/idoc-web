@@ -236,7 +236,7 @@
         "placeholder": "your username",
         "validation": {
           "usernameRequired": "Please enter your username",
-          "usernameLength": "Username must be at least 3 characters long"
+          "usernameLength": "Username must be at least {min} characters long"
         }
       },
       "password": {
@@ -280,6 +280,11 @@
           "loading": "Resetting password...",
           "success": "Password reset successfully!",
           "error": "Error resetting password."
+        },
+        "sendResetLink": {
+          "loading": "Sending reset link...",
+          "success": "If an account exists for {email}, you will receive a reset link shortly.",
+          "error": "Something went wrong. Please try again."
         }
       }
     }
@@ -574,13 +579,38 @@
         },
         "review": {
           "label": "Review",
-          "create": {
-            "success": "Borrow reviewed successfully!",
-            "error": "Failed to review borrow. Please try again."
+          "create": "Create Review",
+          "update": "Update Review",
+          "description": "Share your thoughts on {title}",
+          "fallback": "Share your thoughts on this book",
+          "rating": {
+            "label": "Rating",
+            "error": "Please select a rating",
+            "value": {
+              "excellent": "Excellent",
+              "good": "Good",
+              "neutral": "Neutral",
+              "poor": "Poor",
+              "terrible": "Terrible"
+            }
           },
-          "update": {
-            "success": "Borrow reviewed successfully!",
-            "error": "Failed to review borrow. Please try again."
+          "content": {
+            "label": "Comment",
+            "placeholder": "Write your review here..."
+          },
+          "actions": {
+            "submit": "Submit Review",
+            "update": "Update Review"
+          },
+          "messages": {
+            "create": {
+              "success": "Borrow reviewed successfully!",
+              "error": "Failed to review borrow. Please try again."
+            },
+            "update": {
+              "success": "Borrow reviewed successfully!",
+              "error": "Failed to review borrow. Please try again."
+            }
           }
         },
         "return": {
@@ -589,7 +619,7 @@
           "loading": "Returning borrow...",
           "success": "Borrow returned successfully!",
           "error": "Failed to return borrow. Please try again.",
-          "desc": "Are you sure you want to return <strong>{title}</strong>?<br></br>This action cannot be undone."
+          "confirmDesc": "Are you sure you want to return <strong>{title}</strong>?<br></br>This action cannot be undone."
         },
         "history": {
           "label": "History",

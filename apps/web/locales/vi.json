@@ -234,7 +234,7 @@
         "placeholder": "username",
         "validation": {
           "usernameRequired": "Vui lòng nhập tên đăng nhập",
-          "usernameLength": "Tên đăng nhập phải có ít nhất 3 ký tự"
+          "usernameLength": "Tên đăng nhập phải có ít nhất {min} ký tự"
         }
       },
       "password": {
@@ -278,6 +278,11 @@
           "loading": "Đang đặt lại mật khẩu...",
           "success": "Đặt lại mật khẩu thành công!",
           "error": "Lỗi đặt lại mật khẩu."
+        },
+        "sendResetLink": {
+          "loading": "Đang gửi liên kết đặt lại mật khẩu...",
+          "success": "Nếu tài khoản tồn tại cho {email}, bạn sẽ nhận được liên kết đặt lại mật khẩu trong giây lát.",
+          "error": "Đã có lỗi xảy ra. Vui lòng thử lại."
         }
       }
     }

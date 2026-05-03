@@ -19,6 +19,26 @@ export const useFolders = (
 };
 
 /**
+ * Hook to fetch current user's folders with pagination
+ * @param params Search/filter parameters
+ * @param options Query options
+ */
+export const useMyFolders = (
+    params: FindParams = {},
+    options?: ListQueryOptions<FolderResponse>
+) => {
+    return useListQuery<FolderResponse>(
+        ['folders', 'me', params],
+        () => FolderApi.findMe(params),
+        {
+            staleTime: 0,
+            ...options,
+        }
+    );
+};
+
+
+/**
  * Hook to fetch a single folder by ID
  * @param id Folder ID
  * @param options Query options

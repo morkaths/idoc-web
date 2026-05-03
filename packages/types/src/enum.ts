@@ -49,3 +49,8 @@ export enum ReviewStatus {
   APPROVED = 'approved',
   REJECTED = 'rejected',
 }
+
+export enum AuthProvider {
+  GOOGLE = 'GOOGLE',
+  FACEBOOK = 'FACEBOOK',
+}

@@ -1,6 +1,5 @@
 'use client';
 
-
 import { useState, type HTMLAttributes } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -8,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { cn } from '@/lib/utils';
 import { Loader2, Send } from 'lucide-react';
 import { toast } from 'sonner';
+import { useLocale, KEYS } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import {
   Form,
@@ -20,15 +20,17 @@ import {
 import { Input } from '@repo/ui/components/input';
 
 const formSchema = z.object({
-  email: z.email({
-    error: (iss) => (iss.input === '' ? 'Please enter your email' : undefined),
-  }),
+  email: z
+    .string()
+    .min(1, { message: KEYS.auth.form.email.validation.emailRequired })
+    .email({ message: KEYS.auth.form.email.validation.invalidEmail }),
 });
 
 type ForgotPasswordFormProps = HTMLAttributes<HTMLFormElement>;
 
 export function ForgotPasswordForm({ className, ...props }: ForgotPasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const { t, keys } = useLocale('auth');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,12 +47,12 @@ export function ForgotPasswordForm({ className, ...props }: ForgotPasswordFormPr
     const promise = new Promise((resolve) => setTimeout(() => resolve(true), 2000));
 
     return toast.promise(promise, {
-      loading: 'Sending reset link...',
+      loading: t(keys.form.states.sendResetLink.loading),
       success: () => {
-        return `If an account exists for ${data.email}, you will receive a reset link shortly.`;
+        return t(keys.form.states.sendResetLink.success, { email: data.email });
       },
       error: () => {
-        return 'Something went wrong. Please try again.';
+        return t(keys.form.states.sendResetLink.error);
       },
       finally: () => {
         setIsLoading(false);
@@ -70,19 +72,19 @@ export function ForgotPasswordForm({ className, ...props }: ForgotPasswordFormPr
             <FormField
               control={form.control}
               name='email'
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t(keys.form.email.label)}</FormLabel>
                   <FormControl>
-                    <Input placeholder='name@example.com' {...field} />
+                    <Input placeholder={t(keys.form.email.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
                 </FormItem>
               )}
             />
             <Button className='mt-2' disabled={isLoading}>
               {isLoading ? <Loader2 className='animate-spin' /> : <Send className='mr-2 h-4 w-4' />}
-              Send Reset Link
+              {t(keys.forgotPassword.submit)}
             </Button>
           </div>
         </fieldset>

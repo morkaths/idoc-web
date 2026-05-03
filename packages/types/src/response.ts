@@ -28,4 +28,5 @@ export interface ApiResponse<T> {
   message?: string;
   data?: T;
   timestamp: string;
+  headers?: Record<string, string | string[]>;
 }

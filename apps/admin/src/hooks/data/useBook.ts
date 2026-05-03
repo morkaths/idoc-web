@@ -13,6 +13,11 @@ import {
   type DeleteMutationOptions,
 } from './factory';
 
+/**
+ * Hook to fetch books
+ * @param params Filter parameters
+ * @param options Query options
+ */
 export const useBooks = (
   params: FindParams = {},
   options?: ListQueryOptions<BookResponse>
@@ -20,13 +25,15 @@ export const useBooks = (
   return useListQuery<BookResponse>(
     ['books', params],
     () => BookApi.find(params),
-    {
-      staleTime: 5 * 60 * 1000,
-      ...options,
-    }
+    options
   );
 };
 
+/**
+ * Hook to search books
+ * @param params Search parameters
+ * @param options Query options
+ */
 export const useSearchBooks = (
   params: FindParams = {},
   options?: ListQueryOptions<BookResponse>
@@ -34,12 +41,15 @@ export const useSearchBooks = (
   return useListQuery<BookResponse>(
     ['books', 'search', params],
     () => BookApi.search(params),
-    {
-      ...options,
-    }
+    options
   );
 };
 
+/**
+ * Hook to fetch a single book by ID
+ * @param id Book ID
+ * @param options Query options
+ */
 export const useBook = (
   id: string,
   options?: ItemQueryOptions<BookResponse>
@@ -47,13 +57,14 @@ export const useBook = (
   return useItemQuery<BookResponse>(
     ['books', id],
     () => BookApi.findById(id),
-    {
-      enabled: !!id,
-      ...options,
-    }
+    { enabled: !!id, ...options }
   );
 };
 
+/**
+ * Hook to create a new book
+ * @param options Mutation options
+ */
 export const useCreateBook = (
   options?: CreateMutationOptions<BookRequest, BookResponse>
 ) => {
@@ -64,6 +75,10 @@ export const useCreateBook = (
   );
 };
 
+/**
+ * Hook to update an existing book
+ * @param options Mutation options
+ */
 export const useUpdateBook = (
   options?: UpdateMutationOptions<BookRequest, BookResponse>
 ) => {
@@ -74,6 +89,10 @@ export const useUpdateBook = (
   );
 };
 
+/**
+ * Hook to delete a book
+ * @param options Mutation options
+ */
 export const useDeleteBook = (options?: DeleteMutationOptions) => {
   return useDeleteMutation(
     (id) => BookApi.delete(id),

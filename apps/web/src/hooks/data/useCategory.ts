@@ -1,7 +1,17 @@
-import { type UseQueryOptions, type UseMutationOptions } from '@tanstack/react-query';
 import { CategoryApi } from '@/apis';
-import type { FindParams, CategoryResponse, CategoryRequest, ApiResponse, PageResponse } from '@/types';
-import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation } from './factory';
+import type { FindParams, CategoryResponse, CategoryRequest } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions
+} from './factory';
 
 /**
  * Hook to fetch categories with pagination
@@ -10,7 +20,7 @@ import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDe
  */
 export const useCategories = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<ApiResponse<PageResponse<CategoryResponse>>, Error>, 'queryKey' | 'queryFn'>
+  options?: ListQueryOptions<CategoryResponse>
 ) => {
   return useListQuery<CategoryResponse>(
     ['categories', params],
@@ -26,7 +36,7 @@ export const useCategories = (
  */
 export const useSearchCategories = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<ApiResponse<PageResponse<CategoryResponse>>, Error>, 'queryKey' | 'queryFn'>
+  options?: ListQueryOptions<CategoryResponse>
 ) => {
   return useListQuery<CategoryResponse>(
     ['categories', 'search', params],
@@ -42,15 +52,12 @@ export const useSearchCategories = (
  */
 export const useCategory = (
   id: string,
-  options?: Omit<UseQueryOptions<ApiResponse<CategoryResponse>, Error>, 'queryKey' | 'queryFn'>
+  options?: ItemQueryOptions<CategoryResponse>
 ) => {
   return useItemQuery<CategoryResponse>(
     ['categories', id],
     () => CategoryApi.findById(id),
-    {
-      enabled: !!id,
-      ...options,
-    }
+    { enabled: !!id, ...options }
   );
 };
 
@@ -59,7 +66,7 @@ export const useCategory = (
  * @param options Mutation options
  */
 export const useCreateCategory = <TContext = unknown>(
-  options?: UseMutationOptions<ApiResponse<CategoryResponse>, Error, CategoryRequest, TContext>
+  options?: CreateMutationOptions<CategoryRequest, CategoryResponse, TContext>
 ) => {
   return useCreateMutation<CategoryRequest, CategoryResponse, TContext>(
     (data) => CategoryApi.create(data),
@@ -73,12 +80,7 @@ export const useCreateCategory = <TContext = unknown>(
  * @param options Mutation options
  */
 export const useUpdateCategory = <TContext = unknown>(
-  options?: UseMutationOptions<
-    ApiResponse<CategoryResponse>,
-    Error,
-    { id: string; data: Partial<CategoryRequest> },
-    TContext
-  >
+  options?: UpdateMutationOptions<CategoryRequest, CategoryResponse, TContext>
 ) => {
   return useUpdateMutation<CategoryRequest, CategoryResponse, TContext>(
     ({ id, data }) => CategoryApi.update(id, data),
@@ -92,7 +94,7 @@ export const useUpdateCategory = <TContext = unknown>(
  * @param options Mutation options
  */
 export const useDeleteCategory = <TContext = unknown>(
-  options?: UseMutationOptions<ApiResponse<void>, Error, string, TContext>
+  options?: DeleteMutationOptions<TContext>
 ) => {
   return useDeleteMutation<TContext>(
     (id) => CategoryApi.delete(id),

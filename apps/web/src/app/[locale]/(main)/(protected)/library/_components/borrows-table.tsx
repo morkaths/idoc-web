@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { BorrowStatus } from '@/types';
 import {
@@ -13,7 +13,7 @@ import {
 } from '@tanstack/react-table';
 import { useBorrowHistory } from '@/hooks/data/useBorrow';
 import { KEYS, useLocale } from '@/hooks/ui/useLocale';
-import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
+import { useTableUrlState, type NavigateFn } from '@/hooks/ui/useTableUrlState';
 import { buildBorrowFindParams } from './borrow-query.utils';
 import {
   Table,
@@ -38,14 +38,24 @@ export function BorrowsTable() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const search = useMemo(() => Object.fromEntries(searchParams.entries()), [searchParams]);
+  const searchRef = useRef(search);
+  searchRef.current = search;
 
   const navigate = useCallback(
-    (opts: any) => {
-      const params = typeof opts.search === 'function' ? opts.search(search) : opts.search;
+    (opts: Parameters<NavigateFn>[0]) => {
+      const currentSearch = searchRef.current;
+      const searchVal = opts.search;
+      const params =
+        typeof searchVal === 'function'
+          ? searchVal(currentSearch)
+          : searchVal === true
+            ? currentSearch
+            : searchVal;
+
       const queryString = new URLSearchParams(params as Record<string, string>).toString();
       router.replace(`${pathname}?${queryString}`, { scroll: false });
     },
-    [router, pathname, search]
+    [router, pathname]
   );
 
   const {
@@ -103,18 +113,26 @@ export function BorrowsTable() {
     onColumnFiltersChange,
   });
 
+  // Reset row selection when filters change
   useEffect(() => {
-    if (!onPaginationChange) return;
     setRowSelection({});
-    onPaginationChange((prev) => ({
-      ...prev,
-      pageIndex: 0,
-      pageSize: pagination.pageSize ?? 10,
-    }));
-  }, [globalFilter, onPaginationChange, pagination.pageSize]);
+  }, [globalFilter, columnFilters]);
+
+  // Handle page reset on filter change if needed
+  // Note: useTableUrlState already handles resetting to page 1 on filter changes
+  useEffect(() => {
+    if (globalFilter && pagination.pageIndex !== 0) {
+      onPaginationChange?.((prev) => ({
+        ...prev,
+        pageIndex: 0,
+      }));
+    }
+  }, [globalFilter, onPaginationChange, pagination.pageIndex]);
 
   useEffect(() => {
-    ensurePageInRange(table.getPageCount());
+    if (table.getPageCount() > 0) {
+      ensurePageInRange(table.getPageCount());
+    }
   }, [table.getPageCount(), ensurePageInRange]);
 
   return (

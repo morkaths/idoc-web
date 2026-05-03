@@ -16,8 +16,8 @@ export const ImageApi = {
     });
   },
 
-  delete: async (url: string): Promise<ApiResponse<null>> => {
-    return ApiClient.delete<null>(ApiEndpoint.endpoints.images.delete(url), {
+  delete: async (url: string): Promise<ApiResponse<void>> => {
+    return ApiClient.delete<void>(ApiEndpoint.endpoints.images.delete(url), {
       security: 'private',
     });
   },

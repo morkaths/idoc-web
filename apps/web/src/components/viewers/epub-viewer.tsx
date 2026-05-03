@@ -14,7 +14,7 @@ import {
     SheetTrigger,
 } from "@repo/ui/components/sheet";
 
-import { API_CONFIG } from "@/config/api";
+import { ApiEndpoint } from "@/config/api";
 import { useReaderSettings } from "../../context/reader-provider";
 import { type Theme, EPUB_THEMES } from "./data/setting-data";
 import { EpubSettings } from "./epub-settings";
@@ -118,7 +118,7 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
         if (!fileUrl) return "";
         if (fileUrl.startsWith("http")) return fileUrl;
 
-        const baseUrl = API_CONFIG.baseURL || "";
+        const baseUrl = ApiEndpoint.meta.baseURL || "";
         const cleanBase = baseUrl.replace(/\/api$/, "");
 
         if (fileUrl.startsWith("/")) {
@@ -174,7 +174,6 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
         }
     };
 
-    // Reset trạng thái khi đổi sách hoặc đổi layout (Bắt buộc phải tính lại locations khi đổi layout)
     useEffect(() => {
         locationsInitializedRef.current = false;
         setTotalPages(0);
@@ -183,11 +182,10 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
         setIsCalculating(false);
     }, [fileUrl, flow]);
 
-    // Tải file thủ công để tránh lỗi nhận diện URL có query params
     useEffect(() => {
         if (!absoluteFileUrl) return;
 
-        setEpubData(null); // Reset khi đổi sách
+        setEpubData(null);
 
         fetch(absoluteFileUrl)
             .then(res => {
@@ -211,7 +209,7 @@ export function EpubViewer({ fileUrl, className }: EpubViewerProps) {
         setLocation(epubcfi);
         const rendition = renditionRef.current;
         if (rendition?.book?.locations) {
-            const loc = rendition.book.locations as unknown as { 
+            const loc = rendition.book.locations as unknown as {
                 percentageFromCfi?: (cfi: string) => number;
                 locationFromCfi?: (cfi: string) => number;
             };

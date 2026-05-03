@@ -1,22 +1,16 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ImageApi } from '@/apis/image.api';
-import { useDeleteMutation, type DeleteMutationOptions } from './factory';
+import { useDeleteMutation, useCreateMutation, type DeleteMutationOptions, type CreateMutationOptions } from './factory';
 
 /**
  * Hook to upload an image
+ * @param options Mutation options
  */
-export const useUploadImage = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ file, folder }: { file: File; folder: string }) => {
-            return await ImageApi.upload(file, folder);
-        },
-        onSuccess: (response) => {
-            if (response.success) {
-                queryClient.invalidateQueries({ queryKey: ['images'] });
-            }
-        },
-    });
+export const useUploadImage = (options?: CreateMutationOptions<{ file: File; folder: string }, string>) => {
+    return useCreateMutation(
+        ({ file, folder }) => ImageApi.upload(file, folder),
+        [['images']],
+        options
+    );
 };
 
 /**
@@ -25,8 +19,8 @@ export const useUploadImage = () => {
  */
 export const useDeleteImage = (options?: DeleteMutationOptions) => {
     return useDeleteMutation(
-        (url) => ImageApi.delete(url),
+        (url: string) => ImageApi.delete(url),
         [['images']],
         options
     );
-};
+};

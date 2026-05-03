@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useFolders, useCreateFolder } from '@/hooks/data/useFolder';
+import { useMyFolders, useCreateFolder } from '@/hooks/data/useFolder';
+
 import { useCreateBookmark, useUpdateBookmark, useBookmarkStatus } from '@/hooks/data/useBookmark';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
@@ -21,6 +22,7 @@ import {
   SelectValue,
 } from '@repo/ui/components/select';
 import { Input } from '@repo/ui/components/input';
+import { useSession } from 'next-auth/react';
 import { Plus, FolderPlus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -31,6 +33,7 @@ type AddBookmarkDialogProps = {
 };
 
 export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDialogProps) {
+  const { data: session } = useSession();
   const { t, keys } = useLocale('book');
   const [selectedFolder, setSelectedFolder] = useState<string>('');
   const [showCreateFolder, setShowCreateFolder] = useState(false);
@@ -38,8 +41,9 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Data fetching
-  const { data: foldersData, isLoading: foldersLoading } = useFolders({}, { enabled: open });
-  const { data: bookmarkStatus } = useBookmarkStatus([bookId], { enabled: open });
+  const { data: foldersData, isLoading: foldersLoading } = useMyFolders({}, { enabled: open && !!session?.user });
+
+  const { data: bookmarkStatus } = useBookmarkStatus([bookId], { enabled: open && !!session?.user });
 
   // Mutations
   const createFolderMut = useCreateFolder();
@@ -47,7 +51,7 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
   const updateBookmarkMut = useUpdateBookmark();
 
   const folders = foldersData?.data || [];
-  const currentBookmark = bookmarkStatus[bookId];
+  const currentBookmark = bookmarkStatus?.[bookId];
 
   const handleSave = async () => {
     if (!selectedFolder && !currentBookmark) return;
@@ -82,7 +86,9 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
       const folder = await createFolderMut.mutateAsync({
         name: newFolderName,
       });
-      setSelectedFolder(folder.id);
+      if (folder.data) {
+        setSelectedFolder(folder.data.id);
+      }
       setShowCreateFolder(false);
       setNewFolderName('');
       toast.success('Folder created');
@@ -103,7 +109,7 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
           <DialogTitle>{t(keys.bookmarks.title)}</DialogTitle>
           <DialogDescription>{t(keys.bookmarks.description)}</DialogDescription>
         </DialogHeader>
- 
+
         <fieldset disabled={isSubmitting} className='contents'>
           <div className='grid gap-4 py-4'>
             {showCreateFolder ? (

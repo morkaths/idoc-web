@@ -1,12 +1,17 @@
-import { API_CONFIG } from '@/config/api';
+import { ApiEndpoint } from '@/config/api';
 import type { AuthorRequest, AuthorResponse } from '../types';
 import { apiFactory } from './factory';
 
-export const AuthorApi = apiFactory<AuthorResponse, AuthorRequest>(
-  API_CONFIG.endpoints.authors,
+const factory = apiFactory<AuthorResponse, AuthorRequest>(
+  ApiEndpoint.endpoints.authors,
   {
     find: 'public',
     findById: 'public',
+    search: 'public',
   }
 );
+
+export const AuthorApi = {
+  ...factory,
+};
 

@@ -1,58 +1,104 @@
-import { type UseQueryOptions } from '@tanstack/react-query';
 import { AuthorApi } from '@/apis/author.api';
-import type { AuthorResponse, AuthorRequest, FindParams, ApiResponse, PageResponse } from '@/types';
-import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation } from './factory';
+import type { AuthorResponse, AuthorRequest, FindParams } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+} from './factory';
 
+/**
+ * Hook to fetch authors with pagination
+ * @param params Search/filter parameters
+ * @param options Query options
+ */
 export const useAuthors = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<ApiResponse<PageResponse<AuthorResponse>>, Error>, 'queryKey' | 'queryFn'>
+  options?: ListQueryOptions<AuthorResponse>
 ) => {
-  return useListQuery(
+  return useListQuery<AuthorResponse>(
     ['authors', params],
     () => AuthorApi.find(params),
     options
   );
 };
 
+/**
+ * Hook to search authors
+ * @param params Search parameters
+ * @param options Query options
+ */
 export const useSearchAuthors = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<ApiResponse<PageResponse<AuthorResponse>>, Error>, 'queryKey' | 'queryFn'>
+  options?: ListQueryOptions<AuthorResponse>
 ) => {
-  return useListQuery(
+  return useListQuery<AuthorResponse>(
     ['authors', 'search', params],
     () => AuthorApi.search(params),
     options
   );
 };
 
+/**
+ * Hook to fetch a single author by ID
+ * @param id Author ID
+ * @param options Query options
+ */
 export const useAuthor = (
-  id: string, 
-  options?: Omit<UseQueryOptions<ApiResponse<AuthorResponse>, Error>, 'queryKey' | 'queryFn'>
+  id: string,
+  options?: ItemQueryOptions<AuthorResponse>
 ) => {
-  return useItemQuery(
+  return useItemQuery<AuthorResponse>(
     ['authors', id],
     () => AuthorApi.findById(id),
     { enabled: !!id, ...options }
   );
 };
 
-export const useCreateAuthor = () => {
-  return useCreateMutation(
-    (data: AuthorRequest) => AuthorApi.create(data),
-    [['authors']]
+/**
+ * Hook to create a new author
+ * @param options Mutation options
+ */
+export const useCreateAuthor = <TContext = unknown>(
+  options?: CreateMutationOptions<AuthorRequest, AuthorResponse, TContext>
+) => {
+  return useCreateMutation<AuthorRequest, AuthorResponse, TContext>(
+    (data) => AuthorApi.create(data),
+    [['authors']],
+    options
   );
 };
 
-export const useUpdateAuthor = () => {
-  return useUpdateMutation(
-    ({ id, data }: { id: string; data: Partial<AuthorRequest> }) => AuthorApi.update(id, data),
-    (variables) => [['authors', variables.id], ['authors']]
+/**
+ * Hook to update an existing author
+ * @param options Mutation options
+ */
+export const useUpdateAuthor = <TContext = unknown>(
+  options?: UpdateMutationOptions<AuthorRequest, AuthorResponse, TContext>
+) => {
+  return useUpdateMutation<AuthorRequest, AuthorResponse, TContext>(
+    ({ id, data }) => AuthorApi.update(id, data),
+    (variables) => [['authors', variables.id], ['authors']],
+    options
   );
 };
 
-export const useDeleteAuthor = () => {
-  return useDeleteMutation(
-    (id: string) => AuthorApi.delete(id),
-    [['authors']]
+/**
+ * Hook to delete an author
+ * @param options Mutation options
+ */
+export const useDeleteAuthor = <TContext = unknown>(
+  options?: DeleteMutationOptions<TContext>
+) => {
+  return useDeleteMutation<TContext>(
+    (id) => AuthorApi.delete(id),
+    [['authors']],
+    options
   );
 };

@@ -41,7 +41,7 @@ const createInstance = (withCredentials = false): AxiosInstance => {
     config.headers = config.headers || {};
     config.headers['x-api-key'] = env.api.key;
 
-    if (withCredentials) {
+    if (withCredentials && !config.headers['Authorization']) {
       const { auth } = useAuthStore.getState();
       const accessToken = auth.token?.accessToken;
       if (accessToken) {

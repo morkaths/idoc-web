@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { useBookmarkContext } from './bookmark-provider';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 type BookListItemProps = {
   book: BookResponse;
@@ -16,6 +18,8 @@ type BookListItemProps = {
 };
 
 export function BookListItem({ book, onClick, className }: BookListItemProps) {
+  const router = useRouter();
+  const { data: session } = useSession();
   const { t, keys } = useLocale('books');
   const [imageError, setImageError] = useState(false);
   const [localBookmarkId, setLocalBookmarkId] = useState<string | undefined | null>(null);
@@ -45,6 +49,10 @@ export function BookListItem({ book, onClick, className }: BookListItemProps) {
         });
       }
     } else {
+      if (!session?.user) {
+        router.push(`/sign-in?redirect=${encodeURIComponent(window.location.pathname)}`);
+        return;
+      }
       setCurrentBook(book);
       setOpen(true);
     }

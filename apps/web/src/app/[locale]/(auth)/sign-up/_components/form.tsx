@@ -98,52 +98,52 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
             <FormField
               control={form.control}
               name='username'
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>{t(keys.form.username.label)}</FormLabel>
                   <FormControl>
                     <Input placeholder={t(keys.form.username.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message, { min: 3 })}</FormMessage>
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name='email'
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>{t(keys.form.email.label)}</FormLabel>
                   <FormControl>
                     <Input placeholder={t(keys.form.email.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name='password'
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>{t(keys.form.password.label)}</FormLabel>
                   <FormControl>
                     <PasswordInput placeholder={t(keys.form.password.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message, { min: 7 })}</FormMessage>
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name='confirmPassword'
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>{t(keys.form.confirmPassword.label)}</FormLabel>
                   <FormControl>
                     <PasswordInput placeholder={t(keys.form.confirmPassword.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
                 </FormItem>
               )}
             />

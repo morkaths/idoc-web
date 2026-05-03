@@ -1,4 +1,4 @@
-import { API_CONFIG } from '@/config/api';
+import { ApiEndpoint } from '@/config/api';
 import type {
   BorrowResponse,
   BorrowRequest,
@@ -10,10 +10,13 @@ import type {
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
-const factory = apiFactory<BorrowResponse, BorrowRequest>(API_CONFIG.endpoints.borrows, {
-  find: 'public',
-  findById: 'public',
-});
+const factory = apiFactory<BorrowResponse, BorrowRequest>(
+  ApiEndpoint.endpoints.borrows,
+  {
+    find: 'public',
+    findById: 'public',
+  }
+);
 
 export const BorrowApi = {
   ...factory,
@@ -21,27 +24,27 @@ export const BorrowApi = {
   history: async (
     params?: FindParams
   ): Promise<ApiResponse<PageResponse<BorrowResponse>>> => {
-    return ApiClient.get<PageResponse<BorrowResponse>>(API_CONFIG.endpoints.borrows.history, {
+    return ApiClient.get<PageResponse<BorrowResponse>>(ApiEndpoint.endpoints.borrows.history, {
       security: 'private',
       params,
     });
   },
 
-  extend: async (id: string, request: RenewBorrowRequest): Promise<ApiResponse<BorrowResponse>> => {
-    return ApiClient.put<BorrowResponse>(API_CONFIG.endpoints.borrows.extend(id), {
+  extend: async (id: string, request: Partial<RenewBorrowRequest>): Promise<ApiResponse<BorrowResponse>> => {
+    return ApiClient.put<BorrowResponse>(ApiEndpoint.endpoints.borrows.extend(id), {
       security: 'private',
       data: request,
     });
   },
 
   return: async (id: string): Promise<ApiResponse<BorrowResponse>> => {
-    return ApiClient.post<BorrowResponse>(API_CONFIG.endpoints.borrows.return(id), {
+    return ApiClient.post<BorrowResponse>(ApiEndpoint.endpoints.borrows.return(id), {
       security: 'private',
     });
   },
 
   view: async (id: string): Promise<ApiResponse<string>> => {
-    return ApiClient.get<string>(API_CONFIG.endpoints.borrows.view(id), {
+    return ApiClient.get<string>(ApiEndpoint.endpoints.borrows.view(id), {
       security: 'private',
     });
   },

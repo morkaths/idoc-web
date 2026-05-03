@@ -1,7 +1,17 @@
-import { type QueryKey } from '@tanstack/react-query';
 import { BorrowApi } from '@/apis/borrow.api';
-import type { BorrowResponse, BorrowRequest, FindParams, ApiResponse, PageResponse } from '@/types';
-import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type CreateMutationOptions, type UpdateMutationOptions, type DeleteMutationOptions } from './factory';
+import type { BorrowResponse, BorrowRequest, FindParams, RenewBorrowRequest } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions
+} from './factory';
 
 /**
  * Hook to fetch borrows with pagination
@@ -10,7 +20,7 @@ import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDe
  */
 export const useBorrows = (
   params: FindParams = {},
-  options?: any
+  options?: ListQueryOptions<BorrowResponse>
 ) => {
   return useListQuery<BorrowResponse>(
     ['borrows', params],
@@ -26,7 +36,7 @@ export const useBorrows = (
  */
 export const useBorrowHistory = (
   params: FindParams = {},
-  options?: any
+  options?: ListQueryOptions<BorrowResponse>
 ) => {
   return useListQuery<BorrowResponse>(
     ['borrows', 'history', params],
@@ -42,15 +52,12 @@ export const useBorrowHistory = (
  */
 export const useBorrow = (
   id: string,
-  options?: any
+  options?: ItemQueryOptions<BorrowResponse>
 ) => {
   return useItemQuery<BorrowResponse>(
     ['borrows', id],
     () => BorrowApi.findById(id),
-    {
-      enabled: !!id,
-      ...options,
-    }
+    { enabled: !!id, ...options }
   );
 };
 
@@ -101,10 +108,10 @@ export const useDeleteBorrow = <TContext = unknown>(
  * @param options Mutation options
  */
 export const useExtendBorrow = <TContext = unknown>(
-  options?: any
+  options?: UpdateMutationOptions<RenewBorrowRequest, BorrowResponse, TContext>
 ) => {
-  return useUpdateMutation<any, BorrowResponse, TContext>(
-    ({ id, data }) => BorrowApi.extend(id, data as any),
+  return useUpdateMutation<RenewBorrowRequest, BorrowResponse, TContext>(
+    ({ id, data }) => BorrowApi.extend(id, data),
     (variables) => [['borrows'], ['borrows', variables.id]],
     options
   );
@@ -115,11 +122,11 @@ export const useExtendBorrow = <TContext = unknown>(
  * @param options Mutation options
  */
 export const useReturnBorrow = <TContext = unknown>(
-  options?: DeleteMutationOptions<TContext>
+  options?: UpdateMutationOptions<void, BorrowResponse, TContext>
 ) => {
-  return useDeleteMutation<TContext>(
-    (id) => BorrowApi.return(id) as any,
-    [['borrows']],
+  return useUpdateMutation<void, BorrowResponse, TContext>(
+    ({ id }) => BorrowApi.return(id),
+    (variables) => [['borrows'], ['borrows', variables.id]],
     options
   );
 };
@@ -131,7 +138,7 @@ export const useReturnBorrow = <TContext = unknown>(
  */
 export const useRead = (
   borrowId: string,
-  options?: any
+  options?: ItemQueryOptions<string>
 ) => {
   return useItemQuery<string>(
     ['borrows', 'read', borrowId],

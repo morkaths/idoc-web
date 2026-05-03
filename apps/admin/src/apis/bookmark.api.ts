@@ -5,7 +5,11 @@ import { apiFactory } from './factory';
 
 const factory = apiFactory<BookmarkResponse, BookmarkRequest>(
   ApiEndpoint.endpoints.bookmarks,
-  { find: 'public', findById: 'public', findByIds: 'public' }
+  {
+    find: 'public',
+    findById: 'public',
+    findByIds: 'public',
+  }
 );
 
 export const BookmarkApi = {

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BorrowStatus, RoleType, UserStatus } from './enum';
+import { AuthProvider, BorrowStatus, RoleType, UserStatus } from './enum';
 
 export const dateOrString = z.preprocess((val) => {
   if (val == null || val === '') return undefined;
@@ -64,7 +64,7 @@ export const ResetPasswordRequestSchema = z.object({
 export const LinkedAccountSchema = z.object({
   id: z.string().optional(),
   userId: z.string(),
-  provider: z.string(),
+  provider: z.nativeEnum(AuthProvider),
   providerId: z.string(),
   linkedAt: dateOrString,
 });

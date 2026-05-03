@@ -49,17 +49,25 @@ export const useAuthStore = create<AuthState>()((set) => {
    * @param token The authentication tokens
    */
   const setAuthData = (user: UserResponse | null, token: TokenResponse | null) => {
+    // If token exists, strip refreshToken before storing in client-side cookies
+    const tokenToStore = token
+      ? {
+          accessToken: token.accessToken,
+          accessTokenExpiresIn: token.accessTokenExpiresIn,
+          type: token.type,
+        }
+      : null;
+
     set((state) => ({
       ...state,
       auth: {
         ...state.auth,
         user,
-        token,
+        token: tokenToStore as TokenResponse | null,
       },
     }));
 
-    if (user && token) {
-      const { refreshToken: _, ...tokenToStore } = token;
+    if (user && tokenToStore) {
       setCookie(env.cookie.token, JSON.stringify(tokenToStore));
       setCookie(env.cookie.user, JSON.stringify(user));
     } else {
@@ -74,13 +82,20 @@ export const useAuthStore = create<AuthState>()((set) => {
       token: initToken,
       setUser: (user) => set((state) => ({ ...state, auth: { ...state.auth, user } })),
       setToken: (token) => {
-        if (token) {
-          const { refreshToken: _, ...tokenToStore } = token;
+        const tokenToStore = token
+          ? {
+              accessToken: token.accessToken,
+              accessTokenExpiresIn: token.accessTokenExpiresIn,
+              type: token.type,
+            }
+          : null;
+
+        if (tokenToStore) {
           setCookie(env.cookie.token, JSON.stringify(tokenToStore));
         } else {
           removeCookie(env.cookie.token);
         }
-        set((state) => ({ ...state, auth: { ...state.auth, token } }));
+        set((state) => ({ ...state, auth: { ...state.auth, token: tokenToStore as TokenResponse | null } }));
       },
       refresh: async () => {
         if (refreshPromise) {

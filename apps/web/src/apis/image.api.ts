@@ -1,4 +1,4 @@
-import { API_CONFIG } from '@/config/api';
+import { ApiEndpoint } from '@/config/api';
 import type { ApiResponse } from '../types';
 import { ApiClient } from './config';
 
@@ -7,16 +7,17 @@ export const ImageApi = {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', folder);
-    return ApiClient.post<string>(API_CONFIG.endpoints.images.upload, {
+    return ApiClient.post<string>(ApiEndpoint.endpoints.images.upload, {
       security: 'private',
       data: formData,
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
 
-  delete: async (url: string): Promise<ApiResponse<null>> => {
-    return ApiClient.delete<null>(API_CONFIG.endpoints.images.delete(url), {
+  delete: async (url: string): Promise<ApiResponse<void>> => {
+    return ApiClient.delete<void>(ApiEndpoint.endpoints.images.delete(url), {
       security: 'private',
     });
   },
+
 };

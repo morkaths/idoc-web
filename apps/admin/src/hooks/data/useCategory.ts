@@ -17,6 +17,11 @@ import {
   type DeleteMutationOptions,
 } from './factory';
 
+/**
+ * Hook to fetch categories
+ * @param params Filter parameters
+ * @param options Query options
+ */
 export const useCategories = (
   params: FindParams = {},
   options?: ListQueryOptions<CategoryResponse>
@@ -24,13 +29,15 @@ export const useCategories = (
   return useListQuery<CategoryResponse>(
     ['categories', params],
     () => CategoryApi.find(params),
-    {
-      staleTime: 60 * 60 * 1000,
-      ...options,
-    }
+    options
   );
 };
 
+/**
+ * Hook to search categories
+ * @param params Search parameters
+ * @param options Query options
+ */
 export const useSearchCategories = (
   params: FindParams = {},
   options?: ListQueryOptions<CategoryResponse>
@@ -38,12 +45,15 @@ export const useSearchCategories = (
   return useListQuery<CategoryResponse>(
     ['categories', 'search', params],
     () => CategoryApi.search(params),
-    {
-      ...options,
-    }
+    options
   );
 };
 
+/**
+ * Hook to fetch a single category by ID
+ * @param id Category ID
+ * @param options Query options
+ */
 export const useCategory = (
   id: string,
   options?: ItemQueryOptions<CategoryResponse>
@@ -51,35 +61,42 @@ export const useCategory = (
   return useItemQuery<CategoryResponse>(
     ['categories', id],
     () => CategoryApi.findById(id),
-    {
-      enabled: !!id,
-      ...options,
-    }
+    { enabled: !!id, ...options }
   );
 };
 
-export const useCreateCategory = (
-  options?: CreateMutationOptions<CategoryRequest, CategoryResponse>
+/**
+ * Hook to create a new category
+ * @param options Mutation options
+ */
+export const useCreateCategory = <TContext = unknown>(
+  options?: CreateMutationOptions<CategoryRequest, CategoryResponse, TContext>
 ) => {
-  return useCreateMutation<CategoryRequest, CategoryResponse>(
+  return useCreateMutation<CategoryRequest, CategoryResponse, TContext>(
     (data) => CategoryApi.create(data),
     [['categories']],
     options
   );
 };
 
-export const useUpdateCategory = (
-  options?: UpdateMutationOptions<CategoryRequest, CategoryResponse>
+/**
+ * Hook to update an existing category
+ * @param options Mutation options
+ */
+export const useUpdateCategory = <TContext = unknown>(
+  options?: UpdateMutationOptions<CategoryRequest, CategoryResponse, TContext>
 ) => {
-  return useUpdateMutation<CategoryRequest, CategoryResponse>(
+  return useUpdateMutation<CategoryRequest, CategoryResponse, TContext>(
     ({ id, data }) => CategoryApi.update(id, data),
     (variables) => [['categories', variables.id], ['categories']],
     options
   );
 };
 
-export const useDeleteCategory = (options?: DeleteMutationOptions) => {
-  return useDeleteMutation(
+export const useDeleteCategory = <TContext = unknown>(
+  options?: DeleteMutationOptions<TContext>
+) => {
+  return useDeleteMutation<TContext>(
     (id) => CategoryApi.delete(id),
     [['categories']],
     options

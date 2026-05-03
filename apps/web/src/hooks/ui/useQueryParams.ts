@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import type { FilterItem, FindParams } from '@/types';
+import { SortDirection, FilterOperator } from '@/types';
 
 /**
  * Custom hook để quản lý URL query parameters theo chuẩn FindParams
@@ -25,7 +26,7 @@ export function useQueryParams() {
         if (page) result.page = Number(page);
         if (limit) result.limit = Number(limit);
         if (query) result.query = query;
-        if (sortBy && sortOrder) result.sorts = [{ field: sortBy, direction: sortOrder as 'asc' | 'desc' }];
+        if (sortBy && sortOrder) result.sorts = [{ field: sortBy, direction: sortOrder as SortDirection }];
 
         const filters: FilterItem[] = [];
 
@@ -35,9 +36,9 @@ export function useQueryParams() {
                 filters.push({
                     field: key,
                     value: values,
-                    operator: Array.isArray(values) ? 'in' : 'eq',
+                    operator: Array.isArray(values) ? FilterOperator.IN : FilterOperator.EQ,
                 });
-                result[key] = values;
+                (result as Record<string, unknown>)[key] = values;
             }
         });
 
@@ -71,7 +72,7 @@ export function useQueryParams() {
                         newParams.set('sortOrder', sort.direction);
                     }
                 } else if (key === 'filters' && Array.isArray(value)) {
-                    value.forEach((filter: any) => {
+                    (value as FilterItem[]).forEach((filter) => {
                         if (filter.field && filter.value !== undefined && filter.value !== null) {
                             if (Array.isArray(filter.value)) {
                                 newParams.set(filter.field, filter.value.join(','));

@@ -7,9 +7,15 @@ import {
   type ListQueryOptions,
   type ItemQueryOptions,
   type DeleteMutationOptions,
+  CreateMutationOptions,
+  useCreateMutation,
 } from './factory';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+/**
+ * Hook to fetch files with pagination
+ * @param params Search/filter parameters
+ * @param options Query options
+ */
 export const useFiles = (
   params: FindParams = {},
   options?: ListQueryOptions<FileResponse>
@@ -21,6 +27,11 @@ export const useFiles = (
   );
 };
 
+/**
+ * Hook to fetch a single file by ID
+ * @param id File ID
+ * @param options Query options
+ */
 export const useFile = (
   id: string,
   options?: ItemQueryOptions<FileResponse>
@@ -35,30 +46,19 @@ export const useFile = (
   );
 };
 
-export const useUploadFile = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ file, folder }: { file: File; folder?: string }) => {
-      return await FileApi.upload(file, folder);
-    },
-    onSuccess: (res) => {
-      if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ['files'] });
-      }
-    },
-  });
-};
-
-export const useUploadPresignedFile = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ file, folder }: { file: File; folder?: string }) => {
+/**
+ * Hook to upload a file using presigned URL
+ * @param options Mutation options
+ */
+export const useUploadPresignedFile = <TContext = unknown>(
+  options?: CreateMutationOptions<{ file: File; folder?: string }, FileResponse, TContext>
+) => {
+  return useCreateMutation<{ file: File; folder?: string }, FileResponse, TContext>(
+    async ({ file, folder }) => {
       const result = await FileApi.uploadPresigned({
         fileName: file.name,
         contentType: file.type,
-        folder,
+        folder
       });
 
       if (!result.success || !result.data) {
@@ -66,22 +66,23 @@ export const useUploadPresignedFile = () => {
       }
 
       const success = await FileApi.uploadToPresignedUrl(result.data.uploadUrl, file);
-      if (!success) throw new Error('Upload to S3 failed');
+      if (!success) throw new Error('Upload to storage failed');
 
       return await FileApi.completePresignedUpload(result.data.uploadId);
     },
-    onSuccess: (res) => {
-      if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ['files'] });
-      }
-    },
-  });
+    [['files']],
+    options
+  );
 };
 
-export const useDeleteFile = (
-  options?: DeleteMutationOptions
+/**
+ * Hook to delete a file
+ * @param options Mutation options
+ */
+export const useDeleteFile = <TContext = unknown>(
+  options?: DeleteMutationOptions<TContext>
 ) => {
-  return useDeleteMutation(
+  return useDeleteMutation<TContext>(
     (id) => FileApi.delete(id),
     [['files']],
     options
