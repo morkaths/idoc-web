@@ -1,5 +1,5 @@
 import { ApiEndpoint } from '@/config/api';
-import type { FolderRequest, FolderResponse, FindParams, ApiResponse, PageResponse } from '../types';
+import type { FolderRequest, FolderResponse, ApiResponse, PageResponse, PageParams } from '../types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
@@ -9,7 +9,7 @@ const factory = apiFactory<FolderResponse, FolderRequest>(
 
 export const FolderApi = {
   ...factory,
-  findMe: async (params?: FindParams): Promise<ApiResponse<PageResponse<FolderResponse>>> => {
+  findMe: async (params?: PageParams): Promise<ApiResponse<PageResponse<FolderResponse>>> => {
     return ApiClient.get<PageResponse<FolderResponse>>(ApiEndpoint.endpoints.folders.me, {
       security: 'private',
       params,

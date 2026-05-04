@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { BookApi } from '@/apis';
 import { BookmarkApi } from '@/apis/bookmark.api';
-import type { BookResponse, BookRequest, FindParams, BookmarkResponse } from '@/types';
+import type { BookResponse, BookRequest, FindParams, BookmarkResponse, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -10,7 +10,6 @@ import {
   useUpdateMutation,
   useDeleteMutation,
   type ListQueryOptions,
-  type ItemQueryOptions,
   type CreateMutationOptions,
   type UpdateMutationOptions,
   type DeleteMutationOptions,
@@ -64,11 +63,11 @@ function useBookListEnricher(booksQueryResult: ReturnType<typeof useListQuery<Bo
 
 /**
  * Hook to fetch books with pagination and bookmark status
- * @param params Search/filter parameters
+ * @param params Page parameters
  * @param options Query options
  */
 export const useBooks = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<BookResponse>
 ) => {
   const booksQuery = useListQuery<BookResponse>(

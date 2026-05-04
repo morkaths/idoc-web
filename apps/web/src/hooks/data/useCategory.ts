@@ -1,5 +1,5 @@
 import { CategoryApi } from '@/apis';
-import type { FindParams, CategoryResponse, CategoryRequest } from '@/types';
+import type { FindParams, CategoryResponse, CategoryRequest, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -15,11 +15,11 @@ import {
 
 /**
  * Hook to fetch categories with pagination
- * @param params Search/filter parameters
+ * @param params Page parameters
  * @param options Query options
  */
 export const useCategories = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<CategoryResponse>
 ) => {
   return useListQuery<CategoryResponse>(

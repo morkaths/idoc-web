@@ -1,7 +1,7 @@
 'use client';
 
 import { AppImage as Image } from '@/components/app-image';
-import { type BookResponse } from '@/types';
+import { type BookResponse, BorrowStatus } from '@/types';
 import { useRouter, useParams } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -183,7 +183,7 @@ export function BookDetailView({ id }: BookDetailViewProps) {
   };
 
   return (
-    <div key='content' className='relative min-h-screen pt-2 pb-10 md:pt-10'>
+    <div key='content' className='relative min-h-screen pt-14 pb-10 md:pt-16'>
       {/* Banner */}
       <div className='bg-primary/10 dark:bg-primary/10 relative h-64 w-full md:h-72 lg:h-96' />
       {/* Main content */}
@@ -239,6 +239,8 @@ export function BookDetailView({ id }: BookDetailViewProps) {
                 return toast.promise(
                   createBorrowMut.mutateAsync({
                     bookId: book.id!,
+                    userId: user?.id || '',
+                    status: BorrowStatus.BORROWED,
                     ...data,
                   }),
                   {

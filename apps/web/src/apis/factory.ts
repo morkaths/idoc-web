@@ -1,4 +1,4 @@
-import type { ApiResponse, FindParams, PageResponse } from '../types';
+import type { ApiResponse, FindParams, PageParams, PageResponse } from '../types';
 import { ApiClient, type SecurityStrategy } from './config';
 
 export interface CrudEndpoints {
@@ -55,7 +55,7 @@ export const apiFactory = <TResponse, TRequest, TParams = object>(
 
   return {
     find: async (
-      params?: FindParams & TParams
+      params?: PageParams & TParams
     ): Promise<ApiResponse<PageResponse<TResponse>>> => {
       return ApiClient.get<PageResponse<TResponse>>(endpoints.find, {
         security: config.find,

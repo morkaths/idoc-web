@@ -73,9 +73,14 @@ export const useListQuery = <T>(
   }), [query.data]);
 
   return {
-    ...query,
     data: stabilizedData,
     response: query.data,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    isFetching: query.isFetching,
+    refetch: query.refetch,
+    status: query.status,
   };
 };
 
@@ -101,9 +106,14 @@ export const useItemQuery = <T>(
   const data = useMemo(() => query.data?.data || null, [query.data]);
 
   return {
-    ...query,
     data,
     response: query.data,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    isFetching: query.isFetching,
+    refetch: query.refetch,
+    status: query.status,
   };
 };
 

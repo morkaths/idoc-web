@@ -1,5 +1,5 @@
 import { AuthorApi } from '@/apis/author.api';
-import type { AuthorResponse, AuthorRequest, FindParams } from '@/types';
+import type { AuthorResponse, AuthorRequest, PageParams, FindParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -15,11 +15,11 @@ import {
 
 /**
  * Hook to fetch authors with pagination
- * @param params Search/filter parameters
+ * @param params Page parameters
  * @param options Query options
  */
 export const useAuthors = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<AuthorResponse>
 ) => {
   return useListQuery<AuthorResponse>(

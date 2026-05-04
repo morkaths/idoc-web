@@ -73,6 +73,7 @@ export interface BookResponse {
   publishedDate?: Date | string;
   edition?: string;
   isbn?: string;
+  isbn13?: string;
   language?: string;
   pages?: number;
   price?: number;
@@ -81,6 +82,7 @@ export interface BookResponse {
   fileId?: string;
   tags?: string[];
   rating?: number;
+  weightedRating?: number;
   bookmarkId?: string;
   totalReviews?: number;
   totalBorrows?: number;
@@ -127,7 +129,7 @@ export interface BookmarkResponse {
   id: string;
   user: UserResponse;
   book: BookResponse;
-  folder?: string;
+  folder?: FolderResponse;
   page?: number;
   note?: string;
   createdAt: Date | string;

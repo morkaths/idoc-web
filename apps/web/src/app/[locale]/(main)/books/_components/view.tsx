@@ -78,7 +78,7 @@ export function BooksView() {
   );
 
   return (
-    <main className='container flex gap-8 py-8'>
+    <main className='container flex gap-8 pt-20 pb-8'>
       {/* Sidebar */}
       <aside className='hidden w-64 lg:block'>
         <Card className='mb-4 p-4'>

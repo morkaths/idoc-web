@@ -1,19 +1,35 @@
 import { ReviewApi } from '@/apis/review.api';
-import type { ReviewResponse, ReviewRequest, FindParams } from '@/types';
+import type { ReviewResponse, ReviewRequest, PageParams, FindParams } from '@/types';
 import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type ListQueryOptions, type ItemQueryOptions, type CreateMutationOptions, type UpdateMutationOptions, type DeleteMutationOptions } from './factory';
 
 /**
  * Hook to fetch reviews with pagination
- * @param params Search/filter parameters
+ * @param params Page parameters
  * @param options Query options
  */
 export const useReviews = (
-    params: FindParams = {},
+    params?: PageParams,
     options?: ListQueryOptions<ReviewResponse>
 ) => {
     return useListQuery<ReviewResponse>(
         ['reviews', params],
         () => ReviewApi.find(params),
+        options
+    );
+};
+
+/**
+ * Hook to search reviews with complex filters
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchReviews = (
+    params: FindParams = {},
+    options?: ListQueryOptions<ReviewResponse>
+) => {
+    return useListQuery<ReviewResponse>(
+        ['reviews', 'search', params],
+        () => ReviewApi.search(params),
         options
     );
 };

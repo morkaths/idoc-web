@@ -1,7 +1,7 @@
 import { Icon } from '@iconify/react';
 import { type BookResponse } from "@/types";
 import { AppImage as Image } from '../app-image';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useDeleteBookmark } from "@/hooks/data/useBookmark";
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';

@@ -2,6 +2,7 @@ import axios, {
   type AxiosInstance,
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
+  type AxiosError,
   AxiosHeaders
 } from 'axios';
 import { getSession } from 'next-auth/react';
@@ -100,13 +101,13 @@ const handleError = (error: unknown): ApiErrorResponse => {
  */
 const applyLocaleHeader = (config: InternalAxiosRequestConfig) => {
   const lang = config.params?.lang as string | undefined;
-  
+
   if (lang) {
     config.headers.set('Accept-Language', lang);
     delete config.params.lang;
     return;
   }
-  
+
   if (typeof window !== 'undefined') {
     const locale = document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1];
     if (locale) {
@@ -125,7 +126,7 @@ const forwardServerCookies = async (config: InternalAxiosRequestConfig) => {
     const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
     const allCookies = cookieStore.getAll();
-    
+
     if (allCookies.length > 0) {
       const cookieString = allCookies
         .map((c) => `${c.name}=${c.value}`)
@@ -152,13 +153,13 @@ const applyAuthHeader = async (config: InternalAxiosRequestConfig, useAuth: bool
 /**
  * Handles 401 Unauthorized errors by attempting to refresh the session.
  */
-const handleUnauthorizedError = async (error: any, instance: AxiosInstance) => {
+const handleUnauthorizedError = async (error: AxiosError, instance: AxiosInstance) => {
   const originalRequest = error.config as CustomAxiosRequestConfig;
 
-  const shouldRetry = 
-    error.response?.status === 401 && 
-    !originalRequest._retry && 
-    !isLoggingOut && 
+  const shouldRetry =
+    error.response?.status === 401 &&
+    !originalRequest._retry &&
+    !isLoggingOut &&
     typeof window !== 'undefined';
 
   if (shouldRetry) {
@@ -204,7 +205,7 @@ const createInstance = (useAuth = false): AxiosInstance => {
       if (!config.headers) config.headers = new AxiosHeaders();
 
       applyLocaleHeader(config);
-      
+
       if (env.api.key) {
         config.headers.set('x-api-key', env.api.key);
       }
@@ -271,7 +272,7 @@ export const ApiClient = {
       return response.data;
     } catch (error: unknown) {
       // Return formatted error if it's already an ApiErrorResponse
-      if (error && typeof error === 'object' && 'success' in error && (error as any).success === false) {
+      if (error && typeof error === 'object' && 'success' in error && (error as { success: boolean }).success === false) {
         return error as unknown as ApiResponse<T>;
       }
       return handleError(error) as unknown as ApiResponse<T>;

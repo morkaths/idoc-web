@@ -1,5 +1,5 @@
 import { BookmarkApi } from '@/apis/bookmark.api';
-import type { BookmarkResponse, BookmarkRequest, FindParams } from '@/types';
+import type { BookmarkResponse, BookmarkRequest, PageParams, FindParams } from '@/types';
 import {
     useListQuery,
     useItemQuery,
@@ -15,16 +15,32 @@ import {
 
 /**
  * Hook to fetch bookmarks
- * @param params Filter parameters
+ * @param params Page parameters
  * @param options Query options
  */
 export const useBookmarks = (
-    params: FindParams = {},
+    params: PageParams = {},
     options?: ListQueryOptions<BookmarkResponse>
 ) => {
     return useListQuery<BookmarkResponse>(
         ['bookmarks', params],
         () => BookmarkApi.find(params),
+        options
+    );
+};
+
+/**
+ * Hook to search bookmarks with complex filters
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchBookmarks = (
+    params: FindParams = {},
+    options?: ListQueryOptions<BookmarkResponse>
+) => {
+    return useListQuery<BookmarkResponse>(
+        ['bookmarks', 'search', params],
+        () => BookmarkApi.search(params),
         options
     );
 };

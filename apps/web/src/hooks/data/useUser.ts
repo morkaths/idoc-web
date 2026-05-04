@@ -1,14 +1,14 @@
 import { UserApi } from '@/apis';
-import type { FindParams, UserResponse, UserRequest } from '@/types';
+import type { FindParams, UserResponse, UserRequest, PageParams } from '@/types';
 import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type ListQueryOptions, type ItemQueryOptions, type CreateMutationOptions, type UpdateMutationOptions, type DeleteMutationOptions } from './factory';
 
 /**
  * Hook to fetch users with pagination
- * @param params Search/filter parameters
+ * @param params Page parameters
  * @param options Query options
  */
 export const useUsers = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<UserResponse>
 ) => {
   return useListQuery<UserResponse>(

@@ -11,7 +11,7 @@ import { BorrowsTable } from './borrows-table';
 export function LibraryView() {
   const { t, keys } = useLocale('library');
   return (
-    <main className='container w-full max-w-full overflow-x-hidden py-8'>
+    <main className='container w-full max-w-full overflow-x-hidden pt-20 pb-8'>
       <div className='mb-6'>
         <h1 className='mb-2 text-2xl font-bold'>{t(keys.title)}</h1>
         <p className='text-muted-foreground'>{t(keys.description)}</p>

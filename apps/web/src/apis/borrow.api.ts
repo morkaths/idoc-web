@@ -3,9 +3,9 @@ import type {
   BorrowResponse,
   BorrowRequest,
   RenewBorrowRequest,
-  FindParams,
   ApiResponse,
   PageResponse,
+  PageParams,
 } from '../types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
@@ -22,7 +22,7 @@ export const BorrowApi = {
   ...factory,
 
   history: async (
-    params?: FindParams
+    params?: PageParams
   ): Promise<ApiResponse<PageResponse<BorrowResponse>>> => {
     return ApiClient.get<PageResponse<BorrowResponse>>(ApiEndpoint.endpoints.borrows.history, {
       security: 'private',

@@ -1,14 +1,14 @@
 import { FolderApi } from '@/apis/folder.api';
-import type { FolderResponse, FolderRequest, FindParams } from '@/types';
+import type { FolderResponse, FolderRequest, PageParams } from '@/types';
 import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type ListQueryOptions, type ItemQueryOptions, type CreateMutationOptions, type UpdateMutationOptions, type DeleteMutationOptions } from './factory';
 
 /**
  * Hook to fetch folders with pagination
- * @param params Search/filter parameters
+ * @param params Page parameters
  * @param options Query options
  */
 export const useFolders = (
-    params: FindParams = {},
+    params: PageParams = {},
     options?: ListQueryOptions<FolderResponse>
 ) => {
     return useListQuery<FolderResponse>(
@@ -20,11 +20,11 @@ export const useFolders = (
 
 /**
  * Hook to fetch current user's folders with pagination
- * @param params Search/filter parameters
+ * @param params Page parameters
  * @param options Query options
  */
 export const useMyFolders = (
-    params: FindParams = {},
+    params: PageParams = {},
     options?: ListQueryOptions<FolderResponse>
 ) => {
     return useListQuery<FolderResponse>(

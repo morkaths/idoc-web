@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { formatDate } from '@/utils/date';
 import { Star, MessageSquare, Loader2, User as UserIcon } from 'lucide-react';
-import { useReviews } from '@/hooks/data/useReview';
+import { useSearchReviews } from '@/hooks/data/useReview';
+import { FilterOperator, SortDirection } from '@/types';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Avatar, AvatarFallback } from '@repo/ui/components/avatar';
 import { Pagination } from '@/components/pagination';
@@ -28,18 +29,17 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0, enabled = tr
   const [sort, setSort] = useState('newest');
 
   const sortParams = {
-    newest: { sortBy: 'createdAt', sortOrder: 'desc' },
-    oldest: { sortBy: 'createdAt', sortOrder: 'asc' },
-    highestRating: { sortBy: 'rating', sortOrder: 'desc' },
-    lowestRating: { sortBy: 'rating', sortOrder: 'asc' },
-  }[sort] || { sortBy: 'createdAt', sortOrder: 'desc' };
+    newest: { sortBy: 'createdAt', sortOrder: SortDirection.DESC },
+    oldest: { sortBy: 'createdAt', sortOrder: SortDirection.ASC },
+    highestRating: { sortBy: 'rating', sortOrder: SortDirection.DESC },
+    lowestRating: { sortBy: 'rating', sortOrder: SortDirection.ASC },
+  }[sort] || { sortBy: 'createdAt', sortOrder: SortDirection.DESC };
 
-  const { data, isLoading, isError } = useReviews(
+  const { data, isLoading, isError } = useSearchReviews(
     {
-      bookId,
       page,
-      sortBy: sortParams.sortBy,
-      sortOrder: sortParams.sortOrder,
+      filters: [{ field: 'book.id', value: bookId, operator: FilterOperator.EQ }],
+      sorts: [{ field: sortParams.sortBy, direction: sortParams.sortOrder }],
     },
     { enabled: !!bookId && enabled }
   );
@@ -55,7 +55,7 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0, enabled = tr
       <div className='grid gap-8 md:grid-cols-[250px_1fr]'>
         {/* Reviews summary */}
         <div className='space-y-6'>
-          <div className='bg-card sticky top-4 h-fit space-y-2 rounded-xl border p-6 text-center'>
+          <div className='bg-card sticky top-20 h-fit space-y-2 rounded-xl border p-6 text-center'>
             <div className='text-foreground text-5xl font-bold tracking-tighter'>
               {rating?.toFixed(1) || 0}
             </div>

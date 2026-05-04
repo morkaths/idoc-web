@@ -1,5 +1,4 @@
 import { ApiEndpoint } from '@/config/api';
-import env from '@/config/env';
 import type {
   AuthResponse,
   UserResponse,

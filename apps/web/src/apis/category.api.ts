@@ -1,5 +1,5 @@
 import { ApiEndpoint } from '@/config/api';
-import type { CategoryRequest, CategoryResponse, FindParams } from '../types';
+import type { CategoryRequest, CategoryResponse, PageParams } from '../types';
 import { apiFactory } from './factory';
 
 const factory = apiFactory<CategoryResponse, CategoryRequest, { lang?: string }>(
@@ -12,6 +12,6 @@ const factory = apiFactory<CategoryResponse, CategoryRequest, { lang?: string }>
 
 export const CategoryApi = {
   ...factory,
-  find: (params?: FindParams) => factory.find({ ...params, lang: 'all' }),
+  find: (params?: PageParams) => factory.find({ ...params, lang: 'all' }),
   findById: (id: string) => factory.findById(id, { lang: 'all' }),
 };
