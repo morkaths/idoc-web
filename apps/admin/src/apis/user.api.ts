@@ -12,7 +12,7 @@ export const UserApi = {
 
   me: async (): Promise<ApiResponse<UserResponse>> => {
     return ApiClient.get<UserResponse>(
-      ApiEndpoint.endpoints.users.me,
+      ApiEndpoint.endpoints.users.me(),
       {
         security: 'private',
       }
@@ -21,7 +21,7 @@ export const UserApi = {
 
   updateMe: async (request: Partial<UserRequest>): Promise<ApiResponse<UserResponse>> => {
     return ApiClient.patch<UserResponse>(
-      ApiEndpoint.endpoints.users.updateMe,
+      ApiEndpoint.endpoints.users.updateMe(),
       {
         security: 'private',
         data: request

@@ -1,5 +1,5 @@
 import { FolderApi } from '@/apis/folder.api';
-import type { FolderResponse, FolderRequest, FindParams } from '@/types';
+import type { FolderResponse, FolderRequest, FindParams, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -13,8 +13,13 @@ import {
   type DeleteMutationOptions,
 } from './factory';
 
+/**
+ * Hook to fetch folders with pagination
+ * @param params Pagination parameters
+ * @param options Query options
+ */
 export const useFolders = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<FolderResponse>
 ) => {
   return useListQuery(
@@ -24,6 +29,27 @@ export const useFolders = (
   );
 };
 
+/**
+ * Hook to search folders
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchFolders = (
+  params: FindParams = {},
+  options?: ListQueryOptions<FolderResponse>
+) => {
+  return useListQuery(
+    ['folders', 'search', params],
+    () => FolderApi.search(params),
+    options
+  );
+};
+
+/**
+ * Hook to fetch a single folder by ID
+ * @param id Folder ID
+ * @param options Query options
+ */
 export const useFolder = (
   id: string,
   options?: ItemQueryOptions<FolderResponse>
@@ -38,6 +64,10 @@ export const useFolder = (
   );
 };
 
+/**
+ * Hook to create a new folder
+ * @param options Mutation options
+ */
 export const useCreateFolder = (
   options?: CreateMutationOptions<FolderRequest, FolderResponse>
 ) => {
@@ -48,6 +78,10 @@ export const useCreateFolder = (
   );
 };
 
+/**
+ * Hook to update an existing folder
+ * @param options Mutation options
+ */
 export const useUpdateFolder = (
   options?: UpdateMutationOptions<FolderRequest, FolderResponse>
 ) => {
@@ -58,6 +92,10 @@ export const useUpdateFolder = (
   );
 };
 
+/**
+ * Hook to delete a folder
+ * @param options Mutation options
+ */
 export const useDeleteFolder = (
   options?: DeleteMutationOptions
 ) => {

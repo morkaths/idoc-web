@@ -9,6 +9,7 @@ const factory = apiFactory<BookmarkResponse, BookmarkRequest>(
     find: 'public',
     findById: 'public',
     findByIds: 'public',
+    search: 'public',
   }
 );
 

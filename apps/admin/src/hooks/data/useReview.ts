@@ -1,5 +1,5 @@
 import { ReviewApi } from '@/apis/review.api';
-import type { ReviewResponse, ReviewRequest, FindParams } from '@/types';
+import type { ReviewResponse, ReviewRequest, FindParams, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -13,8 +13,13 @@ import {
   type DeleteMutationOptions,
 } from './factory';
 
+/**
+ * Hook to fetch reviews with pagination
+ * @param params Pagination parameters
+ * @param options Query options
+ */
 export const useReviews = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<ReviewResponse>
 ) => {
   return useListQuery(
@@ -24,6 +29,27 @@ export const useReviews = (
   );
 };
 
+/**
+ * Hook to search reviews
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchReviews = (
+  params: FindParams = {},
+  options?: ListQueryOptions<ReviewResponse>
+) => {
+  return useListQuery(
+    ['reviews', 'search', params],
+    () => ReviewApi.search(params),
+    options
+  );
+};
+
+/**
+ * Hook to fetch a single review by ID
+ * @param id Review ID
+ * @param options Query options
+ */
 export const useReview = (
   id: string,
   options?: ItemQueryOptions<ReviewResponse>
@@ -38,6 +64,10 @@ export const useReview = (
   );
 };
 
+/**
+ * Hook to create a new review
+ * @param options Mutation options
+ */
 export const useCreateReview = (
   options?: CreateMutationOptions<ReviewRequest, ReviewResponse>
 ) => {
@@ -48,6 +78,10 @@ export const useCreateReview = (
   );
 };
 
+/**
+ * Hook to update an existing review
+ * @param options Mutation options
+ */
 export const useUpdateReview = (
   options?: UpdateMutationOptions<ReviewRequest, ReviewResponse>
 ) => {
@@ -58,6 +92,10 @@ export const useUpdateReview = (
   );
 };
 
+/**
+ * Hook to delete a review
+ * @param options Mutation options
+ */
 export const useDeleteReview = (
   options?: DeleteMutationOptions
 ) => {

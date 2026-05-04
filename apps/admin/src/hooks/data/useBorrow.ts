@@ -1,5 +1,5 @@
 import { BorrowApi } from '@/apis/borrow.api';
-import type { BorrowResponse, BorrowRequest, FindParams, RenewBorrowRequest } from '@/types';
+import type { BorrowResponse, BorrowRequest, FindParams, RenewBorrowRequest, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -15,11 +15,11 @@ import {
 
 /**
  * Hook to fetch borrows
- * @param params Filter parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useBorrows = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<BorrowResponse>
 ) => {
   return useListQuery(
@@ -31,16 +31,32 @@ export const useBorrows = (
 
 /**
  * Hook to fetch borrow history
- * @param params Filter parameters
+ * @param params Page parameters
  * @param options Query options
  */
 export const useBorrowHistory = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<BorrowResponse>
 ) => {
   return useListQuery<BorrowResponse>(
     ['borrows', 'history', params],
     () => BorrowApi.history(params),
+    options
+  );
+};
+
+/**
+ * Hook to search borrows
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchBorrows = (
+  params: FindParams = {},
+  options?: ListQueryOptions<BorrowResponse>
+) => {
+  return useListQuery<BorrowResponse>(
+    ['borrows', 'search', params],
+    () => BorrowApi.search(params),
     options
   );
 };

@@ -1,6 +1,6 @@
 import { useQuery, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
 import { FileApi } from '@/apis/file.api';
-import type { FileResponse, PageParams } from '@/types';
+import type { FileResponse, FindParams, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -14,7 +14,7 @@ import {
 
 /**
  * Hook to fetch files with pagination
- * @param params Page parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useFiles = (
@@ -30,7 +30,7 @@ export const useFiles = (
 
 /**
  * Hook to fetch files for the current user
- * @param params Page parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useUserFiles = (
@@ -40,6 +40,22 @@ export const useUserFiles = (
   return useListQuery<FileResponse>(
     ['files', 'user', params],
     () => FileApi.findByUser(params),
+    options
+  );
+};
+
+/**
+ * Hook to search files
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchFiles = (
+  params: FindParams = {},
+  options?: ListQueryOptions<FileResponse>
+) => {
+  return useListQuery<FileResponse>(
+    ['files', 'search', params],
+    () => FileApi.search(params),
     options
   );
 };
@@ -56,10 +72,7 @@ export const useFile = (
   return useItemQuery<FileResponse>(
     ['files', id],
     () => FileApi.findById(id),
-    {
-      enabled: !!id,
-      ...options,
-    }
+    { enabled: !!id, ...options }
   );
 };
 

@@ -4,11 +4,12 @@ import { apiFactory } from './factory';
 
 const factory = apiFactory<CategoryResponse, CategoryRequest, { lang?: string }>(
   ApiEndpoint.endpoints.categories,
-  { find: 'public', findById: 'public' }
+  { find: 'public', findById: 'public', search: 'public' }
 );
 
 export const CategoryApi = {
   ...factory,
   find: (params?: FindParams) => factory.find({ ...params, lang: 'all' }),
   findById: (id: string) => factory.findById(id, { lang: 'all' }),
+  search: (params: FindParams) => factory.search({ ...params, lang: 'all' }),
 };

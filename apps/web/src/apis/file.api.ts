@@ -25,7 +25,7 @@ export const FileApi = {
   ...factory,
 
   findByUser: async (params?: FindParams): Promise<ApiResponse<PageResponse<IFile>>> => {
-    return ApiClient.get<PageResponse<IFile>>(ApiEndpoint.endpoints.files.findByUser, {
+    return ApiClient.get<PageResponse<IFile>>(ApiEndpoint.endpoints.files.findByUser(), {
       security: 'private',
       params,
     });
@@ -35,7 +35,7 @@ export const FileApi = {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', folder);
-    return ApiClient.post<IFile>(ApiEndpoint.endpoints.files.upload, {
+    return ApiClient.post<IFile>(ApiEndpoint.endpoints.files.upload(), {
       security: 'private',
       data: formData,
       headers: {
@@ -67,17 +67,23 @@ export const FileApi = {
   uploadPresigned: async (
     request: PresignedUploadRequest
   ): Promise<ApiResponse<PresignedUploadResponse>> => {
-    return ApiClient.post<PresignedUploadResponse>(ApiEndpoint.endpoints.files.uploadPresigned, {
-      security: 'private',
-      data: request,
-    });
+    return ApiClient.post<PresignedUploadResponse>(
+      ApiEndpoint.endpoints.files.uploadPresigned(),
+      {
+        security: 'private',
+        data: request,
+      }
+    );
   },
 
   download: async (id: string): Promise<ApiResponse<Blob>> => {
-    return ApiClient.get<Blob>(ApiEndpoint.endpoints.files.download(id), {
-      security: 'private',
-      responseType: 'blob',
-    });
+    return ApiClient.get<Blob>(
+      ApiEndpoint.endpoints.files.download(id),
+      {
+        security: 'private',
+        responseType: 'blob',
+      }
+    );
   },
 
   getViewUrl: (id: string, ticket: string): string => {

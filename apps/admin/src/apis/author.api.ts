@@ -8,6 +8,7 @@ const factory = apiFactory<AuthorResponse, AuthorRequest>(
     find: 'public',
     findById: 'public',
     findByIds: 'public',
+    search: 'public',
   }
 );
 

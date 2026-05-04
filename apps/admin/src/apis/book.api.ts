@@ -7,6 +7,7 @@ const factory = apiFactory<BookResponse, BookRequest>(
   {
     find: 'public',
     findById: 'public',
+    search: 'public',
   }
 );
 

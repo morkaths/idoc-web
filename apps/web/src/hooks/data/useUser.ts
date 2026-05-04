@@ -4,7 +4,7 @@ import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDe
 
 /**
  * Hook to fetch users with pagination
- * @param params Page parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useUsers = (
@@ -30,10 +30,7 @@ export const useSearchUsers = (
   return useListQuery<UserResponse>(
     ['users', 'search', params],
     () => UserApi.search(params),
-    {
-      staleTime: 60 * 60 * 1000,
-      ...options,
-    }
+    options
   );
 };
 
@@ -49,10 +46,7 @@ export const useUser = (
   return useItemQuery<UserResponse>(
     ['users', id],
     () => UserApi.findById(id),
-    {
-      enabled: !!id,
-      ...options,
-    }
+    { enabled: !!id, ...options }
   );
 };
 

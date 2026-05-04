@@ -24,7 +24,7 @@ export const BorrowApi = {
   history: async (
     params?: FindParams
   ): Promise<ApiResponse<PageResponse<BorrowResponse>>> => {
-    return ApiClient.get<PageResponse<BorrowResponse>>(ApiEndpoint.endpoints.borrows.history, {
+    return ApiClient.get<PageResponse<BorrowResponse>>(ApiEndpoint.endpoints.borrows.history(), {
       security: 'private',
       params,
     });

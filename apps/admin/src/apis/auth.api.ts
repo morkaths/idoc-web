@@ -5,7 +5,7 @@ import { ApiClient } from './config';
 export const AuthApi = {
   register: async (data: Partial<UserRequest>): Promise<ApiResponse<AuthResponse>> => {
     return ApiClient.post<AuthResponse>(
-      ApiEndpoint.endpoints.auth.register,
+      ApiEndpoint.endpoints.auth.register(),
       { security: 'public', data }
     );
   },
@@ -15,42 +15,40 @@ export const AuthApi = {
     password: string;
   }): Promise<ApiResponse<AuthResponse>> => {
     return ApiClient.post<AuthResponse>(
-      ApiEndpoint.endpoints.auth.login,
+      ApiEndpoint.endpoints.auth.login(),
       { security: 'public', data }
     );
   },
 
   refresh: async (): Promise<ApiResponse<AuthResponse>> => {
-    return ApiClient.post<AuthResponse>(ApiEndpoint.endpoints.auth.refresh, {
+    return ApiClient.post<AuthResponse>(ApiEndpoint.endpoints.auth.refresh(), {
       security: 'public',
     });
   },
 
   logout: async (): Promise<ApiResponse<void>> => {
-    return ApiClient.post<void>(ApiEndpoint.endpoints.auth.logout, {
+    return ApiClient.post<void>(ApiEndpoint.endpoints.auth.logout(), {
       security: 'private',
     });
   },
 
   verify: async (data: { email: string; otp: string }): Promise<ApiResponse<void>> => {
-    return ApiClient.put<void>(ApiEndpoint.endpoints.auth.verify, {
+    return ApiClient.put<void>(ApiEndpoint.endpoints.auth.verify(), {
       security: 'public',
       data,
     });
   },
 
   resend: async (data: { email: string }): Promise<ApiResponse<void>> => {
-    return ApiClient.post<void>(
-      `${ApiEndpoint.endpoints.auth.resend}?email=${data.email}`,
-      {
-        security: 'public',
-      }
-    );
+    return ApiClient.post<void>(ApiEndpoint.endpoints.auth.resend(), {
+      security: 'public',
+      params: data,
+    });
   },
 
   changePassword: async (data: { oldPassword: string; newPassword: string }): Promise<ApiResponse<void>> => {
     return ApiClient.post<void>(
-      ApiEndpoint.endpoints.auth.changePassword,
+      ApiEndpoint.endpoints.auth.changePassword(),
       {
         security: 'private',
         data,
@@ -60,7 +58,7 @@ export const AuthApi = {
 
   forgotPassword: async (data: { email: string }): Promise<ApiResponse<void>> => {
     return ApiClient.post<void>(
-      ApiEndpoint.endpoints.auth.forgotPassword,
+      ApiEndpoint.endpoints.auth.forgotPassword(),
       {
         security: 'public',
         data,
@@ -70,7 +68,7 @@ export const AuthApi = {
 
   resetPassword: async (data: { token: string; newPassword: string }): Promise<ApiResponse<void>> => {
     return ApiClient.post<void>(
-      ApiEndpoint.endpoints.auth.resetPassword,
+      ApiEndpoint.endpoints.auth.resetPassword(),
       {
         security: 'public',
         data,

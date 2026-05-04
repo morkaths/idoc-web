@@ -3,6 +3,7 @@ import type {
   FindParams,
   CategoryResponse,
   CategoryRequest,
+  PageParams,
 } from '@/types';
 import {
   useListQuery,
@@ -18,12 +19,12 @@ import {
 } from './factory';
 
 /**
- * Hook to fetch categories
- * @param params Filter parameters
+ * Hook to fetch categories with pagination
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useCategories = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<CategoryResponse>
 ) => {
   return useListQuery<CategoryResponse>(

@@ -15,7 +15,7 @@ import {
 
 /**
  * Hook to fetch authors with pagination
- * @param params Page parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useAuthors = (

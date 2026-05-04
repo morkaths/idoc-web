@@ -10,10 +10,13 @@ const factory = apiFactory<FolderResponse, FolderRequest>(
 export const FolderApi = {
   ...factory,
   findMe: async (params?: PageParams): Promise<ApiResponse<PageResponse<FolderResponse>>> => {
-    return ApiClient.get<PageResponse<FolderResponse>>(ApiEndpoint.endpoints.folders.me, {
-      security: 'private',
-      params,
-    });
+    return ApiClient.get<PageResponse<FolderResponse>>(
+      ApiEndpoint.endpoints.folders.me(),
+      {
+        security: 'private',
+        params,
+      }
+    );
   },
 };
 

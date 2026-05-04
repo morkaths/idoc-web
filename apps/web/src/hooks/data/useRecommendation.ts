@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { BookApi } from '@/apis/book.api';
 import { BookmarkApi } from '@/apis/bookmark.api';
-import { RecommendationApi, type RecommendationStrategy } from '@/apis/recommendation.api';
+import { RecommendationApi, RecommendationStrategy } from '@/apis/recommendation.api';
 import type { BookResponse, BookmarkResponse } from '@/types';
 import { useItemQuery } from './factory';
 
@@ -32,7 +32,7 @@ export const useRecommendations = (
   userId: string | undefined,
   options?: UseRecommendationsOptions
 ) => {
-  const { strategy = 'hybrid', enabled = true } = options ?? {};
+  const { strategy = RecommendationStrategy.HYBRID, enabled = true } = options ?? {};
   const { data: session, status: authStatus } = useSession();
 
   // --- Step 1: Agent call — get IDs with scores ---
@@ -116,7 +116,7 @@ export const usePopularBooks = (options?: { enabled?: boolean }) => {
   // data is RecommendationResponse | null
   const { data: recData, isLoading: recLoading } = useItemQuery(
     ['recommendations', 'anonymous', 'popularity'],
-    () => RecommendationApi.getForUser('anonymous', 'popularity'),
+    () => RecommendationApi.getForUser('anonymous', RecommendationStrategy.POPULARITY),
     {
       enabled: options?.enabled !== false,
       staleTime: 10 * 60 * 1000,

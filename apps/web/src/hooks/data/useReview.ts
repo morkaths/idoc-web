@@ -4,7 +4,7 @@ import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDe
 
 /**
  * Hook to fetch reviews with pagination
- * @param params Page parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useReviews = (
@@ -46,10 +46,7 @@ export const useReview = (
     return useItemQuery<ReviewResponse>(
         ['reviews', id],
         () => ReviewApi.findById(id),
-        {
-            enabled: !!id,
-            ...options,
-        }
+        { enabled: !!id, ...options }
     );
 };
 

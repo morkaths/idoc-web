@@ -24,32 +24,41 @@ export const FileApi = {
   findByUser: async (
     params?: FindParams
   ): Promise<ApiResponse<PageResponse<FileResponse>>> => {
-    return ApiClient.get<PageResponse<FileResponse>>(ApiEndpoint.endpoints.files.findByUser, {
-      security: 'private',
-      params,
-    });
+    return ApiClient.get<PageResponse<FileResponse>>(
+      ApiEndpoint.endpoints.files.findByUser(),
+      {
+        security: 'private',
+        params,
+      }
+    );
   },
 
   upload: async (file: File, folder: string = 'general'): Promise<ApiResponse<FileResponse>> => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', folder);
-    return ApiClient.post<FileResponse>(ApiEndpoint.endpoints.files.upload, {
-      security: 'private',
-      data: formData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    return ApiClient.post<FileResponse>(
+      ApiEndpoint.endpoints.files.upload(),
+      {
+        security: 'private',
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
   },
 
   uploadPresigned: async (
     request: PresignedUploadRequest
   ): Promise<ApiResponse<PresignedUploadResponse>> => {
-    return ApiClient.post<PresignedUploadResponse>(ApiEndpoint.endpoints.files.uploadPresigned, {
-      security: 'private',
-      data: request,
-    });
+    return ApiClient.post<PresignedUploadResponse>(
+      ApiEndpoint.endpoints.files.uploadPresigned(),
+      {
+        security: 'private',
+        data: request,
+      }
+    );
   },
 
   uploadToPresignedUrl: async (url: string, file: File): Promise<boolean> => {
@@ -76,10 +85,13 @@ export const FileApi = {
   },
 
   download: async (id: string): Promise<ApiResponse<Blob>> => {
-    return ApiClient.get<Blob>(ApiEndpoint.endpoints.files.download(id), {
-      security: 'private',
-      responseType: 'blob',
-    });
+    return ApiClient.get<Blob>(
+      ApiEndpoint.endpoints.files.download(id),
+      {
+        security: 'private',
+        responseType: 'blob',
+      }
+    );
   },
 };
 

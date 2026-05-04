@@ -1,10 +1,10 @@
 import { FolderApi } from '@/apis/folder.api';
-import type { FolderResponse, FolderRequest, PageParams } from '@/types';
+import type { FolderResponse, FolderRequest, PageParams, FindParams } from '@/types';
 import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type ListQueryOptions, type ItemQueryOptions, type CreateMutationOptions, type UpdateMutationOptions, type DeleteMutationOptions } from './factory';
 
 /**
  * Hook to fetch folders with pagination
- * @param params Page parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useFolders = (
@@ -20,7 +20,7 @@ export const useFolders = (
 
 /**
  * Hook to fetch current user's folders with pagination
- * @param params Page parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useMyFolders = (
@@ -30,13 +30,25 @@ export const useMyFolders = (
     return useListQuery<FolderResponse>(
         ['folders', 'me', params],
         () => FolderApi.findMe(params),
-        {
-            staleTime: 0,
-            ...options,
-        }
+        options
     );
 };
 
+/**
+ * Hook to search folders
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchFolders = (
+    params: FindParams = {},
+    options?: ListQueryOptions<FolderResponse>
+) => {
+    return useListQuery<FolderResponse>(
+        ['folders', 'search', params],
+        () => FolderApi.search(params),
+        options
+    );
+};
 
 /**
  * Hook to fetch a single folder by ID
@@ -50,10 +62,7 @@ export const useFolder = (
     return useItemQuery<FolderResponse>(
         ['folders', id],
         () => FolderApi.findById(id),
-        {
-            enabled: !!id,
-            ...options,
-        }
+        { enabled: !!id, ...options }
     );
 };
 

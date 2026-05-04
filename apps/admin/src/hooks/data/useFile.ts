@@ -1,5 +1,5 @@
 import { FileApi } from '@/apis/file.api';
-import type { FileResponse, FindParams } from '@/types';
+import type { FileResponse, FindParams, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -13,16 +13,32 @@ import {
 
 /**
  * Hook to fetch files with pagination
- * @param params Search/filter parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useFiles = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<FileResponse>
 ) => {
   return useListQuery(
     ['files', params],
     () => FileApi.find(params),
+    options
+  );
+};
+
+/**
+ * Hook to search files
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchFiles = (
+  params: FindParams = {},
+  options?: ListQueryOptions<FileResponse>
+) => {
+  return useListQuery<FileResponse>(
+    ['files', 'search', params],
+    () => FileApi.search(params),
     options
   );
 };

@@ -63,7 +63,7 @@ function useBookListEnricher(booksQueryResult: ReturnType<typeof useListQuery<Bo
 
 /**
  * Hook to fetch books with pagination and bookmark status
- * @param params Page parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useBooks = (

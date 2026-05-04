@@ -7,17 +7,23 @@ export const ImageApi = {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', folder);
-    return ApiClient.post<string>(ApiEndpoint.endpoints.images.upload, {
-      security: 'private',
-      data: formData,
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return ApiClient.post<string>(
+      ApiEndpoint.endpoints.images.upload(),
+      {
+        security: 'private',
+        data: formData,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
   },
 
   delete: async (url: string): Promise<ApiResponse<void>> => {
-    return ApiClient.delete<void>(ApiEndpoint.endpoints.images.delete(url), {
-      security: 'private',
-    });
+    return ApiClient.delete<void>(
+      ApiEndpoint.endpoints.images.delete(url),
+      {
+        security: 'private',
+      }
+    );
   },
 
 };

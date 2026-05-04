@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { BookGridItems } from '@/components/book/book-grid-items';
 import { useRecommendations, usePopularBooks } from '@/hooks/data/useRecommendation';
-import type { RecommendationStrategy } from '@/apis/recommendation.api';
+import { RecommendationStrategy } from '@/apis/recommendation.api';
 
 interface BookRecommendedProps {
   enabled?: boolean;
@@ -19,12 +19,11 @@ interface BookRecommendedProps {
  */
 export function BookRecommended({
   enabled = true,
-  strategy = 'hybrid',
+  strategy = RecommendationStrategy.HYBRID,
 }: BookRecommendedProps) {
   const { data: session, status: authStatus } = useSession();
   const isAuthenticated = authStatus === 'authenticated';
 
-  // Personalized recommendations for logged-in users
   const {
     data: personalizedBooks,
     isLoading: personalizedLoading,
@@ -34,7 +33,6 @@ export function BookRecommended({
     enabled: enabled && isAuthenticated,
   });
 
-  // Popularity fallback for unauthenticated users
   const { data: popularBooks, isLoading: popularLoading } = usePopularBooks({
     enabled: enabled && !isAuthenticated,
   });

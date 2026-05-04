@@ -2,12 +2,12 @@ import type { ApiResponse, FindParams, PageParams, PageResponse } from '../types
 import { ApiClient, type SecurityStrategy } from './config';
 
 export interface CrudEndpoints {
-  find: string;
-  search?: string;
+  find: () => string;
+  search?: () => string;
   findById: (id: string) => string;
   findByIds: (ids: readonly string[]) => string;
-  create: string;
-  createMany: string;
+  create: () => string;
+  createMany: () => string;
   update: (id: string) => string;
   updateMany: (ids: readonly string[]) => string;
   delete: (id: string) => string;
@@ -57,7 +57,7 @@ export const apiFactory = <TResponse, TRequest, TParams = object>(
     find: async (
       params?: PageParams & TParams
     ): Promise<ApiResponse<PageResponse<TResponse>>> => {
-      return ApiClient.get<PageResponse<TResponse>>(endpoints.find, {
+      return ApiClient.get<PageResponse<TResponse>>(endpoints.find(), {
         security: config.find,
         params,
       });
@@ -67,7 +67,7 @@ export const apiFactory = <TResponse, TRequest, TParams = object>(
       params?: FindParams & TParams
     ): Promise<ApiResponse<PageResponse<TResponse>>> => {
       return ApiClient.post<PageResponse<TResponse>>(
-        endpoints.search || `${endpoints.find}/search`,
+        endpoints.search ? endpoints.search() : `${endpoints.find()}/search`,
         {
           security: config.search,
           data: params,
@@ -90,7 +90,7 @@ export const apiFactory = <TResponse, TRequest, TParams = object>(
     },
 
     create: async <P = TParams>(data: TRequest, params?: P): Promise<ApiResponse<TResponse>> => {
-      return ApiClient.post<TResponse>(endpoints.create, {
+      return ApiClient.post<TResponse>(endpoints.create(), {
         security: config.create,
         data,
         params,
@@ -101,7 +101,7 @@ export const apiFactory = <TResponse, TRequest, TParams = object>(
       data: TRequest[],
       params?: P
     ): Promise<ApiResponse<TResponse[]>> => {
-      return ApiClient.post<TResponse[]>(endpoints.createMany, {
+      return ApiClient.post<TResponse[]>(endpoints.createMany(), {
         security: config.createMany,
         data,
         params,

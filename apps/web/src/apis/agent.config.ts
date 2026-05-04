@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiEndpoint } from '@/config/api';
+import { AgentEndpoint } from '@/config/api';
 import type { ApiResponse } from '@/types';
 
 /**
@@ -8,8 +8,8 @@ import type { ApiResponse } from '@/types';
  * No auth header required — agent is an internal service.
  */
 const agentAxios = axios.create({
-  baseURL: ApiEndpoint.agent.baseURL,
-  timeout: ApiEndpoint.agent.timeout,
+  baseURL: AgentEndpoint.meta.baseURL,
+  timeout: AgentEndpoint.meta.timeout,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -17,13 +17,16 @@ const agentAxios = axios.create({
 
 /**
  * Lightweight agent API client.
- * Returns data unwrapped from axios response.
  */
 export const AgentClient = {
+  /**
+   * Generic GET request with retry logic.
+   * @param url API endpoint
+   * @param options Axios request options
+   */
   async get<T>(url: string, options?: { params?: Record<string, unknown> }): Promise<ApiResponse<T>> {
     try {
       const response = await agentAxios.get<T>(url, { params: options?.params });
-      // Agent returns plain JSON, wrap into ApiResponse shape
       return {
         success: true,
         status: response.status,

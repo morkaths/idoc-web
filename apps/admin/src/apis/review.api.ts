@@ -4,7 +4,11 @@ import { apiFactory } from './factory';
 
 const factory = apiFactory<ReviewResponse, ReviewRequest>(
   ApiEndpoint.endpoints.reviews,
-  { find: 'public', findById: 'public' }
+  {
+    find: 'public',
+    findById: 'public',
+    search: 'public',
+  }
 );
 
 export const ReviewApi = {

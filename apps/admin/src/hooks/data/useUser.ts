@@ -1,5 +1,5 @@
 import { UserApi } from '@/apis';
-import type { FindParams, UserResponse, UserRequest } from '@/types';
+import type { FindParams, UserResponse, UserRequest, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -13,8 +13,13 @@ import {
   type DeleteMutationOptions,
 } from './factory';
 
+/**
+ * Hook to fetch users with pagination
+ * @param params Pagination parameters
+ * @param options Query options
+ */
 export const useUsers = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<UserResponse>
 ) => {
   return useListQuery<UserResponse>(
@@ -27,6 +32,11 @@ export const useUsers = (
   );
 };
 
+/**
+ * Hook to search users
+ * @param params Search parameters
+ * @param options Query options
+ */
 export const useSearchUsers = (
   params: FindParams = {},
   options?: ListQueryOptions<UserResponse>
@@ -40,6 +50,11 @@ export const useSearchUsers = (
   );
 };
 
+/**
+ * Hook to fetch a single user by ID
+ * @param id User ID
+ * @param options Query options
+ */
 export const useUser = (
   id: string,
   options?: ItemQueryOptions<UserResponse>
@@ -54,6 +69,10 @@ export const useUser = (
   );
 };
 
+/**
+ * Hook to create a new user
+ * @param options Mutation options
+ */
 export const useCreateUser = (
   options?: CreateMutationOptions<UserRequest, UserResponse>
 ) => {
@@ -64,6 +83,10 @@ export const useCreateUser = (
   );
 };
 
+/**
+ * Hook to update an existing user
+ * @param options Mutation options
+ */
 export const useUpdateUser = (
   options?: UpdateMutationOptions<UserRequest, UserResponse>
 ) => {
@@ -74,6 +97,10 @@ export const useUpdateUser = (
   );
 };
 
+/**
+ * Hook to delete a user
+ * @param options Mutation options
+ */
 export const useDeleteUser = (options?: DeleteMutationOptions) => {
   return useDeleteMutation(
     (id) => UserApi.delete(id),

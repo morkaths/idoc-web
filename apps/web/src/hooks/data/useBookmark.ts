@@ -15,7 +15,7 @@ import {
 
 /**
  * Hook to fetch bookmarks
- * @param params Page parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useBookmarks = (

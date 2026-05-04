@@ -1,5 +1,5 @@
 import { BookApi } from '@/apis';
-import type { BookResponse, BookRequest, FindParams } from '@/types';
+import type { BookResponse, BookRequest, FindParams, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -15,11 +15,11 @@ import {
 
 /**
  * Hook to fetch books
- * @param params Filter parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useBooks = (
-  params: FindParams = {},
+  params: PageParams = {},
   options?: ListQueryOptions<BookResponse>
 ) => {
   return useListQuery<BookResponse>(

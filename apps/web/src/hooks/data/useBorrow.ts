@@ -15,7 +15,7 @@ import {
 
 /**
  * Hook to fetch borrows with pagination
- * @param params Page parameters
+ * @param params Pagination parameters
  * @param options Query options
  */
 export const useBorrows = (
@@ -25,6 +25,22 @@ export const useBorrows = (
   return useListQuery<BorrowResponse>(
     ['borrows', params],
     () => BorrowApi.find(params),
+    options
+  );
+};
+
+/**
+ * Hook to fetch borrow history
+ * @param params Pagination parameters
+ * @param options Query options
+ */
+export const useBorrowHistory = (
+  params: PageParams = {},
+  options?: ListQueryOptions<BorrowResponse>
+) => {
+  return useListQuery<BorrowResponse>(
+    ['borrows', 'history', params],
+    () => BorrowApi.history(params),
     options
   );
 };
@@ -41,22 +57,6 @@ export const useSearchBorrows = (
   return useListQuery<BorrowResponse>(
     ['borrows', 'search', params],
     () => BorrowApi.search(params),
-    options
-  );
-};
-
-/**
- * Hook to fetch borrow history
- * @param params Search/filter parameters
- * @param options Query options
- */
-export const useBorrowHistory = (
-  params: PageParams = {},
-  options?: ListQueryOptions<BorrowResponse>
-) => {
-  return useListQuery<BorrowResponse>(
-    ['borrows', 'history', params],
-    () => BorrowApi.history(params),
     options
   );
 };

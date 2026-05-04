@@ -1,58 +1,71 @@
 import env from './env';
 
 const crud = (path: string) => ({
-  find: path,
-  search: `${path}/search`,
+  find: () => path,
+  search: () => `${path}/search`,
   findById: (id: string) => `${path}/${id}`,
   findByIds: (ids: readonly string[]) => `${path}/bulk?ids=${ids.join(',')}`,
-  create: path,
-  createMany: `${path}/bulk`,
+  create: () => path,
+  createMany: () => `${path}/bulk`,
   update: (id: string) => `${path}/${id}`,
   updateMany: (ids: readonly string[]) => `${path}/bulk?ids=${ids.join(',')}`,
   delete: (id: string) => `${path}/${id}`,
   deleteMany: (ids: readonly string[]) => `${path}/bulk?ids=${ids.join(',')}`,
 });
 
+export const AgentEndpoint = {
+  meta: {
+    baseURL: env.agent.url,
+    timeout: 15_000,
+  },
+  endpoints: {
+    recommendations: {
+      sync: () => '/recommendations/sync',
+      popular: () => '/recommendations/popular',
+      similar: (bookId: string) => `/recommendations/similar/${bookId}`,
+      content: (userId: string) => `/recommendations/content/${userId}`,
+      userBased: (userId: string) => `/recommendations/user-based/${userId}`,
+      itemBased: (userId: string) => `/recommendations/item-based/${userId}`,
+      svd: (userId: string) => `/recommendations/svd/${userId}`,
+      hybrid: (userId: string) => `/recommendations/${userId}`,
+    },
+  },
+} as const;
+
 export const ApiEndpoint = {
   meta: {
     baseURL: env.api.url,
     timeout: 10_000,
   },
-  agent: {
-    baseURL: env.agent.url,
-    timeout: 15_000,
-    recommendation: (userId: string) => `/recommendations/${userId}`,
-    similarBooks: (bookId: string) => `/recommendations/similar/${bookId}`,
-  },
   endpoints: {
     auth: {
-      login: '/auth/sign-in',
-      loginGoogle: '/auth/oauth/sign-in',
-      register: '/auth/sign-up',
-      verify: '/auth/verify',
-      resend: '/auth/resend',
-      refresh: '/auth/refresh',
-      logout: '/auth/sign-out',
-      forgotPassword: '/auth/password/forgot',
-      resetPassword: '/auth/password/reset',
-      changePassword: '/auth/password/change',
-      update: '/auth/update',
+      login: () => '/auth/sign-in',
+      loginGoogle: () => '/auth/oauth/sign-in',
+      register: () => '/auth/sign-up',
+      verify: () => '/auth/verify',
+      resend: () => '/auth/resend',
+      refresh: () => '/auth/refresh',
+      logout: () => '/auth/sign-out',
+      forgotPassword: () => '/auth/password/forgot',
+      resetPassword: () => '/auth/password/reset',
+      changePassword: () => '/auth/password/change',
+      update: () => '/auth/update',
     },
     users: {
       ...crud('/users'),
-      me: '/users/me',
-      updateMe: '/users/me',
+      me: () => '/users/me',
+      updateMe: () => '/users/me',
     },
     profiles: {
       ...crud('/profiles'),
-      me: '/profiles/me',
+      me: () => '/profiles/me',
     },
     authors: crud('/authors'),
     categories: crud('/categories'),
     books: crud('/books'),
     borrows: {
       ...crud('/loans'),
-      history: '/loans/history',
+      history: () => '/loans/history',
       extend: (id: string) => `/loans/${id}/extend`,
       return: (id: string) => `/loans/${id}/return`,
       view: (id: string) => `/loans/${id}/view-ticket`,
@@ -63,20 +76,20 @@ export const ApiEndpoint = {
     },
     folders: {
       ...crud('/folders'),
-      me: '/folders/me',
+      me: () => '/folders/me',
     },
     reviews: crud('/reviews'),
     files: {
       ...crud('/files'),
-      findByUser: '/files/user',
+      findByUser: () => '/files/user',
       download: (id: string) => `/files/${id}/download`,
-      upload: '/files/upload',
-      uploadPresigned: '/files/upload/presigned',
+      upload: () => '/files/upload',
+      uploadPresigned: () => '/files/upload/presigned',
       completePresignedUpload: (uploadId: string) => `/files/upload/complete/${uploadId}`,
       view: (id: string) => `/files/${id}/view`,
     },
     images: {
-      upload: '/images/upload',
+      upload: () => '/images/upload',
       delete: (url: string) => `/images/${url}`,
     },
   },

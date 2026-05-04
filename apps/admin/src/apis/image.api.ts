@@ -7,7 +7,7 @@ export const ImageApi = {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', folder);
-    return ApiClient.post<string>(ApiEndpoint.endpoints.images.upload, {
+    return ApiClient.post<string>(ApiEndpoint.endpoints.images.upload(), {
       security: 'private',
       data: formData,
       headers: {

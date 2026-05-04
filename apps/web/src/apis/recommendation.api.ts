@@ -1,17 +1,16 @@
-import { ApiEndpoint } from '@/config/api';
+import { AgentEndpoint } from '@/config/api';
 import { AgentClient } from './agent.config';
 import type { ApiResponse } from '@/types';
 
-/** Strategies supported by the recommendation engine */
-export type RecommendationStrategy =
-  | 'popularity'
-  | 'content'
-  | 'user_based'
-  | 'item_based'
-  | 'svd'
-  | 'hybrid';
+export enum RecommendationStrategy {
+  POPULARITY = 'popularity',
+  CONTENT = 'content',
+  USER_BASED = 'user_based',
+  ITEM_BASED = 'item_based',
+  SVD = 'svd',
+  HYBRID = 'hybrid',
+}
 
-/** A single recommendation item returned by the Agent */
 export interface RecommendationItem {
   id: string;
   title: string;
@@ -19,7 +18,6 @@ export interface RecommendationItem {
   reason: string;
 }
 
-/** Full response from Agent recommendation endpoint */
 export interface RecommendationResponse {
   user_id: string;
   strategy: RecommendationStrategy;
@@ -27,27 +25,66 @@ export interface RecommendationResponse {
 }
 
 export const RecommendationApi = {
-  /**
-   * Fetches personalized book recommendations for a user.
-   * @param userId - The ID of the current user
-   * @param strategy - Recommendation algorithm (default: 'hybrid')
-   * @returns List of { id, title, score, reason } items
-   */
-  getForUser: (
-    userId: string,
-    strategy: RecommendationStrategy = 'hybrid'
-  ): Promise<ApiResponse<RecommendationResponse>> =>
-    AgentClient.get<RecommendationResponse>(
-      ApiEndpoint.agent.recommendation(userId),
-      { params: { strategy } }
+  syncData: (): Promise<ApiResponse<void>> =>
+    AgentClient.get<void>(
+      AgentEndpoint.endpoints.recommendations.sync()
     ),
 
-  /**
-   * Fetches books similar to a given book (item-based).
-   * @param bookId - The ID of the source book
-   */
-  getSimilarBooks: (bookId: string): Promise<ApiResponse<RecommendationResponse>> =>
+  getPopular: (): Promise<ApiResponse<RecommendationResponse>> =>
     AgentClient.get<RecommendationResponse>(
-      ApiEndpoint.agent.similarBooks(bookId)
+      AgentEndpoint.endpoints.recommendations.popular()
     ),
+
+  getSimilar: (bookId: string): Promise<ApiResponse<RecommendationResponse>> =>
+    AgentClient.get<RecommendationResponse>(
+      AgentEndpoint.endpoints.recommendations.similar(bookId)
+    ),
+
+  getContentBased: (userId: string): Promise<ApiResponse<RecommendationResponse>> =>
+    AgentClient.get<RecommendationResponse>(
+      AgentEndpoint.endpoints.recommendations.content(userId)
+    ),
+
+  getUserBased: (userId: string): Promise<ApiResponse<RecommendationResponse>> =>
+    AgentClient.get<RecommendationResponse>(
+      AgentEndpoint.endpoints.recommendations.userBased(userId)
+    ),
+
+  getItemBased: (userId: string): Promise<ApiResponse<RecommendationResponse>> =>
+    AgentClient.get<RecommendationResponse>(
+      AgentEndpoint.endpoints.recommendations.itemBased(userId)
+    ),
+
+  getSVD: (userId: string): Promise<ApiResponse<RecommendationResponse>> =>
+    AgentClient.get<RecommendationResponse>(
+      AgentEndpoint.endpoints.recommendations.svd(userId)
+    ),
+
+  getHybrid: (userId: string): Promise<ApiResponse<RecommendationResponse>> =>
+    AgentClient.get<RecommendationResponse>(
+      AgentEndpoint.endpoints.recommendations.hybrid(userId)
+    ),
+
+  getForUser: (
+    userId: string,
+    strategy: RecommendationStrategy = RecommendationStrategy.HYBRID
+  ): Promise<ApiResponse<RecommendationResponse>> => {
+    switch (strategy) {
+      case RecommendationStrategy.POPULARITY:
+        return RecommendationApi.getPopular();
+      case RecommendationStrategy.CONTENT:
+        return RecommendationApi.getContentBased(userId);
+      case RecommendationStrategy.USER_BASED:
+        return RecommendationApi.getUserBased(userId);
+      case RecommendationStrategy.ITEM_BASED:
+        return RecommendationApi.getItemBased(userId);
+      case RecommendationStrategy.SVD:
+        return RecommendationApi.getSVD(userId);
+      case RecommendationStrategy.HYBRID:
+      default:
+        return RecommendationApi.getHybrid(userId);
+    }
+  },
 };
+
+
