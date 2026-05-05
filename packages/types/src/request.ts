@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AuthProvider, BorrowStatus, RoleType, UserStatus } from './enum';
+import { AuthProvider, BorrowStatus, RecommendationStrategy, RoleType, UserStatus } from './enum';
 
 export const dateOrString = z.preprocess((val) => {
   if (val == null || val === '') return undefined;
@@ -169,6 +169,9 @@ export const FolderRequestSchema = z.object({
   isPublic: z.boolean().optional()
 });
 
+export const RecommendationRequestSchema = z.object({
+  strategy: z.nativeEnum(RecommendationStrategy).optional(),
+});
 
 
 export type UserRequest = z.infer<typeof UserRequestSchema>;
@@ -190,4 +193,6 @@ export type RenewBorrowRequest = z.infer<typeof RenewBorrowRequestSchema>;
 export type ReviewRequest = z.infer<typeof ReviewRequestSchema>;
 export type BookmarkRequest = z.infer<typeof BookmarkRequestSchema>;
 export type FolderRequest = z.infer<typeof FolderRequestSchema>;
+export type RecommendationRequest = z.infer<typeof RecommendationRequestSchema>;
+
 

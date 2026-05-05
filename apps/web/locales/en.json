@@ -698,5 +698,47 @@
         "update": "Update Review"
       }
     }
+  },
+  "home": {
+    "banner": {
+      "author": "Author",
+      "unknownAuthor": "Unknown Author",
+      "descriptionFallback": "Embark on an exciting journey of discovery. A must-read for anyone passionate about this genre.",
+      "readNow": "Read Now"
+    },
+    "hero": {
+      "title": "Explore a World of Knowledge",
+      "subtitle": "Discover the most popular books and personalized recommendations just for you.",
+      "action": "Browse Catalog",
+      "searchBooks": "Search Books",
+      "joinedBy": "Joined by {count} avid readers",
+      "readPreview": "Read Preview",
+      "noFeaturedBooks": "No featured books",
+      "todaysPick": "Today's Pick",
+      "trendingNow": "Trending Now",
+      "unknownAuthor": "Unknown Author"
+    },
+    "recommendations": {
+      "title": "Picked for You",
+      "subtitle": "Based on your reading history and preferences",
+      "forYou": "Just for You",
+      "trending": "Trending Now",
+      "interests": "Based on Your Interests",
+      "similarReaders": "Readers Like You Enjoyed",
+      "empty": "No recommendations yet",
+      "startBookmarking": "Start bookmarking books to get personalized suggestions!"
+    },
+    "popular": {
+      "title": "Currently Trending",
+      "subtitle": "The most read books in our community right now",
+      "viewAll": "View All",
+      "empty": "No popular books found at the moment."
+    },
+    "categories": {
+      "title": "Browse by Category",
+      "subtitle": "Find your next favorite read in our diverse collection",
+      "browseCollection": "Browse collection",
+      "empty": "No categories found."
+    }
   }
 }

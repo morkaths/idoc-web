@@ -674,5 +674,47 @@
         "update": "Cập nhật đánh giá"
       }
     }
+  },
+  "home": {
+    "banner": {
+      "author": "Tác giả",
+      "unknownAuthor": "Tác giả chưa rõ",
+      "descriptionFallback": "Hành trình khám phá đầy kỳ thú đang chờ đón bạn. Một tác phẩm không thể bỏ qua cho những ai đam mê thể loại này.",
+      "readNow": "Đọc ngay"
+    },
+    "hero": {
+      "title": "Khám phá thế giới tri thức",
+      "subtitle": "Khám phá những cuốn sách phổ biến nhất và các đề xuất cá nhân hóa dành riêng cho bạn.",
+      "action": "Duyệt danh mục",
+      "searchBooks": "Tìm kiếm sách",
+      "joinedBy": "Tham gia cùng {count} độc giả nhiệt huyết",
+      "readPreview": "Đọc thử",
+      "noFeaturedBooks": "Không có sách nổi bật",
+      "todaysPick": "Gợi ý hôm nay",
+      "trendingNow": "Xu hướng hiện nay",
+      "unknownAuthor": "Tác giả chưa rõ"
+    },
+    "recommendations": {
+      "title": "Dành riêng cho bạn",
+      "subtitle": "Dựa trên lịch sử đọc và sở thích của bạn",
+      "forYou": "Dành riêng cho bạn",
+      "trending": "Xu hướng thịnh hành",
+      "interests": "Dựa trên sở thích",
+      "similarReaders": "Người dùng tương tự cũng thích",
+      "empty": "Chưa có đề xuất nào",
+      "startBookmarking": "Hãy bắt đầu đánh dấu sách để nhận được những gợi ý cá nhân hóa!"
+    },
+    "popular": {
+      "title": "Đang thịnh hành",
+      "subtitle": "Những cuốn sách được đọc nhiều nhất trong cộng đồng của chúng tôi hiện nay",
+      "viewAll": "Xem tất cả",
+      "empty": "Hiện không tìm thấy cuốn sách phổ biến nào."
+    },
+    "categories": {
+      "title": "Duyệt theo thể loại",
+      "subtitle": "Tìm cuốn sách yêu thích tiếp theo trong bộ sưu tập đa dạng của chúng tôi",
+      "browseCollection": "Khám phá bộ sưu tập",
+      "empty": "Không tìm thấy thể loại nào."
+    }
   }
 }

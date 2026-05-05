@@ -1,4 +1,4 @@
-import { AuthProvider, BorrowStatus, RoleType } from './enum';
+import { AuthProvider, BorrowStatus, RecommendationStrategy, RoleType } from './enum';
 
 // --- User & Authentication ---
 
@@ -164,3 +164,23 @@ export interface PresignedUploadResponse {
   uploadId: string;
   uploadUrl: string;
 }
+
+export interface RecommendationItem {
+  id: string;
+  title: string;
+  score: number;
+  reason: string;
+}
+
+export interface RecommendationResponse {
+  userId: string;
+  strategy: RecommendationStrategy;
+  items: RecommendationItem[];
+}
+
+export interface RecommendedBookResponse extends BookResponse {
+  score?: number;
+  reason?: string;
+}
+
+

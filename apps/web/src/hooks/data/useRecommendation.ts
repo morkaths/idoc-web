@@ -2,19 +2,19 @@ import { useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { BookApi } from '@/apis/book.api';
 import { BookmarkApi } from '@/apis/bookmark.api';
-import { RecommendationApi, RecommendationStrategy } from '@/apis/recommendation.api';
-import type { BookResponse, BookmarkResponse } from '@/types';
+import { RecommendationApi } from '@/apis/recommendation.api';
+import {
+  RecommendationStrategy,
+  type BookmarkResponse,
+  type RecommendationRequest,
+  type RecommendedBookResponse,
+} from '@/types';
 import { useItemQuery } from './factory';
 
-/** Extended BookResponse with recommendation metadata */
-export type RecommendedBook = BookResponse & {
-  _score?: number;
-  _reason?: string;
-  bookmarkId?: string;
-};
-
-export interface UseRecommendationsOptions {
-  strategy?: RecommendationStrategy;
+/**
+ * Options for the recommendation hooks.
+ */
+export interface UseRecommendationsOptions extends RecommendationRequest {
   enabled?: boolean;
 }
 
@@ -36,7 +36,6 @@ export const useRecommendations = (
   const { data: session, status: authStatus } = useSession();
 
   // --- Step 1: Agent call — get IDs with scores ---
-  // data is RecommendationResponse | null (already unwrapped by useItemQuery)
   const {
     data: recData,
     isLoading: recLoading,
@@ -56,7 +55,6 @@ export const useRecommendations = (
   );
 
   // --- Step 2: Java Server call — get full book data ---
-  // data is BookResponse[] | null (already unwrapped by useItemQuery)
   const {
     data: booksData,
     isLoading: booksLoading,
@@ -83,7 +81,7 @@ export const useRecommendations = (
   );
 
   // --- Step 3b: Merge score + reason + bookmark into final list ---
-  const enrichedBooks = useMemo<RecommendedBook[]>(() => {
+  const enrichedBooks = useMemo<RecommendedBookResponse[]>(() => {
     if (!booksData || !Array.isArray(booksData)) return [];
 
     // Build lookup map: bookId → { score, reason }
@@ -92,12 +90,12 @@ export const useRecommendations = (
     return booksData
       .map((book) => ({
         ...book,
-        _score: recMap.get(book.id)?.score,
-        _reason: recMap.get(book.id)?.reason,
-        bookmarkId: bookmarkData?.[book.id]?.id,
+        score: recMap.get(book.id)?.score,
+        reason: recMap.get(book.id)?.reason,
+        bookmarkId: bookmarkData?.[book.id]?.id ?? book.bookmarkId,
       }))
       // Sort by relevance score descending
-      .sort((a, b) => (b._score ?? 0) - (a._score ?? 0));
+      .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
   }, [booksData, recData, bookmarkData]);
 
   return {
@@ -107,6 +105,7 @@ export const useRecommendations = (
     strategy: recData?.strategy,
   };
 };
+
 
 /**
  * Popularity-based fallback for unauthenticated users.
@@ -139,7 +138,8 @@ export const usePopularBooks = (options?: { enabled?: boolean }) => {
   );
 
   return {
-    data: (booksData as BookResponse[] | null) ?? [],
+    data: (booksData as RecommendedBookResponse[] | null) ?? [],
     isLoading: recLoading || booksLoading,
   };
+
 };

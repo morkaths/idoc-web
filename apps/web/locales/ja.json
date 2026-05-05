@@ -495,146 +495,27 @@
       }
     }
   },
-  "library": {
-    "title": "マイライブラリ",
-    "description": "借りている書籍を管理し、個人の借り入れ履歴を確認できます。",
-    "tabs": {
-      "books": "書籍一覧",
-      "borrows": "貸出一覧"
+  "home": {
+    "hero": {
+      "title": "知識の世界を探索する",
+      "subtitle": "最も人気のある本や、あなただけのためにパーソナライズされたおすすめを見つけましょう。",
+      "action": "カタログを見る"
     },
-    "search": {
-      "placeholder": "貸出を検索..."
+    "recommendations": {
+      "title": "あなたへのおすすめ",
+      "subtitle": "あなたの読書履歴と好みに基づいています",
+      "forYou": "あなたにぴったり",
+      "trending": "トレンド",
+      "interests": "あなたの興味に基づく",
+      "similarReaders": "似た読者が好んだ本"
     },
-    "table": {
-      "entity": "貸出",
-      "columns": {
-        "cover": "表紙",
-        "item": "アイテム",
-        "renewals": "更新回数",
-        "borrowTime": "貸出日",
-        "expireTime": "返却期限",
-        "returnTime": "返却日",
-        "status": "ステータス"
-      },
-      "states": {
-        "active": "貸出中",
-        "overdue": "延滞",
-        "returned": "返却済み"
-      },
-      "actions": {
-        "view": {
-          "label": "表示",
-          "loading": "リダイレクト中..."
-        },
-        "extend": {
-          "label": "延長",
-          "title": "貸出期間の延長",
-          "description": "延長日数を選択するか、新しい返却期限を指定してください。",
-          "loading": "延長中...",
-          "success": "貸出期間が正常に延長されました！",
-          "error": "期間の延長に失敗しました。もう一度お試しください。",
-          "fields": {
-            "borrowDate": "貸出日",
-            "extraDays": "延長日数",
-            "borrowRange": "貸出期間",
-            "note": "備考",
-            "placeholder": "延長する日数",
-            "error": "新しい返却期限は、現在の期限から少なくとも1日後である必要があります。"
-          }
-        },
-        "review": {
-          "label": "レビュー",
-          "create": {
-            "success": "正常にレビューされました！",
-            "error": "レビューに失敗しました。もう一度お試しください。"
-          },
-          "update": {
-            "success": "レビューが正常に更新されました！",
-            "error": "レビューの更新に失敗しました。もう一度お試しください。"
-          }
-        },
-        "return": {
-          "label": "返却",
-          "title": "この貸出アイテム（{borrowId}）を返却しますか？",
-          "loading": "返却処理中...",
-          "success": "正常に返却されました！",
-          "error": "返却に失敗しました。もう一度お試しください。",
-          "confirm": "以下のアイテムが返却されました：",
-          "confirmDesc": "本当に「<strong>{title}</strong>」を返却しますか？<br></br>この操作は取り消せません。"
-        },
-        "history": {
-          "label": "履歴",
-          "title": "貸出履歴",
-          "description": "この貸出記録のイベントタイムライン。",
-          "unknownTitle": "不明なタイトル",
-          "unknownAuthor": "不明な著者",
-          "noCategory": "カテゴリーなし",
-          "loading": "貸出履歴を読み込み中...",
-          "success": "貸出履歴が正常に読み込まれました！",
-          "error": "貸出履歴の読み込みに失敗しました。もう一度お試しください。",
-          "timeline": {
-            "borrowed": {
-              "title": "貸出済み",
-              "content": "ユーザー「<strong>{username}</strong>」が「<strong>{title}</strong>」を借りました。"
-            },
-            "renewal": {
-              "title": "更新 #{index}",
-              "content": "<strong>{date}</strong> まで延長されました。"
-            },
-            "returned": {
-              "title": "返却済み",
-              "content": "アイテムが返却されました。"
-            },
-            "overdue": {
-              "title": "延滞",
-              "content": "<strong>{date}</strong> から延滞しています。"
-            },
-            "due": {
-              "title": "返却期限",
-              "content": "返却期限は <strong>{date}</strong> です。"
-            },
-            "unknown": "日付不明"
-          }
-        }
-      },
-      "bulkActions": {
-        "return": {
-          "label": "返却",
-          "tooltip": "選択した貸出を返却",
-          "confirmDesc": "選択した貸出を返却してもよろしいですか？"
-        },
-        "export": {
-          "label": "エクスポート",
-          "tooltip": "選択した貸出を書き出し",
-          "confirmDesc": "選択した貸出を書き出してもよろしいですか？"
-        }
-      }
+    "popular": {
+      "title": "現在トレンド",
+      "subtitle": "今、コミュニティで最も読まれている本"
     },
-    "review": {
-      "create": "書籍をレビュー",
-      "update": "レビューを更新",
-      "title": "貸出アイテムをレビュー",
-      "description": "「{title}」についての感想を共有しましょう。",
-      "fallback": "この書籍についての感想を書きましょう。",
-      "rating": {
-        "label": "あなたの評価",
-        "error": "評価を選択してください！",
-        "value": {
-          "excellent": "最高！",
-          "good": "良い！",
-          "neutral": "普通",
-          "poor": "悪い",
-          "terrible": "最悪"
-        }
-      },
-      "content": {
-        "label": "レビュー内容",
-        "placeholder": "この書籍のどのような点が気に入りましたか？または気に食わなかったですか？"
-      },
-      "actions": {
-        "submit": "レビューを送信",
-        "update": "レビューを更新"
-      }
+    "categories": {
+      "title": "カテゴリー別に探す",
+      "subtitle": "多様なコレクションから次のお気に入りの一冊を見つける"
     }
   }
 }

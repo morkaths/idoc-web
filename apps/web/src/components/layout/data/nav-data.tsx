@@ -55,7 +55,7 @@ export function useNavData(): NavItem[] {
         {
           title: t(keys.catalog.discover.title),
           icon: Sparkles,
-          href: "/books/discover",
+          href: "/discover",
           description: t(keys.catalog.discover.description),
         },
         {

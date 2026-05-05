@@ -1,28 +1,6 @@
 import { AgentEndpoint } from '@/config/api';
 import { AgentClient } from './agent.config';
-import type { ApiResponse } from '@/types';
-
-export enum RecommendationStrategy {
-  POPULARITY = 'popularity',
-  CONTENT = 'content',
-  USER_BASED = 'user_based',
-  ITEM_BASED = 'item_based',
-  SVD = 'svd',
-  HYBRID = 'hybrid',
-}
-
-export interface RecommendationItem {
-  id: string;
-  title: string;
-  score: number;
-  reason: string;
-}
-
-export interface RecommendationResponse {
-  user_id: string;
-  strategy: RecommendationStrategy;
-  items: RecommendationItem[];
-}
+import { type ApiResponse, type RecommendationResponse, RecommendationStrategy } from '@/types';
 
 export const RecommendationApi = {
   syncData: (): Promise<ApiResponse<void>> =>

@@ -19,6 +19,16 @@ interface NavbarProps {
 }
 
 export function Navbar({ items }: NavbarProps) {
+    const [isMounted, setIsMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) {
+        return <div className="h-9" />;
+    }
+
     return (
         <NavigationMenu>
             <NavigationMenuList className="flex-wrap">

@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { BookGridItems } from '@/components/book/book-grid-items';
 import { useRecommendations, usePopularBooks } from '@/hooks/data/useRecommendation';
-import { RecommendationStrategy } from '@/apis/recommendation.api';
+import { RecommendationStrategy } from '@/types';
 
 interface BookRecommendedProps {
   enabled?: boolean;

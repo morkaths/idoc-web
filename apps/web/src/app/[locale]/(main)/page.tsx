@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { FaqsSection } from '@/components/home/faqs';
-import FeatureSection from '@/components/home/features';
-import HeroSection from '@/components/home/hero';
-import { PricingSection } from '@/components/home/pricing';
-import TestimonialSection from '@/components/home/testimonial';
+import { BookmarkProvider } from '@/components/book/bookmark-provider';
+import { BannerCarousel } from '@/components/home/banner-carousel';
+import { RecommendationCarousel } from '@/components/home/recommendation-carousel';
+import { PopularBooks } from '@/components/home/popular-books';
+import { CategoriesGrid } from '@/components/home/categories-grid';
 
 export const metadata: Metadata = {
   title: 'Home',
@@ -12,14 +12,16 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className='space-y-10 pt-20 md:space-y-20'>
-      <HeroSection />
-      <FeatureSection />
-      <PricingSection />
-      <TestimonialSection />
-      <div className='border-t'>
-        <FaqsSection />
+    <BookmarkProvider>
+      <div className='flex flex-col pb-20'>
+        <BannerCarousel />
+        
+        <div className='space-y-6 md:space-y-12'>
+          <RecommendationCarousel />
+          <PopularBooks />
+          <CategoriesGrid />
+        </div>
       </div>
-    </div>
+    </BookmarkProvider>
   );
 }

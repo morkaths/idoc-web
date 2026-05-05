@@ -1,6 +1,5 @@
 import { Icon } from '@iconify/react';
 import { type BookResponse } from "@/types";
-import { AppImage as Image } from '../app-image';
 import { useState, useMemo } from 'react';
 import { useDeleteBookmark } from "@/hooks/data/useBookmark";
 import { toast } from 'sonner';
@@ -9,6 +8,7 @@ import { useLocale } from '@/hooks/ui/useLocale';
 import { useBookmarkContext } from './bookmark-provider';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import BookCover3d from '@repo/ui/components/book-cover-3d';
 
 type BookGridItemProps = {
   book: BookResponse;
@@ -22,7 +22,7 @@ export function BookGridItem({
   const router = useRouter();
   const { data: session } = useSession();
   const { t, keys } = useLocale('books');
-  const [imageError, setImageError] = useState(false);
+  const [imageError] = useState(false);
   const [localBookmarkId, setLocalBookmarkId] = useState<string | undefined | null>(null);
   const bookmarkId = localBookmarkId !== null ? localBookmarkId : book.bookmarkId;
   const isBookmarked = !!bookmarkId;
@@ -76,26 +76,21 @@ export function BookGridItem({
         {/* Top Background Pattern */}
         <div className="h-32 w-full bg-primary/10 dark:bg-primary/10" />
 
-        {/* Book Cover Container */}
-        <div className="relative px-2 sm:px-4 -mt-24 flex justify-center z-10 w-full">
-          <div className="relative w-28 sm:w-36 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden transition-transform duration-300 group-hover:-translate-y-1 bg-white dark:bg-zinc-800">
-            {!imageError && book.coverUrl ? (
-              <Image
-                src={book.coverUrl}
-                alt={book.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, 200px"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center p-3 text-center bg-muted/20 dark:bg-zinc-800/50">
-                <span className="font-medium text-xs sm:text-sm line-clamp-4 leading-tight opacity-60 break-words w-full px-2">
-                  {book.title}
-                </span>
-              </div>
-            )}
-          </div>
+        <div className="relative px-2 sm:px-4 -mt-24 flex justify-center z-10 w-full transition-transform duration-300 group-hover:-translate-y-2">
+          {!imageError && book.coverUrl ? (
+            <BookCover3d
+              src={book.coverUrl}
+              title={book.title}
+              width={140}
+              className="drop-shadow-[0_12px_24px_rgba(0,0,0,0.3)]"
+            />
+          ) : (
+            <div className="relative w-28 sm:w-36 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden bg-muted/20 dark:bg-zinc-800/50 flex items-center justify-center p-3 text-center">
+              <span className="font-medium text-xs sm:text-sm line-clamp-4 leading-tight opacity-60 break-words w-full px-2">
+                {book.title}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Content */}

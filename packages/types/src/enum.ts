@@ -54,3 +54,12 @@ export enum AuthProvider {
   GOOGLE = 'GOOGLE',
   FACEBOOK = 'FACEBOOK',
 }
+
+export enum RecommendationStrategy {
+  POPULARITY = 'popularity',
+  CONTENT = 'content',
+  USER_BASED = 'user_based',
+  ITEM_BASED = 'item_based',
+  SVD = 'svd',
+  HYBRID = 'hybrid',
+}
