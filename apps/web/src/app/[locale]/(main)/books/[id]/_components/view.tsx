@@ -1,6 +1,5 @@
 'use client';
 
-import { AppImage as Image } from '@/components/app-image';
 import { type BookResponse, BorrowStatus } from '@/types';
 import { useRouter, useParams } from 'next/navigation';
 import { useState } from 'react';
@@ -17,31 +16,26 @@ import { Skeleton } from '@repo/ui/components/skeleton';
 import { BookTabs } from './book-tabs';
 import { BorrowBookDialog } from './borrow-book-dialog';
 import { AddBookmarkDialog } from './add-bookmark-dialog';
+import BookCover3d from '@repo/ui/components/book-cover-3d';
 
 interface BookDetailViewProps {
   id: string;
 }
 
 const CoverImage = ({ title, src }: { title: string; src?: string }) => {
-  const [imageError, setImageError] = useState(false);
+  const [imageError] = useState(false);
 
   return (
-    <div className='relative aspect-[3/4] w-46 overflow-hidden rounded-xl border-2 bg-white sm:w-64 md:w-72 lg:w-80 dark:bg-zinc-800'>
+    <div className='relative z-10 flex justify-center'>
       {!imageError && src ? (
-        <Image
-          key='image'
+        <BookCover3d
           src={src}
-          alt={title}
-          fill
-          className='object-cover'
-          priority
-          onError={() => setImageError(true)}
+          title={title}
+          width={300}
+          className='drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]'
         />
       ) : (
-        <div
-          key='fallback'
-          className='flex h-full w-full items-center justify-center p-6 text-center'
-        >
+        <div className='bg-card flex aspect-[3/4] w-64 items-center justify-center rounded-xl border-2 p-6 text-center shadow-lg md:w-80'>
           <span className='line-clamp-4 w-full text-lg leading-tight font-bold break-words opacity-90 md:text-xl'>
             {title}
           </span>

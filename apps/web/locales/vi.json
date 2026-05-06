@@ -14,7 +14,12 @@
       "next": "Tiếp theo",
       "previous": "Trước đó",
       "view": "Hiển thị",
-      "toggleColumns": "Ẩn/hiện cột"
+      "viewAll": "Xem tất cả",
+      "viewDetails": "Xem chi tiết",
+      "submit": "Gửi",
+      "reset": "Đặt lại",
+      "backToHome": "Về trang chủ",
+      "goBack": "Quay lại"
     },
     "table": {
       "asc": "Tăng dần",
@@ -313,10 +318,7 @@
   "books": {
     "sidebar": {
       "title": "Khám phá",
-      "actions": {
-        "reset": "Đặt lại",
-        "submit": "Áp dụng"
-      },
+      "actions": {},
       "tabs": {
         "filter": "Bộ lọc",
         "sort": "Sắp xếp"
@@ -384,7 +386,7 @@
     "by": "Bởi",
     "author": "Tác giả ẩn danh",
     "actions": {
-      "addToFolder": "Thêm vào thư mục",
+      "addToBookmark": "Thêm vào thư mục",
       "borrow": "Mượn ngay"
     },
     "borrow": {
@@ -398,10 +400,7 @@
         "label": "Ghi chú",
         "placeholder": "Ghi chú (không bắt buộc)"
       },
-      "actions": {
-        "cancel": "Hủy",
-        "confirm": "Xác nhận"
-      },
+      "actions": {},
       "states": {
         "loading": "Đang tạo yêu cầu mượn...",
         "success": "Yêu cầu mượn được tạo thành công!",
@@ -502,9 +501,7 @@
         "title": "Không tìm thấy tài liệu",
         "description": "Tài liệu bạn đang tìm kiếm không tồn tại hoặc chưa được đính kèm."
       },
-      "actions": {
-        "goBack": "Quay lại"
-      }
+      "actions": {}
     }
   },
   "library": {
@@ -535,11 +532,9 @@
       },
       "actions": {
         "view": {
-          "label": "Xem",
           "loading": "Đang chuyển hướng..."
         },
         "extend": {
-          "label": "Gia hạn",
           "title": "Gia hạn bản mượn",
           "description": "Chọn thêm số ngày hoặc ngày hết hạn mới cho bản mượn này.",
           "loading": "Đang gia hạn...",
@@ -558,13 +553,11 @@
         "mutate": {
           "create": {
             "title": "Thêm bản mượn",
-            "description": "Nhập thông tin cho bản mượn mới.",
-            "submit": "Tạo mới"
+            "description": "Nhập thông tin cho bản mượn mới."
           },
           "update": {
             "title": "Chỉnh sửa bản mượn",
-            "description": "Cập nhật thông tin bản mượn bên dưới.",
-            "submit": "Lưu thay đổi"
+            "description": "Cập nhật thông tin bản mượn bên dưới."
           },
           "fields": {
             "book": "Sách",
@@ -574,11 +567,9 @@
           },
           "loading": "Đang lưu...",
           "success": "Lưu thành công!",
-          "error": "Lưu thất bại. Vui lòng thử lại.",
-          "cancel": "Hủy"
+          "error": "Lưu thất bại. Vui lòng thử lại."
         },
         "review": {
-          "label": "Đánh giá",
           "create": {
             "success": "Đánh giá thành công!",
             "error": "Lỗi khi đánh giá. Vui lòng thử lại."
@@ -589,7 +580,6 @@
           }
         },
         "return": {
-          "label": "Trả",
           "title": "Trả bản mượn này: {borrowId}?",
           "loading": "Đang thực hiện trả...",
           "success": "Trả sách thành công!",
@@ -598,7 +588,6 @@
           "confirmDesc": "Bạn có chắc chắn muốn trả <strong>{title}</strong>?<br></br>Thao tác này không thể hoàn tác."
         },
         "history": {
-          "label": "Lịch sử",
           "title": "Lịch sử mượn",
           "description": "Dòng thời gian các sự kiện cho bản mượn này.",
           "unknownTitle": "Tiêu đề không xác định",
@@ -634,12 +623,10 @@
       },
       "bulkActions": {
         "return": {
-          "label": "Trả",
           "tooltip": "Trả các bản mượn đã chọn",
           "confirmDesc": "Bạn có chắc muốn trả các bản mượn đã chọn?"
         },
         "export": {
-          "label": "Xuất",
           "tooltip": "Xuất các bản mượn đã chọn",
           "confirmDesc": "Bạn có chắc muốn xuất các bản mượn đã chọn?",
           "loading": "Đang xuất bản mượn...",
@@ -669,18 +656,12 @@
         "label": "Nội dung đánh giá",
         "placeholder": "Điều bạn thích hoặc không thích ở cuốn sách này?"
       },
-      "actions": {
-        "submit": "Gửi đánh giá",
-        "update": "Cập nhật đánh giá"
-      }
+      "actions": {}
     }
   },
   "home": {
     "banner": {
-      "author": "Tác giả",
-      "unknownAuthor": "Tác giả chưa rõ",
-      "descriptionFallback": "Hành trình khám phá đầy kỳ thú đang chờ đón bạn. Một tác phẩm không thể bỏ qua cho những ai đam mê thể loại này.",
-      "readNow": "Đọc ngay"
+      "descriptionFallback": "Hành trình khám phá đầy kỳ thú đang chờ đón bạn. Một tác phẩm không thể bỏ qua cho những ai đam mê thể loại này."
     },
     "hero": {
       "title": "Khám phá thế giới tri thức",
@@ -707,7 +688,6 @@
     "popular": {
       "title": "Đang thịnh hành",
       "subtitle": "Những cuốn sách được đọc nhiều nhất trong cộng đồng của chúng tôi hiện nay",
-      "viewAll": "Xem tất cả",
       "empty": "Hiện không tìm thấy cuốn sách phổ biến nào."
     },
     "categories": {

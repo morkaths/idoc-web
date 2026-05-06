@@ -17,15 +17,15 @@ import {
   Users,
   ShieldCheck,
   AudioWaveform,
-  Command,
   GalleryVerticalEnd,
   Library,
   Tag,
   UserPen,
   Bookmark,
 } from 'lucide-react';
-import { ClerkLogo } from '@/assets/clerk-logo';
+import { Logo } from '../logo';
 import { type SidebarData } from '../types';
+import { ClerkLogo } from '@/assets/clerk-logo';
 
 export const sidebarData: SidebarData = {
   user: {
@@ -35,9 +35,9 @@ export const sidebarData: SidebarData = {
   },
   teams: [
     {
-      name: 'Shadcn Admin',
-      logo: Command,
-      plan: 'Vite + ShadcnUI',
+      name: 'iDoc Admin',
+      logo: Logo,
+      plan: 'Library Management',
     },
     {
       name: 'Acme Inc',

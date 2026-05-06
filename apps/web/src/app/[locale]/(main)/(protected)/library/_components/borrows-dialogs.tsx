@@ -128,7 +128,7 @@ export function BorrowsDialogs() {
             onOpenChange={(v) => setOpen(v ? 'extend' : null)}
             onSubmit={async (data) => {
               return toast.promise(
-                extendBorrowMut.mutateAsync({ id: currentRow.id, ...data }),
+                extendBorrowMut.mutateAsync({ id: currentRow.id, data }),
                 {
                   loading: t(keys.table.actions.extend.loading),
                   success: () => {
@@ -161,8 +161,8 @@ export function BorrowsDialogs() {
               const onSuccess = () => {
                 toast.success(
                   existingReview
-                    ? t(keys.table.actions.review.update.success)
-                    : t(keys.table.actions.review.create.success)
+                    ? t(keys.table.actions.review.messages.create.success)
+                    : t(keys.table.actions.review.messages.update.success)
                 );
                 setOpen(null);
                 setCurrentRow(null);
@@ -173,8 +173,8 @@ export function BorrowsDialogs() {
                 toast.error(
                   (error?.message as string) ||
                     (existingReview
-                      ? t(keys.table.actions.review.update.error)
-                      : t(keys.table.actions.review.create.error))
+                      ? t(keys.table.actions.review.messages.create.error)
+                      : t(keys.table.actions.review.messages.update.error))
                 );
               };
 
@@ -212,7 +212,7 @@ export function BorrowsDialogs() {
               if (isSubmitting) return;
               setIsSubmitting(true);
               try {
-                await toast.promise(returnBorrowMut.mutateAsync(currentRow.id), {
+                await toast.promise(returnBorrowMut.mutateAsync({ id: currentRow.id, data: undefined }), {
                   loading: t(keys.table.actions.return.loading),
                   success: () => {
                     setOpen(null);
@@ -228,7 +228,7 @@ export function BorrowsDialogs() {
             isLoading={isSubmitting}
             className='max-w-md'
             title={t(keys.table.actions.return.title, { borrowId: currentRow.id })}
-            desc={t.rich(keys.table.actions.return.desc, {
+            desc={t.rich(keys.table.actions.return.confirmDesc, {
               title: currentRow.book?.title || currentRow.id,
               strong: (chunks) => <strong>{chunks}</strong>,
               br: () => <br />,

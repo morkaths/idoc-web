@@ -1,78 +1,111 @@
 'use client';
 
-import { useTranslations, useLocale } from 'next-intl';
 import { useCategories } from '@/hooks/data/useCategory';
-import { Badge } from '@repo/ui/components/badge';
 import { Skeleton } from '@repo/ui/components/skeleton';
-import { InfiniteSlider } from '@repo/ui/components/infinite-slider';
 import Link from 'next/link';
-import { Book } from 'lucide-react';
-import { CATEGORY_ICONS, HOME_LIMITS } from './data/home-data';
-import type { CategoryResponse, CategoryTranslationResponse } from '@/types';
+import { ArrowRight, Book } from 'lucide-react';
+import type { CategoryTranslationResponse, CategoryResponse } from '@/types';
+import { cn } from '@repo/ui/lib/utils';
+import { useLocale as useLocaleIntl } from 'next-intl';
+import { useLocale, KEYS } from '@/hooks/ui/useLocale';
+import { Button } from '@repo/ui/components/button';
+import { CategoryIcons } from './data/category-data';
+
+const COLORS = [
+  'from-blue-500/20 to-indigo-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400',
+  'from-rose-500/20 to-pink-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400',
+  'from-amber-500/20 to-orange-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400',
+  'from-emerald-500/20 to-teal-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400',
+  'from-violet-500/20 to-purple-500/10 border-violet-500/20 text-violet-600 dark:text-violet-400',
+  'from-cyan-500/20 to-sky-500/10 border-cyan-500/20 text-cyan-600 dark:text-cyan-400',
+];
 
 export const CategoriesGrid = () => {
-  const t = useTranslations('home.categories');
-  const locale = useLocale();
-  const { data: categories, isLoading } = useCategories({ limit: HOME_LIMITS.CATEGORIES });
+  const { t, keys } = useLocale('home');
+  const locale = useLocaleIntl();
+  const { data: categories, isLoading } = useCategories({ limit: 11 });
 
   const items = categories?.data || [];
 
-  const renderCategoryBadge = (category: CategoryResponse) => {
-    const { translations, slug, id } = category;
-    const translation = translations?.find((tr: CategoryTranslationResponse) => tr.lang === locale) || translations?.[0];
-    const name = translation?.name || slug || 'Unnamed';
-
-    const slugKey = slug.charAt(0).toUpperCase() + slug.slice(1);
-    const Icon = CATEGORY_ICONS[name] || CATEGORY_ICONS[slugKey] || CATEGORY_ICONS[slug] || Book;
-
-    return (
-      <Link key={id} href={`/catalog?category=${id}`} className='group'>
-        <Badge 
-          variant='secondary' 
-          className='flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all duration-300 hover:scale-105 hover:bg-primary hover:text-primary-foreground hover:shadow-lg rounded-full border-none bg-muted/50 backdrop-blur-sm'
-        >
-          <Icon className='h-4 w-4 transition-transform group-hover:rotate-12' />
-          <span>{name}</span>
-        </Badge>
-      </Link>
-    );
+  const getSpan = (index: number) => {
+    if (index === 0) return 'md:col-span-2 md:row-span-2';
+    if (index === 3) return 'md:col-span-2';
+    if (index === 6) return 'md:row-span-2';
+    return '';
   };
 
-  // Split categories into two rows for a more dynamic look
-  const row1 = items.slice(0, Math.ceil(items.length / 2));
-  const row2 = items.slice(Math.ceil(items.length / 2));
-
   return (
-    <section className='container py-16 overflow-hidden'>
-      <div className='mb-10 flex flex-col items-center text-center space-y-3'>
-        <h2 className='text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent'>
-          {t('title')}
-        </h2>
-        <p className='text-muted-foreground max-w-2xl'>
-          {t('subtitle')}
-        </p>
+    <section className='container py-12'>
+      <div className='mb-8 flex items-end justify-between'>
+        <div className='flex flex-col space-y-2'>
+          <h2 className='text-3xl font-bold tracking-tight bg-gradient-to-br from-primary to-primary/60 bg-clip-text text-transparent'>
+            {t(keys.categories.title)}
+          </h2>
+          <p className='text-muted-foreground'>
+            {t(keys.categories.subtitle)}
+          </p>
+        </div>
+        <Button variant='ghost' className='text-primary font-semibold hover:bg-primary/5' asChild>
+          <Link href='/books'>
+            {t(KEYS.common.actions.viewAll)}
+            <ArrowRight className='ml-2 h-4 w-4' />
+          </Link>
+        </Button>
       </div>
 
       {isLoading ? (
-        <div className='flex gap-4 overflow-hidden py-4'>
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className='h-10 w-32 rounded-full' />
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className={cn('h-40', i === 1 ? 'md:col-span-2 md:row-span-2 h-auto' : '')} />
           ))}
         </div>
       ) : items.length > 0 ? (
-        <div className='flex flex-col gap-6'>
-          <InfiniteSlider gap={16} speed={30} reverse={false}>
-            {row1.map(renderCategoryBadge)}
-          </InfiniteSlider>
-          {row2.length > 0 && (
-            <InfiniteSlider gap={16} speed={35} reverse={true}>
-              {row2.map(renderCategoryBadge)}
-            </InfiniteSlider>
-          )}
+        <div className='grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] gap-4 md:gap-6'>
+          {items.map((category: CategoryResponse, index: number) => {
+            const { translations, slug, id } = category;
+            const translation = translations?.find((tr: CategoryTranslationResponse) => tr.lang === locale) || translations?.[0];
+            const name = translation?.name || slug || 'Unnamed';
+            const description = translation?.description;
+
+            const Icon = CategoryIcons[slug] || Book;
+            const colorClass = COLORS[index % COLORS.length];
+            const spanClass = getSpan(index);
+
+            return (
+              <Link
+                key={id}
+                href={`/catalog?category=${id}`}
+                className={cn(
+                  'group relative overflow-hidden border bg-gradient-to-br transition-all duration-300',
+                  'hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02]',
+                  colorClass,
+                  spanClass
+                )}
+              >
+                <div className='absolute inset-0 bg-background/40 backdrop-blur-[2px] transition-colors group-hover:bg-transparent' />
+
+                <div className='relative h-full p-6 md:p-8 flex flex-col justify-between z-10'>
+                  <div className='space-y-1'>
+                    <h3 className='text-xl md:text-2xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary flex items-center gap-3'>
+                      <Icon className='h-6 w-6 shrink-0' />
+                      {name}
+                    </h3>
+                    <p className='text-sm text-muted-foreground/80 font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300 line-clamp-2'>
+                      {description || t(keys.categories.description)}
+                    </p>
+                  </div>
+                </div>
+
+                <Icon className='absolute -bottom-8 -right-8 h-32 w-32 opacity-[0.03] transition-all duration-700 group-hover:opacity-[0.08] group-hover:scale-125 group-hover:-rotate-12' />
+              </Link>
+            );
+          })}
         </div>
       ) : (
-        <div className='flex h-[150px] items-center justify-center rounded-2xl border-2 border-dashed bg-muted/30'>
-          <p className='text-muted-foreground'>{t('empty')}</p>
+        <div className='flex h-[200px] items-center justify-center border-2 border-dashed'>
+          <p className='text-muted-foreground'>
+            {t(keys.categories.empty)}
+          </p>
         </div>
       )}
     </section>

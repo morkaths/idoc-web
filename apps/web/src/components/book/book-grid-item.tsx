@@ -68,7 +68,7 @@ export function BookGridItem({
     <>
       <div
         onClick={onClick}
-        className="group relative flex flex-col w-full max-w-[240px] bg-white dark:bg-zinc-900 rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-zinc-800 h-full"
+        className="group relative flex flex-col w-full max-w-[240px] bg-white dark:bg-zinc-900 rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-zinc-800 h-full"
         role="button"
         tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'Enter') onClick?.(); }}
@@ -76,7 +76,7 @@ export function BookGridItem({
         {/* Top Background Pattern */}
         <div className="h-32 w-full bg-primary/10 dark:bg-primary/10" />
 
-        <div className="relative px-2 sm:px-4 -mt-24 flex justify-center z-10 w-full transition-transform duration-300 group-hover:-translate-y-2">
+        <div className="relative px-2 sm:px-4 -mt-24 flex justify-center z-10 w-full transition-transform duration-500">
           {!imageError && book.coverUrl ? (
             <BookCover3d
               src={book.coverUrl}
@@ -85,7 +85,7 @@ export function BookGridItem({
               className="drop-shadow-[0_12px_24px_rgba(0,0,0,0.3)]"
             />
           ) : (
-            <div className="relative w-28 sm:w-36 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden bg-muted/20 dark:bg-zinc-800/50 flex items-center justify-center p-3 text-center">
+            <div className="relative w-28 sm:w-36 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden bg-muted/20 dark:bg-zinc-800/50 flex items-center justify-center p-3 text-center transition-transform duration-500 group-hover:scale-105 group-hover:rotate-1">
               <span className="font-medium text-xs sm:text-sm line-clamp-4 leading-tight opacity-60 break-words w-full px-2">
                 {book.title}
               </span>

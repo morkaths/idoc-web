@@ -35,7 +35,7 @@ export const useBorrows = (
  * @param options Query options
  */
 export const useBorrowHistory = (
-  params: PageParams = {},
+  params: FindParams = {},
   options?: ListQueryOptions<BorrowResponse>
 ) => {
   return useListQuery<BorrowResponse>(

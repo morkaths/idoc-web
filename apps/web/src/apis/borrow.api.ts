@@ -5,7 +5,7 @@ import type {
   RenewBorrowRequest,
   ApiResponse,
   PageResponse,
-  PageParams,
+  FindParams,
 } from '../types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
@@ -22,7 +22,7 @@ export const BorrowApi = {
   ...factory,
 
   history: async (
-    params?: PageParams
+    params?: FindParams & { item?: string; status?: string }
   ): Promise<ApiResponse<PageResponse<BorrowResponse>>> => {
     return ApiClient.get<PageResponse<BorrowResponse>>(
       ApiEndpoint.endpoints.borrows.history(),

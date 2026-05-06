@@ -50,6 +50,7 @@ const BookCover3d = ({
           !shouldReduceMotion && [
             "transition-transform duration-500 ease-out",
             "hover:[transform:rotateY(-25deg)_rotateX(5deg)_scale(1.05)]",
+            "group-hover:[transform:rotateY(-25deg)_rotateX(5deg)_scale(1.05)]",
           ]
         )}
         style={{

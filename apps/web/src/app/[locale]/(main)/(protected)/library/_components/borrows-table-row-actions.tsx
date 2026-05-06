@@ -19,7 +19,7 @@ type BorrowsTableRowActionsProps<TData> = {
 };
 
 export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsProps<TData>) {
-  const { t, keys } = useLocale('library');
+  const { t, KEYS } = useLocale('library');
   const borrow = row.original as unknown as BorrowResponse;
 
   const ctx = useBorrowsContext();
@@ -45,7 +45,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               }
             }}
           >
-            {t(keys.table.actions.view.label)}
+            {t(KEYS.common.actions.view)}
             <span className='ml-auto'>
               <Eye />
             </span>
@@ -56,7 +56,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               setOpen('review');
             }}
           >
-            {t(keys.table.actions.review.label)}
+            {t(KEYS.common.actions.review)}
             <span className='ml-auto'>
               <Star size={16} />
             </span>
@@ -67,7 +67,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               setOpen('history');
             }}
           >
-            {t(keys.table.actions.history.label)}
+            {t(KEYS.common.actions.history)}
             <span className='ml-auto'>
               <History size={16} />
             </span>
@@ -78,7 +78,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               setOpen('extend');
             }}
           >
-            {t(keys.table.actions.extend.label)}
+            {t(KEYS.common.actions.extend)}
             <span className='ml-auto'>
               <Clock size={16} />
             </span>
@@ -93,7 +93,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               setOpen('return');
             }}
           >
-            {t(keys.table.actions.return.label)}
+            {t(KEYS.common.actions.return)}
             <span className='ml-auto'>
               <Undo2 size={16} />
             </span>

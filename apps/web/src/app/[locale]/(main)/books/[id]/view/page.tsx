@@ -9,6 +9,7 @@ import { useFile, useViewUrl } from '@/hooks/data/useFile';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import { FileViewer } from '@/components/viewers/file-viewer';
+import { BorrowStatus, FilterOperator, SortDirection } from '@/types';
 
 export default function BookViewPage() {
   const { t, keys } = useLocale('view');
@@ -19,9 +20,13 @@ export default function BookViewPage() {
   const { data: file, isLoading: fileLoading } = useFile(book?.fileId || '');
   const { data: borrows, isLoading: borrowsLoading } = useBorrowHistory(
     {
-      item: params.id,
-      status: 'active',
+      page: 1,
       limit: 1,
+      filters: [
+        { field: 'book.id', operator: FilterOperator.EQ, value: params.id },
+        { field: 'status', operator: FilterOperator.EQ, value: BorrowStatus.BORROWED },
+      ],
+      sorts: [{ field: 'createdAt', direction: SortDirection.DESC }],
     },
     { enabled: !!session?.user }
   );

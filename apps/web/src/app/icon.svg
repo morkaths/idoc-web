@@ -8,7 +8,7 @@
     }
   </style>
   <defs>
-    <mask id='logo-mask-favicon-admin'>
+    <mask id='logo-mask'>
       <rect width='64' height='64' fill='white' />
       <rect x='22' y='14' width='36' height='36' rx='6' fill='black' />
     </mask>
@@ -22,7 +22,7 @@
     rx='6'
     stroke-opacity='0.4'
     stroke-width='3'
-    mask='url(#logo-mask-favicon-admin)'
+    mask='url(#logo-mask)'
   />
   <rect
     class='icon-color'

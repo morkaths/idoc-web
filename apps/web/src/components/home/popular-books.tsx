@@ -1,6 +1,5 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { BookGridItem } from '@/components/book/book-grid-item';
 import { Skeleton } from '@repo/ui/components/skeleton';
 import { Button } from '@repo/ui/components/button';
@@ -14,9 +13,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@repo/ui/components/carousel';
+import { useLocale, KEYS } from '@/hooks/ui/useLocale';
 
 export const PopularBooks = () => {
-  const t = useTranslations('home.popular');
+  const { t, keys } = useLocale('home');
   const { data: booksResponse, isLoading } = useBooks();
   const books = booksResponse?.data;
 
@@ -24,12 +24,13 @@ export const PopularBooks = () => {
     <section className='container py-12'>
       <div className='mb-8 flex items-end justify-between'>
         <div className='flex flex-col space-y-2'>
-          <h2 className='text-3xl font-bold tracking-tight'>{t('title')}</h2>
-          <p className='text-muted-foreground'>{t('subtitle')}</p>
+          <h2 className='text-3xl font-bold tracking-tight bg-gradient-to-br from-primary to-primary/60 bg-clip-text text-transparent'>{t(keys.popular.title)}</h2>
+          <p className='text-muted-foreground'>{t(keys.popular.subtitle)}</p>
         </div>
         <Button variant='ghost' className='text-primary font-semibold hover:bg-primary/5' asChild>
           <Link href='/books'>
-            {t('viewAll')} <ArrowRight className='ml-2 h-4 w-4' />
+            {t(KEYS.common.actions.viewAll)}
+            <ArrowRight className='ml-2 h-4 w-4' />
           </Link>
         </Button>
       </div>
@@ -70,7 +71,9 @@ export const PopularBooks = () => {
         </Carousel>
       ) : (
         <div className='flex h-[200px] items-center justify-center rounded-xl border-2 border-dashed'>
-          <p className='text-muted-foreground'>{t('empty')}</p>
+          <p className='text-muted-foreground'>
+            {t(keys.popular.empty)}
+          </p>
         </div>
       )}
     </section>

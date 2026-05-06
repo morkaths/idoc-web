@@ -1,0 +1,38 @@
+import {
+  Book,
+  Sparkles,
+  Ghost,
+  Search,
+  Zap,
+  ShieldAlert,
+  Users,
+  Heart,
+  Baby,
+  History,
+  Scroll,
+  User,
+  Image,
+  Layout,
+  FileText,
+  Feather,
+  type LucideIcon
+} from 'lucide-react';
+
+export const CategoryIcons: Record<string, LucideIcon> = {
+  'fiction': Book,
+  'fantasy': Sparkles,
+  'paranormal': Ghost,
+  'mystery': Search,
+  'thriller': Zap,
+  'crime': ShieldAlert,
+  'young-adult': Users,
+  'romance': Heart,
+  'children': Baby,
+  'history': History,
+  'historical-fiction': Scroll,
+  'biography': User,
+  'comics': Image,
+  'graphic': Layout,
+  'non-fiction': FileText,
+  'poetry': Feather,
+};

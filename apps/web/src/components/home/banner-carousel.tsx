@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { useTranslations } from 'next-intl';
 import {
   Carousel,
   CarouselContent,
@@ -19,9 +18,10 @@ import Autoplay from 'embla-carousel-autoplay';
 import { motion } from 'framer-motion';
 import { useBooks } from '@/hooks/data/useBook';
 import BookCover3d from '@repo/ui/components/book-cover-3d';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 export const BannerCarousel = () => {
-  const t = useTranslations('home');
+  const { t, keys } = useLocale('home');
   const { data: booksResponse, isLoading } = useBooks();
   const books = booksResponse?.data;
   const [api, setApi] = React.useState<CarouselApi>();
@@ -128,20 +128,24 @@ export const BannerCarousel = () => {
                           {book.title}
                         </h2>
                         <p className='text-sm md:text-xl text-white/70 line-clamp-2 md:line-clamp-3 font-medium max-w-xl leading-relaxed'>
-                          {book.description || t('banner.descriptionFallback')}
+                          {book.description || t(keys.banner.descriptionFallback)}
                         </p>
                       </div>
 
                       <div className='flex flex-wrap items-center gap-6 pt-4'>
-                        <Button size='lg' className='rounded-full h-12 md:h-14 px-8 md:px-12 bg-white text-black hover:bg-white/90 font-bold group text-sm md:text-base shadow-2xl transition-all hover:scale-105 active:scale-95' asChild>
+                        <Button size='lg' className='rounded-full h-12 md:h-14 px-8 md:px-12 bg-white text-black hover:bg-white/90 font-bold group text-sm md:text-base shadow-2xl transition-all' asChild>
                           <Link href={`/books/${book.id}`}>
-                            {t('banner.readNow')}
+                            {t(keys.actions.readNow)}
                             <ArrowRight className='ml-2 h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-1' />
                           </Link>
                         </Button>
                         <div className='flex flex-col'>
-                          <span className='text-[10px] uppercase tracking-widest text-white/40 font-bold'>{t('banner.author')}</span>
-                          <span className='text-sm md:text-lg font-bold text-white/90 line-clamp-1'>{book.authors?.[0]?.name || t('banner.unknownAuthor')}</span>
+                          <span className='text-[10px] uppercase tracking-widest text-white/40 font-bold'>
+                            {t(keys.banner.author)}
+                          </span>
+                          <span className='text-sm md:text-lg font-bold text-white/90 line-clamp-1'>
+                            {book.authors?.[0]?.name || t(keys.banner.unknownAuthor)}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
@@ -155,7 +159,7 @@ export const BannerCarousel = () => {
                       <BookCover3d
                         src={book.coverUrl || '/placeholder-book.jpg'}
                         title={book.title}
-                        width={240}
+                        width={200}
                         className='drop-shadow-[0_25px_25px_rgba(0,0,0,0.5)]'
                       />
                       <motion.div

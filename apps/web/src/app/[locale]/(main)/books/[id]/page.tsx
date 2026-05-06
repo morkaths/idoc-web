@@ -9,7 +9,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   try {
     const { id } = await params;
-    const book = await BookApi.findById(id);
+    const response = await BookApi.findById(id);
+    const book = response.data;
     if (!book) {
       return {
         title: 'Book not found',

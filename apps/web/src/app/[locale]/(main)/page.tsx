@@ -15,7 +15,6 @@ export default function Home() {
     <BookmarkProvider>
       <div className='flex flex-col pb-20'>
         <BannerCarousel />
-        
         <div className='space-y-6 md:space-y-12'>
           <RecommendationCarousel />
           <PopularBooks />

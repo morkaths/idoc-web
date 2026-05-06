@@ -14,7 +14,12 @@
       "next": "次へ",
       "previous": "前へ",
       "view": "表示",
-      "toggleColumns": "列の切り替え"
+      "viewAll": "すべて表示",
+      "viewDetails": "詳細を表示",
+      "submit": "送信",
+      "reset": "リセット",
+      "backToHome": "ホームに戻る",
+      "goBack": "戻る"
     },
     "table": {
       "asc": "昇順",

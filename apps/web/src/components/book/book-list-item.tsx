@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { AppImage as Image } from "../app-image";
 import { Icon } from '@iconify/react';
 import { type BookResponse } from "@/types";
 import { cn } from "@/lib/utils";
@@ -10,6 +9,7 @@ import { useLocale } from '@/hooks/ui/useLocale';
 import { useBookmarkContext } from './bookmark-provider';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import BookCover3d from '@repo/ui/components/book-cover-3d';
 
 type BookListItemProps = {
   book: BookResponse;
@@ -21,7 +21,7 @@ export function BookListItem({ book, onClick, className }: BookListItemProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const { t, keys } = useLocale('books');
-  const [imageError, setImageError] = useState(false);
+  const [imageError] = useState(false);
   const [localBookmarkId, setLocalBookmarkId] = useState<string | undefined | null>(null);
   const bookmarkId = localBookmarkId !== null ? localBookmarkId : book.bookmarkId;
   const isBookmarked = !!bookmarkId;
@@ -71,24 +71,20 @@ export function BookListItem({ book, onClick, className }: BookListItemProps) {
     >
       {/* Left Accent Area with Book Cover - Synced with BookGridItem Primary */}
       <div className="relative w-32 sm:w-40 shrink-0 bg-primary/10 dark:bg-primary/10 flex items-center justify-center p-3 sm:p-4">
-        <div className="relative w-24 sm:w-28 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.1)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden transition-transform duration-300 group-hover:-translate-y-1 bg-white dark:bg-zinc-800">
-          {!imageError && book.coverUrl ? (
-            <Image
-              src={book.coverUrl}
-              alt={book.title}
-              fill
-              className="object-cover"
-              sizes="150px"
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center p-3 text-center bg-muted/20 dark:bg-zinc-800/50">
-              <span className="font-medium text-xs sm:text-sm line-clamp-4 leading-tight opacity-60 break-words w-full px-2">
-                {book.title}
-              </span>
-            </div>
-          )}
-        </div>
+        {!imageError && book.coverUrl ? (
+          <BookCover3d
+            src={book.coverUrl}
+            title={book.title}
+            width={110}
+            className="drop-shadow-[0_8px_16px_rgba(0,0,0,0.2)] dark:drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)]"
+          />
+        ) : (
+          <div className="relative w-24 sm:w-28 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.1)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden bg-white dark:bg-zinc-800 flex items-center justify-center p-3 text-center transition-transform duration-300 group-hover:-translate-y-1">
+            <span className="font-medium text-xs sm:text-sm line-clamp-4 leading-tight opacity-60 break-words w-full px-2">
+              {book.title}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content Area */}
