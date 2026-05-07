@@ -4,7 +4,12 @@ import type { UserResponse, UserRequest, ApiResponse } from '../types';
 import { apiFactory } from './factory';
 
 const factory = apiFactory<UserResponse, UserRequest>(
-  ApiEndpoint.endpoints.users
+  ApiEndpoint.endpoints.users,
+  {
+    find: 'public',
+    findById: 'public',
+    search: 'public',
+  }
 );
 
 export const UserApi = {

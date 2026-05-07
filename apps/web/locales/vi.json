@@ -53,7 +53,9 @@
       "last": "Trang cuối",
       "next": "Trang sau",
       "previous": "Trang trước"
-    }
+    },
+    "item": "mục",
+    "items": "tác phẩm"
   },
   "theme": {
     "title": "Cài đặt giao diện",
@@ -695,6 +697,29 @@
       "subtitle": "Tìm cuốn sách yêu thích tiếp theo trong bộ sưu tập đa dạng của chúng tôi",
       "browseCollection": "Khám phá bộ sưu tập",
       "empty": "Không tìm thấy thể loại nào."
+    },
+    "newArrivals": {
+      "title": "Sách mới cập nhật",
+      "subtitle": "Khám phá những tựa sách mới nhất vừa cập bến thư viện",
+      "empty": "Chưa có sách mới nào."
+    },
+    "featuredAuthors": {
+      "title": "Tác giả tiêu biểu",
+      "subtitle": "Gặp gỡ những cây bút tài năng đằng sau những tác phẩm vĩ đại",
+      "empty": "Chưa có tác giả nổi bật nào."
+    },
+    "stats": {
+      "title": "iDoc qua những con số",
+      "subtitle": "Một cộng đồng ngày càng lớn mạnh của những người yêu sách và tìm kiếm tri thức",
+      "books": "Số sách",
+      "authors": "Số tác giả",
+      "users": "Số độc giả",
+      "borrows": "Lượt mượn"
+    },
+    "cta": {
+      "title": "Bắt đầu hành trình đọc sách của bạn",
+      "subtitle": "Tham gia cộng đồng iDoc ngay hôm nay để truy cập hàng ngàn đầu sách và nhận đề xuất cá nhân hóa.",
+      "action": "Đăng ký ngay"
     }
   }
 }

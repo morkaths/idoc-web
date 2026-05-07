@@ -4,6 +4,10 @@ import { BannerCarousel } from '@/components/home/banner-carousel';
 import { RecommendationCarousel } from '@/components/home/recommendation-carousel';
 import { PopularBooks } from '@/components/home/popular-books';
 import { CategoriesGrid } from '@/components/home/categories-grid';
+import { NewArrivals } from '@/components/home/new-arrivals';
+import { FeaturedAuthors } from '@/components/home/featured-authors';
+import { StatsSection } from '@/components/home/stats-section';
+import { CTASection } from '@/components/home/cta-section';
 
 export const metadata: Metadata = {
   title: 'Home',
@@ -15,10 +19,14 @@ export default function Home() {
     <BookmarkProvider>
       <div className='flex flex-col pb-20'>
         <BannerCarousel />
-        <div className='space-y-6 md:space-y-12'>
+        <div className='space-y-12 md:space-y-24'>
           <RecommendationCarousel />
           <PopularBooks />
+          <NewArrivals />
           <CategoriesGrid />
+          <FeaturedAuthors />
+          <StatsSection />
+          <CTASection />
         </div>
       </div>
     </BookmarkProvider>

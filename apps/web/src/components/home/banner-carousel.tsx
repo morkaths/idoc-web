@@ -72,7 +72,7 @@ export const BannerCarousel = () => {
               className='pl-4 md:pl-8 basis-[94%] md:basis-[85%] lg:basis-[75%] xl:basis-[65%]'
             >
               <div className={cn(
-                'relative h-[350px] md:h-[450px] lg:h-[500px] w-full overflow-hidden rounded-[3rem] transition-all duration-1000 ease-in-out select-none',
+                'relative h-[350px] md:h-[450px] lg:h-[500px] w-full overflow-hidden transition-all duration-1000 ease-in-out select-none',
                 current === index
                   ? 'scale-100 translate-y-0 opacity-100 shadow-[0_40px_80px_-15px_rgba(var(--primary-rgb),0.3),0_20px_40px_-10px_rgba(0,0,0,0.5)] z-20 ring-2 ring-white/30'
                   : 'scale-[0.85] translate-y-8 opacity-40 blur-[2px] z-0 grayscale contrast-75'

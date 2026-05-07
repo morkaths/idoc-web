@@ -1,5 +1,5 @@
 import {
-  Book,
+  Library,
   Sparkles,
   Ghost,
   Search,
@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 export const CategoryIcons: Record<string, LucideIcon> = {
-  'fiction': Book,
+  'fiction': Library,
   'fantasy': Sparkles,
   'paranormal': Ghost,
   'mystery': Search,

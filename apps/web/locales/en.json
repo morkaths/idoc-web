@@ -732,6 +732,29 @@
       "subtitle": "Find your next favorite read in our diverse collection",
       "description": "Discover a world of knowledge and imagination through our extensive collection of books across various categories.",
       "empty": "No categories found."
+    },
+    "newArrivals": {
+      "title": "New Arrivals",
+      "subtitle": "Discover the latest titles that have just arrived in our library",
+      "empty": "No new books available yet."
+    },
+    "featuredAuthors": {
+      "title": "Featured Authors",
+      "subtitle": "Meet the talented writers behind the great works",
+      "empty": "No featured authors available yet."
+    },
+    "stats": {
+      "title": "iDoc by the Numbers",
+      "subtitle": "A growing community of readers and knowledge seekers",
+      "books": "Books",
+      "authors": "Authors",
+      "users": "Readers",
+      "borrows": "Borrows"
+    },
+    "cta": {
+      "title": "Start Your Reading Journey",
+      "subtitle": "Join the iDoc community today to access thousands of books and get personalized recommendations.",
+      "action": "Sign Up Now"
     }
   }
 }

@@ -3,7 +3,7 @@
 import { useCategories } from '@/hooks/data/useCategory';
 import { Skeleton } from '@repo/ui/components/skeleton';
 import Link from 'next/link';
-import { ArrowRight, Book } from 'lucide-react';
+import { ArrowRight, Book, LayoutGrid } from 'lucide-react';
 import type { CategoryTranslationResponse, CategoryResponse } from '@/types';
 import { cn } from '@repo/ui/lib/utils';
 import { useLocale as useLocaleIntl } from 'next-intl';
@@ -38,9 +38,12 @@ export const CategoriesGrid = () => {
     <section className='container py-12'>
       <div className='mb-8 flex items-end justify-between'>
         <div className='flex flex-col space-y-2'>
-          <h2 className='text-3xl font-bold tracking-tight bg-gradient-to-br from-primary to-primary/60 bg-clip-text text-transparent'>
-            {t(keys.categories.title)}
-          </h2>
+          <div className='flex items-center gap-2'>
+            <LayoutGrid className='h-5 w-5 text-primary' />
+            <h2 className='text-3xl font-bold tracking-tight bg-gradient-to-br from-primary to-primary/60 bg-clip-text text-transparent'>
+              {t(keys.categories.title)}
+            </h2>
+          </div>
           <p className='text-muted-foreground'>
             {t(keys.categories.subtitle)}
           </p>
