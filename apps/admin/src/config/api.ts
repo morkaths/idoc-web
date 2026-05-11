@@ -13,6 +13,24 @@ const crud = (path: string) => ({
   deleteMany: (ids: readonly string[]) => `${path}/bulk?ids=${ids.join(',')}`,
 });
 
+export const AgentEndpoint = {
+  meta: {
+    baseURL: env.agent.url,
+    timeout: 15_000,
+  },
+  endpoints: {
+    recommendations: {
+      sync: () => '/recommendations/sync',
+      train: () => '/recommendations/train',
+      evaluate: (strategy: string) => `/recommendations/evaluate/${strategy}`,
+      popular: () => '/recommendations/popular',
+      similar: (bookId: string) => `/recommendations/similar/${bookId}`,
+      recommend: (userId: string, strategy: string) =>
+        `/recommendations/${userId}?strategy=${strategy}`,
+    },
+  },
+} as const;
+
 export const ApiEndpoint = {
   meta: {
     baseURL: env.api.url,

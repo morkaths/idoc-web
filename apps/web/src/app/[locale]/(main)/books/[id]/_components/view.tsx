@@ -9,6 +9,7 @@ import { Bookmark, Plus, BookX } from 'lucide-react';
 import { toast } from 'sonner';
 import { useBook } from '@/hooks/data/useBook';
 import { useCreateBorrow } from '@/hooks/data/useBorrow';
+import { useSimilarBooks } from '@/hooks/data/useRecommendation';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Badge } from '@repo/ui/components/badge';
 import { Button } from '@repo/ui/components/button';
@@ -16,6 +17,7 @@ import { Skeleton } from '@repo/ui/components/skeleton';
 import { BookTabs } from './book-tabs';
 import { BorrowBookDialog } from './borrow-book-dialog';
 import { AddBookmarkDialog } from './add-bookmark-dialog';
+import { RecommendationRow } from '@/components/recommendation/recommendation-row';
 import BookCover3d from '@repo/ui/components/book-cover-3d';
 
 interface BookDetailViewProps {
@@ -156,6 +158,7 @@ export function BookDetailView({ id }: BookDetailViewProps) {
   const [openBorrow, setOpenBorrow] = useState(false);
   const [openAddToFolder, setOpenAddToFolder] = useState(false);
   const createBorrowMut = useCreateBorrow();
+  const { data: similarBooks, isLoading: isLoadingSimilar } = useSimilarBooks(id);
 
   if (isLoading) return <BookDetailSkeleton key='skeleton' />;
   if (error || !book) return <BookDetailError key='error' />;
@@ -259,6 +262,15 @@ export function BookDetailView({ id }: BookDetailViewProps) {
       {/* Tabs */}
       <div className='mx-auto mt-6 max-w-5xl px-4 md:mt-10'>
         <BookTabs book={book as BookResponse} />
+      </div>
+
+      {/* Similar Books */}
+      <div className='mx-auto mt-12 max-w-5xl px-4'>
+        <RecommendationRow
+          title={t(keys.tabs.similar.label)}
+          books={similarBooks}
+          isLoading={isLoadingSimilar}
+        />
       </div>
     </div>
   );

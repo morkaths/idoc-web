@@ -6,85 +6,42 @@ import { RecommendationApi } from '@/apis/recommendation.api';
 import {
   RecommendationStrategy,
   type BookmarkResponse,
-  type RecommendationRequest,
+  type RecommendationResponse,
   type RecommendedBookResponse,
 } from '@/types';
 import { useItemQuery } from './factory';
 
-/**
- * Options for the recommendation hooks.
- */
-export interface UseRecommendationsOptions extends RecommendationRequest {
-  enabled?: boolean;
-}
-
-/**
- * Two-step hook for personalized book recommendations.
- *
- * Step 1: Call Python Agent → get [ { id, score, reason } ]
- * Step 2: Call Java Server with those IDs → get full BookResponse[]
- * Step 3: Merge score/reason + enrich with bookmark status
- *
- * @param userId - Current user's ID (skip query if undefined)
- * @param options - Strategy and enabled flag
- */
-export const useRecommendations = (
-  userId: string | undefined,
-  options?: UseRecommendationsOptions
+const useEnrichedBooks = (
+  recData: RecommendationResponse | null,
+  isLoadingRec: boolean,
+  isErrorRec: boolean
 ) => {
-  const { strategy = RecommendationStrategy.HYBRID, enabled = true } = options ?? {};
   const { data: session, status: authStatus } = useSession();
 
-  // --- Step 1: Agent call — get IDs with scores ---
-  const {
-    data: recData,
-    isLoading: recLoading,
-    isError: recError,
-  } = useItemQuery(
-    ['recommendations', userId, strategy],
-    () => RecommendationApi.getForUser(userId!, strategy),
-    {
-      enabled: !!userId && enabled,
-      staleTime: 5 * 60 * 1000,
-    }
-  );
+  const bookIds = useMemo(() => recData?.items?.map((item) => item.id) ?? [], [recData]);
 
-  const bookIds = useMemo(
-    () => recData?.items?.map((item) => item.id) ?? [],
-    [recData]
-  );
-
-  // --- Step 2: Java Server call — get full book data ---
-  const {
-    data: booksData,
-    isLoading: booksLoading,
-    isError: booksError,
-  } = useItemQuery(
+  const { data: booksData, isLoading: isLoadingBooks, isError: isErrorBooks } = useItemQuery(
     ['books', 'by-ids-rec', bookIds],
     () => BookApi.findByIds(bookIds),
     {
       enabled: bookIds.length > 0,
-      staleTime: 5 * 60 * 1000,
+      staleTime: 5 * 60 * 1000
     }
   );
 
-  const userId2 = session?.user?.id;
-
-  // --- Step 3a: Get bookmark status for these books ---
+  const currentUserId = session?.user?.id;
   const { data: bookmarkData } = useItemQuery<Record<string, BookmarkResponse>>(
-    ['bookmarks', 'status', bookIds, userId2],
+    ['bookmarks', 'status', bookIds, currentUserId],
     () => BookmarkApi.status(bookIds),
     {
-      enabled: bookIds.length > 0 && authStatus === 'authenticated' && !!userId2,
-      staleTime: 5 * 60 * 1000,
+      enabled: bookIds.length > 0 && authStatus === 'authenticated' && !!currentUserId,
+      staleTime: 5 * 60 * 1000
     }
   );
 
-  // --- Step 3b: Merge score + reason + bookmark into final list ---
-  const enrichedBooks = useMemo<RecommendedBookResponse[]>(() => {
+  const data = useMemo<RecommendedBookResponse[]>(() => {
     if (!booksData || !Array.isArray(booksData)) return [];
 
-    // Build lookup map: bookId → { score, reason }
     const recMap = new Map(recData?.items?.map((i) => [i.id, i]) ?? []);
 
     return booksData
@@ -94,52 +51,52 @@ export const useRecommendations = (
         reason: recMap.get(book.id)?.reason,
         bookmarkId: bookmarkData?.[book.id]?.id ?? book.bookmarkId,
       }))
-      // Sort by relevance score descending
       .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
   }, [booksData, recData, bookmarkData]);
 
   return {
-    data: enrichedBooks,
-    isLoading: recLoading || booksLoading,
-    isError: recError || booksError,
+    data,
+    isLoading: isLoadingRec || isLoadingBooks,
+    isError: isErrorRec || isErrorBooks,
     strategy: recData?.strategy,
   };
 };
 
-
-/**
- * Popularity-based fallback for unauthenticated users.
- * Calls the Agent with strategy='popularity' then fetches book details.
- */
-export const usePopularBooks = (options?: { enabled?: boolean }) => {
-  // data is RecommendationResponse | null
-  const { data: recData, isLoading: recLoading } = useItemQuery(
-    ['recommendations', 'anonymous', 'popularity'],
-    () => RecommendationApi.getForUser('anonymous', RecommendationStrategy.POPULARITY),
+export const useRecommendations = (
+  userId: string | undefined,
+  strategy: RecommendationStrategy = RecommendationStrategy.HYBRID
+) => {
+  const { data, isLoading, isError } = useItemQuery(
+    ['recommendations', userId, strategy],
+    () => RecommendationApi.getForUser(userId!, strategy),
     {
-      enabled: options?.enabled !== false,
-      staleTime: 10 * 60 * 1000,
+      enabled: !!userId,
+      staleTime: 5 * 60 * 1000
     }
   );
 
-  const bookIds = useMemo(
-    () => recData?.items?.map((item) => item.id) ?? [],
-    [recData]
+  return useEnrichedBooks(data, isLoading, isError);
+};
+
+export const usePopularBooks = () => {
+  const { data, isLoading, isError } = useItemQuery(
+    ['recommendations', 'popular'],
+    () => RecommendationApi.getPopular(),
+    { staleTime: 10 * 60 * 1000 }
   );
 
-  // data is BookResponse[] | null
-  const { data: booksData, isLoading: booksLoading } = useItemQuery(
-    ['books', 'popular-rec', bookIds],
-    () => BookApi.findByIds(bookIds),
+  return useEnrichedBooks(data, isLoading, isError);
+};
+
+export const useSimilarBooks = (bookId: string | undefined) => {
+  const { data, isLoading, isError } = useItemQuery(
+    ['recommendations', 'similar', bookId],
+    () => RecommendationApi.getSimilar(bookId!),
     {
-      enabled: bookIds.length > 0,
-      staleTime: 10 * 60 * 1000,
+      enabled: !!bookId,
+      staleTime: 30 * 60 * 1000
     }
   );
 
-  return {
-    data: (booksData as RecommendedBookResponse[] | null) ?? [],
-    isLoading: recLoading || booksLoading,
-  };
-
+  return useEnrichedBooks(data, isLoading, isError);
 };

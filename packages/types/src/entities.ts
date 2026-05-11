@@ -167,9 +167,9 @@ export interface PresignedUploadResponse {
 
 export interface RecommendationItem {
   id: string;
-  title: string;
   score: number;
-  reason: string;
+  reason?: string;
+  predictedRating?: number;
 }
 
 export interface RecommendationResponse {
@@ -181,6 +181,49 @@ export interface RecommendationResponse {
 export interface RecommendedBookResponse extends BookResponse {
   score?: number;
   reason?: string;
+}
+
+// --- Agent Tasks & Evaluation ---
+
+export interface RecommendationSyncResponse {
+  count: number;
+}
+
+export interface RecommendationTrainResponse {
+  [key: string]: any;
+}
+
+export interface RecommendationEvaluationMetrics {
+  precisionAtK: number;
+  recallAtK: number;
+  ndcgAtK: number;
+  mrr: number;
+  mae: number;
+  rmse: number;
+  hitRate: number;
+}
+
+export interface RecommendationSparsityAnalysis {
+  frequencyBuckets: {
+    bucketName: string;
+    userCount: number;
+    precisionAtK: number;
+    recallAtK: number;
+    ndcgAtK: number;
+  }[];
+  longTailMetrics?: RecommendationEvaluationMetrics;
+  cfOnlyMetrics?: RecommendationEvaluationMetrics;
+  hybridMetrics?: RecommendationEvaluationMetrics;
+  deltaNdcg?: number;
+  deltaRmse?: number;
+}
+
+export interface RecommendationEvaluationResponse {
+  strategy: RecommendationStrategy;
+  metrics: RecommendationEvaluationMetrics;
+  sampleSize: number;
+  k: number;
+  sparsityAnalysis?: RecommendationSparsityAnalysis;
 }
 
 

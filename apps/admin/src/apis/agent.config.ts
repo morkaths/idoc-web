@@ -5,7 +5,6 @@ import type { ApiResponse } from '@/types';
 /**
  * Dedicated Axios instance for Python AI Agent service.
  * Uses a separate baseURL and longer timeout for ML inference.
- * No auth header required — agent is an internal service.
  */
 const agentAxios = axios.create({
   baseURL: AgentEndpoint.meta.baseURL,
@@ -16,14 +15,9 @@ const agentAxios = axios.create({
 });
 
 /**
- * Lightweight agent API client.
+ * Lightweight agent API client for Admin app.
  */
 export const AgentClient = {
-  /**
-   * Generic GET request with retry logic.
-   * @param url API endpoint
-   * @param options Axios request options
-   */
   async get<T>(url: string, options?: { params?: Record<string, unknown> }): Promise<ApiResponse<T>> {
     try {
       const response = await agentAxios.get<T>(url, { params: options?.params });
