@@ -31,28 +31,37 @@ export function BookGridItems({
                 {[...Array(10)].map((_, i) => (
                     <div
                         key={i}
-                        className="flex flex-col w-full max-w-[240px] bg-white dark:bg-zinc-900 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-zinc-800 h-full"
+                        className={`group relative flex flex-col w-full max-w-[200px] rounded-md overflow-hidden border border-gray-200/80 bg-zinc-50/90 dark:border-zinc-800 dark:bg-zinc-900/80 h-full pb-1`}
                     >
-                        {/* Top Background Pattern Skeleton */}
-                        <Skeleton className="h-32 w-full rounded-none bg-primary/5" />
+                        <div className={`absolute top-0 left-0 right-0 rounded-md overflow-hidden pointer-events-none h-[50%]`}>
+                            <Skeleton className="h-full w-full rounded-none bg-zinc-100/80 dark:bg-zinc-800/40" />
+                        </div>
+                        <div className={`h-20 w-full invisible`} aria-hidden="true" />
 
-                        {/* Book Cover Skeleton */}
-                        <div className="relative px-2 sm:px-4 -mt-24 w-full flex justify-center z-10">
-                            <Skeleton className="w-28 sm:w-36 aspect-[3/4] shadow-md rounded-sm" />
+                        <div className={`relative px-2 sm:px-3 flex justify-center z-10 w-full transition-transform duration-500 -mt-14`}>
+                            <div className={`flex items-center justify-center p-1 sm:p-1.5`}>
+                                <Skeleton className={`rounded-sm w-[120px] aspect-[3/4]`} />
+                            </div>
                         </div>
 
-                        {/* Content Skeleton */}
-                        <div className="p-2 sm:p-3 pt-2 sm:pt-3 flex flex-col flex-grow gap-1 sm:gap-2">
-                            <Skeleton className="h-2 sm:h-3 w-10" /> {/* Ebook tag */}
+                        <div className="flex flex-col flex-grow p-2 pt-1 sm:p-2">
+                            <Skeleton className="mb-1 h-2 sm:h-3 w-10" />
                             <div className="space-y-1">
-                                <Skeleton className="h-3 sm:h-4 w-full" /> {/* Title line 1 */}
-                                <Skeleton className="h-3 sm:h-4 w-2/3" /> {/* Title line 2 */}
+                                <Skeleton className="h-3 sm:h-4 w-full" />
+                                <Skeleton className="h-3 sm:h-4 w-2/3" />
                             </div>
-                            <Skeleton className="h-2 sm:h-3 w-1/2 mt-1" /> {/* Author */}
+                            <Skeleton className="mt-2 h-2 sm:h-3 w-1/2" />
 
-                            <div className="mt-auto flex items-center justify-between pt-2">
-                                <Skeleton className="h-3 w-16" /> {/* Rating stars */}
-                                <Skeleton className="h-5 w-5 rounded-md" /> {/* Bookmark icon */}
+                            <div className="mt-auto flex items-center justify-between pt-1">
+                                <div className="flex items-center gap-0.5">
+                                    <Skeleton className="h-3 w-3 rounded-full" />
+                                    <Skeleton className="h-3 w-3 rounded-full" />
+                                    <Skeleton className="h-3 w-3 rounded-full" />
+                                    <Skeleton className="h-3 w-3 rounded-full" />
+                                    <Skeleton className="h-3 w-3 rounded-full" />
+                                    <Skeleton className="ml-1 h-3 w-8" />
+                                </div>
+                                <Skeleton className="h-5 w-5 rounded-md" />
                             </div>
                         </div>
                     </div>

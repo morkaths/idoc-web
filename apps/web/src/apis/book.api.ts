@@ -1,8 +1,12 @@
 import { ApiEndpoint } from '@/config/api';
-import type { BookResponse, BookRequest } from '../types';
+import type { BookResponse, BookRequest, FindParams } from '../types';
 import { apiFactory } from './factory';
 
-const factory = apiFactory<BookResponse, BookRequest>(
+export type BookSearchParams = FindParams & {
+  authorIds?: string[];
+};
+
+const factory = apiFactory<BookResponse, BookRequest, BookSearchParams>(
   ApiEndpoint.endpoints.books,
   {
     find: 'public',

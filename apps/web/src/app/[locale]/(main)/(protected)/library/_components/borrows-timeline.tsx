@@ -2,7 +2,7 @@
 
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { type BorrowResponse } from '@/types';
+import { type LoanResponse } from '@/types';
 import { Calendar, Check, Clock, AlertCircle, Play } from 'lucide-react';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Badge } from '@repo/ui/components/badge';
@@ -15,7 +15,7 @@ type TimelineEntry = {
 };
 
 interface BorrowTimelineProps {
-  borrow: BorrowResponse;
+  borrow: LoanResponse;
   className?: string;
 }
 

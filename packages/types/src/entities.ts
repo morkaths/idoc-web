@@ -22,6 +22,16 @@ export interface UserResponse {
   updatedAt: Date | string;
 }
 
+export namespace UserResponse {
+  export interface Summary {
+    id: string;
+    username: string;
+    avatar?: string;
+  }
+}
+
+export type UserSummaryResponse = UserResponse.Summary;
+
 export interface TokenResponse {
   accessToken: string;
   type: string;
@@ -62,6 +72,16 @@ export interface AuthorResponse {
   updatedAt: Date | string;
 }
 
+export namespace AuthorResponse {
+  export interface Summary {
+    id: string;
+    name: string;
+    avatar?: string;
+  }
+}
+
+export type AuthorSummaryResponse = AuthorResponse.Summary;
+
 export interface BookResponse {
   id: string;
   title: string;
@@ -90,22 +110,38 @@ export interface BookResponse {
   updatedAt: Date | string;
 }
 
+export namespace BookResponse {
+  export interface Summary {
+    id: string;
+    title: string;
+    slug: string;
+    coverUrl?: string;
+    authors: AuthorResponse.Summary[];
+  }
+}
+
+export type BookSummaryResponse = BookResponse.Summary;
+
 // --- Activities & Social ---
 
-export interface BorrowResponse {
+export interface LoanResponse {
   id: string;
-  book: BookResponse;
-  user: UserResponse;
+  book: BookResponse.Summary;
+  user: UserResponse.Summary;
   borrowedDate: Date | string;
   dueDate: Date | string;
   returnDate?: Date | string;
   status: BorrowStatus;
   notes?: string;
-  renewals?: {
+  renewals?: LoanResponse.RenewalResponse[];
+}
+
+export namespace LoanResponse {
+  export interface RenewalResponse {
     renewedAt: Date | string;
     oldDueDate: Date | string;
     newDueDate: Date | string;
-  }[];
+  }
 }
 
 export interface ReviewResponse {
@@ -114,27 +150,34 @@ export interface ReviewResponse {
   bookId: string;
   rating: number;
   content?: string;
-  book?: {
-    id: string;
-    title: string;
-    slug: string;
-    coverUrl?: string;
-  };
-  user?: UserResponse;
+  book?: BookResponse.Summary;
+  user?: UserResponse.Summary;
   createdAt: Date | string;
   updatedAt: Date | string;
 }
 
 export interface BookmarkResponse {
   id: string;
-  user: UserResponse;
-  book: BookResponse;
-  folder?: FolderResponse;
+  user: UserResponse.Summary;
+  book: BookResponse.Summary;
+  folder?: FolderResponse.Summary;
+  createdAt: Date | string;
   page?: number;
   note?: string;
-  createdAt: Date | string;
-  updatedAt: Date | string;
+  updatedAt?: Date | string;
 }
+
+export namespace BookmarkResponse {
+  export interface Summary {
+    id: string;
+    user: UserResponse.Summary;
+    folder?: FolderResponse.Summary;
+    book: BookResponse.Summary;
+    createdAt: Date | string;
+  }
+}
+
+export type BookmarkSummaryResponse = BookmarkResponse.Summary;
 
 export interface FolderResponse {
   id: string;
@@ -145,6 +188,15 @@ export interface FolderResponse {
   createdAt: Date | string;
   updatedAt: Date | string;
 }
+
+export namespace FolderResponse {
+  export interface Summary {
+    id: string;
+    name: string;
+  }
+}
+
+export type FolderSummaryResponse = FolderResponse.Summary;
 
 // --- Files ---
 

@@ -26,7 +26,7 @@ export const NewArrivals = () => {
   const books = booksResponse?.data;
 
   return (
-    <section className='container py-12'>
+    <section className='container py-12 pb-20'>
       <div className='mb-8 flex items-end justify-between'>
         <div className='flex flex-col space-y-2'>
           <div className='flex items-center gap-2'>
@@ -47,9 +47,9 @@ export const NewArrivals = () => {
 
       {isLoading ? (
         <Carousel className='w-full'>
-          <CarouselContent className='-ml-6'>
+          <CarouselContent className='-ml-6 py-6'>
             {[1, 2, 3, 4, 5].map((i) => (
-              <CarouselItem key={i} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5'>
+              <CarouselItem key={i} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 py-4'>
                 <div className='space-y-3'>
                   <Skeleton className='h-[280px] w-full rounded-xl' />
                   <Skeleton className='h-4 w-3/4' />
@@ -67,9 +67,9 @@ export const NewArrivals = () => {
           }}
           className='w-full'
         >
-          <CarouselContent className='-ml-6'>
+          <CarouselContent className='-ml-6 py-6'>
             {books.map((book) => (
-              <CarouselItem key={book.id} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5'>
+              <CarouselItem key={book.id} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 py-4'>
                 <BookGridItem book={book} />
               </CarouselItem>
             ))}

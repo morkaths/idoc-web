@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BorrowRequestSchema, type BorrowResponse, type BorrowRequest } from '@/types';
+import { BorrowRequestSchema, type LoanResponse, type BorrowRequest } from '@/types';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
@@ -24,7 +24,7 @@ import { useLocale } from '@/hooks/ui/useLocale';
 type BorrowsMutateDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: Partial<BorrowResponse>;
+  initialData?: Partial<LoanResponse>;
   onSubmit: (data: BorrowRequest) => void;
 };
 

@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@repo/types": "*"
+    "@repo/types": "*",
+    "react-is": "^18.3.1"
   },
   "scripts": {
     "dev": "vite",

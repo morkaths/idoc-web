@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import type { BorrowResponse } from '@/types';
+import type { LoanResponse } from '@/types';
 import type { Table } from '@tanstack/react-table';
 import { FileSpreadsheet, Undo2 } from 'lucide-react';
 import { useReturnBorrow } from '@/hooks/data/useBorrow';
@@ -7,7 +7,7 @@ import { useLocale } from '@/hooks/ui/useLocale';
 import { DataTableBulkActions } from '@/components/data-table/data-table-bulk-actions';
 
 type Props = {
-  table: Table<BorrowResponse>;
+  table: Table<LoanResponse>;
 };
 
 export function BorrowsTableBulkActions({ table }: Props) {
@@ -38,7 +38,7 @@ export function BorrowsTableBulkActions({ table }: Props) {
           key: 'export',
           icon: <FileSpreadsheet />,
           label: t(keys.table.bulkActions.export.label),
-          onClick: async () => {},
+          onClick: async () => { },
           variant: 'default',
           tooltip: t(keys.table.bulkActions.export.tooltip),
           confirm: true,

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { BorrowResponse, ReviewResponse } from '@/types';
+import type { LoanResponse, ReviewResponse } from '@/types';
 import { Star, Loader2 } from 'lucide-react';
 import { useReviews } from '@/hooks/data/useReview';
 import { KEYS, useLocale } from '@/hooks/ui/useLocale';
@@ -30,7 +30,7 @@ export type ReviewForm = z.infer<typeof ReviewFormSchema>;
 interface ReviewMutateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  borrow: BorrowResponse;
+  borrow: LoanResponse;
   onSubmit: (data: ReviewForm, existingReview?: ReviewResponse) => Promise<void>;
 }
 
@@ -121,8 +121,8 @@ export function ReviewMutateDialog({
                           >
                             <Star
                               className={`h-8 w-8 transition-colors ${star <= field.value
-                                  ? 'fill-amber-400 text-amber-400'
-                                  : 'text-muted-foreground/30 fill-transparent'
+                                ? 'fill-amber-400 text-amber-400'
+                                : 'text-muted-foreground/30 fill-transparent'
                                 }`}
                             />
                           </button>

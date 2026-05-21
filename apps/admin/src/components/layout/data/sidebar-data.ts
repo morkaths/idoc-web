@@ -22,6 +22,7 @@ import {
   Tag,
   UserPen,
   Bookmark,
+  Sparkles,
 } from 'lucide-react';
 import { Logo } from '../logo';
 import { type SidebarData } from '../types';
@@ -106,6 +107,11 @@ export const sidebarData: SidebarData = {
           title: 'Users',
           url: '/users',
           icon: Users,
+        },
+        {
+          title: 'Recommendations',
+          url: '/recommendations',
+          icon: Sparkles,
         },
         {
           title: 'Apps',

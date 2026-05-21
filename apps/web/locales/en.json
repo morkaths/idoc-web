@@ -720,7 +720,8 @@
       "interests": "Based on Your Interests",
       "similarReaders": "Readers Like You Enjoyed",
       "empty": "No recommendations yet",
-      "startBookmarking": "Start bookmarking books to get personalized suggestions!"
+      "startBookmarking": "Start bookmarking books to get personalized suggestions!",
+      "error": "Could not load recommendations. Please try again later."
     },
     "popular": {
       "title": "Currently Trending",
@@ -755,6 +756,43 @@
       "title": "Start Your Reading Journey",
       "subtitle": "Join the iDoc community today to access thousands of books and get personalized recommendations.",
       "action": "Sign Up Now"
+    }
+  },
+  "discover": {
+    "hero": {
+      "title": "Uncover Your Next Great Read",
+      "subtitle": "Dive into a sea of stories, curated collections, and personalized gems just for you.",
+      "searchPlaceholder": "Search by title, author, or genre..."
+    },
+    "categories": {
+      "title": "Explore by Genre",
+      "all": "All Categories"
+    },
+    "sections": {
+      "newArrivals": {
+        "title": "New Arrivals",
+        "subtitle": "The latest treasures added to our collection."
+      },
+      "trending": {
+        "title": "Trending Now",
+        "subtitle": "What everyone is talking about this week."
+      },
+      "forYou": {
+        "title": "Just for You",
+        "subtitle": "Personalized picks based on your unique taste."
+      },
+      "interests": {
+        "title": "Based on Your Interests",
+        "subtitle": "Books from genres you love."
+      },
+      "similarReaders": {
+        "title": "Readers Like You Enjoyed",
+        "subtitle": "Discover what others with similar tastes are reading."
+      }
+    },
+    "authPrompt": {
+      "title": "Want a Personalized Experience?",
+      "description": "Sign in to let iDoc suggest the best books based on your reading history and interests."
     }
   }
 }

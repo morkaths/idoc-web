@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { motion } from 'framer-motion';
 import {
   Carousel,
   CarouselContent,
@@ -84,7 +85,13 @@ export function RecommendationRow({
   }
 
   return (
-    <div className='py-4 space-y-4'>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className='py-4 space-y-4'
+    >
       <div className='flex flex-col'>
         <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
           {title}
@@ -121,6 +128,6 @@ export function RecommendationRow({
           </div>
         </Carousel>
       </BookmarkProvider>
-    </div>
+    </motion.div>
   );
 }

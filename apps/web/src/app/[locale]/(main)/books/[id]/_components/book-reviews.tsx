@@ -27,6 +27,7 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0, enabled = tr
   const { t, keys } = useLocale('book');
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState('newest');
+  const pageSize = 10;
 
   const sortParams = {
     newest: { sortBy: 'createdAt', sortOrder: SortDirection.DESC },
@@ -38,6 +39,7 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0, enabled = tr
   const { data, isLoading, isError } = useSearchReviews(
     {
       page,
+      limit: pageSize,
       filters: [{ field: 'book.id', value: bookId, operator: FilterOperator.EQ }],
       sorts: [{ field: sortParams.sortBy, direction: sortParams.sortOrder }],
     },
@@ -126,7 +128,7 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0, enabled = tr
                         </Avatar>
                         <div>
                           <div className='text-sm font-medium'>
-                            {review.user?.username || review.user?.email || 'User'}
+                            {review.user?.username || 'User'}
                           </div>
                           <div className='text-muted-foreground text-xs'>
                             {formatDate(review.createdAt)}

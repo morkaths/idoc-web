@@ -685,7 +685,8 @@
       "interests": "Dựa trên sở thích",
       "similarReaders": "Người dùng tương tự cũng thích",
       "empty": "Chưa có đề xuất nào",
-      "startBookmarking": "Hãy bắt đầu đánh dấu sách để nhận được những gợi ý cá nhân hóa!"
+      "startBookmarking": "Hãy bắt đầu đánh dấu sách để nhận được những gợi ý cá nhân hóa!",
+      "error": "Không thể tải gợi ý sách. Vui lòng thử lại sau."
     },
     "popular": {
       "title": "Đang thịnh hành",
@@ -720,6 +721,43 @@
       "title": "Bắt đầu hành trình đọc sách của bạn",
       "subtitle": "Tham gia cộng đồng iDoc ngay hôm nay để truy cập hàng ngàn đầu sách và nhận đề xuất cá nhân hóa.",
       "action": "Đăng ký ngay"
+    }
+  },
+  "discover": {
+    "hero": {
+      "title": "Khám phá cuốn sách tuyệt vời tiếp theo",
+      "subtitle": "Đắm mình vào biển truyện, các bộ sưu tập được tuyển chọn và những viên ngọc cá nhân hóa dành riêng cho bạn.",
+      "searchPlaceholder": "Tìm kiếm theo tiêu đề, tác giả hoặc thể loại..."
+    },
+    "categories": {
+      "title": "Khám phá theo thể loại",
+      "all": "Tất cả thể loại"
+    },
+    "sections": {
+      "newArrivals": {
+        "title": "Sách mới cập nhật",
+        "subtitle": "Những kho báu mới nhất vừa được thêm vào bộ sưu tập."
+      },
+      "trending": {
+        "title": "Xu hướng hiện nay",
+        "subtitle": "Những cuốn sách đang được cộng đồng quan tâm nhất tuần này."
+      },
+      "forYou": {
+        "title": "Dành riêng cho bạn",
+        "subtitle": "Những lựa chọn cá nhân hóa dựa trên sở thích độc đáo của bạn."
+      },
+      "interests": {
+        "title": "Dựa trên sở thích của bạn",
+        "subtitle": "Những cuốn sách từ các thể loại bạn yêu thích."
+      },
+      "similarReaders": {
+        "title": "Độc giả giống bạn cũng thích",
+        "subtitle": "Khám phá những gì người khác có cùng sở thích đang đọc."
+      }
+    },
+    "authPrompt": {
+      "title": "Bạn muốn trải nghiệm cá nhân hóa?",
+      "description": "Đăng nhập để iDoc đề xuất những cuốn sách tốt nhất dựa trên lịch sử đọc và sở thích của bạn."
     }
   }
 }

@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
-import { type BorrowResponse } from '@/types';
+import { type LoanResponse } from '@/types';
 import { type Row } from '@tanstack/react-table';
 import { Clock, Eye, Undo2, History, Star } from 'lucide-react';
 import { useLocale } from '@/hooks/ui/useLocale';
@@ -20,7 +20,7 @@ type BorrowsTableRowActionsProps<TData> = {
 
 export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsProps<TData>) {
   const { t, KEYS } = useLocale('library');
-  const borrow = row.original as unknown as BorrowResponse;
+  const borrow = row.original as unknown as LoanResponse;
 
   const ctx = useBorrowsContext();
   if (!ctx) throw new Error('BorrowsTableRowActions must be used inside BorrowsProvider');

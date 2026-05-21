@@ -23,7 +23,7 @@ export const FeaturedAuthors = () => {
   const authors = authorsResponse?.data;
 
   return (
-    <section className='container py-12'>
+    <section className='container py-12 pb-20'>
       <div className='mb-8 flex items-end justify-between'>
         <div className='flex flex-col space-y-2'>
           <div className='flex items-center gap-2'>
@@ -44,9 +44,9 @@ export const FeaturedAuthors = () => {
 
       {isLoading ? (
         <Carousel className='w-full'>
-          <CarouselContent className='-ml-6'>
+          <CarouselContent className='-ml-6 py-6'>
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <CarouselItem key={i} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6'>
+              <CarouselItem key={i} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 py-4'>
                 <div className='flex flex-col items-center space-y-3'>
                   <Skeleton className='h-24 w-24 rounded-full md:h-32 md:w-32' />
                   <Skeleton className='h-4 w-24' />
@@ -64,20 +64,22 @@ export const FeaturedAuthors = () => {
           }}
           className='w-full'
         >
-          <CarouselContent className='-ml-6'>
+          <CarouselContent className='-ml-6 py-6'>
             {authors.map((author) => (
-              <CarouselItem key={author.id} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6'>
+              <CarouselItem key={author.id} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 py-4'>
                 <Link
                   href={`/authors/${author.id}`}
                   className='group flex flex-col items-center text-center transition-all hover:-translate-y-1'
                 >
-                  <div className='relative h-24 w-24 overflow-hidden rounded-full ring-2 ring-transparent ring-offset-2 transition-all group-hover:ring-primary md:h-32 md:w-32'>
-                    <AppImage
-                      src={author.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${author.name}`}
-                      alt={author.name}
-                      fill
-                      className='object-cover'
-                    />
+                  <div className='relative h-24 w-24 rounded-full ring-2 ring-transparent ring-offset-2 transition-all group-hover:ring-primary md:h-32 md:w-32'>
+                    <div className='absolute inset-0 overflow-hidden rounded-full'>
+                      <AppImage
+                        src={author.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${author.name}`}
+                        alt={author.name}
+                        fill
+                        className='object-cover'
+                      />
+                    </div>
                   </div>
                   <h3 className='mt-4 font-semibold group-hover:text-primary line-clamp-1'>{author.name}</h3>
                   <p className='text-sm text-muted-foreground line-clamp-1'>

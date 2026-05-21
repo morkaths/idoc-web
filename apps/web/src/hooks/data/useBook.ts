@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
 import { useSession } from 'next-auth/react';
+import { useQueries } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
 import { BookmarkApi } from '@/apis/bookmark.api';
-import type { BookResponse, BookRequest, FindParams, BookmarkResponse, PageParams } from '@/types';
+import type { BookResponse, BookRequest, BookmarkResponse, PageParams } from '@/types';
+import type { BookSearchParams } from '@/apis/book.api';
 import {
   useListQuery,
   useItemQuery,
@@ -61,6 +63,34 @@ function useBookListEnricher(booksQueryResult: ReturnType<typeof useListQuery<Bo
   };
 }
 
+export const useBooksByIds = (bookIds: string[], enabled = true) => {
+  const queries = useQueries({
+    queries: bookIds.map((bookId) => ({
+      queryKey: ['books', bookId],
+      queryFn: () => BookApi.findById(bookId),
+      enabled: enabled && !!bookId,
+      staleTime: 10 * 60 * 1000,
+    })),
+  });
+
+  const booksById = new Map(
+    queries
+      .map((query) => query.data?.data)
+      .filter((book): book is BookResponse => !!book)
+      .map((book) => [book.id, book] as const)
+  );
+
+  const data = bookIds
+    .map((bookId) => booksById.get(bookId))
+    .filter((book): book is BookResponse => !!book);
+
+  return {
+    data,
+    isLoading: queries.some((query) => query.isLoading),
+    isError: queries.some((query) => query.isError),
+  };
+};
+
 /**
  * Hook to fetch books with pagination and bookmark status
  * @param params Pagination parameters
@@ -85,7 +115,7 @@ export const useBooks = (
  * @param options Query options
  */
 export const useSearchBooks = (
-  params: FindParams = {},
+  params: BookSearchParams = {},
   options?: ListQueryOptions<BookResponse>
 ) => {
   const booksQuery = useListQuery<BookResponse>(

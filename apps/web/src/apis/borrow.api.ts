@@ -1,6 +1,6 @@
 import { ApiEndpoint } from '@/config/api';
 import type {
-  BorrowResponse,
+  LoanResponse,
   BorrowRequest,
   RenewBorrowRequest,
   ApiResponse,
@@ -10,7 +10,7 @@ import type {
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
-const factory = apiFactory<BorrowResponse, BorrowRequest>(
+const factory = apiFactory<LoanResponse, BorrowRequest>(
   ApiEndpoint.endpoints.borrows,
   {
     find: 'public',
@@ -23,8 +23,8 @@ export const BorrowApi = {
 
   history: async (
     params?: FindParams & { item?: string; status?: string }
-  ): Promise<ApiResponse<PageResponse<BorrowResponse>>> => {
-    return ApiClient.get<PageResponse<BorrowResponse>>(
+  ): Promise<ApiResponse<PageResponse<LoanResponse>>> => {
+    return ApiClient.get<PageResponse<LoanResponse>>(
       ApiEndpoint.endpoints.borrows.history(),
       {
         security: 'private',
@@ -33,8 +33,8 @@ export const BorrowApi = {
     );
   },
 
-  extend: async (id: string, request: Partial<RenewBorrowRequest>): Promise<ApiResponse<BorrowResponse>> => {
-    return ApiClient.put<BorrowResponse>(
+  extend: async (id: string, request: Partial<RenewBorrowRequest>): Promise<ApiResponse<LoanResponse>> => {
+    return ApiClient.put<LoanResponse>(
       ApiEndpoint.endpoints.borrows.extend(id),
       {
         security: 'private',
@@ -43,8 +43,8 @@ export const BorrowApi = {
     );
   },
 
-  return: async (id: string): Promise<ApiResponse<BorrowResponse>> => {
-    return ApiClient.post<BorrowResponse>(
+  return: async (id: string): Promise<ApiResponse<LoanResponse>> => {
+    return ApiClient.post<LoanResponse>(
       ApiEndpoint.endpoints.borrows.return(id),
       {
         security: 'private',

@@ -16,17 +16,21 @@ import { Heart } from 'lucide-react';
 
 export const RecommendationCarousel = () => {
   const { t, keys } = useLocale('home');
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const userId = session?.user?.id;
 
   const { data: books, isLoading } = useRecommendations(userId, {
     enabled: !!userId,
   });
 
-  if (!userId) return null;
+  // Don't render if not logged in or session is still loading
+  if (status === 'loading' || !userId) return null;
+
+  // Don't render if loaded but no recommendations yet (new user / no history)
+  if (!isLoading && (!books || books.length === 0)) return null;
 
   return (
-    <section className='container py-12'>
+    <section className='container py-12 pb-20'>
       <div className='mb-8 flex items-end justify-between'>
         <div className='flex flex-col space-y-2'>
           <div className='flex items-center gap-2'>
@@ -40,7 +44,7 @@ export const RecommendationCarousel = () => {
       </div>
 
       {isLoading ? (
-        <div className='flex gap-4 overflow-hidden'>
+        <div className='flex gap-4 overflow-hidden py-6'>
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className='min-w-[200px] flex-1 space-y-3'>
               <Skeleton className='h-[280px] w-full rounded-xl' />
@@ -49,8 +53,8 @@ export const RecommendationCarousel = () => {
             </div>
           ))}
         </div>
-      ) : books && books.length > 0 ? (
-        <div className='px-12'>
+      ) : (
+        <div className='px-6'>
           <Carousel
             opts={{
               align: 'start',
@@ -58,21 +62,18 @@ export const RecommendationCarousel = () => {
             }}
             className='w-full'
           >
-            <CarouselContent className='-ml-4'>
-              {books.slice(0, 10).map((book) => (
-                <CarouselItem key={book.id} className='pl-4 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5'>
+            <CarouselContent className='-ml-6 py-6'>
+              {books!.slice(0, 10).map((book) => (
+                <CarouselItem key={book.id} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 py-4'>
                   <BookGridItem book={book} />
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <div className='hidden md:block'>
+              <CarouselPrevious className='-left-6' />
+              <CarouselNext className='-right-6' />
+            </div>
           </Carousel>
-        </div>
-      ) : (
-        <div className='flex h-[200px] flex-col items-center justify-center rounded-xl border-2 border-dashed gap-2'>
-          <p className='text-lg font-medium text-muted-foreground'>{t(keys.recommendations.empty)}</p>
-          <p className='text-sm text-muted-foreground'>{t(keys.recommendations.startBookmarking)}</p>
         </div>
       )}
     </section>

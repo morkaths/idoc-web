@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { type BorrowResponse } from '@/types';
+import { type LoanResponse } from '@/types';
 import { ImageOff } from 'lucide-react';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Badge } from '@repo/ui/components/badge';
@@ -40,7 +40,7 @@ const CoverImage = ({ src, title }: { src?: string; title: string }) => {
 type BorrowsHistoryDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  borrow: BorrowResponse | null;
+  borrow: LoanResponse | null;
 };
 
 export function BorrowsHistoryDialog({ open, onOpenChange, borrow }: BorrowsHistoryDialogProps) {

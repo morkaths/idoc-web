@@ -8,7 +8,9 @@ import { useLocale } from '@/hooks/ui/useLocale';
 import { useBookmarkContext } from './bookmark-provider';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import paths from '@/config/path';
 import BookCover3d from '@repo/ui/components/book-cover-3d';
+import { isValidCover } from '@/lib/book-utils';
 
 type BookGridItemProps = {
   book: BookResponse;
@@ -22,15 +24,23 @@ export function BookGridItem({
   const router = useRouter();
   const { data: session } = useSession();
   const { t, keys } = useLocale('books');
-  const [imageError] = useState(false);
   const [localBookmarkId, setLocalBookmarkId] = useState<string | undefined | null>(null);
   const bookmarkId = localBookmarkId !== null ? localBookmarkId : book.bookmarkId;
   const isBookmarked = !!bookmarkId;
+  const coverSrc = isValidCover(book.coverUrl) ? book.coverUrl : undefined;
 
   const { setOpen, setCurrentBook } = useBookmarkContext();
   const { mutate: deleteBookmark, isPending: isDeleting } = useDeleteBookmark();
 
   const isLoading = isDeleting;
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      router.push(paths.book(book.id));
+    }
+  };
 
   const handleToggleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -67,43 +77,39 @@ export function BookGridItem({
   return (
     <>
       <div
-        onClick={onClick}
-        className="group relative flex flex-col w-full max-w-[240px] bg-white dark:bg-zinc-900 rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-zinc-800 h-full"
+        onClick={handleClick}
+        className={`group relative flex flex-col w-full max-w-[200px] rounded-md cursor-pointer border border-gray-200/80 bg-zinc-50/90 transition-colors duration-200 hover:border-gray-300 dark:border-zinc-800 dark:bg-zinc-900/80 dark:hover:border-zinc-700 h-full pb-1}`}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => { if (e.key === 'Enter') onClick?.(); }}
+        onKeyDown={(e) => { if (e.key === 'Enter') handleClick(); }}
       >
-        {/* Top Background Pattern */}
-        <div className="h-32 w-full bg-primary/10 dark:bg-primary/10" />
+        {/* Top Background Pattern - Wrapped in container to handle overflow-hidden locally */}
+        <div className={`absolute top-0 left-0 right-0 rounded-md overflow-hidden pointer-events-none h-[40%]`}>
+          <div className="h-full w-full bg-primary/10 dark:bg-primary/20" />
+        </div>
+        <div className={`h-20 w-full invisible`} aria-hidden="true" />
 
-        <div className="relative px-2 sm:px-4 -mt-24 flex justify-center z-10 w-full transition-transform duration-500">
-          {!imageError && book.coverUrl ? (
+        <div className={`relative px-2 sm:px-3 flex justify-center z-10 w-full transition-transform duration-500 -mt-14`}>
             <BookCover3d
-              src={book.coverUrl}
+              src={coverSrc}
               title={book.title}
-              width={140}
-              className="drop-shadow-[0_12px_24px_rgba(0,0,0,0.3)]"
+              width={115}
+              wrapperClassName="p-1 sm:p-1.5"
+              className="p-1 sm:p-1.5"
             />
-          ) : (
-            <div className="relative w-28 sm:w-36 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden bg-muted/20 dark:bg-zinc-800/50 flex items-center justify-center p-3 text-center transition-transform duration-500 group-hover:scale-105 group-hover:rotate-1">
-              <span className="font-medium text-xs sm:text-sm line-clamp-4 leading-tight opacity-60 break-words w-full px-2">
-                {book.title}
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Content */}
-        <div className="p-2 sm:p-3 pt-2 sm:pt-3 flex flex-col flex-grow">
-          <span className="text-[10px] sm:text-xs text-muted-foreground mb-0.5 sm:mb-1 font-medium tracking-wide block text-left">
+        <div className={`flex flex-col flex-grow p-2 pt-0.5 sm:p-2 sm:pt-0.5`}>
+          <span className="text-[10px] sm:text-xs text-muted-foreground mb-0.5 font-medium tracking-wide block text-left">
             Ebook
           </span>
 
-          <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug line-clamp-2 mb-1 text-left h-[38px] sm:h-[44px]" title={book.title}>
+          <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug line-clamp-2 text-left h-[35px] sm:h-[40px]" title={book.title}>
             {book.title}
           </h3>
 
-          <div className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-1 text-left" title={authorNames}>
+          <div className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-1 text-left" title={authorNames}>
             {book.authors?.length ? (
               book.authors.map((a, i) => (
                 <span key={i}>
@@ -118,7 +124,7 @@ export function BookGridItem({
             )}
           </div>
 
-          <div className="mt-auto flex items-center justify-between">
+          <div className={`mt-auto flex items-center justify-between`}>
             <div className="flex flex-col gap-0.5">
               <div className="flex sm:hidden items-center gap-1 text-amber-500">
                 <Icon icon="mdi:star" width={14} height={14} />
@@ -130,7 +136,7 @@ export function BookGridItem({
                 </span>
               </div>
 
-              <div className="hidden sm:flex items-center gap-0.5 text-amber-500">
+              <div className={`hidden sm:flex items-center gap-0.5 text-amber-500`}>
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Icon
                     key={i}
@@ -154,7 +160,7 @@ export function BookGridItem({
                 } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                <Loader2 className={`animate-spin text-primary w-5 h-5`} />
               ) : (
                 <Icon
                   icon={isBookmarked ? "mdi:bookmark" : "mdi:bookmark-outline"}

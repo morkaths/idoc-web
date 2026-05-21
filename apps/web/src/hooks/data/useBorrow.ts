@@ -1,5 +1,5 @@
 import { BorrowApi } from '@/apis/borrow.api';
-import type { BorrowResponse, BorrowRequest, FindParams, RenewBorrowRequest, PageParams } from '@/types';
+import type { LoanResponse, BorrowRequest, FindParams, RenewBorrowRequest, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -20,9 +20,9 @@ import {
  */
 export const useBorrows = (
   params: PageParams = {},
-  options?: ListQueryOptions<BorrowResponse>
+  options?: ListQueryOptions<LoanResponse>
 ) => {
-  return useListQuery<BorrowResponse>(
+  return useListQuery<LoanResponse>(
     ['borrows', params],
     () => BorrowApi.find(params),
     options
@@ -36,9 +36,9 @@ export const useBorrows = (
  */
 export const useBorrowHistory = (
   params: FindParams = {},
-  options?: ListQueryOptions<BorrowResponse>
+  options?: ListQueryOptions<LoanResponse>
 ) => {
-  return useListQuery<BorrowResponse>(
+  return useListQuery<LoanResponse>(
     ['borrows', 'history', params],
     () => BorrowApi.history(params),
     options
@@ -52,9 +52,9 @@ export const useBorrowHistory = (
  */
 export const useSearchBorrows = (
   params: FindParams = {},
-  options?: ListQueryOptions<BorrowResponse>
+  options?: ListQueryOptions<LoanResponse>
 ) => {
-  return useListQuery<BorrowResponse>(
+  return useListQuery<LoanResponse>(
     ['borrows', 'search', params],
     () => BorrowApi.search(params),
     options
@@ -68,9 +68,9 @@ export const useSearchBorrows = (
  */
 export const useBorrow = (
   id: string,
-  options?: ItemQueryOptions<BorrowResponse>
+  options?: ItemQueryOptions<LoanResponse>
 ) => {
-  return useItemQuery<BorrowResponse>(
+  return useItemQuery<LoanResponse>(
     ['borrows', id],
     () => BorrowApi.findById(id),
     { enabled: !!id, ...options }
@@ -82,9 +82,9 @@ export const useBorrow = (
  * @param options Mutation options
  */
 export const useCreateBorrow = <TContext = unknown>(
-  options?: CreateMutationOptions<BorrowRequest, BorrowResponse, TContext>
+  options?: CreateMutationOptions<BorrowRequest, LoanResponse, TContext>
 ) => {
-  return useCreateMutation<BorrowRequest, BorrowResponse, TContext>(
+  return useCreateMutation<BorrowRequest, LoanResponse, TContext>(
     (data) => BorrowApi.create(data),
     [['borrows']],
     options
@@ -96,9 +96,9 @@ export const useCreateBorrow = <TContext = unknown>(
  * @param options Mutation options
  */
 export const useUpdateBorrow = <TContext = unknown>(
-  options?: UpdateMutationOptions<BorrowRequest, BorrowResponse, TContext>
+  options?: UpdateMutationOptions<BorrowRequest, LoanResponse, TContext>
 ) => {
-  return useUpdateMutation<BorrowRequest, BorrowResponse, TContext>(
+  return useUpdateMutation<BorrowRequest, LoanResponse, TContext>(
     ({ id, data }) => BorrowApi.update(id, data),
     (variables) => [['borrows'], ['borrows', variables.id]],
     options
@@ -124,9 +124,9 @@ export const useDeleteBorrow = <TContext = unknown>(
  * @param options Mutation options
  */
 export const useExtendBorrow = <TContext = unknown>(
-  options?: UpdateMutationOptions<RenewBorrowRequest, BorrowResponse, TContext>
+  options?: UpdateMutationOptions<RenewBorrowRequest, LoanResponse, TContext>
 ) => {
-  return useUpdateMutation<RenewBorrowRequest, BorrowResponse, TContext>(
+  return useUpdateMutation<RenewBorrowRequest, LoanResponse, TContext>(
     ({ id, data }) => BorrowApi.extend(id, data),
     (variables) => [['borrows'], ['borrows', variables.id]],
     options
@@ -138,9 +138,9 @@ export const useExtendBorrow = <TContext = unknown>(
  * @param options Mutation options
  */
 export const useReturnBorrow = <TContext = unknown>(
-  options?: UpdateMutationOptions<void, BorrowResponse, TContext>
+  options?: UpdateMutationOptions<void, LoanResponse, TContext>
 ) => {
-  return useUpdateMutation<void, BorrowResponse, TContext>(
+  return useUpdateMutation<void, LoanResponse, TContext>(
     ({ id }) => BorrowApi.return(id),
     (variables) => [['borrows'], ['borrows', variables.id]],
     options

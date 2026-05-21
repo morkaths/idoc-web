@@ -27,12 +27,7 @@ export const AgentClient = {
   async get<T>(url: string, options?: { params?: Record<string, unknown> }): Promise<ApiResponse<T>> {
     try {
       const response = await agentAxios.get<T>(url, { params: options?.params });
-      return {
-        success: true,
-        status: response.status,
-        message: 'OK',
-        data: response.data,
-      } as ApiResponse<T>;
+      return response.data as ApiResponse<T>;
     } catch (error) {
       return this.handleError<T>(error, url);
     }
@@ -45,12 +40,7 @@ export const AgentClient = {
   ): Promise<ApiResponse<T>> {
     try {
       const response = await agentAxios.post<T>(url, data, { params: options?.params });
-      return {
-        success: true,
-        status: response.status,
-        message: 'OK',
-        data: response.data,
-      } as ApiResponse<T>;
+      return response.data as ApiResponse<T>;
     } catch (error) {
       return this.handleError<T>(error, url);
     }

@@ -16,16 +16,19 @@ import { useBooks } from '@/hooks/data/useBook';
 import { useAuthors } from '@/hooks/data/useAuthor';
 import { useDebounce } from '@/hooks/ui/useDebounce';
 import { AppImage as Image } from '../app-image';
+import BookCover3d from '@repo/ui/components/book-cover-3d';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
 
 const SearchBookCover = ({ title, src }: { title: string; src?: string }) => {
   const [error, setError] = React.useState(false);
+  const fallbackText = title.trim().substring(0, 2).toUpperCase();
+  const showImage = !!src && !error;
 
   return (
     <div className="w-10 h-[60px] shrink-0 rounded overflow-hidden bg-background border flex items-center justify-center text-center">
-      {!error && (src || "/images/book-cover-placeholder.png") ? (
+      {showImage ? (
         <Image
-          src={src || "/images/book-cover-placeholder.png"}
+          src={src}
           alt={title}
           width={40}
           height={60}
@@ -33,9 +36,13 @@ const SearchBookCover = ({ title, src }: { title: string; src?: string }) => {
           onError={() => setError(true)}
         />
       ) : (
-        <span className="text-xs font-bold text-muted-foreground line-clamp-2 px-0.5 leading-none break-all">
-          {title.substring(0, 2).toUpperCase()}
-        </span>
+        <BookCover3d
+          src={undefined}
+          title={title}
+          fallbackText={fallbackText}
+          width={40}
+          className="drop-shadow-[0_4px_6px_rgba(0,0,0,0.2)]"
+        />
       )}
     </div>
   );

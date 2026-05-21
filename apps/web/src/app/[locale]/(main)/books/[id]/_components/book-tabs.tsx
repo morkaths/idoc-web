@@ -5,7 +5,8 @@ import { type BookResponse, Languages } from '@/types';
 import { formatDate } from '@/utils/date';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/tabs';
-import { BookRecommended } from './book-recommended';
+import { BookSimilar } from './book-similar';
+import BookTags from './book-tags';
 import { BookReviews } from './book-reviews';
 import { useFile } from '@/hooks/data/useFile';
 
@@ -118,28 +119,27 @@ export function BookTabs({ book }: { book?: BookResponse }) {
       ),
     },
     {
-      name: t(keys.tabs.recommendations.label),
-      value: 'recommendations',
-      content: <BookRecommended enabled={activeTab === 'recommendations'} />,
-    },
-    {
       name: t(keys.tabs.similar.label),
       value: 'similar',
-      content: null,
+      content: <BookSimilar enabled={activeTab === 'similar'} bookId={book?.id} />,
     },
     {
       name: t(keys.tabs.tags.label),
       value: 'tags',
       content: (
-        <div className='mt-4 rounded-xl border border-dashed border-gray-600 p-8 text-center text-base text-gray-200'>
-          <div className='mb-2 font-semibold'>{t(keys.tabs.tags.empty)}</div>
-          <div className='text-sm text-gray-400'>{t(keys.tabs.tags.description)}</div>
+        <div className='mt-4'>
+          {book?.tags && book.tags.length > 0 ? (
+            <BookTags tags={book.tags} variant='pill' size='md' maxVisible={8} clickable />
+          ) : (
+            <div className='mt-4 rounded-xl border border-dashed border-gray-600 p-8 text-center text-base text-gray-200'>
+              <div className='mb-2 font-semibold'>{t(keys.tabs.tags.empty)}</div>
+              <div className='text-sm text-gray-400'>{t(keys.tabs.tags.description)}</div>
+            </div>
+          )}
         </div>
       ),
     },
-    { name: 'Credits', value: 'credits', content: null },
-    { name: 'Images', value: 'images', content: null },
-    { name: 'Videos', value: 'videos', content: null },
+    { name: 'Images', value: 'images', content: null }
   ];
 
   return (
