@@ -108,11 +108,12 @@ export interface BookResponse {
   tags?: string[];
   rating?: number;
   weightedRating?: number;
-  bookmarkId?: string;
   totalReviews?: number;
   totalBorrows?: number;
   createdAt: Date | string;
   updatedAt: Date | string;
+  isBookmarked?: boolean;
+  bookmarkId?: string;
 }
 
 export namespace BookResponse {

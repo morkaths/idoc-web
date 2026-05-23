@@ -241,6 +241,7 @@ export function BookDetailView({ id }: BookDetailViewProps) {
             />
             <AddBookmarkDialog
               bookId={book.id!}
+              bookmarkId={book.bookmarkId}
               open={openAddToFolder}
               onOpenChange={setOpenAddToFolder}
             />

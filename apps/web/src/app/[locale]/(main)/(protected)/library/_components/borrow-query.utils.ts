@@ -1,4 +1,4 @@
-import { type FilterItem, type FindParams, type SortItem } from '@/types';
+import { type FilterItem, type FindParams, type SortItem, SortDirection, FilterOperator } from '@/types';
 import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
 
 /**
@@ -43,7 +43,7 @@ export function buildBorrowFindParams(
     ? [
         {
           field: String(sorting[0].id),
-          direction: (sorting[0].desc ? 'desc' : 'asc') as 'asc' | 'desc',
+          direction: sorting[0].desc ? SortDirection.DESC : SortDirection.ASC,
         },
       ]
     : undefined;
@@ -54,7 +54,7 @@ export function buildBorrowFindParams(
       filters.push({
         field: 'status',
         value: f.value,
-        operator: 'in',
+        operator: FilterOperator.IN,
       });
     }
   });

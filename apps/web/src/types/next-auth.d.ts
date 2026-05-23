@@ -9,6 +9,7 @@ declare module 'next-auth' {
     accessToken?: string;
     accessTokenExpiresIn?: number;
     emailVerified: Date | null;
+    bookmarks?: any[];
   }
 
   interface Session {

@@ -7,12 +7,7 @@ export type BookSearchParams = FindParams & {
 };
 
 const factory = apiFactory<BookResponse, BookRequest, BookSearchParams>(
-  ApiEndpoint.endpoints.books,
-  {
-    find: 'public',
-    search: 'public',
-    findById: 'public',
-  }
+  ApiEndpoint.endpoints.books
 );
 
 export const BookApi = {

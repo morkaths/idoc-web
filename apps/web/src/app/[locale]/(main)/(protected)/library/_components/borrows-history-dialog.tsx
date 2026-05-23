@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { type LoanResponse } from '@/types';
+import { type LoanResponse, type BookResponse } from '@/types';
 import { ImageOff } from 'lucide-react';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Badge } from '@repo/ui/components/badge';
@@ -63,8 +63,8 @@ export function BorrowsHistoryDialog({ open, onOpenChange, borrow }: BorrowsHist
                 : t(keys.table.actions.history.unknownAuthor)}
             </p>
             <div className='mt-2 flex flex-wrap gap-2'>
-              {borrow.book?.categories?.length ? (
-                borrow.book.categories.map((c, i) => (
+              {(borrow.book as BookResponse)?.categories?.length ? (
+                (borrow.book as BookResponse).categories!.map((c, i) => (
                   <Badge key={i} variant='secondary' className='h-5 px-2 py-0 text-xs font-normal'>
                     {c.translations?.find((tr) => tr.lang === locale)?.name ||
                       c.translations?.[0]?.name}

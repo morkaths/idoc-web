@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Plus, FolderPlus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useCreateBookmark, useUpdateBookmark, useBookmarkStatus } from '@/hooks/data/useBookmark';
+import { useCreateBookmark, useUpdateBookmark, useBookmark } from '@/hooks/data/useBookmark';
 import { useMyFolders, useCreateFolder } from '@/hooks/data/useFolder';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
@@ -27,13 +27,14 @@ import {
 
 type AddBookmarkDialogProps = {
   bookId: string;
+  bookmarkId?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDialogProps) {
-  const { data: session } = useSession();
+export function AddBookmarkDialog({ bookId, bookmarkId, open, onOpenChange }: AddBookmarkDialogProps) {
   const { t, keys } = useLocale('book');
+  const { data: session } = useSession();
   const [selectedFolder, setSelectedFolder] = useState<string>('');
   const [showCreateFolder, setShowCreateFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
@@ -45,27 +46,22 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
     { enabled: open && !!session?.user }
   );
 
-  const { data: bookmarkStatus } = useBookmarkStatus([bookId], {
-    enabled: open && !!session?.user,
-  });
-
   // Mutations
   const createFolderMut = useCreateFolder();
   const createBookmarkMut = useCreateBookmark();
   const updateBookmarkMut = useUpdateBookmark();
 
   const folders = foldersData?.data || [];
-  const currentBookmark = bookmarkStatus?.[bookId];
 
   const handleSave = async () => {
-    if (!selectedFolder && !currentBookmark) return;
+    if (!selectedFolder && !bookmarkId) return;
     if (isSubmitting) return;
 
     setIsSubmitting(true);
     try {
-      if (currentBookmark) {
+      if (bookmarkId) {
         await updateBookmarkMut.mutateAsync({
-          id: currentBookmark.id,
+          id: bookmarkId,
           data: { folderId: selectedFolder || undefined },
         });
       } else {
@@ -101,6 +97,10 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
       toast.error((err?.message as string) || 'Failed to create folder');
     }
   };
+
+  const { data: currentBookmark } = useBookmark(bookmarkId || '', {
+    enabled: open && !!bookmarkId,
+  });
 
   const folderObj = currentBookmark?.folder as Record<string, unknown> | undefined;
   const currentFolderId =

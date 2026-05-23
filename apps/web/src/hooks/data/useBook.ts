@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
-import { useSession } from 'next-auth/react';
 import { useQueries } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
-import type { BookResponse, BookRequest, BookmarkResponse, PageParams } from '@/types';
+import type { BookResponse, BookRequest, PageParams } from '@/types';
 import type { BookSearchParams } from '@/apis/book.api';
-import { BookmarkApi } from '@/apis/bookmark.api';
+
 import {
   useListQuery,
   useItemQuery,
@@ -16,52 +15,6 @@ import {
   type UpdateMutationOptions,
   type DeleteMutationOptions,
 } from './factory';
-
-export type EnrichedBook = BookResponse & {
-  bookmarkId?: string;
-};
-
-/**
- * Internal hook to enrich book list with bookmark status
- */
-function useBookListEnricher(booksQueryResult: ReturnType<typeof useListQuery<BookResponse>>) {
-  const { data: session, status: authStatus } = useSession();
-
-  const bookIds = useMemo(() => {
-    const content = booksQueryResult.data.data;
-    if (!content || !Array.isArray(content)) return [];
-    return content.map((b) => b.id).sort();
-  }, [booksQueryResult.data.data]);
-
-  const userId = session?.user?.id;
-
-  const { data: bookmarkData } = useItemQuery<Record<string, BookmarkResponse>>(
-    ['bookmarks', 'status', bookIds, userId],
-    () => BookmarkApi.status(bookIds),
-    {
-      enabled: bookIds.length > 0 && authStatus === 'authenticated' && !!userId,
-      staleTime: 5 * 60 * 1000,
-    }
-  );
-
-  const enrichedBooks = useMemo<EnrichedBook[]>(() => {
-    const content = booksQueryResult.data.data;
-    if (!content || !Array.isArray(content)) return [];
-
-    return content.map((book) => ({
-      ...book,
-      bookmarkId: bookmarkData?.[book.id]?.id,
-    }));
-  }, [booksQueryResult.data.data, bookmarkData]);
-
-  return {
-    ...booksQueryResult,
-    data: {
-      ...booksQueryResult.data,
-      data: enrichedBooks,
-    },
-  };
-}
 
 export const useBooksByIds = (bookIds: string[], enabled = true) => {
   const queries = useQueries({
@@ -92,22 +45,20 @@ export const useBooksByIds = (bookIds: string[], enabled = true) => {
 };
 
 /**
- * Hook to fetch books with pagination and bookmark status
+ * Hook to fetch books with pagination
  * @param params Pagination parameters
  * @param options Query options
  */
 export const useBooks = (params: PageParams = {}, options?: ListQueryOptions<BookResponse>) => {
-  const booksQuery = useListQuery<BookResponse>(
+  return useListQuery<BookResponse>(
     ['books', params],
     () => BookApi.find(params),
     options
   );
-
-  return useBookListEnricher(booksQuery);
 };
 
 /**
- * Hook to search books with bookmark status
+ * Hook to search books
  * @param params Search parameters
  * @param options Query options
  */
@@ -115,17 +66,15 @@ export const useSearchBooks = (
   params: BookSearchParams = {},
   options?: ListQueryOptions<BookResponse>
 ) => {
-  const booksQuery = useListQuery<BookResponse>(
+  return useListQuery<BookResponse>(
     ['books', 'search', params],
     () => BookApi.search(params),
     options
   );
-
-  return useBookListEnricher(booksQuery);
 };
 
 /**
- * Hook to fetch a single book by ID with bookmark status
+ * Hook to fetch a single book by ID
  * @param id Book ID
  * @param options Query options
  */
@@ -133,31 +82,10 @@ export const useBook = (
   id: string | undefined,
   options?: Parameters<typeof useItemQuery<BookResponse>>[2]
 ) => {
-  const { status: authStatus } = useSession();
-
-  const query = useItemQuery<BookResponse>(['books', id], () => BookApi.findById(id!), {
+  return useItemQuery<BookResponse>(['books', id], () => BookApi.findById(id!), {
     ...options,
     enabled: !!id && options?.enabled !== false,
   });
-
-  const { data: bookmarkData } = useItemQuery<Record<string, BookmarkResponse>>(
-    ['bookmarks', 'status', [id]],
-    () => BookmarkApi.status([id!]),
-    { enabled: !!id && authStatus === 'authenticated' }
-  );
-
-  const enrichedBook = useMemo<EnrichedBook | null>(() => {
-    if (!query.data) return null;
-    return {
-      ...query.data,
-      bookmarkId: bookmarkData?.[id!]?.id,
-    };
-  }, [query.data, bookmarkData, id]);
-
-  return {
-    ...query,
-    data: enrichedBook,
-  };
 };
 
 /**

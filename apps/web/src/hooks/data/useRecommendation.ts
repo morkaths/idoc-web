@@ -1,15 +1,12 @@
 import { useMemo } from 'react';
-import { useSession } from 'next-auth/react';
 import {
   RecommendationStrategy,
   type BookResponse,
-  type BookmarkResponse,
   type RecommendationResponse,
   type RecommendedBookResponse,
   SortDirection,
 } from '@/types';
 import { BookApi } from '@/apis/book.api';
-import { BookmarkApi } from '@/apis/bookmark.api';
 import { RecommendationApi } from '@/apis/recommendation.api';
 import { useItemQuery, useListQuery } from './factory';
 import { useBooksByIds } from './useBook';
@@ -19,24 +16,12 @@ const useEnrichedBooks = (
   isLoadingRec: boolean,
   isErrorRec: boolean
 ) => {
-  const { data: session, status: authStatus } = useSession();
-
   const bookIds = useMemo(() => recData?.items?.map((item) => item.id) ?? [], [recData]);
   const {
     data: booksData,
     isLoading: isLoadingBooks,
     isError: isErrorBooks,
   } = useBooksByIds(bookIds, bookIds.length > 0);
-
-  const currentUserId = session?.user?.id;
-  const { data: bookmarkData } = useItemQuery<Record<string, BookmarkResponse>>(
-    ['bookmarks', 'status', bookIds, currentUserId],
-    () => BookmarkApi.status(bookIds),
-    {
-      enabled: bookIds.length > 0 && authStatus === 'authenticated' && !!currentUserId,
-      staleTime: 5 * 60 * 1000,
-    }
-  );
 
   const data = useMemo<RecommendedBookResponse[]>(() => {
     const books = booksData ?? [];
@@ -50,12 +35,11 @@ const useEnrichedBooks = (
         ...book,
         score: recMap.get(book.id)?.score,
         reason: recMap.get(book.id)?.reason,
-        bookmarkId: bookmarkData?.[book.id]?.id ?? book.bookmarkId,
       }))
       .sort(
         (a: RecommendedBookResponse, b: RecommendedBookResponse) => (b.score ?? 0) - (a.score ?? 0)
       );
-  }, [booksData, recData, bookmarkData]);
+  }, [booksData, recData]);
 
   return {
     data,
@@ -128,26 +112,13 @@ export const useNewArrivals = (options: { limit?: number; enabled?: boolean } = 
     { enabled, staleTime: 30 * 60 * 1000 }
   );
 
-  const { data: session, status: authStatus } = useSession();
   const booksData = booksResponse.data;
-  const bookIds = useMemo(() => booksData.map((book: BookResponse) => book.id), [booksData]);
-
-  const currentUserId = session?.user?.id;
-  const { data: bookmarkData } = useItemQuery<Record<string, BookmarkResponse>>(
-    ['bookmarks', 'status', bookIds, currentUserId],
-    () => BookmarkApi.status(bookIds),
-    {
-      enabled: bookIds.length > 0 && authStatus === 'authenticated' && !!currentUserId,
-      staleTime: 5 * 60 * 1000,
-    }
-  );
 
   const data = useMemo<RecommendedBookResponse[]>(() => {
     return booksData.map((book: BookResponse) => ({
       ...book,
-      bookmarkId: bookmarkData?.[book.id]?.id ?? book.bookmarkId,
     }));
-  }, [booksData, bookmarkData]);
+  }, [booksData]);
 
   return {
     data,

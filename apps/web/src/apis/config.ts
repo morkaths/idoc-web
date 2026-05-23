@@ -140,11 +140,25 @@ const forwardServerCookies = async (config: InternalAxiosRequestConfig) => {
  * Attaches the Authorization header if the instance requires it.
  */
 const applyAuthHeader = async (config: InternalAxiosRequestConfig, useAuth: boolean) => {
-  if (!useAuth || typeof window === 'undefined') return;
+  if (!useAuth) return;
 
-  const token = await syncSession();
-  if (token) {
-    config.headers.set('Authorization', `Bearer ${token}`);
+  if (typeof window !== 'undefined') {
+    const token = await syncSession();
+    if (token) {
+      config.headers.set('Authorization', `Bearer ${token}`);
+    }
+  } else {
+    try {
+      const { cookies } = await import('next/headers');
+      const cookieStore = await cookies();
+      const token = cookieStore.get(env.cookie.accessToken)?.value;
+      
+      if (token) {
+        config.headers.set('Authorization', `Bearer ${token}`);
+      }
+    } catch (_error) {
+      // Not in a request context
+    }
   }
 };
 
