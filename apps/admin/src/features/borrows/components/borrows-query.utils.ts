@@ -25,13 +25,18 @@ export const borrowFilterFormSchema = z.object({
 
 export const borrowSortSchema = z.object({
   sortBy: z.string().default(DEFAULT_BORROW_SORT_FIELD).catch(DEFAULT_BORROW_SORT_FIELD),
-  sortOrder: z.nativeEnum(SortDirection).default(DEFAULT_BORROW_SORT_ORDER).catch(DEFAULT_BORROW_SORT_ORDER),
+  sortOrder: z
+    .nativeEnum(SortDirection)
+    .default(DEFAULT_BORROW_SORT_ORDER)
+    .catch(DEFAULT_BORROW_SORT_ORDER),
 });
 
-export const borrowQuerySchema = borrowFilterSchema.extend({
-  page: z.coerce.number().int().positive().catch(DEFAULT_BORROW_PAGE),
-  limit: z.coerce.number().int().positive().catch(DEFAULT_BORROW_LIMIT),
-}).merge(borrowSortSchema);
+export const borrowQuerySchema = borrowFilterSchema
+  .extend({
+    page: z.coerce.number().int().positive().catch(DEFAULT_BORROW_PAGE),
+    limit: z.coerce.number().int().positive().catch(DEFAULT_BORROW_LIMIT),
+  })
+  .merge(borrowSortSchema);
 
 // --- Types ---
 export type BorrowQueryState = z.infer<typeof borrowQuerySchema>;
@@ -53,9 +58,7 @@ export function buildBorrowFindParams(
     page,
     limit,
     query,
-    filters: status.length
-      ? [{ field: 'status', value: status, operator: FilterOperator.IN }]
-      : [],
+    filters: status.length ? [{ field: 'status', value: status, operator: FilterOperator.IN }] : [],
     sorts: [{ field: sortBy, direction: sortOrder }],
   };
 }

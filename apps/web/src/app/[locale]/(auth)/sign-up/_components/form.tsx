@@ -104,7 +104,9 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
                   <FormControl>
                     <Input placeholder={t(keys.form.username.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message, { min: 3 })}</FormMessage>
+                  <FormMessage>
+                    {fieldState.error?.message && t(fieldState.error.message, { min: 3 })}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -117,7 +119,9 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
                   <FormControl>
                     <Input placeholder={t(keys.form.email.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
+                  <FormMessage>
+                    {fieldState.error?.message && t(fieldState.error.message)}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -130,7 +134,9 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
                   <FormControl>
                     <PasswordInput placeholder={t(keys.form.password.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message, { min: 7 })}</FormMessage>
+                  <FormMessage>
+                    {fieldState.error?.message && t(fieldState.error.message, { min: 7 })}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -141,9 +147,14 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
                 <FormItem>
                   <FormLabel>{t(keys.form.confirmPassword.label)}</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder={t(keys.form.confirmPassword.placeholder)} {...field} />
+                    <PasswordInput
+                      placeholder={t(keys.form.confirmPassword.placeholder)}
+                      {...field}
+                    />
                   </FormControl>
-                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
+                  <FormMessage>
+                    {fieldState.error?.message && t(fieldState.error.message)}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -156,7 +167,9 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
                 <span className='w-full border-t' />
               </div>
               <div className='relative flex justify-center text-xs uppercase'>
-                <span className='bg-background text-muted-foreground px-2'>{t(keys.signIn.or)}</span>
+                <span className='bg-background text-muted-foreground px-2'>
+                  {t(keys.signIn.or)}
+                </span>
               </div>
             </div>
 

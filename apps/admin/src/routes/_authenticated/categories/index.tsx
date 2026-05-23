@@ -7,16 +7,11 @@ const categoriesSearchSchema = z.object({
   pageSize: z.coerce.number().optional().catch(10),
   query: z.string().optional().catch(''),
   lang: z
-    .preprocess(
-      (val) => (Array.isArray(val) ? val : val ? [val] : []),
-      z.array(z.string())
-    )
+    .preprocess((val) => (Array.isArray(val) ? val : val ? [val] : []), z.array(z.string()))
     .catch([]),
 });
 
-export const Route = createFileRoute('/_authenticated/categories/')(
-  {
-    validateSearch: categoriesSearchSchema,
-    component: Categories,
-  }
-);
+export const Route = createFileRoute('/_authenticated/categories/')({
+  validateSearch: categoriesSearchSchema,
+  component: Categories,
+});

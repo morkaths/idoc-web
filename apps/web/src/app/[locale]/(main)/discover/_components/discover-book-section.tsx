@@ -1,11 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import type { FindParams } from '@/types';
 import { motion } from 'framer-motion';
+import { useSearchBooks } from '@/hooks/data/useBook';
 import { Button } from '@repo/ui/components/button';
 import { BookGridItems } from '@/components/book/book-grid-items';
-import { useSearchBooks } from '@/hooks/data/useBook';
-import type { FindParams } from '@/types';
 
 type DiscoverBookSectionProps = {
   title: string;
@@ -22,7 +22,9 @@ export function DiscoverBookSection({
   initialLimit = 8,
 }: DiscoverBookSectionProps) {
   const [page, setPage] = React.useState(1);
-  const [books, setBooks] = React.useState<NonNullable<ReturnType<typeof useSearchBooks>['data']>['data']>([]);
+  const [books, setBooks] = React.useState<
+    NonNullable<ReturnType<typeof useSearchBooks>['data']>['data']
+  >([]);
 
   const paramsKey = React.useMemo(() => JSON.stringify(params), [params]);
 
@@ -74,21 +76,17 @@ export function DiscoverBookSection({
     >
       <div className='space-y-1 px-4'>
         <div className='space-y-1'>
-          <h2 className='text-xl md:text-2xl font-bold tracking-tight'>{title}</h2>
+          <h2 className='text-xl font-bold tracking-tight md:text-2xl'>{title}</h2>
           {description ? (
-            <p className='text-sm text-muted-foreground max-w-2xl'>{description}</p>
+            <p className='text-muted-foreground max-w-2xl text-sm'>{description}</p>
           ) : null}
         </div>
       </div>
 
-      <BookGridItems
-        data={books}
-        loading={isLoading}
-        error={error?.message}
-      />
+      <BookGridItems data={books} loading={isLoading} error={error?.message} />
 
       {hasMore ? (
-        <div className='px-4 flex justify-center'>
+        <div className='flex justify-center px-4'>
           <Button
             type='button'
             variant='outline'

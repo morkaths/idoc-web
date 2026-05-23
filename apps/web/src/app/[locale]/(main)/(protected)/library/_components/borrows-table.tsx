@@ -15,7 +15,6 @@ import {
 import { useBorrowHistory } from '@/hooks/data/useBorrow';
 import { KEYS, useLocale } from '@/hooks/ui/useLocale';
 import { useTableUrlState, type NavigateFn } from '@/hooks/ui/useTableUrlState';
-import { buildBorrowFindParams } from './borrow-query.utils';
 import {
   Table,
   TableBody,
@@ -25,6 +24,7 @@ import {
   TableRow,
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
+import { buildBorrowFindParams } from './borrow-query.utils';
 import { borrowsColumns } from './borrows-columns';
 import BorrowsTableBulkActions from './borrows-table-bulk-actions';
 
@@ -137,7 +137,13 @@ export function BorrowsTable() {
 
 type BorrowsTableContentProps = {
   columns: ReturnType<typeof borrowsColumns>;
-  borrows: ReturnType<typeof useBorrowHistory>['data'] extends infer T ? T extends { data?: infer D } ? D extends Array<unknown> ? D : never : never : never;
+  borrows: ReturnType<typeof useBorrowHistory>['data'] extends infer T
+    ? T extends { data?: infer D }
+      ? D extends Array<unknown>
+        ? D
+        : never
+      : never
+    : never;
   borrowPaginationPages: number;
   isBorrowsFetching: boolean;
   sorting: SortingState;
@@ -244,10 +250,7 @@ function BorrowsTableContent({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(cell.column.columnDef.meta?.className)}
-                    >
+                    <TableCell key={cell.id} className={cn(cell.column.columnDef.meta?.className)}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

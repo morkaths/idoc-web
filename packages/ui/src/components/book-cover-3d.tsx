@@ -41,7 +41,11 @@ export default function BookCover3d({
 
   return (
     <div
-      className={cn("flex items-center justify-center p-12", wrapperClassName, className)}
+      className={cn(
+        "flex items-center justify-center p-12",
+        wrapperClassName,
+        className,
+      )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -86,9 +90,7 @@ export default function BookCover3d({
           ) : (
             <div className="relative h-full w-full flex flex-col justify-end p-4 pl-6">
               {/* Dải màu phía trên (chiếm 40%) */}
-              <div
-                className="absolute top-0 left-0 right-0 h-[40%] z-10 bg-primary"
-              />
+              <div className="absolute top-0 left-0 right-0 h-[40%] z-10 bg-primary" />
               {/* Tên sách - Giới hạn 2-3 dòng, hỗ trợ sáng/tối */}
               <div className="z-20 h-[55%] flex items-end">
                 <span className="text-sm font-semibold text-foreground/60 select-none line-clamp-3 leading-tight tracking-tight uppercase">
@@ -133,7 +135,8 @@ export default function BookCover3d({
             transform: `translateZ(-${BOOK_DEPTH / 2 - 2}px)`,
             zIndex: 10,
             borderRadius: "1px 3px 3px 1px",
-            background: "linear-gradient(to right, #f0f0f0 0%, #ffffff 5%, #ffffff 100%)",
+            background:
+              "linear-gradient(to right, #f0f0f0 0%, #ffffff 5%, #ffffff 100%)",
           }}
         >
           <div className="p-6 opacity-10">
@@ -165,7 +168,8 @@ export default function BookCover3d({
             right: `-${BOOK_DEPTH / 2}px`,
             top: "3px",
             transform: "rotateY(90deg)",
-            background: "repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(0,0,0,0.05) 2px)",
+            background:
+              "repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(0,0,0,0.05) 2px)",
             opacity: isHovered ? 0 : 1,
           }}
         />
@@ -181,9 +185,7 @@ export default function BookCover3d({
             zIndex: 5,
           }}
         >
-          <div
-            className="absolute top-0 left-0 right-0 h-[40%] bg-background/50"
-          />
+          <div className="absolute top-0 left-0 right-0 h-[40%] bg-background/50" />
         </div>
 
         {/* Top/Bottom Edges */}
@@ -195,7 +197,8 @@ export default function BookCover3d({
             top: `-${BOOK_DEPTH / 2}px`,
             left: "2px",
             transform: "rotateX(90deg)",
-            background: "repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.05) 2px)",
+            background:
+              "repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.05) 2px)",
           }}
         />
         <div
@@ -206,7 +209,8 @@ export default function BookCover3d({
             bottom: `-${BOOK_DEPTH / 2}px`,
             left: "2px",
             transform: "rotateX(-90deg)",
-            background: "repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.05) 2px)",
+            background:
+              "repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.05) 2px)",
           }}
         />
       </div>

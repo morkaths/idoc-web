@@ -18,7 +18,10 @@ const agentAxios = axios.create({
  * Lightweight agent API client for Admin app.
  */
 export const AgentClient = {
-  async get<T>(url: string, options?: { params?: Record<string, unknown> }): Promise<ApiResponse<T>> {
+  async get<T>(
+    url: string,
+    options?: { params?: Record<string, unknown> }
+  ): Promise<ApiResponse<T>> {
     try {
       const response = await agentAxios.get<T>(url, { params: options?.params });
       return {

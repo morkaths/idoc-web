@@ -52,15 +52,17 @@ export { ComponentName };
 ### 2. Export from barrel
 
 Add to `packages/ui/src/components/index.ts` (or the main barrel export):
+
 ```typescript
-export { ComponentName } from './component-name';
+export { ComponentName } from "./component-name";
 ```
 
 ### 3. Usage in apps
 
 Import using the `@repo/ui` alias:
+
 ```typescript
-import { ComponentName } from '@repo/ui/components/component-name';
+import { ComponentName } from "@repo/ui/components/component-name";
 ```
 
 ## Key conventions
@@ -70,26 +72,28 @@ import { ComponentName } from '@repo/ui/components/component-name';
 - Set `displayName` for DevTools debugging
 - Use `cn()` utility (from `clsx` + `tailwind-merge`) for className merging
 - Use `class-variance-authority` (CVA) for complex variant systems:
-  ```typescript
-  import { cva, type VariantProps } from 'class-variance-authority';
 
-  const componentVariants = cva('base-classes', {
+  ```typescript
+  import { cva, type VariantProps } from "class-variance-authority";
+
+  const componentVariants = cva("base-classes", {
     variants: {
       variant: {
-        default: 'default-classes',
-        destructive: 'destructive-classes',
+        default: "default-classes",
+        destructive: "destructive-classes",
       },
       size: {
-        sm: 'small-classes',
-        lg: 'large-classes',
+        sm: "small-classes",
+        lg: "large-classes",
       },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'sm',
+      variant: "default",
+      size: "sm",
     },
   });
   ```
+
 - Build on top of **Radix UI** primitives when the component needs accessibility features (dialog, dropdown, tooltip, etc.)
 - Always check if the component already exists in `packages/ui/src/components/` before creating a new one
 - TailwindCSS 4 classes only — no inline styles

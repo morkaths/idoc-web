@@ -35,10 +35,16 @@ export default function BookTags({
 
   const visible = maxVisible && !showAll ? normalized.slice(0, maxVisible) : normalized;
 
-  const sizeClass = size === 'sm' ? 'text-sm px-2 py-0.5' : size === 'lg' ? 'text-base px-4 py-1.5' : 'text-sm px-3 py-1';
+  const sizeClass =
+    size === 'sm'
+      ? 'text-sm px-2 py-0.5'
+      : size === 'lg'
+        ? 'text-base px-4 py-1.5'
+        : 'text-sm px-3 py-1';
 
   const variantClass = (v: string) => {
-    if (v === 'outline') return 'border border-gray-200 dark:border-zinc-700 bg-transparent text-muted-foreground';
+    if (v === 'outline')
+      return 'border border-gray-200 dark:border-zinc-700 bg-transparent text-muted-foreground';
     if (v === 'ghost') return 'bg-transparent text-muted-foreground';
     return 'bg-primary/10 text-primary';
   };
@@ -54,12 +60,13 @@ export default function BookTags({
           key={tag.id ?? `${tag.name}-${idx}`}
           type={clickable ? 'button' : 'button'}
           onClick={() => clickable && onClick?.(tag)}
-          className={`inline-flex items-center gap-2 rounded-full ${sizeClass} ${variantClass(variant)} ${clickable ? 'cursor-pointer hover:opacity-90' : 'cursor-default'
-            }`}
+          className={`inline-flex items-center gap-2 rounded-full ${sizeClass} ${variantClass(variant)} ${
+            clickable ? 'cursor-pointer hover:opacity-90' : 'cursor-default'
+          }`}
         >
           <span className='truncate'>{tag.name}</span>
           {showCount && tag.count ? (
-            <span className='text-xs text-muted-foreground'>({tag.count})</span>
+            <span className='text-muted-foreground text-xs'>({tag.count})</span>
           ) : null}
         </button>
       ))}
@@ -68,9 +75,11 @@ export default function BookTags({
         <button
           type='button'
           onClick={() => setShowAll((s) => !s)}
-          className='ml-1 text-sm text-primary font-medium'
+          className='text-primary ml-1 text-sm font-medium'
         >
-          {showAll ? t('common.actions.showLess') || 'Show less' : t('common.actions.showMore') || `+${normalized.length - maxVisible} more`}
+          {showAll
+            ? t('common.actions.showLess') || 'Show less'
+            : t('common.actions.showMore') || `+${normalized.length - maxVisible} more`}
         </button>
       ) : null}
     </div>

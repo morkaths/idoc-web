@@ -24,19 +24,19 @@ type UseTableUrlStateParams = {
   };
   columnFilters?: Array<
     | {
-      columnId: string;
-      searchKey: string;
-      type?: 'string';
-      serialize?: (value: unknown) => unknown;
-      deserialize?: (value: unknown) => unknown;
-    }
+        columnId: string;
+        searchKey: string;
+        type?: 'string';
+        serialize?: (value: unknown) => unknown;
+        deserialize?: (value: unknown) => unknown;
+      }
     | {
-      columnId: string;
-      searchKey: string;
-      type: 'array';
-      serialize?: (value: unknown) => unknown;
-      deserialize?: (value: unknown) => unknown;
-    }
+        columnId: string;
+        searchKey: string;
+        type: 'array';
+        serialize?: (value: unknown) => unknown;
+        deserialize?: (value: unknown) => unknown;
+      }
   >;
 };
 
@@ -101,17 +101,23 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     const rawPageSize = (search as SearchRecord)[pageSizeKey];
 
     // URL params are strings, need to parse them
-    const pageNum = typeof rawPage === 'string'
-      ? parseInt(rawPage, 10)
-      : (typeof rawPage === 'number' ? rawPage : defaultPage);
+    const pageNum =
+      typeof rawPage === 'string'
+        ? parseInt(rawPage, 10)
+        : typeof rawPage === 'number'
+          ? rawPage
+          : defaultPage;
 
-    const pageSizeNum = typeof rawPageSize === 'string'
-      ? parseInt(rawPageSize, 10)
-      : (typeof rawPageSize === 'number' ? rawPageSize : defaultPageSize);
+    const pageSizeNum =
+      typeof rawPageSize === 'string'
+        ? parseInt(rawPageSize, 10)
+        : typeof rawPageSize === 'number'
+          ? rawPageSize
+          : defaultPageSize;
 
     return {
       pageIndex: isNaN(pageNum) ? 0 : Math.max(0, pageNum - 1),
-      pageSize: isNaN(pageSizeNum) ? defaultPageSize : pageSizeNum
+      pageSize: isNaN(pageSizeNum) ? defaultPageSize : pageSizeNum,
     };
   }, [search, pageKey, pageSizeKey, defaultPage, defaultPageSize]);
 
@@ -126,7 +132,10 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
       const next = typeof updater === 'function' ? updater(currentPagination) : updater;
 
       // Don't navigate if values haven't actually changed to avoid unnecessary re-renders
-      if (next.pageIndex === currentPagination.pageIndex && next.pageSize === currentPagination.pageSize) {
+      if (
+        next.pageIndex === currentPagination.pageIndex &&
+        next.pageSize === currentPagination.pageSize
+      ) {
         return;
       }
 
@@ -161,19 +170,19 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     () =>
       globalFilterEnabled
         ? (updater: string | ((prev: string) => string)) => {
-          const next = typeof updater === 'function' ? updater(globalFilter) : updater;
-          const value = trimGlobal ? next.trim() : next;
+            const next = typeof updater === 'function' ? updater(globalFilter) : updater;
+            const value = trimGlobal ? next.trim() : next;
 
-          if (value === globalFilter) return;
+            if (value === globalFilter) return;
 
-          navigate({
-            search: (prev) => ({
-              ...(prev as SearchRecord),
-              [pageKey]: undefined,
-              [globalFilterKey]: value ? value : undefined,
-            }),
-          });
-        }
+            navigate({
+              search: (prev) => ({
+                ...(prev as SearchRecord),
+                [pageKey]: undefined,
+                [globalFilterKey]: value ? value : undefined,
+              }),
+            });
+          }
         : undefined,
     [globalFilterEnabled, globalFilter, trimGlobal, navigate, pageKey, globalFilterKey]
   );
@@ -214,9 +223,12 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     (pageCount: number, opts: { resetTo?: 'first' | 'last' } = { resetTo: 'first' }) => {
       const currentSearch = searchRef.current;
       const rawPage = currentSearch[pageKey];
-      const pageNum = typeof rawPage === 'string'
-        ? parseInt(rawPage, 10)
-        : (typeof rawPage === 'number' ? rawPage : defaultPage);
+      const pageNum =
+        typeof rawPage === 'string'
+          ? parseInt(rawPage, 10)
+          : typeof rawPage === 'number'
+            ? rawPage
+            : defaultPage;
 
       if (pageCount > 0 && pageNum > pageCount) {
         const nextQuery: Record<string, string> = {};
@@ -248,4 +260,3 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     ensurePageInRange,
   };
 }
-

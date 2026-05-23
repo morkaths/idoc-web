@@ -10,20 +10,15 @@ import type {
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
-const factory = apiFactory<BorrowResponse, BorrowRequest>(
-  ApiEndpoint.endpoints.borrows,
-  {
-    find: 'public',
-    findById: 'public',
-  }
-)
+const factory = apiFactory<BorrowResponse, BorrowRequest>(ApiEndpoint.endpoints.borrows, {
+  find: 'public',
+  findById: 'public',
+});
 
 export const BorrowApi = {
   ...factory,
 
-  history: async (
-    params?: FindParams
-  ): Promise<ApiResponse<PageResponse<BorrowResponse>>> => {
+  history: async (params?: FindParams): Promise<ApiResponse<PageResponse<BorrowResponse>>> => {
     return ApiClient.get<PageResponse<BorrowResponse>>(ApiEndpoint.endpoints.borrows.history(), {
       security: 'private',
       params,
@@ -46,4 +41,3 @@ export const BorrowApi = {
     });
   },
 };
-

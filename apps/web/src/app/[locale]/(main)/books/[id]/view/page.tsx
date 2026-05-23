@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { BorrowStatus, FilterOperator, SortDirection } from '@/types';
 import { ArrowLeft, Loader2, Lock } from 'lucide-react';
 import { useBook } from '@/hooks/data/useBook';
 import { useBorrowHistory, useRead } from '@/hooks/data/useBorrow';
@@ -9,7 +10,6 @@ import { useFile, useViewUrl } from '@/hooks/data/useFile';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import { FileViewer } from '@/components/viewers/file-viewer';
-import { BorrowStatus, FilterOperator, SortDirection } from '@/types';
 
 export default function BookViewPage() {
   const { t, keys } = useLocale('view');
@@ -36,9 +36,13 @@ export default function BookViewPage() {
     enabled: !!activeBorrowId && !!session?.user,
   });
 
-  const { data: viewUrl, isLoading: viewUrlLoading } = useViewUrl(book?.fileId || '', ticket || '', {
-    enabled: !!book?.fileId && !!ticket,
-  });
+  const { data: viewUrl, isLoading: viewUrlLoading } = useViewUrl(
+    book?.fileId || '',
+    ticket || '',
+    {
+      enabled: !!book?.fileId && !!ticket,
+    }
+  );
 
   const handleBack = () => router.back();
 

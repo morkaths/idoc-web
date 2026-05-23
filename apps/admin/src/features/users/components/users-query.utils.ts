@@ -1,6 +1,6 @@
+import { z } from 'zod';
 import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
 import { type FindParams, SortDirection, FilterOperator } from '@repo/types';
-import { z } from 'zod';
 
 // --- Helpers ---
 const commaSeparatedArray = z.string().transform((val) => val.split(',').filter(Boolean));
@@ -26,13 +26,18 @@ export const userFilterFormSchema = z.object({
 
 export const userSortSchema = z.object({
   sortBy: z.string().default(DEFAULT_USER_SORT_FIELD).catch(DEFAULT_USER_SORT_FIELD),
-  sortOrder: z.nativeEnum(SortDirection).default(DEFAULT_USER_SORT_ORDER).catch(DEFAULT_USER_SORT_ORDER),
+  sortOrder: z
+    .nativeEnum(SortDirection)
+    .default(DEFAULT_USER_SORT_ORDER)
+    .catch(DEFAULT_USER_SORT_ORDER),
 });
 
-export const userQuerySchema = userFilterSchema.extend({
-  page: z.coerce.number().int().positive().catch(DEFAULT_USER_PAGE),
-  limit: z.coerce.number().int().positive().catch(DEFAULT_USER_LIMIT),
-}).merge(userSortSchema);
+export const userQuerySchema = userFilterSchema
+  .extend({
+    page: z.coerce.number().int().positive().catch(DEFAULT_USER_PAGE),
+    limit: z.coerce.number().int().positive().catch(DEFAULT_USER_LIMIT),
+  })
+  .merge(userSortSchema);
 
 // --- Types ---
 export type UserQueryState = z.infer<typeof userQuerySchema>;

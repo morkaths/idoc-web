@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { BorrowRequestSchema, type LoanResponse, type BorrowRequest } from '@/types';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
@@ -18,8 +19,6 @@ import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/c
 import { Input } from '@repo/ui/components/input';
 import { DatePicker } from '@/components/form/date-picker';
 import { ItemCombobox } from './items-combobox';
-
-import { useLocale } from '@/hooks/ui/useLocale';
 
 type BorrowsMutateDialogProps = {
   open: boolean;

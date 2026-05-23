@@ -1,6 +1,6 @@
+import { z } from 'zod';
 import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
 import { type FindParams, SortDirection, FilterOperator } from '@repo/types';
-import { z } from 'zod';
 
 // --- Helpers ---
 const commaSeparatedArray = z.string().transform((val) => val.split(',').filter(Boolean));
@@ -26,13 +26,18 @@ export const authorFilterFormSchema = z.object({
 
 export const authorSortSchema = z.object({
   sortBy: z.string().default(DEFAULT_AUTHOR_SORT_FIELD).catch(DEFAULT_AUTHOR_SORT_FIELD),
-  sortOrder: z.nativeEnum(SortDirection).default(DEFAULT_AUTHOR_SORT_ORDER).catch(DEFAULT_AUTHOR_SORT_ORDER),
+  sortOrder: z
+    .nativeEnum(SortDirection)
+    .default(DEFAULT_AUTHOR_SORT_ORDER)
+    .catch(DEFAULT_AUTHOR_SORT_ORDER),
 });
 
-export const authorQuerySchema = authorFilterSchema.extend({
-  page: z.coerce.number().int().positive().catch(DEFAULT_AUTHOR_PAGE),
-  limit: z.coerce.number().int().positive().catch(DEFAULT_AUTHOR_LIMIT),
-}).merge(authorSortSchema);
+export const authorQuerySchema = authorFilterSchema
+  .extend({
+    page: z.coerce.number().int().positive().catch(DEFAULT_AUTHOR_PAGE),
+    limit: z.coerce.number().int().positive().catch(DEFAULT_AUTHOR_LIMIT),
+  })
+  .merge(authorSortSchema);
 
 // --- Types ---
 export type AuthorQueryState = z.infer<typeof authorQuerySchema>;
@@ -53,7 +58,7 @@ export function buildAuthorFindParams(
   const nationality = (columnFilters.find((f) => f.id === 'nationality')?.value as string[]) || [];
 
   const filters = [];
-  
+
   if (nationality.length > 0) {
     filters.push({ field: 'nationality', value: nationality, operator: FilterOperator.IN });
   }
@@ -66,4 +71,3 @@ export function buildAuthorFindParams(
     sorts: [{ field: sortBy, direction: sortOrder }],
   };
 }
-

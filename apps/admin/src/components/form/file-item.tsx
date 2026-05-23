@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { FileApi } from '@/apis/file.api';
 import type { FileResponse } from '@/types';
 import { FileArchive, FileCode, FilePlay, FileText, Sheet, Trash2, Loader2 } from 'lucide-react';
-import { FileApi } from '@/apis/file.api';
 
 export function FileItem({
   file,
@@ -58,19 +58,26 @@ export function FileItem({
   }, [file, isDownloading, isLocal, localUrl]);
 
   const renderIcon = useMemo(() => {
-    if (isDownloading) return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
+    if (isDownloading) return <Loader2 className='text-primary h-4 w-4 animate-spin' />;
 
     const iconProps = { className: 'h-4 w-4' };
     const mime = contentType.toLowerCase();
 
-    if (mime === 'application/pdf') return <FileText {...iconProps} className={`${iconProps.className} text-red-500`} />;
+    if (mime === 'application/pdf')
+      return <FileText {...iconProps} className={`${iconProps.className} text-red-500`} />;
     if (mime.includes('sheet') || mime.includes('excel') || mime.includes('csv'))
       return <Sheet {...iconProps} className={`${iconProps.className} text-green-500`} />;
     if (mime.includes('zip') || mime.includes('rar') || mime.includes('compressed'))
       return <FileArchive {...iconProps} className={`${iconProps.className} text-yellow-500`} />;
     if (mime.startsWith('image/') || mime.startsWith('video/') || mime.startsWith('audio/'))
       return <FilePlay {...iconProps} className={`${iconProps.className} text-indigo-500`} />;
-    if (mime.includes('javascript') || mime.includes('typescript') || mime.includes('json') || mime.includes('html') || mime.includes('css'))
+    if (
+      mime.includes('javascript') ||
+      mime.includes('typescript') ||
+      mime.includes('json') ||
+      mime.includes('html') ||
+      mime.includes('css')
+    )
       return <FileCode {...iconProps} className={`${iconProps.className} text-orange-500`} />;
 
     return <FileText {...iconProps} className={`${iconProps.className} text-muted-foreground`} />;
@@ -88,8 +95,8 @@ export function FileItem({
             tabIndex={0}
             onClick={handleAction}
             onKeyDown={(e) => e.key === 'Enter' && handleAction()}
-            className={`text-primary max-w-60 truncate text-sm font-semibold underline cursor-pointer hover:opacity-80 transition-opacity ${
-              isDownloading ? 'opacity-50 pointer-events-none' : ''
+            className={`text-primary max-w-60 cursor-pointer truncate text-sm font-semibold underline transition-opacity hover:opacity-80 ${
+              isDownloading ? 'pointer-events-none opacity-50' : ''
             }`}
           >
             {name}
@@ -101,7 +108,7 @@ export function FileItem({
         {onDelete && (
           <button
             type='button'
-            className='bg-transparent hover:text-red-500 transition-colors disabled:opacity-50'
+            className='bg-transparent transition-colors hover:text-red-500 disabled:opacity-50'
             onClick={onDelete}
             disabled={isDownloading}
             aria-label='Remove file'

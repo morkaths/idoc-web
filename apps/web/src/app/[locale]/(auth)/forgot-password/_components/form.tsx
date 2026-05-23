@@ -78,7 +78,9 @@ export function ForgotPasswordForm({ className, ...props }: ForgotPasswordFormPr
                   <FormControl>
                     <Input placeholder={t(keys.form.email.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
+                  <FormMessage>
+                    {fieldState.error?.message && t(fieldState.error.message)}
+                  </FormMessage>
                 </FormItem>
               )}
             />

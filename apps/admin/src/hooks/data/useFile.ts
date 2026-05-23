@@ -16,15 +16,8 @@ import {
  * @param params Pagination parameters
  * @param options Query options
  */
-export const useFiles = (
-  params: PageParams = {},
-  options?: ListQueryOptions<FileResponse>
-) => {
-  return useListQuery(
-    ['files', params],
-    () => FileApi.find(params),
-    options
-  );
+export const useFiles = (params: PageParams = {}, options?: ListQueryOptions<FileResponse>) => {
+  return useListQuery(['files', params], () => FileApi.find(params), options);
 };
 
 /**
@@ -48,18 +41,11 @@ export const useSearchFiles = (
  * @param id File ID
  * @param options Query options
  */
-export const useFile = (
-  id: string,
-  options?: ItemQueryOptions<FileResponse>
-) => {
-  return useItemQuery(
-    ['files', id],
-    () => FileApi.findById(id),
-    {
-      enabled: !!id,
-      ...options,
-    }
-  );
+export const useFile = (id: string, options?: ItemQueryOptions<FileResponse>) => {
+  return useItemQuery(['files', id], () => FileApi.findById(id), {
+    enabled: !!id,
+    ...options,
+  });
 };
 
 /**
@@ -74,7 +60,7 @@ export const useUploadPresignedFile = <TContext = unknown>(
       const result = await FileApi.uploadPresigned({
         fileName: file.name,
         contentType: file.type,
-        folder
+        folder,
       });
 
       if (!result.success || !result.data) {
@@ -95,13 +81,6 @@ export const useUploadPresignedFile = <TContext = unknown>(
  * Hook to delete a file
  * @param options Mutation options
  */
-export const useDeleteFile = <TContext = unknown>(
-  options?: DeleteMutationOptions<TContext>
-) => {
-  return useDeleteMutation<TContext>(
-    (id) => FileApi.delete(id),
-    [['files']],
-    options
-  );
+export const useDeleteFile = <TContext = unknown>(options?: DeleteMutationOptions<TContext>) => {
+  return useDeleteMutation<TContext>((id) => FileApi.delete(id), [['files']], options);
 };
-

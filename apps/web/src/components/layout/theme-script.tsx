@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import type { ThemePreset } from "@/types";
-import { themeConfig } from "./data/theme-data";
+import type { ThemePreset } from '@/types';
+import { themeConfig } from './data/theme-data';
 
 export function ThemeScript({ theme }: { theme: ThemePreset }) {
-    const scriptContent = `
+  const scriptContent = `
     try {
       var mode = document.cookie.match(/idoc_web_mode=([^;]+)/)?.[1] || '${themeConfig.defaults.mode}';
       if (mode === 'system') {
@@ -29,11 +29,11 @@ export function ThemeScript({ theme }: { theme: ThemePreset }) {
     }
   `;
 
-    return (
-        <script
-            dangerouslySetInnerHTML={{
-                __html: scriptContent,
-            }}
-        />
-    );
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: scriptContent,
+      }}
+    />
+  );
 }

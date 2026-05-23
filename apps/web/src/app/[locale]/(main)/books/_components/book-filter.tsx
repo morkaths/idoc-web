@@ -1,14 +1,18 @@
 'use client';
 
+import { useEffect } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
-import { type BookFilterState, bookFilterFormSchema, DEFAULT_BOOK_FILTER } from './book-query.utils';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import { Form, FormField, FormLabel, FormControl, FormMessage } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
+import {
+  type BookFilterState,
+  bookFilterFormSchema,
+  DEFAULT_BOOK_FILTER,
+} from './book-query.utils';
 import { CategoriesCombobox } from './categories-combobox';
 import { LanguagesCombobox } from './languages-combobox';
 
@@ -32,10 +36,7 @@ export default function BookFilter({ filter, onFilter, onReset }: BookFilterProp
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onFilter)}
-        className='space-y-4'
-      >
+      <form onSubmit={form.handleSubmit(onFilter)} className='space-y-4'>
         {/* Search */}
         <FormField
           control={form.control}

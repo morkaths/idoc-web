@@ -14,9 +14,14 @@ All data hooks live in: `apps/admin/src/hooks/data/use{Entity}.ts`
 ## Template
 
 ```typescript
-import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import { EntityApi } from '@/apis';
-import type { Entity, EntityRequest, FindParams, Pagination } from '@/types';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
+import { EntityApi } from "@/apis";
+import type { Entity, EntityRequest, FindParams, Pagination } from "@/types";
 
 type EntityResponse = { data: Entity[]; pagination?: Pagination };
 
@@ -28,10 +33,13 @@ type EntityResponse = { data: Entity[]; pagination?: Pagination };
  */
 export const useEntities = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<EntityResponse, Error, EntityResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: Omit<
+    UseQueryOptions<EntityResponse, Error, EntityResponse, any[]>,
+    "queryKey" | "queryFn"
+  >,
 ) => {
   const query = useQuery<EntityResponse, Error, EntityResponse, any[]>({
-    queryKey: ['entities', params],
+    queryKey: ["entities", params],
     queryFn: () => EntityApi.findAll(params),
     enabled: true,
     refetchOnWindowFocus: false,
@@ -56,7 +64,7 @@ export const useEntities = (
  */
 export const useEntity = (id: string) => {
   const query = useQuery({
-    queryKey: ['entities', id],
+    queryKey: ["entities", id],
     queryFn: () => EntityApi.findById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
@@ -80,7 +88,7 @@ export const useCreateEntity = () => {
   return useMutation({
     mutationFn: (data: EntityRequest) => EntityApi.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['entities'] });
+      queryClient.invalidateQueries({ queryKey: ["entities"] });
     },
   });
 };
@@ -98,8 +106,8 @@ export const useUpdateEntity = () => {
     mutationFn: ({ id, data }: { id: string; data: Partial<EntityRequest> }) =>
       EntityApi.update(id, data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['entities', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['entities'] });
+      queryClient.invalidateQueries({ queryKey: ["entities", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["entities"] });
     },
   });
 };
@@ -116,7 +124,7 @@ export const useDeleteEntity = () => {
   return useMutation({
     mutationFn: (id: string) => EntityApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['entities'] });
+      queryClient.invalidateQueries({ queryKey: ["entities"] });
     },
   });
 };
@@ -145,10 +153,10 @@ const updateEntity = useUpdateEntity();
 const handleSubmit = async (formData: EntityRequest) => {
   if (isEditing) {
     await updateEntity.mutateAsync({ id: selectedId, data: formData });
-    toast.success('Entity updated successfully!');
+    toast.success("Entity updated successfully!");
   } else {
     await createEntity.mutateAsync(formData);
-    toast.success('Entity created successfully!');
+    toast.success("Entity created successfully!");
   }
 };
 ```

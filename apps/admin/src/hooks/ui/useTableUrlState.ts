@@ -24,20 +24,20 @@ type UseTableUrlStateParams = {
   };
   columnFilters?: Array<
     | {
-      columnId: string;
-      searchKey: string;
-      type?: 'string';
-      // Optional transformers for custom types
-      serialize?: (value: unknown) => unknown;
-      deserialize?: (value: unknown) => unknown;
-    }
+        columnId: string;
+        searchKey: string;
+        type?: 'string';
+        // Optional transformers for custom types
+        serialize?: (value: unknown) => unknown;
+        deserialize?: (value: unknown) => unknown;
+      }
     | {
-      columnId: string;
-      searchKey: string;
-      type: 'array';
-      serialize?: (value: unknown) => unknown;
-      deserialize?: (value: unknown) => unknown;
-    }
+        columnId: string;
+        searchKey: string;
+        type: 'array';
+        serialize?: (value: unknown) => unknown;
+        deserialize?: (value: unknown) => unknown;
+      }
   >;
 };
 
@@ -124,27 +124,30 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     };
   }, [search, pageKey, pageSizeKey, defaultPage, defaultPageSize]);
 
-  const onPaginationChange: OnChangeFn<PaginationState> = useCallback((updater) => {
-    const currentPagination = pagination;
-    const next = typeof updater === 'function' ? updater(currentPagination) : updater;
+  const onPaginationChange: OnChangeFn<PaginationState> = useCallback(
+    (updater) => {
+      const currentPagination = pagination;
+      const next = typeof updater === 'function' ? updater(currentPagination) : updater;
 
-    if (
-      next.pageIndex === currentPagination.pageIndex &&
-      next.pageSize === currentPagination.pageSize
-    ) {
-      return;
-    }
+      if (
+        next.pageIndex === currentPagination.pageIndex &&
+        next.pageSize === currentPagination.pageSize
+      ) {
+        return;
+      }
 
-    const nextPage = next.pageIndex + 1;
-    const nextPageSize = next.pageSize;
-    navigate({
-      search: (prev) => ({
-        ...(prev as SearchRecord),
-        [pageKey]: nextPage <= defaultPage ? undefined : nextPage,
-        [pageSizeKey]: nextPageSize === defaultPageSize ? undefined : nextPageSize,
-      }),
-    });
-  }, [defaultPage, defaultPageSize, navigate, pageKey, pageSizeKey, pagination]);
+      const nextPage = next.pageIndex + 1;
+      const nextPageSize = next.pageSize;
+      navigate({
+        search: (prev) => ({
+          ...(prev as SearchRecord),
+          [pageKey]: nextPage <= defaultPage ? undefined : nextPage,
+          [pageSizeKey]: nextPageSize === defaultPageSize ? undefined : nextPageSize,
+        }),
+      });
+    },
+    [defaultPage, defaultPageSize, navigate, pageKey, pageSizeKey, pagination]
+  );
 
   const [globalFilter, setGlobalFilter] = useState<string | undefined>(() => {
     if (!globalFilterEnabled) return undefined;
@@ -152,69 +155,75 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     return typeof raw === 'string' ? raw : '';
   });
 
-  const handleGlobalFilterChange = useCallback((updater: string | ((prev: string) => string)) => {
-    const next = typeof updater === 'function' ? updater(globalFilter ?? '') : updater;
-    const value = trimGlobal ? next.trim() : next;
-    setGlobalFilter(value);
-    navigate({
-      search: (prev) => ({
-        ...(prev as SearchRecord),
-        [pageKey]: undefined,
-        [globalFilterKey]: value ? value : undefined,
-      }),
-    });
-  }, [globalFilter, trimGlobal, navigate, pageKey, globalFilterKey]);
+  const handleGlobalFilterChange = useCallback(
+    (updater: string | ((prev: string) => string)) => {
+      const next = typeof updater === 'function' ? updater(globalFilter ?? '') : updater;
+      const value = trimGlobal ? next.trim() : next;
+      setGlobalFilter(value);
+      navigate({
+        search: (prev) => ({
+          ...(prev as SearchRecord),
+          [pageKey]: undefined,
+          [globalFilterKey]: value ? value : undefined,
+        }),
+      });
+    },
+    [globalFilter, trimGlobal, navigate, pageKey, globalFilterKey]
+  );
 
   const onGlobalFilterChange = globalFilterEnabled ? handleGlobalFilterChange : undefined;
 
-  const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> = useCallback((updater) => {
-    const next = typeof updater === 'function' ? updater(columnFilters) : updater;
-    setColumnFilters(next);
+  const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> = useCallback(
+    (updater) => {
+      const next = typeof updater === 'function' ? updater(columnFilters) : updater;
+      setColumnFilters(next);
 
-    const patch: Record<string, unknown> = {};
+      const patch: Record<string, unknown> = {};
 
-    for (const cfg of columnFiltersCfg) {
-      const found = next.find((f) => f.id === cfg.columnId);
-      const serialize = cfg.serialize ?? ((v: unknown) => v);
-      if (cfg.type === 'string') {
-        const value = typeof found?.value === 'string' ? (found.value as string) : '';
-        patch[cfg.searchKey] = value.trim() !== '' ? serialize(value) : undefined;
-      } else {
-        const value = Array.isArray(found?.value) ? (found!.value as unknown[]) : [];
-        patch[cfg.searchKey] = value.length > 0 ? serialize(value) : undefined;
+      for (const cfg of columnFiltersCfg) {
+        const found = next.find((f) => f.id === cfg.columnId);
+        const serialize = cfg.serialize ?? ((v: unknown) => v);
+        if (cfg.type === 'string') {
+          const value = typeof found?.value === 'string' ? (found.value as string) : '';
+          patch[cfg.searchKey] = value.trim() !== '' ? serialize(value) : undefined;
+        } else {
+          const value = Array.isArray(found?.value) ? (found!.value as unknown[]) : [];
+          patch[cfg.searchKey] = value.length > 0 ? serialize(value) : undefined;
+        }
       }
-    }
 
-    navigate({
-      search: (prev) => ({
-        ...(prev as SearchRecord),
-        [pageKey]: undefined,
-        ...patch,
-      }),
-    });
-  }, [columnFilters, columnFiltersCfg, navigate, pageKey]);
-
-  const ensurePageInRange = useCallback((
-    pageCount: number,
-    opts: { resetTo?: 'first' | 'last' } = { resetTo: 'first' }
-  ) => {
-    const currentPage = (search as SearchRecord)[pageKey];
-    const pageNum =
-      typeof currentPage === 'string'
-        ? Number.parseInt(currentPage, 10)
-        : typeof currentPage === 'number'
-          ? currentPage
-          : defaultPage;
-    if (pageCount > 0 && pageNum > pageCount) {
       navigate({
-        replace: true,
         search: (prev) => ({
           ...(prev as SearchRecord),
-          [pageKey]: opts.resetTo === 'last' ? pageCount : undefined,
+          [pageKey]: undefined,
+          ...patch,
         }),
       });
-    }
-  }, [search, pageKey, defaultPage, navigate]);
+    },
+    [columnFilters, columnFiltersCfg, navigate, pageKey]
+  );
+
+  const ensurePageInRange = useCallback(
+    (pageCount: number, opts: { resetTo?: 'first' | 'last' } = { resetTo: 'first' }) => {
+      const currentPage = (search as SearchRecord)[pageKey];
+      const pageNum =
+        typeof currentPage === 'string'
+          ? Number.parseInt(currentPage, 10)
+          : typeof currentPage === 'number'
+            ? currentPage
+            : defaultPage;
+      if (pageCount > 0 && pageNum > pageCount) {
+        navigate({
+          replace: true,
+          search: (prev) => ({
+            ...(prev as SearchRecord),
+            [pageKey]: opts.resetTo === 'last' ? pageCount : undefined,
+          }),
+        });
+      }
+    },
+    [search, pageKey, defaultPage, navigate]
+  );
 
   return {
     globalFilter: globalFilterEnabled ? (globalFilter ?? '') : undefined,

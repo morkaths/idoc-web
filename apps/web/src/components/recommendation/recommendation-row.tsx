@@ -1,6 +1,9 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
+import paths from '@/config/path';
+import { type RecommendedBookResponse } from '@/types';
 import { motion } from 'framer-motion';
 import {
   Carousel,
@@ -9,12 +12,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@repo/ui/components/carousel';
-import { BookGridItem } from '../book/book-grid-item';
 import { Skeleton } from '@repo/ui/components/skeleton';
+import { BookGridItem } from '../book/book-grid-item';
 import { BookmarkProvider } from '../book/bookmark-provider';
-import { type RecommendedBookResponse } from '@/types';
-import { useRouter } from 'next/navigation';
-import paths from '@/config/path';
 
 interface RecommendationRowProps {
   title: string;
@@ -36,8 +36,8 @@ export function RecommendationRow({
   if (error) {
     return (
       <div className='py-4'>
-        <h2 className='text-2xl font-bold mb-4'>{title}</h2>
-        <div className='p-4 text-center rounded-md bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'>
+        <h2 className='mb-4 text-2xl font-bold'>{title}</h2>
+        <div className='rounded-md bg-red-50 p-4 text-center text-red-700 dark:bg-red-900/20 dark:text-red-300'>
           {error}
         </div>
       </div>
@@ -46,7 +46,7 @@ export function RecommendationRow({
 
   if (isLoading) {
     return (
-      <div className='py-4 space-y-4'>
+      <div className='space-y-4 py-4'>
         <div className='space-y-1'>
           <Skeleton className='h-8 w-64' />
           <Skeleton className='h-4 w-96' />
@@ -55,19 +55,19 @@ export function RecommendationRow({
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className='flex flex-col w-[240px] shrink-0 bg-white dark:bg-zinc-900 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-zinc-800 h-full'
+              className='flex h-full w-[240px] shrink-0 flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900'
             >
-              <Skeleton className='h-32 w-full rounded-none bg-primary/5' />
-              <div className='relative px-4 -mt-24 w-full flex justify-center z-10'>
-                <Skeleton className='w-36 aspect-[3/4] shadow-md rounded-sm' />
+              <Skeleton className='bg-primary/5 h-32 w-full rounded-none' />
+              <div className='relative z-10 -mt-24 flex w-full justify-center px-4'>
+                <Skeleton className='aspect-[3/4] w-36 rounded-sm shadow-md' />
               </div>
-              <div className='p-3 pt-3 flex flex-col flex-grow gap-2'>
+              <div className='flex flex-grow flex-col gap-2 p-3 pt-3'>
                 <Skeleton className='h-3 w-10' />
                 <div className='space-y-1'>
                   <Skeleton className='h-4 w-full' />
                   <Skeleton className='h-4 w-2/3' />
                 </div>
-                <Skeleton className='h-3 w-1/2 mt-1' />
+                <Skeleton className='mt-1 h-3 w-1/2' />
                 <div className='mt-auto flex items-center justify-between pt-2'>
                   <Skeleton className='h-3 w-16' />
                   <Skeleton className='h-5 w-5 rounded-md' />
@@ -90,15 +90,11 @@ export function RecommendationRow({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className='py-4 space-y-4'
+      className='space-y-4 py-4'
     >
       <div className='flex flex-col'>
-        <h2 className='text-xl sm:text-2xl font-bold text-foreground'>
-          {title}
-        </h2>
-        {description && (
-          <p className='text-sm text-muted-foreground'>{description}</p>
-        )}
+        <h2 className='text-foreground text-xl font-bold sm:text-2xl'>{title}</h2>
+        {description && <p className='text-muted-foreground text-sm'>{description}</p>}
       </div>
 
       <BookmarkProvider>
@@ -113,12 +109,9 @@ export function RecommendationRow({
             {books.map((book) => (
               <CarouselItem
                 key={book.id}
-                className='pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/5'
+                className='basis-1/2 pl-4 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/5'
               >
-                <BookGridItem
-                  book={book}
-                  onClick={() => router.push(paths.book(book.id))}
-                />
+                <BookGridItem book={book} onClick={() => router.push(paths.book(book.id))} />
               </CarouselItem>
             ))}
           </CarouselContent>

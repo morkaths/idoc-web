@@ -1,19 +1,23 @@
 import { useState } from 'react';
+import { RecommendationStrategy } from '@repo/types';
+import { Sparkles, RefreshCw, Play, BarChart3, TrendingUp, Target, Zap } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import {
-  Sparkles,
-  RefreshCw,
-  Play,
-  BarChart3,
-  TrendingUp,
-  Target,
-  Zap,
-} from 'lucide-react';
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
+import { toast } from 'sonner';
 import {
   useRecommendationSync,
   useRecommendationTrain,
   useRecommendationEvaluation,
 } from '@/hooks/data/useRecommendation';
-import { RecommendationStrategy } from '@repo/types';
 import { Button } from '@repo/ui/components/button';
 import {
   Card,
@@ -29,22 +33,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/select';
-import { toast } from 'sonner';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from 'recharts';
-import { Loader2 } from 'lucide-react';
 
 export function Recommendations() {
   const [strategy, setStrategy] = useState<RecommendationStrategy>(RecommendationStrategy.HYBRID);
-  
+
   const syncMutation = useRecommendationSync();
   const trainMutation = useRecommendationTrain();
   const { data: evaluation, isLoading: isEvalLoading } = useRecommendationEvaluation(strategy);
@@ -86,11 +78,7 @@ export function Recommendations() {
           </p>
         </div>
         <div className='flex items-center gap-2'>
-          <Button
-            variant='outline'
-            onClick={handleSync}
-            disabled={syncMutation.isPending}
-          >
+          <Button variant='outline' onClick={handleSync} disabled={syncMutation.isPending}>
             {syncMutation.isPending ? (
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
             ) : (
@@ -117,7 +105,7 @@ export function Recommendations() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='flex items-center gap-4 mb-6'>
+          <div className='mb-6 flex items-center gap-4'>
             <span className='text-sm font-medium'>Target Strategy:</span>
             <Select
               value={strategy}
@@ -138,7 +126,7 @@ export function Recommendations() {
 
           {isEvalLoading ? (
             <div className='flex h-[400px] items-center justify-center'>
-              <Loader2 className='h-8 w-8 animate-spin text-primary' />
+              <Loader2 className='text-primary h-8 w-8 animate-spin' />
             </div>
           ) : metrics ? (
             <div className='space-y-6'>
@@ -182,28 +170,32 @@ export function Recommendations() {
                       <ResponsiveContainer width='100%' height='100%'>
                         <BarChart data={sparsity.frequencyBuckets}>
                           <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                          <XAxis 
-                            dataKey='bucketName' 
-                            fontSize={12} 
-                            tickLine={false} 
-                            axisLine={false} 
+                          <XAxis
+                            dataKey='bucketName'
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={false}
                           />
-                          <YAxis 
-                            fontSize={12} 
-                            tickLine={false} 
-                            axisLine={false} 
+                          <YAxis
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={false}
                             tickFormatter={(v) => `${(v * 100).toFixed(0)}%`}
                           />
-                          <Tooltip 
-                            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                          <Tooltip
+                            contentStyle={{
+                              borderRadius: '8px',
+                              border: 'none',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            }}
                             formatter={(v: any) => [`${((v || 0) * 100).toFixed(2)}%`, 'NDCG']}
                           />
                           <Legend />
-                          <Bar 
-                            dataKey='ndcgAtK' 
-                            name='NDCG@K' 
-                            fill='hsl(var(--primary))' 
-                            radius={[4, 4, 0, 0]} 
+                          <Bar
+                            dataKey='ndcgAtK'
+                            name='NDCG@K'
+                            fill='hsl(var(--primary))'
+                            radius={[4, 4, 0, 0]}
                           />
                         </BarChart>
                       </ResponsiveContainer>
@@ -213,10 +205,14 @@ export function Recommendations() {
               )}
             </div>
           ) : (
-            <div className='flex h-[400px] flex-col items-center justify-center rounded-xl border-2 border-dashed gap-2'>
-              <Sparkles className='h-10 w-10 text-muted-foreground opacity-20' />
-              <p className='text-lg font-medium text-muted-foreground'>No evaluation data available</p>
-              <p className='text-sm text-muted-foreground'>Train the model first to generate metrics.</p>
+            <div className='flex h-[400px] flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed'>
+              <Sparkles className='text-muted-foreground h-10 w-10 opacity-20' />
+              <p className='text-muted-foreground text-lg font-medium'>
+                No evaluation data available
+              </p>
+              <p className='text-muted-foreground text-sm'>
+                Train the model first to generate metrics.
+              </p>
             </div>
           )}
         </CardContent>
@@ -225,26 +221,26 @@ export function Recommendations() {
   );
 }
 
-function MetricCard({ 
-  title, 
-  value, 
-  icon: Icon, 
-  description 
-}: { 
-  title: string; 
-  value: string; 
-  icon: any; 
-  description: string 
+function MetricCard({
+  title,
+  value,
+  icon: Icon,
+  description,
+}: {
+  title: string;
+  value: string;
+  icon: any;
+  description: string;
 }) {
   return (
     <Card>
       <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
         <CardTitle className='text-sm font-medium'>{title}</CardTitle>
-        <Icon className='h-4 w-4 text-muted-foreground' />
+        <Icon className='text-muted-foreground h-4 w-4' />
       </CardHeader>
       <CardContent>
         <div className='text-2xl font-bold'>{value}</div>
-        <p className='text-xs text-muted-foreground mt-1'>{description}</p>
+        <p className='text-muted-foreground mt-1 text-xs'>{description}</p>
       </CardContent>
     </Card>
   );

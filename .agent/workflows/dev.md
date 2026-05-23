@@ -7,7 +7,9 @@ description: How to start the development server for admin, web, or both apps
 ## Run all apps (via Turborepo)
 
 // turbo
+
 1. From the **root** directory, run:
+
 ```bash
 npm run dev
 ```
@@ -16,14 +18,14 @@ This starts both `apps/admin` (Vite, port 5173) and `apps/web` (Next.js, port 30
 
 ## Run a single app
 
-// turbo
-2. To run only the **admin** app:
+// turbo 2. To run only the **admin** app:
+
 ```bash
 npm run dev --workspace=admin
 ```
 
-// turbo
-3. To run only the **web** app:
+// turbo 3. To run only the **web** app:
+
 ```bash
 npm run dev --workspace=web
 ```

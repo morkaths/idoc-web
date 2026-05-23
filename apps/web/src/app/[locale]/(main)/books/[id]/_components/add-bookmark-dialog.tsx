@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useMyFolders, useCreateFolder } from '@/hooks/data/useFolder';
-
+import { useSession } from 'next-auth/react';
+import { Plus, FolderPlus, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useCreateBookmark, useUpdateBookmark, useBookmarkStatus } from '@/hooks/data/useBookmark';
+import { useMyFolders, useCreateFolder } from '@/hooks/data/useFolder';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -14,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@repo/ui/components/dialog';
+import { Input } from '@repo/ui/components/input';
 import {
   Select,
   SelectContent,
@@ -21,10 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/select';
-import { Input } from '@repo/ui/components/input';
-import { useSession } from 'next-auth/react';
-import { Plus, FolderPlus, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 
 type AddBookmarkDialogProps = {
   bookId: string;
@@ -41,9 +40,14 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Data fetching
-  const { data: foldersData, isLoading: foldersLoading } = useMyFolders({}, { enabled: open && !!session?.user });
+  const { data: foldersData, isLoading: foldersLoading } = useMyFolders(
+    {},
+    { enabled: open && !!session?.user }
+  );
 
-  const { data: bookmarkStatus } = useBookmarkStatus([bookId], { enabled: open && !!session?.user });
+  const { data: bookmarkStatus } = useBookmarkStatus([bookId], {
+    enabled: open && !!session?.user,
+  });
 
   // Mutations
   const createFolderMut = useCreateFolder();
@@ -99,8 +103,11 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
   };
 
   const folderObj = currentBookmark?.folder as Record<string, unknown> | undefined;
-  const currentFolderId = (folderObj?.id as string) || (typeof currentBookmark?.folder === 'string' ? currentBookmark.folder : '');
-  const currentFolderName = (folderObj?.name as string) || folders.find(f => f.id === currentFolderId)?.name;
+  const currentFolderId =
+    (folderObj?.id as string) ||
+    (typeof currentBookmark?.folder === 'string' ? currentBookmark.folder : '');
+  const currentFolderName =
+    (folderObj?.name as string) || folders.find((f) => f.id === currentFolderId)?.name;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -121,7 +128,11 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
                   autoFocus
                 />
                 <Button size='sm' onClick={handleCreateFolder} disabled={createFolderMut.isPending}>
-                  {createFolderMut.isPending ? <Loader2 className='animate-spin' /> : <Plus className='h-4 w-4' />}
+                  {createFolderMut.isPending ? (
+                    <Loader2 className='animate-spin' />
+                  ) : (
+                    <Plus className='h-4 w-4' />
+                  )}
                 </Button>
                 <Button size='sm' variant='ghost' onClick={() => setShowCreateFolder(false)}>
                   Cancel
@@ -163,21 +174,14 @@ export function AddBookmarkDialog({ bookId, open, onOpenChange }: AddBookmarkDia
 
           <DialogFooter className='flex items-center justify-between sm:justify-between'>
             <div className='text-muted-foreground text-xs'>
-              {currentFolderName && (
-                <span>Current: {currentFolderName}</span>
-              )}
+              {currentFolderName && <span>Current: {currentFolderName}</span>}
             </div>
             <div className='flex gap-2'>
               <Button variant='outline' onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleSave}
-                disabled={isSubmitting}
-              >
-                {isSubmitting && (
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                )}
+              <Button onClick={handleSave} disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
                 Save
               </Button>
             </div>

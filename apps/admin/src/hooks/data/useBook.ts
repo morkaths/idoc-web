@@ -18,15 +18,8 @@ import {
  * @param params Pagination parameters
  * @param options Query options
  */
-export const useBooks = (
-  params: PageParams = {},
-  options?: ListQueryOptions<BookResponse>
-) => {
-  return useListQuery<BookResponse>(
-    ['books', params],
-    () => BookApi.find(params),
-    options
-  );
+export const useBooks = (params: PageParams = {}, options?: ListQueryOptions<BookResponse>) => {
+  return useListQuery<BookResponse>(['books', params], () => BookApi.find(params), options);
 };
 
 /**
@@ -50,24 +43,18 @@ export const useSearchBooks = (
  * @param id Book ID
  * @param options Query options
  */
-export const useBook = (
-  id: string,
-  options?: ItemQueryOptions<BookResponse>
-) => {
-  return useItemQuery<BookResponse>(
-    ['books', id],
-    () => BookApi.findById(id),
-    { enabled: !!id, ...options }
-  );
+export const useBook = (id: string, options?: ItemQueryOptions<BookResponse>) => {
+  return useItemQuery<BookResponse>(['books', id], () => BookApi.findById(id), {
+    enabled: !!id,
+    ...options,
+  });
 };
 
 /**
  * Hook to create a new book
  * @param options Mutation options
  */
-export const useCreateBook = (
-  options?: CreateMutationOptions<BookRequest, BookResponse>
-) => {
+export const useCreateBook = (options?: CreateMutationOptions<BookRequest, BookResponse>) => {
   return useCreateMutation<BookRequest, BookResponse>(
     (data) => BookApi.create(data),
     [['books']],
@@ -79,9 +66,7 @@ export const useCreateBook = (
  * Hook to update an existing book
  * @param options Mutation options
  */
-export const useUpdateBook = (
-  options?: UpdateMutationOptions<BookRequest, BookResponse>
-) => {
+export const useUpdateBook = (options?: UpdateMutationOptions<BookRequest, BookResponse>) => {
   return useUpdateMutation<BookRequest, BookResponse>(
     ({ id, data }) => BookApi.update(id, data),
     (variables) => [['books', variables.id], ['books']],
@@ -94,10 +79,5 @@ export const useUpdateBook = (
  * @param options Mutation options
  */
 export const useDeleteBook = (options?: DeleteMutationOptions) => {
-  return useDeleteMutation(
-    (id) => BookApi.delete(id),
-    [['books']],
-    options
-  );
+  return useDeleteMutation((id) => BookApi.delete(id), [['books']], options);
 };
-

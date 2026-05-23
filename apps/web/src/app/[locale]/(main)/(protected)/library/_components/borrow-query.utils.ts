@@ -1,5 +1,5 @@
-import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
 import { type FilterItem, type FindParams, type SortItem } from '@/types';
+import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
 
 /**
  * Filter state for borrow history.
@@ -41,11 +41,11 @@ export function buildBorrowFindParams(
 ): FindParams {
   const sorts: SortItem[] | undefined = sorting[0]
     ? [
-      {
-        field: String(sorting[0].id),
-        direction: (sorting[0].desc ? 'desc' : 'asc') as 'asc' | 'desc',
-      },
-    ]
+        {
+          field: String(sorting[0].id),
+          direction: (sorting[0].desc ? 'desc' : 'asc') as 'asc' | 'desc',
+        },
+      ]
     : undefined;
 
   const filters: FilterItem[] = [];

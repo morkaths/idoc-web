@@ -1,4 +1,4 @@
-import { FilterOperator, SortDirection } from './enum';
+import { FilterOperator, SortDirection } from "./enum";
 
 /**
  * Pagination metadata often returned from the API

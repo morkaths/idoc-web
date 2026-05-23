@@ -50,7 +50,10 @@ export const useAuthStore = create<AuthState>()((set) => {
    */
   const setAuthData = (user: UserResponse | null, token: TokenResponse | null) => {
     const currentAuth = useAuthStore.getState().auth;
-    if (currentAuth.user?.id === user?.id && currentAuth.token?.accessToken === token?.accessToken) {
+    if (
+      currentAuth.user?.id === user?.id &&
+      currentAuth.token?.accessToken === token?.accessToken
+    ) {
       return;
     }
 
@@ -100,7 +103,10 @@ export const useAuthStore = create<AuthState>()((set) => {
         } else {
           removeCookie(env.cookie.token);
         }
-        set((state) => ({ ...state, auth: { ...state.auth, token: tokenToStore as TokenResponse | null } }));
+        set((state) => ({
+          ...state,
+          auth: { ...state.auth, token: tokenToStore as TokenResponse | null },
+        }));
       },
       refresh: async () => {
         if (refreshPromise) {

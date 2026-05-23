@@ -1,20 +1,16 @@
-import { Badge } from "@repo/ui/components/badge";
-import { Button } from "@repo/ui/components/button";
-import { ArrowUpRight, CirclePlay } from "lucide-react";
-import Link from "next/link";
-import { LogoCloud } from "./logo-clound";
+import Link from 'next/link';
+import { ArrowUpRight, CirclePlay } from 'lucide-react';
+import { Badge } from '@repo/ui/components/badge';
+import { Button } from '@repo/ui/components/button';
+import { LogoCloud } from './logo-clound';
 
 export default function HeroSection() {
   return (
-    <div className="flex items-center justify-center px-6">
-      <div className="text-center max-w-4xl gap-12 overflow-x-hidden pt-8 sm:gap-16 sm:pt-16 lg:gap-24 lg:pt-24">
-        <Badge
-          variant="secondary"
-          className="rounded-full py-1 border-border"
-          asChild
-        >
-          <Link href="#">
-            Over 10,000+ new research papers added <ArrowUpRight className="ml-1 size-4" />
+    <div className='flex items-center justify-center px-6'>
+      <div className='max-w-4xl gap-12 overflow-x-hidden pt-8 text-center sm:gap-16 sm:pt-16 lg:gap-24 lg:pt-24'>
+        <Badge variant='secondary' className='border-border rounded-full py-1' asChild>
+          <Link href='#'>
+            Over 10,000+ new research papers added <ArrowUpRight className='ml-1 size-4' />
           </Link>
         </Badge>
         <h1 className='mt-6 text-3xl leading-[1.2] font-bold text-balance sm:text-4xl lg:text-5xl'>
@@ -53,28 +49,23 @@ export default function HeroSection() {
           </span>{' '}
           Knowledge Management!
         </h1>
-        <p className='mt-6 text-muted-foreground'>
+        <p className='text-muted-foreground mt-6'>
           Access a world-class collection of digital books, academic journals,
           <br />
           and multimedia resources. Empowering researchers and students worldwide.
         </p>
-        <div className="mt-12 flex items-center justify-center gap-4">
-          <Button size="lg" className="rounded-full text-base">
-            Get Started <ArrowUpRight className="size-5" />
+        <div className='mt-12 flex items-center justify-center gap-4'>
+          <Button size='lg' className='rounded-full text-base'>
+            Get Started <ArrowUpRight className='size-5' />
           </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="rounded-full text-base shadow-none"
-          >
-            <CirclePlay className="size-5" /> Watch Demo
+          <Button variant='outline' size='lg' className='rounded-full text-base shadow-none'>
+            <CirclePlay className='size-5' /> Watch Demo
           </Button>
         </div>
-        <div className="mt-12">
+        <div className='mt-12'>
           <LogoCloud />
         </div>
       </div>
     </div>
   );
 }
-

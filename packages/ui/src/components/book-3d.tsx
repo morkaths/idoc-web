@@ -70,7 +70,7 @@ const Book = ({
           !shouldReduceMotion && [
             "transition-transform duration-[250ms] ease-out",
             "hover:[transform:rotateY(-20deg)_scale(1.066)_translateX(-8px)]",
-          ]
+          ],
         )}
         style={{
           aspectRatio: "49 / 60",
@@ -85,7 +85,7 @@ const Book = ({
             "[transform:translateZ(0px)]",
             "shadow-[rgba(0,0,0,0.02)_0px_1px_1px,rgba(0,0,0,0.1)_0px_4px_8px_-4px,rgba(0,0,0,0.03)_0px_16px_24px_-8px]",
             "dark:bg-[linear-gradient(rgba(255,255,255,0.1)_0%,rgba(255,255,255,0)_50%,rgba(255,255,255,0)_100%),rgb(31,31,31)]",
-            "dark:shadow-[rgba(0,0,0,0.05)_0px_1.8px_3.6px,rgba(0,0,0,0.08)_0px_10.8px_21.6px,rgba(0,0,0,0.1)_0px_-0.9px_inset,rgba(255,255,255,0.1)_0px_1.8px_1.8px_inset,rgba(0,0,0,0.1)_3.6px_0px_3.6px_inset]"
+            "dark:shadow-[rgba(0,0,0,0.05)_0px_1.8px_3.6px,rgba(0,0,0,0.08)_0px_10.8px_21.6px,rgba(0,0,0,0.1)_0px_-0.9px_inset,rgba(255,255,255,0.1)_0px_1.8px_1.8px_inset,rgba(0,0,0,0.1)_3.6px_0px_3.6px_inset]",
           )}
           style={{
             width: bookWidth,
@@ -113,7 +113,7 @@ const Book = ({
               "pointer-events-none absolute inset-0",
               "border border-black/10",
               "shadow-[rgba(255,255,255,0.3)_0px_1px_2px_inset]",
-              "dark:border-0"
+              "dark:border-0",
             )}
             style={{ borderRadius: "inherit" }}
           />
@@ -125,7 +125,7 @@ const Book = ({
           className={cn(
             "pointer-events-none absolute",
             "bg-[linear-gradient(90deg,rgb(234,234,234)_0%,rgba(0,0,0,0)_70%),linear-gradient(rgb(255,255,255),rgb(250,250,250))]",
-            "dark:bg-[linear-gradient(90deg,rgb(60,60,60)_0%,rgba(0,0,0,0)_70%),linear-gradient(rgb(40,40,40),rgb(35,35,35))]"
+            "dark:bg-[linear-gradient(90deg,rgb(60,60,60)_0%,rgba(0,0,0,0)_70%),linear-gradient(rgb(40,40,40),rgb(35,35,35))]",
           )}
           style={{
             height: "calc(100% - 6px)",

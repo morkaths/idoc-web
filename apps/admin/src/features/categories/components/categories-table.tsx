@@ -9,6 +9,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { Languages } from '@/types';
 import { cn } from '@/lib/utils';
 import { useSearchCategories } from '@/hooks/data/useCategory';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
@@ -21,10 +22,9 @@ import {
   TableRow,
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
-import { Languages } from '@/types';
 import { categoriesColumns as columns } from './categories-columns';
-import CategoriesTableBulkActions from './categories-table-bulk-actions';
 import { buildCategoryFindParams } from './categories-query.utils';
+import CategoriesTableBulkActions from './categories-table-bulk-actions';
 
 const route = getRouteApi('/_authenticated/categories/');
 
@@ -48,9 +48,7 @@ export function CategoriesTable() {
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'query' },
-    columnFilters: [
-      { columnId: 'lang', searchKey: 'lang', type: 'array' },
-    ],
+    columnFilters: [{ columnId: 'lang', searchKey: 'lang', type: 'array' }],
   });
 
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
@@ -62,7 +60,8 @@ export function CategoriesTable() {
   );
 
   // fetch server-side page
-  const { data: categoriesData, isFetching: isCategoriesFetching } = useSearchCategories(categoryParams);
+  const { data: categoriesData, isFetching: isCategoriesFetching } =
+    useSearchCategories(categoryParams);
   const categories = categoriesData?.data ?? [];
   const categoryPagination = categoriesData?.pagination;
 

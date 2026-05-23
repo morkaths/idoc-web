@@ -18,4 +18,3 @@ const factory = apiFactory<BookResponse, BookRequest, BookSearchParams>(
 export const BookApi = {
   ...factory,
 };
-

@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
+import { cn } from '@/lib/utils';
 import { type Table } from '@tanstack/react-table';
 import { X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { Badge } from '@repo/ui/components/badge';
 import { Button } from '@repo/ui/components/button';
 import { Separator } from '@repo/ui/components/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@repo/ui/components/tooltip';
-import { useLocale } from '@/hooks/ui/useLocale';
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>;
@@ -176,10 +176,7 @@ export function DataTableBulkActions<TData>({
             >
               {selectedCount}
             </Badge>{' '}
-            <span className='hidden sm:inline'>
-              {entityName}
-            </span>{' '}
-            {t(keys.table.selected)}
+            <span className='hidden sm:inline'>{entityName}</span> {t(keys.table.selected)}
           </div>
 
           <Separator className='h-5' orientation='vertical' aria-hidden='true' />

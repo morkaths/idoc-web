@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   useQuery,
   useMutation,
@@ -6,7 +7,6 @@ import {
   type QueryKey,
   type UseMutationOptions,
 } from '@tanstack/react-query';
-import { useMemo } from 'react';
 import type { ApiResponse, PageResponse } from '@/types';
 
 export type ListQueryOptions<T> = Omit<
@@ -61,16 +61,21 @@ export const useListQuery = <T>(
     ...options,
   });
 
-  const stabilizedData = useMemo(() => ({
-    data: query.data?.data?.content || [],
-    pagination: query.data?.data ? {
-      total: query.data.data.total,
-      page: query.data.data.page,
-      limit: query.data.data.limit,
-      pages: query.data.data.pages,
-      last: query.data.data.last,
-    } : undefined,
-  }), [query.data]);
+  const stabilizedData = useMemo(
+    () => ({
+      data: query.data?.data?.content || [],
+      pagination: query.data?.data
+        ? {
+            total: query.data.data.total,
+            page: query.data.data.page,
+            limit: query.data.data.limit,
+            pages: query.data.data.pages,
+            last: query.data.data.last,
+          }
+        : undefined,
+    }),
+    [query.data]
+  );
 
   return {
     ...query,

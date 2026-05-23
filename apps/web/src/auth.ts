@@ -1,9 +1,9 @@
-import NextAuth, { type NextAuthConfig, CredentialsSignin, type User } from "next-auth";
-import Google from "next-auth/providers/google";
-import Credentials from "next-auth/providers/credentials";
-import env from "@/config/env";
-import { AuthApi } from "@/apis/auth.api";
-import { AuthProvider, type AuthResponse } from "@repo/types";
+import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
+import env from '@/config/env';
+import { AuthProvider, type AuthResponse } from '@repo/types';
+import NextAuth, { type NextAuthConfig, CredentialsSignin, type User } from 'next-auth';
+import { AuthApi } from '@/apis/auth.api';
 
 /**
  * Helper to set auth cookies in the browser.
@@ -32,10 +32,10 @@ const setAuthCookies = async (data: AuthResponse) => {
 export const authConfig = {
   providers: [
     Credentials({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) return null;
@@ -116,7 +116,7 @@ export const authConfig = {
                   emailVerified: null,
                 },
                 accessToken: data.token.accessToken,
-                expiresAt: Date.now() + (data.token.accessTokenExpiresIn * 1000),
+                expiresAt: Date.now() + data.token.accessTokenExpiresIn * 1000,
               };
             }
           } catch (_error) {
@@ -131,7 +131,8 @@ export const authConfig = {
           sub: user.id || token.sub,
           user: user,
           accessToken: user.accessToken,
-          expiresAt: Date.now() + (user.accessTokenExpiresIn ? user.accessTokenExpiresIn * 1000 : 0),
+          expiresAt:
+            Date.now() + (user.accessTokenExpiresIn ? user.accessTokenExpiresIn * 1000 : 0),
         };
       }
 
@@ -144,7 +145,7 @@ export const authConfig = {
       try {
         const result = await AuthApi.refresh();
         if (!result?.success || !result.data) {
-          return { ...token, error: "RefreshAccessTokenError", accessToken: undefined };
+          return { ...token, error: 'RefreshAccessTokenError', accessToken: undefined };
         }
 
         const { data } = result;
@@ -153,16 +154,16 @@ export const authConfig = {
         return {
           ...token,
           accessToken: data.token.accessToken,
-          expiresAt: Date.now() + (data.token.accessTokenExpiresIn * 1000),
+          expiresAt: Date.now() + data.token.accessTokenExpiresIn * 1000,
           error: undefined,
         };
       } catch (_error) {
-        return { ...token, error: "RefreshAccessTokenError" };
+        return { ...token, error: 'RefreshAccessTokenError' };
       }
-    }
+    },
   },
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
     updateAge: 24 * 60 * 60, // 24 hours
   },

@@ -13,11 +13,11 @@ Follow the existing pattern in `apps/admin/src/apis/`. Reference any existing `*
 Create `src/apis/{entity}.api.ts`:
 
 ```typescript
-import { ApiClient } from './config';
-import type { Entity, EntityRequest, FindParams } from '@/types';
+import { ApiClient } from "./config";
+import type { Entity, EntityRequest, FindParams } from "@/types";
 
 export class EntityApi {
-  private static readonly BASE = '/api/v1/entities';
+  private static readonly BASE = "/api/v1/entities";
 
   /**
    * Fetch all entities with optional pagination and filtering.
@@ -59,8 +59,9 @@ export class EntityApi {
 ### 2. Register in barrel export
 
 Add to `src/apis/index.ts`:
+
 ```typescript
-export { EntityApi } from './entity.api';
+export { EntityApi } from "./entity.api";
 ```
 
 ### 3. Define types

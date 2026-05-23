@@ -1,5 +1,11 @@
+import type {
+  LoanResponse,
+  BorrowRequest,
+  FindParams,
+  RenewBorrowRequest,
+  PageParams,
+} from '@/types';
 import { BorrowApi } from '@/apis/borrow.api';
-import type { LoanResponse, BorrowRequest, FindParams, RenewBorrowRequest, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -10,7 +16,7 @@ import {
   type ItemQueryOptions,
   type CreateMutationOptions,
   type UpdateMutationOptions,
-  type DeleteMutationOptions
+  type DeleteMutationOptions,
 } from './factory';
 
 /**
@@ -18,15 +24,8 @@ import {
  * @param params Pagination parameters
  * @param options Query options
  */
-export const useBorrows = (
-  params: PageParams = {},
-  options?: ListQueryOptions<LoanResponse>
-) => {
-  return useListQuery<LoanResponse>(
-    ['borrows', params],
-    () => BorrowApi.find(params),
-    options
-  );
+export const useBorrows = (params: PageParams = {}, options?: ListQueryOptions<LoanResponse>) => {
+  return useListQuery<LoanResponse>(['borrows', params], () => BorrowApi.find(params), options);
 };
 
 /**
@@ -66,15 +65,11 @@ export const useSearchBorrows = (
  * @param id Borrow ID
  * @param options Query options
  */
-export const useBorrow = (
-  id: string,
-  options?: ItemQueryOptions<LoanResponse>
-) => {
-  return useItemQuery<LoanResponse>(
-    ['borrows', id],
-    () => BorrowApi.findById(id),
-    { enabled: !!id, ...options }
-  );
+export const useBorrow = (id: string, options?: ItemQueryOptions<LoanResponse>) => {
+  return useItemQuery<LoanResponse>(['borrows', id], () => BorrowApi.findById(id), {
+    enabled: !!id,
+    ...options,
+  });
 };
 
 /**
@@ -109,14 +104,8 @@ export const useUpdateBorrow = <TContext = unknown>(
  * Hook to delete a borrow
  * @param options Mutation options
  */
-export const useDeleteBorrow = <TContext = unknown>(
-  options?: DeleteMutationOptions<TContext>
-) => {
-  return useDeleteMutation<TContext>(
-    (id) => BorrowApi.delete(id),
-    [['borrows']],
-    options
-  );
+export const useDeleteBorrow = <TContext = unknown>(options?: DeleteMutationOptions<TContext>) => {
+  return useDeleteMutation<TContext>((id) => BorrowApi.delete(id), [['borrows']], options);
 };
 
 /**
@@ -152,17 +141,9 @@ export const useReturnBorrow = <TContext = unknown>(
  * @param borrowId Borrow ID
  * @param options Query options
  */
-export const useRead = (
-  borrowId: string,
-  options?: ItemQueryOptions<string>
-) => {
-  return useItemQuery<string>(
-    ['borrows', 'read', borrowId],
-    () => BorrowApi.view(borrowId),
-    {
-      enabled: !!borrowId,
-      ...options,
-    }
-  );
+export const useRead = (borrowId: string, options?: ItemQueryOptions<string>) => {
+  return useItemQuery<string>(['borrows', 'read', borrowId], () => BorrowApi.view(borrowId), {
+    enabled: !!borrowId,
+    ...options,
+  });
 };
-

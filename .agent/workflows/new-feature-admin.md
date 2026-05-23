@@ -11,6 +11,7 @@ Follow the existing feature pattern in `apps/admin/src/features/`. Use the `book
 ### 1. Define types in `src/types/`
 
 Add response interface in `response.ts`:
+
 ```typescript
 export interface Entity {
   id: string;
@@ -22,6 +23,7 @@ export interface Entity {
 ```
 
 Add request DTO in `request.ts`:
+
 ```typescript
 export interface EntityRequest {
   name: string;
@@ -34,12 +36,13 @@ Add enums in `enum.ts` if needed. Ensure all are re-exported in `index.ts`.
 ### 2. Create API service in `src/apis/`
 
 Create `entity.api.ts`:
+
 ```typescript
-import { ApiClient } from './config';
-import type { Entity, EntityRequest, FindParams } from '@/types';
+import { ApiClient } from "./config";
+import type { Entity, EntityRequest, FindParams } from "@/types";
 
 export class EntityApi {
-  private static readonly BASE = '/api/v1/entities';
+  private static readonly BASE = "/api/v1/entities";
 
   static findAll(params?: FindParams) {
     return ApiClient.get<Entity[]>(this.BASE, { params });
@@ -84,38 +87,46 @@ src/features/{name}/
 ### 4. Create components (in order)
 
 **4a. Provider** (`{name}-provider.tsx`):
+
 - Create a context with dialog open/close states
 - Track selected items for edit/delete/bulk actions
 - Wrap feature with this provider
 
 **4b. Columns** (`{name}-columns.tsx`):
+
 - Define `ColumnDef<Entity>[]` using TanStack Table
 - Include checkbox column for bulk selection
 - Include actions column with row action menu
 
 **4c. Table** (`{name}-table.tsx`):
+
 - Use shared `DataTable` component from `@/components/data-table/`
 - Implement search toolbar with filters
 - Use TanStack Query for data fetching
 
 **4d. Dialogs** (`{name}-dialogs.tsx`):
+
 - Aggregate all dialog components
 - Connect to provider context for open/close state
 
 **4e. Mutate Dialog** (`{name}-mutate-dialog.tsx`):
+
 - Form dialog using React Hook Form + Zod validation
 - Handle both create (POST) and edit (PATCH) modes
 - Use `sonner` toast for success/error feedback
 
 **4f. Primary Buttons** (`{name}-primary-buttons.tsx`):
+
 - "Add" button that opens create dialog
 - Optional "Import" button
 
 **4g. Row Actions** (`{name}-table-row-actions.tsx`):
+
 - Dropdown menu with Edit, Delete actions
 - Connect to provider context
 
 **4h. Bulk Actions** (`{name}-table-bulk-actions.tsx`):
+
 - Toolbar shown when rows are selected
 - Bulk delete action
 

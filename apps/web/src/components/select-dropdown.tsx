@@ -1,5 +1,6 @@
-import { Loader } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Loader } from 'lucide-react';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { FormControl } from '@repo/ui/components/form';
 import {
   Select,
@@ -8,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/select';
-import { useLocale } from '@/hooks/ui/useLocale';
 
 type SelectDropdownProps = {
   onValueChange?: (value: string) => void;

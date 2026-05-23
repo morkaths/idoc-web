@@ -51,4 +51,3 @@ export function handleServerError(error: unknown, options: HandleServerErrorOpti
 
   return message;
 }
-

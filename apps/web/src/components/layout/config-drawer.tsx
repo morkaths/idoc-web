@@ -1,8 +1,15 @@
-import { Palette, RotateCcw, Dices, Sun, Moon } from 'lucide-react';
-import { themeColors, themeConfig } from '@/components/layout/data/theme-data';
 import { useTheme } from '@/context/theme-provider';
 import { cn } from '@/lib/utils';
+import { Palette, RotateCcw, Dices, Sun, Moon } from 'lucide-react';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/select';
 import {
   Sheet,
   SheetContent,
@@ -12,14 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@repo/ui/components/sheet';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui/components/select';
-import { useLocale } from '@/hooks/ui/useLocale';
+import { themeColors, themeConfig } from '@/components/layout/data/theme-data';
 
 export function ConfigDrawer() {
   const { resetTheme, setRadius, setFont } = useTheme();
@@ -47,12 +47,10 @@ export function ConfigDrawer() {
       <SheetContent className='flex w-[400px] flex-col gap-0 p-0 sm:w-[540px]'>
         <SheetHeader className='p-4 pb-2 text-start'>
           <SheetTitle>{t(keys.title)}</SheetTitle>
-          <SheetDescription id='config-drawer-description'>
-            {t(keys.description)}
-          </SheetDescription>
+          <SheetDescription id='config-drawer-description'>{t(keys.description)}</SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div className='flex-1 space-y-6 overflow-y-auto p-4'>
           <ModeConfig />
           <FontConfig />
           <ColorConfig />
@@ -64,7 +62,7 @@ export function ConfigDrawer() {
             variant='destructive'
             onClick={handleReset}
             aria-label='Reset all settings to default values'
-            className="w-full"
+            className='w-full'
           >
             {t(keys.reset)}
           </Button>
@@ -102,7 +100,6 @@ function SectionTitle({
   );
 }
 
-
 function ModeConfig() {
   const { mode, setMode } = useTheme();
   const { t, keys } = useLocale('theme');
@@ -110,23 +107,23 @@ function ModeConfig() {
   return (
     <div>
       <SectionTitle title={t(keys.mode.title)} />
-      <div className="grid grid-cols-2 gap-2">
+      <div className='grid grid-cols-2 gap-2'>
         <Button
           variant={mode === 'light' ? 'default' : 'outline'}
-          size="sm"
+          size='sm'
           onClick={() => setMode('light')}
-          className="w-full justify-center gap-2"
+          className='w-full justify-center gap-2'
         >
-          <Sun className="size-4" />
+          <Sun className='size-4' />
           {t(keys.mode.light)}
         </Button>
         <Button
           variant={mode === 'dark' ? 'default' : 'outline'}
-          size="sm"
+          size='sm'
           onClick={() => setMode('dark')}
-          className="w-full justify-center gap-2"
+          className='w-full justify-center gap-2'
         >
-          <Moon className="size-4" />
+          <Moon className='size-4' />
           {t(keys.mode.dark)}
         </Button>
       </div>
@@ -147,7 +144,7 @@ function FontConfig() {
         onReset={() => setFont(themeConfig.defaults.font)}
       />
       <Select value={font} onValueChange={setFont}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger className='w-full'>
           <SelectValue placeholder={t(keys.font.placeholder)} />
         </SelectTrigger>
         <SelectContent>
@@ -162,7 +159,6 @@ function FontConfig() {
   );
 }
 
-
 function RadiusConfig() {
   const { radius, setRadius } = useTheme();
   const { t, keys } = useLocale('theme');
@@ -174,13 +170,13 @@ function RadiusConfig() {
         showReset={radius !== themeConfig.defaults.radius}
         onReset={() => setRadius(themeConfig.defaults.radius)}
       />
-      <div className="grid grid-cols-5 gap-2">
+      <div className='grid grid-cols-5 gap-2'>
         {themeConfig.radiuses.map((r) => (
           <Button
             key={r}
             variant={radius === r ? 'default' : 'outline'}
-            size="sm"
-            className="w-full"
+            size='sm'
+            className='w-full'
             onClick={() => setRadius(r)}
           >
             {r === '0' ? '0' : parseFloat(r)}
@@ -205,25 +201,20 @@ function ColorConfig() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
+      <div className='mb-2 flex items-center justify-between'>
         <SectionTitle title={t(keys.color.title)} className='mb-0' />
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleRandom}
-          className="h-7 text-xs gap-1.5"
-        >
-          <Dices className="size-3.5" />
+        <Button variant='outline' size='sm' onClick={handleRandom} className='h-7 gap-1.5 text-xs'>
+          <Dices className='size-3.5' />
           {t(keys.color.random)}
         </Button>
       </div>
 
       <Select value={color} onValueChange={setColor}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger className='w-full'>
           <SelectValue placeholder={t(keys.color.placeholder)}>
             {themeColors[color] && (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center -space-x-1.5">
+              <div className='flex items-center gap-3'>
+                <div className='flex items-center -space-x-1.5'>
                   {[
                     themeColors[color].styles[resolvedMode].primary,
                     themeColors[color].styles[resolvedMode].secondary,
@@ -232,12 +223,12 @@ function ColorConfig() {
                   ].map((col, idx) => (
                     <div
                       key={idx}
-                      className="h-3.5 w-3.5 rounded-full ring-1 ring-border shadow-sm z-10"
+                      className='ring-border z-10 h-3.5 w-3.5 rounded-full shadow-sm ring-1'
                       style={{ backgroundColor: col }}
                     />
                   ))}
                 </div>
-                <span className="font-medium">{themeColors[color].label}</span>
+                <span className='font-medium'>{themeColors[color].label}</span>
               </div>
             )}
           </SelectValue>
@@ -250,20 +241,17 @@ function ColorConfig() {
 
             return (
               <SelectItem key={key} value={key}>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center -space-x-1.5">
-                    {[
-                      colors.primary,
-                      colors.secondary,
-                      colors.accent,
-                      colors.card,
-                    ].map((col, idx) => (
-                      <div
-                        key={idx}
-                        className="h-3.5 w-3.5 rounded-full ring-1 ring-border shadow-sm z-10"
-                        style={{ backgroundColor: col }}
-                      />
-                    ))}
+                <div className='flex items-center gap-3'>
+                  <div className='flex items-center -space-x-1.5'>
+                    {[colors.primary, colors.secondary, colors.accent, colors.card].map(
+                      (col, idx) => (
+                        <div
+                          key={idx}
+                          className='ring-border z-10 h-3.5 w-3.5 rounded-full shadow-sm ring-1'
+                          style={{ backgroundColor: col }}
+                        />
+                      )
+                    )}
                   </div>
                   <span>{config.label}</span>
                 </div>

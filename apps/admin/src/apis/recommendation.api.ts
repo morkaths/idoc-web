@@ -1,5 +1,4 @@
 import { AgentEndpoint } from '@/config/api';
-import { AgentClient } from './agent.config';
 import {
   type ApiResponse,
   type RecommendationStrategy,
@@ -7,6 +6,7 @@ import {
   type RecommendationTrainResponse,
   type RecommendationEvaluationResponse,
 } from '@/types';
+import { AgentClient } from './agent.config';
 
 /**
  * Maps frontend recommendation strategy to the corresponding backend Enum string.
@@ -29,9 +29,7 @@ const mapStrategy = (strategy: string): string => {
 
 export const RecommendationApi = {
   sync: (): Promise<ApiResponse<RecommendationSyncResponse>> =>
-    AgentClient.post<RecommendationSyncResponse>(
-      AgentEndpoint.endpoints.recommendations.sync()
-    ),
+    AgentClient.post<RecommendationSyncResponse>(AgentEndpoint.endpoints.recommendations.sync()),
 
   train: (strategy?: RecommendationStrategy): Promise<ApiResponse<RecommendationTrainResponse>> => {
     let target = 'all';
@@ -49,7 +47,9 @@ export const RecommendationApi = {
 
   evaluate: (
     strategy: RecommendationStrategy
-  ): Promise<ApiResponse<RecommendationEvaluationResponse | RecommendationEvaluationResponse[]>> => {
+  ): Promise<
+    ApiResponse<RecommendationEvaluationResponse | RecommendationEvaluationResponse[]>
+  > => {
     const mappedStrategy = mapStrategy(strategy);
     return AgentClient.get<RecommendationEvaluationResponse | RecommendationEvaluationResponse[]>(
       AgentEndpoint.endpoints.recommendations.evaluate(mappedStrategy)

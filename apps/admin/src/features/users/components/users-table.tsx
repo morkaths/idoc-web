@@ -9,8 +9,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { cn } from '@/lib/utils';
 import { RoleType, UserStatus } from '@/types';
+import { cn } from '@/lib/utils';
 import { useSearchUsers } from '@/hooks/data/useUser';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
@@ -23,8 +23,8 @@ import {
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
 import { usersColumns as columns } from './users-columns';
-import UsersTableBulkActions from './users-table-bulk-actions';
 import { buildUserFindParams } from './users-query.utils';
+import UsersTableBulkActions from './users-table-bulk-actions';
 
 const route = getRouteApi('/_authenticated/users/');
 

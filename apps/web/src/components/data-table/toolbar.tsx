@@ -1,12 +1,12 @@
+import { useEffect, useState } from 'react';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { type Table } from '@tanstack/react-table';
+import { useDebounce } from '@/hooks/ui/useDebounce';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { DataTableFacetedFilter } from './faceted-filter';
 import { DataTableViewOptions } from './view-options';
-import { useDebounce } from '@/hooks/ui/useDebounce';
-import { useEffect, useState } from 'react';
-import { useLocale } from '@/hooks/ui/useLocale';
 
 type DataTableToolbarProps<TData> = {
   table: Table<TData>;

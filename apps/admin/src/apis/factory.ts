@@ -54,9 +54,7 @@ export const apiFactory = <TResponse, TRequest, TParams = object>(
   const config: SecurityConfig = { ...defaultConfig, ...customConfig };
 
   return {
-    find: async (
-      params?: PageParams & TParams
-    ): Promise<ApiResponse<PageResponse<TResponse>>> => {
+    find: async (params?: PageParams & TParams): Promise<ApiResponse<PageResponse<TResponse>>> => {
       return ApiClient.get<PageResponse<TResponse>>(endpoints.find(), {
         security: config.find,
         params,
@@ -80,7 +78,10 @@ export const apiFactory = <TResponse, TRequest, TParams = object>(
       });
     },
 
-    findByIds: async <P = TParams>(ids: string[], params?: P): Promise<ApiResponse<TResponse[]>> => {
+    findByIds: async <P = TParams>(
+      ids: string[],
+      params?: P
+    ): Promise<ApiResponse<TResponse[]>> => {
       return ApiClient.get<TResponse[]>(endpoints.findByIds(ids), {
         security: config.findByIds,
         params,

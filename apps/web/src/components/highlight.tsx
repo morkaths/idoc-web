@@ -31,12 +31,9 @@ export default function Highlight({ text = '', query = '', className = '' }: Hig
       {parts.map((part, i) => {
         // Kiểm tra xem part có khớp với query không (không phân biệt hoa thường)
         const isMatch = part.toLowerCase() === query.trim().toLowerCase();
-        
+
         return isMatch ? (
-          <mark 
-            key={i} 
-            className={`rounded bg-yellow-200 px-0.5 text-black ${className}`}
-          >
+          <mark key={i} className={`rounded bg-yellow-200 px-0.5 text-black ${className}`}>
             {part}
           </mark>
         ) : (

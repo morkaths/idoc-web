@@ -3,7 +3,7 @@ import axios, {
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
   type AxiosError,
-  AxiosHeaders
+  AxiosHeaders,
 } from 'axios';
 import { getSession } from 'next-auth/react';
 import { ApiEndpoint } from '@/config/api';
@@ -128,9 +128,7 @@ const forwardServerCookies = async (config: InternalAxiosRequestConfig) => {
     const allCookies = cookieStore.getAll();
 
     if (allCookies.length > 0) {
-      const cookieString = allCookies
-        .map((c) => `${c.name}=${c.value}`)
-        .join('; ');
+      const cookieString = allCookies.map((c) => `${c.name}=${c.value}`).join('; ');
       config.headers.set('Cookie', cookieString);
     }
   } catch (_error) {
@@ -189,7 +187,12 @@ const createInstance = (useAuth = false): AxiosInstance => {
     paramsSerializer: (params) => {
       const processed: Record<string, unknown> = {};
       Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'object' && value[0] !== null) {
+        if (
+          Array.isArray(value) &&
+          value.length > 0 &&
+          typeof value[0] === 'object' &&
+          value[0] !== null
+        ) {
           processed[key] = JSON.stringify(value);
         } else {
           processed[key] = value;
@@ -272,7 +275,12 @@ export const ApiClient = {
       return response.data;
     } catch (error: unknown) {
       // Return formatted error if it's already an ApiErrorResponse
-      if (error && typeof error === 'object' && 'success' in error && (error as { success: boolean }).success === false) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'success' in error &&
+        (error as { success: boolean }).success === false
+      ) {
         return error as unknown as ApiResponse<T>;
       }
       return handleError(error) as unknown as ApiResponse<T>;

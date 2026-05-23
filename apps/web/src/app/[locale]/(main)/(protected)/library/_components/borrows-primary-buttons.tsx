@@ -1,9 +1,9 @@
 'use client';
 
 import { Plus, Download } from 'lucide-react';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import { useBorrowsContext } from './borrows-provider';
-import { useLocale } from '@/hooks/ui/useLocale';
 
 export function BorrowsPrimaryButtons() {
   const { setOpen } = useBorrowsContext();

@@ -57,9 +57,9 @@ export function DataTableToolbar<TData>({
   // Sync search input with table state if it changes externally (e.g. reset or browser navigation)
   useEffect(() => {
     const externalVal = searchKey
-      ? (table.getColumn(searchKey)?.getFilterValue() as string) ?? ''
-      : (table.getState().globalFilter as string) ?? '';
-    
+      ? ((table.getColumn(searchKey)?.getFilterValue() as string) ?? '')
+      : ((table.getState().globalFilter as string) ?? '');
+
     if (externalVal !== debouncedSearch) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearch(externalVal);

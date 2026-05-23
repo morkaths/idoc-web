@@ -9,6 +9,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { Languages } from '@/types';
 import { cn } from '@/lib/utils';
 import { useSearchAuthors } from '@/hooks/data/useAuthor';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
@@ -21,10 +22,9 @@ import {
   TableRow,
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
-import { Languages } from '@/types';
 import { authorsColumns as columns } from './authors-columns';
-import AuthorsTableBulkActions from './authors-table-bulk-actions';
 import { buildAuthorFindParams } from './authors-query.utils';
+import AuthorsTableBulkActions from './authors-table-bulk-actions';
 
 const route = getRouteApi('/_authenticated/authors/');
 

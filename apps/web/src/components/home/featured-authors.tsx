@@ -1,12 +1,10 @@
 'use client';
 
-import { useAuthors } from '@/hooks/data/useAuthor';
-import { useLocale, KEYS } from '@/hooks/ui/useLocale';
-import { Skeleton } from '@repo/ui/components/skeleton';
-import { Button } from '@repo/ui/components/button';
 import Link from 'next/link';
 import { ArrowRight, Users2 } from 'lucide-react';
-import { AppImage } from '@/components/app-image';
+import { useAuthors } from '@/hooks/data/useAuthor';
+import { useLocale, KEYS } from '@/hooks/ui/useLocale';
+import { Button } from '@repo/ui/components/button';
 import {
   Carousel,
   CarouselContent,
@@ -14,6 +12,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@repo/ui/components/carousel';
+import { Skeleton } from '@repo/ui/components/skeleton';
+import { AppImage } from '@/components/app-image';
 
 export const FeaturedAuthors = () => {
   const { t, keys } = useLocale('home');
@@ -27,14 +27,14 @@ export const FeaturedAuthors = () => {
       <div className='mb-8 flex items-end justify-between'>
         <div className='flex flex-col space-y-2'>
           <div className='flex items-center gap-2'>
-            <Users2 className='h-5 w-5 text-primary' />
-            <h2 className='text-3xl font-bold tracking-tight bg-gradient-to-br from-primary to-primary/60 bg-clip-text text-transparent'>
+            <Users2 className='text-primary h-5 w-5' />
+            <h2 className='from-primary to-primary/60 bg-gradient-to-br bg-clip-text text-3xl font-bold tracking-tight text-transparent'>
               {t(keys.featuredAuthors.title)}
             </h2>
           </div>
           <p className='text-muted-foreground'>{t(keys.featuredAuthors.subtitle)}</p>
         </div>
-        <Button variant='ghost' className='text-primary font-semibold hover:bg-primary/5' asChild>
+        <Button variant='ghost' className='text-primary hover:bg-primary/5 font-semibold' asChild>
           <Link href='/authors'>
             {t(KEYS.common.actions.viewAll)}
             <ArrowRight className='ml-2 h-4 w-4' />
@@ -46,7 +46,10 @@ export const FeaturedAuthors = () => {
         <Carousel className='w-full'>
           <CarouselContent className='-ml-6 py-6'>
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <CarouselItem key={i} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 py-4'>
+              <CarouselItem
+                key={i}
+                className='basis-1/2 py-4 pl-6 sm:basis-1/3 md:basis-1/4 lg:basis-1/6'
+              >
                 <div className='flex flex-col items-center space-y-3'>
                   <Skeleton className='h-24 w-24 rounded-full md:h-32 md:w-32' />
                   <Skeleton className='h-4 w-24' />
@@ -66,23 +69,31 @@ export const FeaturedAuthors = () => {
         >
           <CarouselContent className='-ml-6 py-6'>
             {authors.map((author) => (
-              <CarouselItem key={author.id} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 py-4'>
+              <CarouselItem
+                key={author.id}
+                className='basis-1/2 py-4 pl-6 sm:basis-1/3 md:basis-1/4 lg:basis-1/6'
+              >
                 <Link
                   href={`/authors/${author.id}`}
                   className='group flex flex-col items-center text-center transition-all hover:-translate-y-1'
                 >
-                  <div className='relative h-24 w-24 rounded-full ring-2 ring-transparent ring-offset-2 transition-all group-hover:ring-primary md:h-32 md:w-32'>
+                  <div className='group-hover:ring-primary relative h-24 w-24 rounded-full ring-2 ring-transparent ring-offset-2 transition-all md:h-32 md:w-32'>
                     <div className='absolute inset-0 overflow-hidden rounded-full'>
                       <AppImage
-                        src={author.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${author.name}`}
+                        src={
+                          author.avatar ||
+                          `https://api.dicebear.com/7.x/initials/svg?seed=${author.name}`
+                        }
                         alt={author.name}
                         fill
                         className='object-cover'
                       />
                     </div>
                   </div>
-                  <h3 className='mt-4 font-semibold group-hover:text-primary line-clamp-1'>{author.name}</h3>
-                  <p className='text-sm text-muted-foreground line-clamp-1'>
+                  <h3 className='group-hover:text-primary mt-4 line-clamp-1 font-semibold'>
+                    {author.name}
+                  </h3>
+                  <p className='text-muted-foreground line-clamp-1 text-sm'>
                     {author.nationality || t(KEYS.navigation.authors.label)}
                   </p>
                 </Link>

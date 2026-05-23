@@ -16,9 +16,6 @@ import { Card } from '@repo/ui/components/card';
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from '@repo/ui/components/sheet';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@repo/ui/components/tabs';
 import BookFilter from './book-filter';
-import BookSort from './book-sort';
-import { BookView } from './book-view';
-
 import {
   type BookSortState,
   type BookFilterState,
@@ -28,6 +25,8 @@ import {
   DEFAULT_BOOK_FILTER,
   DEFAULT_BOOK_SORT,
 } from './book-query.utils';
+import BookSort from './book-sort';
+import { BookView } from './book-view';
 
 export function BooksView() {
   const { t, keys } = useLocale('books');
@@ -42,10 +41,7 @@ export function BooksView() {
     () => ({ query: state.query, categories: state.categories, languages: state.languages }),
     [state]
   );
-  const sort = useMemo(
-    () => ({ sortBy: state.sortBy, sortOrder: state.sortOrder }),
-    [state]
-  );
+  const sort = useMemo(() => ({ sortBy: state.sortBy, sortOrder: state.sortOrder }), [state]);
 
   // Write filter changes to URL (resets page to 1)
   const handleSetFilter = useCallback(
@@ -66,7 +62,9 @@ export function BooksView() {
   // Write page changes to URL
   const handlePageChange = useCallback(
     (newPage: number) => {
-      router.replace(`${pathname}?${buildBookQuery(filter, sort, newPage, limit)}`, { scroll: false });
+      router.replace(`${pathname}?${buildBookQuery(filter, sort, newPage, limit)}`, {
+        scroll: false,
+      });
     },
     [router, pathname, filter, sort, limit]
   );
@@ -191,11 +189,7 @@ function FilterTabs({
         />
       </TabsContent>
       <TabsContent value='sort'>
-        <BookSort
-          sort={sort}
-          onSort={setSort}
-          onReset={() => setSort(DEFAULT_BOOK_SORT)}
-        />
+        <BookSort sort={sort} onSort={setSort} onReset={() => setSort(DEFAULT_BOOK_SORT)} />
       </TabsContent>
     </Tabs>
   );

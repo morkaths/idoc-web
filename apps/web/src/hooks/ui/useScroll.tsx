@@ -1,5 +1,5 @@
-"use client";
-import { useCallback, useEffect, useState } from "react";
+'use client';
+import { useCallback, useEffect, useState } from 'react';
 
 export function useScroll(threshold: number) {
   const [scrolled, setScrolled] = useState(false);
@@ -9,10 +9,10 @@ export function useScroll(threshold: number) {
   }, [threshold]);
 
   useEffect(() => {
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener('scroll', onScroll);
     const timeoutId = setTimeout(onScroll, 0);
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener('scroll', onScroll);
       clearTimeout(timeoutId);
     };
   }, [onScroll]);

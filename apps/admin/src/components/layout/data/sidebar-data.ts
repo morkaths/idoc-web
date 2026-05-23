@@ -24,9 +24,9 @@ import {
   Bookmark,
   Sparkles,
 } from 'lucide-react';
+import { ClerkLogo } from '@/assets/clerk-logo';
 import { Logo } from '../logo';
 import { type SidebarData } from '../types';
-import { ClerkLogo } from '@/assets/clerk-logo';
 
 export const sidebarData: SidebarData = {
   user: {

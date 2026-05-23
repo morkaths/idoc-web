@@ -2,6 +2,7 @@
 
 > For system architecture and diagrams, see [ARCHITECTURE.md](./ARCHITECTURE.md).  
 > For tech stack and library versions, see [TECH_STACK.md](./TECH_STACK.md).
+
 ## Coding Conventions
 
 ### General Rules

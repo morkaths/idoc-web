@@ -38,7 +38,7 @@ export function BorrowsTableBulkActions({ table }: Props) {
           key: 'export',
           icon: <FileSpreadsheet />,
           label: t(keys.table.bulkActions.export.label),
-          onClick: async () => { },
+          onClick: async () => {},
           variant: 'default',
           tooltip: t(keys.table.bulkActions.export.tooltip),
           confirm: true,

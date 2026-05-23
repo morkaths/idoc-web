@@ -12,14 +12,11 @@ import type {
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
-const factory = apiFactory<IFile, FileRequest>(
-  ApiEndpoint.endpoints.files,
-  {
-    find: 'private',
-    findById: 'private',
-    delete: 'private',
-  }
-);
+const factory = apiFactory<IFile, FileRequest>(ApiEndpoint.endpoints.files, {
+  find: 'private',
+  findById: 'private',
+  delete: 'private',
+});
 
 export const FileApi = {
   ...factory,
@@ -67,27 +64,20 @@ export const FileApi = {
   uploadPresigned: async (
     request: PresignedUploadRequest
   ): Promise<ApiResponse<PresignedUploadResponse>> => {
-    return ApiClient.post<PresignedUploadResponse>(
-      ApiEndpoint.endpoints.files.uploadPresigned(),
-      {
-        security: 'private',
-        data: request,
-      }
-    );
+    return ApiClient.post<PresignedUploadResponse>(ApiEndpoint.endpoints.files.uploadPresigned(), {
+      security: 'private',
+      data: request,
+    });
   },
 
   download: async (id: string): Promise<ApiResponse<Blob>> => {
-    return ApiClient.get<Blob>(
-      ApiEndpoint.endpoints.files.download(id),
-      {
-        security: 'private',
-        responseType: 'blob',
-      }
-    );
+    return ApiClient.get<Blob>(ApiEndpoint.endpoints.files.download(id), {
+      security: 'private',
+      responseType: 'blob',
+    });
   },
 
   getViewUrl: (id: string, ticket: string): string => {
     return `${ApiEndpoint.meta.baseURL}${ApiEndpoint.endpoints.files.view(id)}?ticket=${encodeURIComponent(ticket)}`;
   },
 };
-

@@ -151,22 +151,25 @@ export function EntityMutateDialog({
 ## Key Conventions
 
 ### Form Structure
+
 1. **Schema first**: Define Zod schema at the top of the file
 2. **Type inference**: Use `z.infer<typeof Schema>` for form values type
 3. **defaultValues**: Always provide defaults, using `initialData?.field ?? ''` pattern
 4. **Reset on close**: Call `form.reset()` after successful submit
 
 ### Field Pattern
+
 Each form field follows this structure:
+
 ```tsx
 <FormField
   control={form.control}
-  name='fieldName'
+  name="fieldName"
   render={({ field }) => (
-    <div className='grid gap-3'>
-      <FormLabel htmlFor='fieldName'>Label</FormLabel>
+    <div className="grid gap-3">
+      <FormLabel htmlFor="fieldName">Label</FormLabel>
       <FormControl>
-        <Input id='fieldName' {...field} />
+        <Input id="fieldName" {...field} />
       </FormControl>
       <FormMessage />
     </div>
@@ -175,29 +178,36 @@ Each form field follows this structure:
 ```
 
 ### File Upload Pattern
+
 For forms with file uploads, handle them in the submit handler:
+
 ```typescript
 const handleFormSubmit = async (data: EntityFormValues) => {
   try {
     if (imageFile) {
-      toast.loading('Uploading image...', { id: 'upload' });
-      const url = await uploadImage.mutateAsync({ file: imageFile, folder: 'entities' });
+      toast.loading("Uploading image...", { id: "upload" });
+      const url = await uploadImage.mutateAsync({
+        file: imageFile,
+        folder: "entities",
+      });
       data.imageUrl = url;
-      toast.success('Image uploaded!', { id: 'upload' });
+      toast.success("Image uploaded!", { id: "upload" });
     }
     onSubmit(data);
   } catch {
-    toast.error('Upload failed!', { id: 'upload' });
+    toast.error("Upload failed!", { id: "upload" });
   }
 };
 ```
 
 ### Toast Notifications
+
 - Use `toast.loading()` with an ID for upload progress
 - Use `toast.success()` / `toast.error()` with the same ID to replace loading toast
 - User-facing messages in **Vietnamese** for error cases
 
 ### Grid Layouts
+
 - Single column: `grid gap-3`
 - Two columns: `grid grid-cols-1 md:grid-cols-2 gap-3`
 - Three columns: `grid grid-cols-1 md:grid-cols-3 gap-3`

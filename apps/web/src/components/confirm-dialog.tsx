@@ -1,5 +1,5 @@
-import { useLocale } from '@/hooks/ui/useLocale';
 import { cn } from '@/lib/utils';
+import { useLocale } from '@/hooks/ui/useLocale';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -52,7 +52,9 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
         </AlertDialogHeader>
         {children}
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>{cancelBtnText ?? t(keys.actions.cancel)}</AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>
+            {cancelBtnText ?? t(keys.actions.cancel)}
+          </AlertDialogCancel>
           <Button
             variant={destructive ? 'destructive' : 'default'}
             onClick={handleConfirm}

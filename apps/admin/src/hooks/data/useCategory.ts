@@ -1,10 +1,5 @@
 import { CategoryApi } from '@/apis';
-import type {
-  FindParams,
-  CategoryResponse,
-  CategoryRequest,
-  PageParams,
-} from '@/types';
+import type { FindParams, CategoryResponse, CategoryRequest, PageParams } from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -55,15 +50,11 @@ export const useSearchCategories = (
  * @param id Category ID
  * @param options Query options
  */
-export const useCategory = (
-  id: string,
-  options?: ItemQueryOptions<CategoryResponse>
-) => {
-  return useItemQuery<CategoryResponse>(
-    ['categories', id],
-    () => CategoryApi.findById(id),
-    { enabled: !!id, ...options }
-  );
+export const useCategory = (id: string, options?: ItemQueryOptions<CategoryResponse>) => {
+  return useItemQuery<CategoryResponse>(['categories', id], () => CategoryApi.findById(id), {
+    enabled: !!id,
+    ...options,
+  });
 };
 
 /**
@@ -97,12 +88,5 @@ export const useUpdateCategory = <TContext = unknown>(
 export const useDeleteCategory = <TContext = unknown>(
   options?: DeleteMutationOptions<TContext>
 ) => {
-  return useDeleteMutation<TContext>(
-    (id) => CategoryApi.delete(id),
-    [['categories']],
-    options
-  );
+  return useDeleteMutation<TContext>((id) => CategoryApi.delete(id), [['categories']], options);
 };
-
-
-

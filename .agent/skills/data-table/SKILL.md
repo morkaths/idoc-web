@@ -11,14 +11,14 @@ This skill covers creating TanStack Table column definitions and integrating the
 
 The project provides these reusable data-table components in `src/components/data-table/`:
 
-| Component | Purpose |
-|---|---|
-| `DataTableColumnHeader` | Sortable column header with sort indicators |
-| `DataTableToolbar` | Search + filter toolbar |
-| `DataTablePagination` | Pagination controls |
-| `DataTableFacetedFilter` | Multi-select filter dropdown |
-| `DataTableViewOptions` | Column visibility toggle |
-| `DataTableBulkActions` | Toolbar for bulk operations on selected rows |
+| Component                | Purpose                                      |
+| ------------------------ | -------------------------------------------- |
+| `DataTableColumnHeader`  | Sortable column header with sort indicators  |
+| `DataTableToolbar`       | Search + filter toolbar                      |
+| `DataTablePagination`    | Pagination controls                          |
+| `DataTableFacetedFilter` | Multi-select filter dropdown                 |
+| `DataTableViewOptions`   | Column visibility toggle                     |
+| `DataTableBulkActions`   | Toolbar for bulk operations on selected rows |
 
 ## Column Definition Template
 
@@ -139,12 +139,14 @@ export function EntityTable() {
 ## Key Conventions
 
 ### Column Types
+
 - **`accessorKey`**: Maps to a field in the data object
 - **`id`**: For computed columns (select, actions) that don't map to data fields
 - **`enableSorting: false`**: Disable sorting for checkbox, image, and action columns
 - **`enableHiding: false`**: Prevent user from hiding essential columns (select, primary identifier)
 
 ### Cell Patterns
+
 1. **Text with highlight**: Use `<Highlight text={value} query={globalFilter} />` for searchable columns
 2. **Truncation**: Always add `max-w-*` and `truncate` classes for text columns
 3. **Image with fallback**: Create a separate cell component with `useState` for error handling
@@ -152,7 +154,9 @@ export function EntityTable() {
 5. **Array of badges**: Slice to show max 2–3, add `+N` badge for overflow
 
 ### Column Meta
+
 Use `meta` for custom styling:
+
 ```typescript
 {
   accessorKey: 'price',
@@ -161,4 +165,5 @@ Use `meta` for custom styling:
 ```
 
 ### URL State Sync
+
 Use `useTableUrlState` hook to sync pagination, sorting, and filters with URL search params for shareable table states.

@@ -1,14 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n';
+import { authMiddleware } from './middlewares/auth-middleware';
 
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
   localePrefix: 'always',
 });
-
-import { authMiddleware } from './middlewares/auth-middleware';
 
 export default async function proxy(req: NextRequest) {
   const { pathname, locale } = req.nextUrl;

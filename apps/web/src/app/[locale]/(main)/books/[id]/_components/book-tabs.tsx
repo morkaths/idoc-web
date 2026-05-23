@@ -3,12 +3,12 @@
 import { type ReactNode, useState } from 'react';
 import { type BookResponse, Languages } from '@/types';
 import { formatDate } from '@/utils/date';
+import { useFile } from '@/hooks/data/useFile';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/tabs';
+import { BookReviews } from './book-reviews';
 import { BookSimilar } from './book-similar';
 import BookTags from './book-tags';
-import { BookReviews } from './book-reviews';
-import { useFile } from '@/hooks/data/useFile';
 
 interface TabItem {
   name: string;
@@ -71,15 +71,17 @@ export function BookTabs({ book }: { book?: BookResponse }) {
                 Format
               </div>
               <div className='text-sm font-medium'>
-                {fileData ? (() => {
-                  const mime = fileData.contentType;
-                  if (mime === 'application/pdf') return 'PDF';
-                  if (mime === 'application/epub+zip') return 'EPUB';
-                  if (mime.includes('wordprocessingml')) return 'DOCX';
-                  if (mime.includes('spreadsheetml')) return 'XLSX';
-                  if (mime.includes('presentationml')) return 'PPTX';
-                  return mime.split('/').pop()?.toUpperCase() || 'N/A';
-                })() : 'N/A'}
+                {fileData
+                  ? (() => {
+                      const mime = fileData.contentType;
+                      if (mime === 'application/pdf') return 'PDF';
+                      if (mime === 'application/epub+zip') return 'EPUB';
+                      if (mime.includes('wordprocessingml')) return 'DOCX';
+                      if (mime.includes('spreadsheetml')) return 'XLSX';
+                      if (mime.includes('presentationml')) return 'PPTX';
+                      return mime.split('/').pop()?.toUpperCase() || 'N/A';
+                    })()
+                  : 'N/A'}
               </div>
             </div>
             <div className='space-y-1'>
@@ -139,7 +141,7 @@ export function BookTabs({ book }: { book?: BookResponse }) {
         </div>
       ),
     },
-    { name: 'Images', value: 'images', content: null }
+    { name: 'Images', value: 'images', content: null },
   ];
 
   return (

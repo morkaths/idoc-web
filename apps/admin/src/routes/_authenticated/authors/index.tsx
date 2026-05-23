@@ -7,16 +7,11 @@ const authorsSearchSchema = z.object({
   pageSize: z.coerce.number().optional().catch(10),
   query: z.string().optional().catch(''),
   nationality: z
-    .preprocess(
-      (val) => (Array.isArray(val) ? val : val ? [val] : []),
-      z.array(z.string())
-    )
+    .preprocess((val) => (Array.isArray(val) ? val : val ? [val] : []), z.array(z.string()))
     .catch([]),
 });
 
-export const Route = createFileRoute('/_authenticated/authors/')(
-  {
-    validateSearch: authorsSearchSchema,
-    component: Authors,
-  }
-);
+export const Route = createFileRoute('/_authenticated/authors/')({
+  validateSearch: authorsSearchSchema,
+  component: Authors,
+});

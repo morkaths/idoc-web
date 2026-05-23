@@ -24,7 +24,10 @@ export const AgentClient = {
    * @param url API endpoint
    * @param options Axios request options
    */
-  async get<T>(url: string, options?: { params?: Record<string, unknown> }): Promise<ApiResponse<T>> {
+  async get<T>(
+    url: string,
+    options?: { params?: Record<string, unknown> }
+  ): Promise<ApiResponse<T>> {
     try {
       const response = await agentAxios.get<T>(url, { params: options?.params });
       return response.data as ApiResponse<T>;

@@ -1,6 +1,6 @@
+import { z } from 'zod';
 import { type ColumnFiltersState, type SortingState } from '@tanstack/react-table';
 import { type FindParams, SortDirection, FilterOperator } from '@repo/types';
-import { z } from 'zod';
 
 // --- Helpers ---
 const commaSeparatedArray = z.string().transform((val) => val.split(',').filter(Boolean));
@@ -28,13 +28,18 @@ export const bookFilterFormSchema = z.object({
 
 export const bookSortSchema = z.object({
   sortBy: z.string().default(DEFAULT_BOOK_SORT_FIELD).catch(DEFAULT_BOOK_SORT_FIELD),
-  sortOrder: z.nativeEnum(SortDirection).default(DEFAULT_BOOK_SORT_ORDER).catch(DEFAULT_BOOK_SORT_ORDER),
+  sortOrder: z
+    .nativeEnum(SortDirection)
+    .default(DEFAULT_BOOK_SORT_ORDER)
+    .catch(DEFAULT_BOOK_SORT_ORDER),
 });
 
-export const bookQuerySchema = bookFilterSchema.extend({
-  page: z.coerce.number().int().positive().catch(DEFAULT_BOOK_PAGE),
-  limit: z.coerce.number().int().positive().catch(DEFAULT_BOOK_LIMIT),
-}).merge(bookSortSchema);
+export const bookQuerySchema = bookFilterSchema
+  .extend({
+    page: z.coerce.number().int().positive().catch(DEFAULT_BOOK_PAGE),
+    limit: z.coerce.number().int().positive().catch(DEFAULT_BOOK_LIMIT),
+  })
+  .merge(bookSortSchema);
 
 // --- Types ---
 export type BookQueryState = z.infer<typeof bookQuerySchema>;
@@ -73,5 +78,3 @@ export function buildBookFindParams(
     sorts: [{ field: sortBy, direction: sortOrder }],
   };
 }
-
-

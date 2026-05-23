@@ -1,7 +1,7 @@
 import z from 'zod';
 import { createFileRoute } from '@tanstack/react-router';
-import { Users } from '@/features/users';
 import { UserStatus, RoleType } from '@repo/types';
+import { Users } from '@/features/users';
 
 const usersSearchSchema = z.object({
   page: z.coerce.number().optional().catch(1),

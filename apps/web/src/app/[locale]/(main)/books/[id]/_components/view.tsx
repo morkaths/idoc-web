@@ -1,9 +1,10 @@
 'use client';
 
-import { type BookResponse, BorrowStatus } from '@/types';
 import { useRouter, useParams } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { isValidCover } from '@/lib/book-utils';
+import { type BookResponse, BorrowStatus } from '@/types';
 import dayjs from 'dayjs';
 import { Bookmark, Plus, BookX } from 'lucide-react';
 import { toast } from 'sonner';
@@ -11,20 +12,18 @@ import { useBook } from '@/hooks/data/useBook';
 import { useCreateBorrow } from '@/hooks/data/useBorrow';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Badge } from '@repo/ui/components/badge';
+import BookCover3d from '@repo/ui/components/book-cover-3d';
 import { Button } from '@repo/ui/components/button';
 import { Skeleton } from '@repo/ui/components/skeleton';
+import { AddBookmarkDialog } from './add-bookmark-dialog';
 import { BookTabs } from './book-tabs';
 import { BorrowBookDialog } from './borrow-book-dialog';
-import { AddBookmarkDialog } from './add-bookmark-dialog';
-import BookCover3d from '@repo/ui/components/book-cover-3d';
-import { isValidCover } from '@/lib/book-utils';
 
 interface BookDetailViewProps {
   id: string;
 }
 
 const CoverImage = ({ title, src }: { title: string; src?: string }) => {
-
   return (
     <div className='relative z-10 flex justify-center'>
       <BookCover3d
@@ -199,13 +198,13 @@ export function BookDetailView({ id }: BookDetailViewProps) {
             {t(keys.by)}{' '}
             {book.authors?.length
               ? book.authors.map((a, i) => (
-                <span key={i}>
-                  <span className='text-muted-foreground hover:text-primary cursor-pointer font-semibold underline transition-colors'>
-                    {a.name}
+                  <span key={i}>
+                    <span className='text-muted-foreground hover:text-primary cursor-pointer font-semibold underline transition-colors'>
+                      {a.name}
+                    </span>
+                    {i < (book.authors?.length || 0) - 1 && ', '}
                   </span>
-                  {i < (book.authors?.length || 0) - 1 && ', '}
-                </span>
-              ))
+                ))
               : t(keys.author)}
           </div>
           {/* Actions */}

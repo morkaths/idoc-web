@@ -14,12 +14,10 @@ import { ApiClient } from './config';
 
 export const AuthApi = {
   login: async (data: SignInRequest): Promise<ApiResponse<AuthResponse>> => {
-    return ApiClient.post<AuthResponse>(
-      ApiEndpoint.endpoints.auth.login(),
-      {
-        security: 'public',
-        data,
-      });
+    return ApiClient.post<AuthResponse>(ApiEndpoint.endpoints.auth.login(), {
+      security: 'public',
+      data,
+    });
   },
 
   loginGoogle: async (data: {
@@ -91,4 +89,3 @@ export const AuthApi = {
     });
   },
 };
-

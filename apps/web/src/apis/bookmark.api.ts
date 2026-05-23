@@ -3,9 +3,7 @@ import type { BookmarkResponse, BookmarkRequest, ApiResponse } from '../types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
-const factory = apiFactory<BookmarkResponse, BookmarkRequest>(
-  ApiEndpoint.endpoints.bookmarks
-);
+const factory = apiFactory<BookmarkResponse, BookmarkRequest>(ApiEndpoint.endpoints.bookmarks);
 
 export const BookmarkApi = {
   ...factory,
@@ -17,4 +15,3 @@ export const BookmarkApi = {
     );
   },
 };
-

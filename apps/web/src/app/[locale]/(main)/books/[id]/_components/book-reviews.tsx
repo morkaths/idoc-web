@@ -1,13 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { FilterOperator, SortDirection } from '@/types';
 import { formatDate } from '@/utils/date';
 import { Star, MessageSquare, Loader2, User as UserIcon } from 'lucide-react';
 import { useSearchReviews } from '@/hooks/data/useReview';
-import { FilterOperator, SortDirection } from '@/types';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Avatar, AvatarFallback } from '@repo/ui/components/avatar';
-import { Pagination } from '@/components/pagination';
 import {
   Select,
   SelectContent,
@@ -15,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/select';
+import { Pagination } from '@/components/pagination';
 
 interface BookReviewsProps {
   bookId?: string;
@@ -23,7 +23,12 @@ interface BookReviewsProps {
   enabled?: boolean;
 }
 
-export function BookReviews({ bookId, rating = 0, totalReviews = 0, enabled = true }: BookReviewsProps) {
+export function BookReviews({
+  bookId,
+  rating = 0,
+  totalReviews = 0,
+  enabled = true,
+}: BookReviewsProps) {
   const { t, keys } = useLocale('book');
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState('newest');
@@ -81,14 +86,22 @@ export function BookReviews({ bookId, rating = 0, totalReviews = 0, enabled = tr
             <h3 className='text-lg font-bold'>{t(keys.tabs.reviews.label)}</h3>
             <div className='flex items-center gap-2'>
               <span className='text-muted-foreground text-sm'>{t(keys.reviews.sort.label)}</span>
-              <Select value={sort} onValueChange={(val) => { setSort(val); setPage(1); }}>
+              <Select
+                value={sort}
+                onValueChange={(val) => {
+                  setSort(val);
+                  setPage(1);
+                }}
+              >
                 <SelectTrigger className='w-[180px]'>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='newest'>{t(keys.reviews.sort.newest)}</SelectItem>
                   <SelectItem value='oldest'>{t(keys.reviews.sort.oldest)}</SelectItem>
-                  <SelectItem value='highestRating'>{t(keys.reviews.sort.highestRating)}</SelectItem>
+                  <SelectItem value='highestRating'>
+                    {t(keys.reviews.sort.highestRating)}
+                  </SelectItem>
                   <SelectItem value='lowestRating'>{t(keys.reviews.sort.lowestRating)}</SelectItem>
                 </SelectContent>
               </Select>

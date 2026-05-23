@@ -9,8 +9,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { cn } from '@/lib/utils';
 import { BorrowStatus } from '@/types';
+import { cn } from '@/lib/utils';
 import { useBorrows } from '@/hooks/data/useBorrow';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
@@ -23,8 +23,8 @@ import {
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
 import { borrowsColumns as columns } from './borrows-columns';
-import BorrowsTableBulkActions from './borrows-table-bulk-actions';
 import { buildBorrowFindParams } from './borrows-query.utils';
+import BorrowsTableBulkActions from './borrows-table-bulk-actions';
 
 const route = getRouteApi('/_authenticated/borrows/');
 

@@ -1,6 +1,13 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useEffect, useState, type ReactNode, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+  useCallback,
+} from 'react';
 import { type Theme, type Flow } from '../components/viewers/data/setting-data';
 
 interface ReaderSettings {
@@ -51,10 +58,16 @@ export function ReaderProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   }, [settings]);
 
-  const setFontSize = useCallback((fontSize: number) => setSettings(s => ({ ...s, fontSize })), []);
-  const setFontFamily = useCallback((fontFamily: string) => setSettings(s => ({ ...s, fontFamily })), []);
-  const setTheme = useCallback((theme: Theme) => setSettings(s => ({ ...s, theme })), []);
-  const setFlow = useCallback((flow: Flow) => setSettings(s => ({ ...s, flow })), []);
+  const setFontSize = useCallback(
+    (fontSize: number) => setSettings((s) => ({ ...s, fontSize })),
+    []
+  );
+  const setFontFamily = useCallback(
+    (fontFamily: string) => setSettings((s) => ({ ...s, fontFamily })),
+    []
+  );
+  const setTheme = useCallback((theme: Theme) => setSettings((s) => ({ ...s, theme })), []);
+  const setFlow = useCallback((flow: Flow) => setSettings((s) => ({ ...s, flow })), []);
 
   // Các hàm tiện ích quản lý EPUB Locations (Ổn định tham chiếu bằng useCallback)
   const getEpubLocations = useCallback((key: string) => {
@@ -72,15 +85,17 @@ export function ReaderProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ReaderContext.Provider value={{ 
-      settings, 
-      setFontSize, 
-      setFontFamily, 
-      setTheme, 
-      setFlow,
-      getEpubLocations,
-      saveEpubLocations
-    }}>
+    <ReaderContext.Provider
+      value={{
+        settings,
+        setFontSize,
+        setFontFamily,
+        setTheme,
+        setFlow,
+        getEpubLocations,
+        saveEpubLocations,
+      }}
+    >
       {children}
     </ReaderContext.Provider>
   );

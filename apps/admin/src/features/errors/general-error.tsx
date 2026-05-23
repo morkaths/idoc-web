@@ -23,7 +23,7 @@ export function GeneralError({ className, minimal = false, error }: GeneralError
       <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
         {!minimal && <h1 className='text-[7rem] leading-tight font-bold'>500</h1>}
         <span className='font-medium'>Oops! Something went wrong {`:')`}</span>
-        <p className='text-muted-foreground text-center max-w-[80vw] overflow-auto'>
+        <p className='text-muted-foreground max-w-[80vw] overflow-auto text-center'>
           {error?.message || 'We apologize for the inconvenience. Please try again later.'}
         </p>
         {!minimal && (

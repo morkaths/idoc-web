@@ -10,7 +10,6 @@ import {
 } from '@/hooks/data/useBorrow';
 import { useCreateReview, useUpdateReview } from '@/hooks/data/useReview';
 import { useLocale } from '@/hooks/ui/useLocale';
-import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
@@ -20,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@repo/ui/components/dialog';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { BorrowsExtendDialog } from './borrows-extend-dialog';
 import { BorrowsHistoryDialog } from './borrows-history-dialog';
 import { BorrowsMutateDialog } from './borrows-mutate-dialog';
@@ -45,27 +45,25 @@ export function BorrowsDialogs() {
         open={open === 'create'}
         onOpenChange={(v) => setOpen(v ? 'create' : null)}
         onSubmit={async (data) => {
-          return toast.promise(createBorrowMut.mutateAsync(data as Parameters<typeof createBorrowMut.mutateAsync>[0]), {
-            loading: t(keys.table.actions.mutate.loading),
-            success: (response) => {
-              setOpen(null);
-              return response?.message || t(keys.table.actions.mutate.success);
-            },
-            error: (err) => err?.message || t(keys.table.actions.mutate.error),
-          });
+          return toast.promise(
+            createBorrowMut.mutateAsync(data as Parameters<typeof createBorrowMut.mutateAsync>[0]),
+            {
+              loading: t(keys.table.actions.mutate.loading),
+              success: (response) => {
+                setOpen(null);
+                return response?.message || t(keys.table.actions.mutate.success);
+              },
+              error: (err) => err?.message || t(keys.table.actions.mutate.error),
+            }
+          );
         }}
       />
 
-      <Dialog
-        open={open === 'export'}
-        onOpenChange={(v) => setOpen(v ? 'export' : null)}
-      >
+      <Dialog open={open === 'export'} onOpenChange={(v) => setOpen(v ? 'export' : null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t(keys.table.bulkActions.export.label)}</DialogTitle>
-            <DialogDescription>
-              {t(keys.table.bulkActions.export.confirmDesc)}
-            </DialogDescription>
+            <DialogDescription>{t(keys.table.bulkActions.export.confirmDesc)}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant='outline' onClick={() => setOpen(null)}>
@@ -73,18 +71,14 @@ export function BorrowsDialogs() {
             </Button>
             <Button
               onClick={async () => {
-                return toast.promise(
-                  new Promise((resolve) => setTimeout(resolve, 2000)),
-                  {
-                    loading: t(keys.table.bulkActions.export.loading),
-                    success: () => {
-                      setOpen(null);
-                      return t(keys.table.bulkActions.export.success);
-                    },
-                    error: (err) =>
-                      err?.message || t(keys.table.bulkActions.export.error),
-                  }
-                );
+                return toast.promise(new Promise((resolve) => setTimeout(resolve, 2000)), {
+                  loading: t(keys.table.bulkActions.export.loading),
+                  success: () => {
+                    setOpen(null);
+                    return t(keys.table.bulkActions.export.success);
+                  },
+                  error: (err) => err?.message || t(keys.table.bulkActions.export.error),
+                });
               }}
             >
               {t(keys.table.bulkActions.export.label)}
@@ -127,18 +121,15 @@ export function BorrowsDialogs() {
             notes={currentRow.notes}
             onOpenChange={(v) => setOpen(v ? 'extend' : null)}
             onSubmit={async (data) => {
-              return toast.promise(
-                extendBorrowMut.mutateAsync({ id: currentRow.id, data }),
-                {
-                  loading: t(keys.table.actions.extend.loading),
-                  success: (response) => {
-                    setOpen(null);
-                    setCurrentRow(null);
-                    return response?.message || t(keys.table.actions.extend.success);
-                  },
-                  error: (err) => err?.message || t(keys.table.actions.extend.error),
-                }
-              );
+              return toast.promise(extendBorrowMut.mutateAsync({ id: currentRow.id, data }), {
+                loading: t(keys.table.actions.extend.loading),
+                success: (response) => {
+                  setOpen(null);
+                  setCurrentRow(null);
+                  return response?.message || t(keys.table.actions.extend.success);
+                },
+                error: (err) => err?.message || t(keys.table.actions.extend.error),
+              });
             }}
           />
 
@@ -162,9 +153,9 @@ export function BorrowsDialogs() {
                 const error = err as Record<string, unknown>;
                 toast.error(
                   (error?.message as string) ||
-                  (existingReview
-                    ? t(keys.table.actions.review.messages.create.error)
-                    : t(keys.table.actions.review.messages.update.error))
+                    (existingReview
+                      ? t(keys.table.actions.review.messages.create.error)
+                      : t(keys.table.actions.review.messages.update.error))
                 );
               };
 
@@ -172,7 +163,9 @@ export function BorrowsDialogs() {
                 return updateReviewMut
                   .mutateAsync({ id: existingReview.id, data: payload })
                   .then((response) => {
-                    toast.success(response?.message || t(keys.table.actions.review.messages.update.success));
+                    toast.success(
+                      response?.message || t(keys.table.actions.review.messages.update.success)
+                    );
                     setOpen(null);
                     setCurrentRow(null);
                   })
@@ -185,7 +178,9 @@ export function BorrowsDialogs() {
                     content: payload.content,
                   })
                   .then((response) => {
-                    toast.success(response?.message || t(keys.table.actions.review.messages.create.success));
+                    toast.success(
+                      response?.message || t(keys.table.actions.review.messages.create.success)
+                    );
                     setOpen(null);
                     setCurrentRow(null);
                   })
@@ -210,15 +205,18 @@ export function BorrowsDialogs() {
               if (isSubmitting) return;
               setIsSubmitting(true);
               try {
-                await toast.promise(returnBorrowMut.mutateAsync({ id: currentRow.id, data: undefined }), {
-                  loading: t(keys.table.actions.return.loading),
-                  success: (response) => {
-                    setOpen(null);
-                    setTimeout(() => setCurrentRow(null), 500);
-                    return response?.message || t(keys.table.actions.return.success);
-                  },
-                  error: (err) => err?.message || t(keys.table.actions.return.error),
-                });
+                await toast.promise(
+                  returnBorrowMut.mutateAsync({ id: currentRow.id, data: undefined }),
+                  {
+                    loading: t(keys.table.actions.return.loading),
+                    success: (response) => {
+                      setOpen(null);
+                      setTimeout(() => setCurrentRow(null), 500);
+                      return response?.message || t(keys.table.actions.return.success);
+                    },
+                    error: (err) => err?.message || t(keys.table.actions.return.error),
+                  }
+                );
               } finally {
                 setIsSubmitting(false);
               }

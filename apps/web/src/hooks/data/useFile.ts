@@ -1,6 +1,6 @@
 import { useQuery, type UseQueryOptions, type QueryKey } from '@tanstack/react-query';
-import { FileApi } from '@/apis/file.api';
 import type { FileResponse, FindParams, PageParams } from '@/types';
+import { FileApi } from '@/apis/file.api';
 import {
   useListQuery,
   useItemQuery,
@@ -9,7 +9,7 @@ import {
   type ListQueryOptions,
   type ItemQueryOptions,
   type CreateMutationOptions,
-  type DeleteMutationOptions
+  type DeleteMutationOptions,
 } from './factory';
 
 /**
@@ -17,15 +17,8 @@ import {
  * @param params Pagination parameters
  * @param options Query options
  */
-export const useFiles = (
-  params: PageParams = {},
-  options?: ListQueryOptions<FileResponse>
-) => {
-  return useListQuery<FileResponse>(
-    ['files', params],
-    () => FileApi.find(params),
-    options
-  );
+export const useFiles = (params: PageParams = {}, options?: ListQueryOptions<FileResponse>) => {
+  return useListQuery<FileResponse>(['files', params], () => FileApi.find(params), options);
 };
 
 /**
@@ -33,10 +26,7 @@ export const useFiles = (
  * @param params Pagination parameters
  * @param options Query options
  */
-export const useUserFiles = (
-  params: PageParams = {},
-  options?: ListQueryOptions<FileResponse>
-) => {
+export const useUserFiles = (params: PageParams = {}, options?: ListQueryOptions<FileResponse>) => {
   return useListQuery<FileResponse>(
     ['files', 'user', params],
     () => FileApi.findByUser(params),
@@ -65,15 +55,11 @@ export const useSearchFiles = (
  * @param id File ID
  * @param options Query options
  */
-export const useFile = (
-  id: string,
-  options?: ItemQueryOptions<FileResponse>
-) => {
-  return useItemQuery<FileResponse>(
-    ['files', id],
-    () => FileApi.findById(id),
-    { enabled: !!id, ...options }
-  );
+export const useFile = (id: string, options?: ItemQueryOptions<FileResponse>) => {
+  return useItemQuery<FileResponse>(['files', id], () => FileApi.findById(id), {
+    enabled: !!id,
+    ...options,
+  });
 };
 
 /**
@@ -102,7 +88,7 @@ export const useUploadPresignedFile = <TContext = unknown>(
       const result = await FileApi.uploadPresigned({
         fileName: file.name,
         contentType: file.type,
-        folder
+        folder,
       });
 
       if (!result.success || !result.data) {
@@ -123,14 +109,8 @@ export const useUploadPresignedFile = <TContext = unknown>(
  * Hook to delete a file
  * @param options Mutation options
  */
-export const useDeleteFile = <TContext = unknown>(
-  options?: DeleteMutationOptions<TContext>
-) => {
-  return useDeleteMutation<TContext>(
-    (id) => FileApi.delete(id),
-    [['files']],
-    options
-  );
+export const useDeleteFile = <TContext = unknown>(options?: DeleteMutationOptions<TContext>) => {
+  return useDeleteMutation<TContext>((id) => FileApi.delete(id), [['files']], options);
 };
 
 /**
@@ -152,4 +132,3 @@ export const useViewUrl = (
     ...options,
   });
 };
-

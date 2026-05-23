@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import { BookmarkProvider } from '@/components/book/bookmark-provider';
 import { BannerCarousel } from '@/components/home/banner-carousel';
-import { RecommendationCarousel } from '@/components/home/recommendation-carousel';
-import { PopularBooks } from '@/components/home/popular-books';
 import { CategoriesGrid } from '@/components/home/categories-grid';
-import { NewArrivals } from '@/components/home/new-arrivals';
-import { FeaturedAuthors } from '@/components/home/featured-authors';
-import { StatsSection } from '@/components/home/stats-section';
 import { CTASection } from '@/components/home/cta-section';
+import { FeaturedAuthors } from '@/components/home/featured-authors';
+import { NewArrivals } from '@/components/home/new-arrivals';
+import { PopularBooks } from '@/components/home/popular-books';
+import { RecommendationCarousel } from '@/components/home/recommendation-carousel';
+import { StatsSection } from '@/components/home/stats-section';
 
 export const metadata: Metadata = {
   title: 'Home',

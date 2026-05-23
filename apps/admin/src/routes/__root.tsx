@@ -2,14 +2,13 @@ import { type QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import env from '@/config/env';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { type AuthState } from '@/stores/auth-store';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { type AuthState } from '@/stores/auth-store';
 import { Toaster } from '@repo/ui/components/sonner';
+import { TooltipProvider } from '@repo/ui/components/tooltip';
 import { NavigationProgress } from '@/components/navigation-progress';
 import { GeneralError } from '@/features/errors/general-error';
 import { NotFoundError } from '@/features/errors/not-found-error';
-
-import { TooltipProvider } from '@repo/ui/components/tooltip';
 
 interface RouterContext {
   queryClient: QueryClient;

@@ -1,8 +1,5 @@
 import { useMemo } from 'react';
 import { useSession } from 'next-auth/react';
-import { BookApi } from '@/apis/book.api';
-import { BookmarkApi } from '@/apis/bookmark.api';
-import { RecommendationApi } from '@/apis/recommendation.api';
 import {
   RecommendationStrategy,
   type BookResponse,
@@ -11,6 +8,9 @@ import {
   type RecommendedBookResponse,
   SortDirection,
 } from '@/types';
+import { BookApi } from '@/apis/book.api';
+import { BookmarkApi } from '@/apis/bookmark.api';
+import { RecommendationApi } from '@/apis/recommendation.api';
 import { useItemQuery, useListQuery } from './factory';
 import { useBooksByIds } from './useBook';
 
@@ -22,10 +22,11 @@ const useEnrichedBooks = (
   const { data: session, status: authStatus } = useSession();
 
   const bookIds = useMemo(() => recData?.items?.map((item) => item.id) ?? [], [recData]);
-  const { data: booksData, isLoading: isLoadingBooks, isError: isErrorBooks } = useBooksByIds(
-    bookIds,
-    bookIds.length > 0
-  );
+  const {
+    data: booksData,
+    isLoading: isLoadingBooks,
+    isError: isErrorBooks,
+  } = useBooksByIds(bookIds, bookIds.length > 0);
 
   const currentUserId = session?.user?.id;
   const { data: bookmarkData } = useItemQuery<Record<string, BookmarkResponse>>(
@@ -33,7 +34,7 @@ const useEnrichedBooks = (
     () => BookmarkApi.status(bookIds),
     {
       enabled: bookIds.length > 0 && authStatus === 'authenticated' && !!currentUserId,
-      staleTime: 5 * 60 * 1000
+      staleTime: 5 * 60 * 1000,
     }
   );
 
@@ -51,7 +52,9 @@ const useEnrichedBooks = (
         reason: recMap.get(book.id)?.reason,
         bookmarkId: bookmarkData?.[book.id]?.id ?? book.bookmarkId,
       }))
-      .sort((a: RecommendedBookResponse, b: RecommendedBookResponse) => (b.score ?? 0) - (a.score ?? 0));
+      .sort(
+        (a: RecommendedBookResponse, b: RecommendedBookResponse) => (b.score ?? 0) - (a.score ?? 0)
+      );
   }, [booksData, recData, bookmarkData]);
 
   return {
@@ -75,7 +78,7 @@ export const useRecommendations = (
     () => RecommendationApi.getForUser(userId!, strategy),
     {
       enabled: !!userId && enabled,
-      staleTime: 5 * 60 * 1000
+      staleTime: 5 * 60 * 1000,
     }
   );
 
@@ -89,7 +92,7 @@ export const usePopularBooks = (options: { enabled?: boolean } = {}) => {
     () => RecommendationApi.getPopular(),
     {
       enabled,
-      staleTime: 10 * 60 * 1000
+      staleTime: 10 * 60 * 1000,
     }
   );
 
@@ -106,7 +109,7 @@ export const useSimilarBooks = (
     () => RecommendationApi.getSimilar(bookId!),
     {
       enabled: !!bookId && enabled,
-      staleTime: 30 * 60 * 1000
+      staleTime: 30 * 60 * 1000,
     }
   );
 
@@ -115,7 +118,11 @@ export const useSimilarBooks = (
 
 export const useNewArrivals = (options: { limit?: number; enabled?: boolean } = {}) => {
   const { limit = 10, enabled = true } = options;
-  const { data: booksResponse, isLoading, isError } = useListQuery<BookResponse>(
+  const {
+    data: booksResponse,
+    isLoading,
+    isError,
+  } = useListQuery<BookResponse>(
     ['books', 'new-arrivals', limit],
     () => BookApi.find({ limit, sorts: [{ field: 'createdAt', direction: SortDirection.DESC }] }),
     { enabled, staleTime: 30 * 60 * 1000 }
@@ -131,7 +138,7 @@ export const useNewArrivals = (options: { limit?: number; enabled?: boolean } = 
     () => BookmarkApi.status(bookIds),
     {
       enabled: bookIds.length > 0 && authStatus === 'authenticated' && !!currentUserId,
-      staleTime: 5 * 60 * 1000
+      staleTime: 5 * 60 * 1000,
     }
   );
 

@@ -33,7 +33,8 @@ const queryClient = new QueryClient({
   },
   queryCache: new QueryCache({
     onError: (error) => {
-      const isRedirectError = error instanceof AxiosError && [401, 403, 500].includes(error.response?.status ?? 0);
+      const isRedirectError =
+        error instanceof AxiosError && [401, 403, 500].includes(error.response?.status ?? 0);
       if (!isRedirectError) {
         handleServerError(error);
       }

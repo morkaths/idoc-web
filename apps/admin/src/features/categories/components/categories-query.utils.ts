@@ -25,13 +25,18 @@ export const categoryFilterFormSchema = z.object({
 
 export const categorySortSchema = z.object({
   sortBy: z.string().default(DEFAULT_CATEGORY_SORT_FIELD).catch(DEFAULT_CATEGORY_SORT_FIELD),
-  sortOrder: z.nativeEnum(SortDirection).default(DEFAULT_CATEGORY_SORT_ORDER).catch(DEFAULT_CATEGORY_SORT_ORDER),
+  sortOrder: z
+    .nativeEnum(SortDirection)
+    .default(DEFAULT_CATEGORY_SORT_ORDER)
+    .catch(DEFAULT_CATEGORY_SORT_ORDER),
 });
 
-export const categoryQuerySchema = categoryFilterSchema.extend({
-  page: z.coerce.number().int().positive().catch(DEFAULT_CATEGORY_PAGE),
-  limit: z.coerce.number().int().positive().catch(DEFAULT_CATEGORY_LIMIT),
-}).merge(categorySortSchema);
+export const categoryQuerySchema = categoryFilterSchema
+  .extend({
+    page: z.coerce.number().int().positive().catch(DEFAULT_CATEGORY_PAGE),
+    limit: z.coerce.number().int().positive().catch(DEFAULT_CATEGORY_LIMIT),
+  })
+  .merge(categorySortSchema);
 
 // --- Types ---
 export type CategoryQueryState = z.infer<typeof categoryQuerySchema>;

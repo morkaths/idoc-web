@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
-import { CheckIcon, ChevronsUpDownIcon, XIcon } from 'lucide-react';
 import { Languages } from '@/types';
+import { CheckIcon, ChevronsUpDownIcon, XIcon } from 'lucide-react';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Badge } from '@repo/ui/components/badge';
 import { Button } from '@repo/ui/components/button';
@@ -25,9 +25,10 @@ export function LanguagesCombobox({ value, onChange }: LanguagesComboboxProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
 
-  const filteredLanguages = Languages.filter((lang) =>
-    lang.label.toLowerCase().includes(query.toLowerCase()) ||
-    lang.value.toLowerCase().includes(query.toLowerCase())
+  const filteredLanguages = Languages.filter(
+    (lang) =>
+      lang.label.toLowerCase().includes(query.toLowerCase()) ||
+      lang.value.toLowerCase().includes(query.toLowerCase())
   ).slice(0, 50);
 
   const toggleSelection = (languageValue: string) => {

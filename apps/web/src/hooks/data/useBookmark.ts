@@ -1,16 +1,16 @@
-import { BookmarkApi } from '@/apis/bookmark.api';
 import type { BookmarkResponse, BookmarkRequest, PageParams, FindParams } from '@/types';
+import { BookmarkApi } from '@/apis/bookmark.api';
 import {
-    useListQuery,
-    useItemQuery,
-    useCreateMutation,
-    useUpdateMutation,
-    useDeleteMutation,
-    type CreateMutationOptions,
-    type UpdateMutationOptions,
-    type DeleteMutationOptions,
-    type ListQueryOptions,
-    type ItemQueryOptions
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+  type ListQueryOptions,
+  type ItemQueryOptions,
 } from './factory';
 
 /**
@@ -19,14 +19,14 @@ import {
  * @param options Query options
  */
 export const useBookmarks = (
-    params: PageParams = {},
-    options?: ListQueryOptions<BookmarkResponse>
+  params: PageParams = {},
+  options?: ListQueryOptions<BookmarkResponse>
 ) => {
-    return useListQuery<BookmarkResponse>(
-        ['bookmarks', params],
-        () => BookmarkApi.find(params),
-        options
-    );
+  return useListQuery<BookmarkResponse>(
+    ['bookmarks', params],
+    () => BookmarkApi.find(params),
+    options
+  );
 };
 
 /**
@@ -35,14 +35,14 @@ export const useBookmarks = (
  * @param options Query options
  */
 export const useSearchBookmarks = (
-    params: FindParams = {},
-    options?: ListQueryOptions<BookmarkResponse>
+  params: FindParams = {},
+  options?: ListQueryOptions<BookmarkResponse>
 ) => {
-    return useListQuery<BookmarkResponse>(
-        ['bookmarks', 'search', params],
-        () => BookmarkApi.search(params),
-        options
-    );
+  return useListQuery<BookmarkResponse>(
+    ['bookmarks', 'search', params],
+    () => BookmarkApi.search(params),
+    options
+  );
 };
 
 /**
@@ -50,15 +50,11 @@ export const useSearchBookmarks = (
  * @param id Bookmark ID
  * @param options Query options
  */
-export const useBookmark = (
-    id: string,
-    options?: ItemQueryOptions<BookmarkResponse>
-) => {
-    return useItemQuery<BookmarkResponse>(
-        ['bookmarks', id],
-        () => BookmarkApi.findById(id),
-        { enabled: !!id, ...options }
-    );
+export const useBookmark = (id: string, options?: ItemQueryOptions<BookmarkResponse>) => {
+  return useItemQuery<BookmarkResponse>(['bookmarks', id], () => BookmarkApi.findById(id), {
+    enabled: !!id,
+    ...options,
+  });
 };
 
 /**
@@ -66,13 +62,13 @@ export const useBookmark = (
  * @param options Mutation options
  */
 export const useCreateBookmark = <TContext = unknown>(
-    options?: CreateMutationOptions<BookmarkRequest, BookmarkResponse, TContext>
+  options?: CreateMutationOptions<BookmarkRequest, BookmarkResponse, TContext>
 ) => {
-    return useCreateMutation<BookmarkRequest, BookmarkResponse, TContext>(
-        (data) => BookmarkApi.create(data),
-        [['bookmarks'], ['books']],
-        options
-    );
+  return useCreateMutation<BookmarkRequest, BookmarkResponse, TContext>(
+    (data) => BookmarkApi.create(data),
+    [['bookmarks'], ['books']],
+    options
+  );
 };
 
 /**
@@ -80,13 +76,13 @@ export const useCreateBookmark = <TContext = unknown>(
  * @param options Mutation options
  */
 export const useUpdateBookmark = <TContext = unknown>(
-    options?: UpdateMutationOptions<BookmarkRequest, BookmarkResponse, TContext>
+  options?: UpdateMutationOptions<BookmarkRequest, BookmarkResponse, TContext>
 ) => {
-    return useUpdateMutation<BookmarkRequest, BookmarkResponse, TContext>(
-        ({ id, data }) => BookmarkApi.update(id, data),
-        (variables) => [['bookmarks', variables.id], ['bookmarks']],
-        options
-    );
+  return useUpdateMutation<BookmarkRequest, BookmarkResponse, TContext>(
+    ({ id, data }) => BookmarkApi.update(id, data),
+    (variables) => [['bookmarks', variables.id], ['bookmarks']],
+    options
+  );
 };
 
 /**
@@ -94,13 +90,13 @@ export const useUpdateBookmark = <TContext = unknown>(
  * @param options Mutation options
  */
 export const useDeleteBookmark = <TContext = unknown>(
-    options?: DeleteMutationOptions<TContext>
+  options?: DeleteMutationOptions<TContext>
 ) => {
-    return useDeleteMutation<TContext>(
-        (id) => BookmarkApi.delete(id),
-        [['bookmarks'], ['books']],
-        options
-    );
+  return useDeleteMutation<TContext>(
+    (id) => BookmarkApi.delete(id),
+    [['bookmarks'], ['books']],
+    options
+  );
 };
 
 /**
@@ -109,13 +105,12 @@ export const useDeleteBookmark = <TContext = unknown>(
  * @param options Query options
  */
 export const useBookmarkStatus = (
-    itemIds: string[],
-    options?: ItemQueryOptions<Record<string, BookmarkResponse>>
+  itemIds: string[],
+  options?: ItemQueryOptions<Record<string, BookmarkResponse>>
 ) => {
-    return useItemQuery<Record<string, BookmarkResponse>>(
-        ['bookmarks', 'status', itemIds],
-        () => BookmarkApi.status(itemIds),
-        { enabled: itemIds.length > 0, ...options }
-    );
+  return useItemQuery<Record<string, BookmarkResponse>>(
+    ['bookmarks', 'status', itemIds],
+    () => BookmarkApi.status(itemIds),
+    { enabled: itemIds.length > 0, ...options }
+  );
 };
-

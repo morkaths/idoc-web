@@ -35,7 +35,7 @@ export function getErrorMessage(error: unknown, fallback = 'Something went wrong
  */
 export function handleServerError(error: unknown, options: HandleServerErrorOptions = {}) {
   const { toastId, fallback, silent } = options;
-  
+
   // eslint-disable-next-line no-console
   console.error('Server Error:', error);
 
@@ -49,4 +49,3 @@ export function handleServerError(error: unknown, options: HandleServerErrorOpti
 
   return message;
 }
-

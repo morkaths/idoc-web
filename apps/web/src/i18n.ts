@@ -1,11 +1,14 @@
-import { getRequestConfig } from 'next-intl/server';
 import { Locales } from '@/types';
+import { getRequestConfig } from 'next-intl/server';
 
 export const locales = [...Locales];
 export type Locale = (typeof Locales)[number];
 export const defaultLocale: Locale = 'en';
 
-function deepMerge<T extends Record<string, unknown>>(target: T, source: Record<string, unknown>): T {
+function deepMerge<T extends Record<string, unknown>>(
+  target: T,
+  source: Record<string, unknown>
+): T {
   const output = { ...target };
 
   if (target && typeof target === 'object' && source && typeof source === 'object') {
@@ -32,9 +35,10 @@ function deepMerge<T extends Record<string, unknown>>(target: T, source: Record<
 }
 
 export default getRequestConfig(async ({ locale: incomingLocale }) => {
-  const locale = (incomingLocale && locales.includes(incomingLocale as Locale))
-    ? (incomingLocale as Locale)
-    : defaultLocale;
+  const locale =
+    incomingLocale && locales.includes(incomingLocale as Locale)
+      ? (incomingLocale as Locale)
+      : defaultLocale;
 
   const fallbackMessages = (await import(`../locales/en.json`)).default;
   if (locale === 'en') {

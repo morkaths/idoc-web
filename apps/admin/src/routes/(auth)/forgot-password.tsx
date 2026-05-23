@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { ForgotPassword } from '@/features/auth/forgot-password';
 import { RoleType } from '@/types';
+import { ForgotPassword } from '@/features/auth/forgot-password';
 
 export const Route = createFileRoute('/(auth)/forgot-password')({
   beforeLoad: ({ context }) => {

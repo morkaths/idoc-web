@@ -1,13 +1,13 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
+import dayjs from 'dayjs';
 import { useAuthor } from '@/hooks/data/useAuthor';
 import { useSearchBooks } from '@/hooks/data/useBook';
-import { Skeleton } from '@repo/ui/components/skeleton';
 import BookCover3d from '@repo/ui/components/book-cover-3d';
 import { Button } from '@repo/ui/components/button';
-import Link from 'next/link';
-import dayjs from 'dayjs';
+import { Skeleton } from '@repo/ui/components/skeleton';
 
 interface AuthorDetailViewProps {
   id: string;
@@ -78,7 +78,7 @@ export function AuthorDetailView({ id }: AuthorDetailViewProps) {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={author.avatar} alt={author.name} className='rounded-md object-cover' />
             ) : (
-              <div className='flex h-40 w-40 items-center justify-center rounded-md bg-muted-foreground/10'>
+              <div className='bg-muted-foreground/10 flex h-40 w-40 items-center justify-center rounded-md'>
                 <span className='text-lg font-semibold'>{author.name?.charAt(0)}</span>
               </div>
             )}
@@ -89,8 +89,8 @@ export function AuthorDetailView({ id }: AuthorDetailViewProps) {
               {author.dob ? dayjs(author.dob).format('MMMM D, YYYY') : null}
               {author.nationality ? ` • ${author.nationality}` : null}
             </div>
-            <h1 className='text-3xl font-bold mb-3'>{author.name}</h1>
-            <div className='prose max-w-none mb-4'>{author.bio}</div>
+            <h1 className='mb-3 text-3xl font-bold'>{author.name}</h1>
+            <div className='prose mb-4 max-w-none'>{author.bio}</div>
             <div className='flex gap-2'>
               <Button variant='outline' onClick={() => router.push(`/${locale}/authors`)}>
                 Back to authors
@@ -105,7 +105,7 @@ export function AuthorDetailView({ id }: AuthorDetailViewProps) {
             {booksData?.data?.length ? (
               booksData.data.map((b) => (
                 <Link key={b.id} href={`/${locale}/books/${b.id}`} className='space-y-2'>
-                  <div className='rounded-md bg-card p-2'>
+                  <div className='bg-card rounded-md p-2'>
                     <BookCover3d src={b.coverUrl} title={b.title} width={200} />
                   </div>
                   <div className='text-sm font-medium'>{b.title}</div>

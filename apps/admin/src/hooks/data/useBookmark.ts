@@ -50,15 +50,11 @@ export const useSearchBookmarks = (
  * @param id Bookmark ID
  * @param options Query options
  */
-export const useBookmark = (
-  id: string,
-  options?: ItemQueryOptions<BookmarkResponse>
-) => {
-  return useItemQuery<BookmarkResponse>(
-    ['bookmarks', id],
-    () => BookmarkApi.findById(id),
-    { enabled: !!id, ...options }
-  );
+export const useBookmark = (id: string, options?: ItemQueryOptions<BookmarkResponse>) => {
+  return useItemQuery<BookmarkResponse>(['bookmarks', id], () => BookmarkApi.findById(id), {
+    enabled: !!id,
+    ...options,
+  });
 };
 
 /**
@@ -94,11 +90,7 @@ export const useUpdateBookmark = (
  * @param options Mutation options
  */
 export const useDeleteBookmark = (options?: DeleteMutationOptions) => {
-  return useDeleteMutation(
-    (id) => BookmarkApi.delete(id),
-    [['bookmarks']],
-    options
-  );
+  return useDeleteMutation((id) => BookmarkApi.delete(id), [['bookmarks']], options);
 };
 
 /**
@@ -116,4 +108,3 @@ export const useBookmarkStatus = (
     { enabled: itemIds.length > 0, ...options }
   );
 };
-

@@ -1,14 +1,14 @@
 'use client';
 
+import Link from 'next/link';
 import * as React from 'react';
-import { useLocale } from '@/hooks/ui/useLocale';
 import { useLocale as useLocaleIntl } from 'next-intl';
+import { ChevronRight } from 'lucide-react';
 import { useCategories } from '@/hooks/data/useCategory';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { Badge } from '@repo/ui/components/badge';
 import { InfiniteSlider } from '@repo/ui/components/infinite-slider';
-import Link from 'next/link';
 import { Skeleton } from '@repo/ui/components/skeleton';
-import { ChevronRight } from 'lucide-react';
 
 export function CategoryScroll() {
   const { t, keys } = useLocale('discover');
@@ -25,17 +25,14 @@ export function CategoryScroll() {
         </div>
 
         <div className='relative'>
-          <div className='absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none md:hidden' />
-          <div className='absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none md:hidden' />
+          <div className='from-background pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-8 bg-gradient-to-r to-transparent md:hidden' />
+          <div className='from-background pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-8 bg-gradient-to-l to-transparent md:hidden' />
 
-          <div className='pb-4 px-4'>
+          <div className='px-4 pb-4'>
             <div className='overflow-hidden py-2'>
               <div className='flex w-max items-center gap-4'>
                 {[...Array(10)].map((_, i) => (
-                  <Skeleton
-                    key={i}
-                    className='h-8 w-20 sm:h-10 sm:w-32 rounded-md shrink-0'
-                  />
+                  <Skeleton key={i} className='h-8 w-20 shrink-0 rounded-md sm:h-10 sm:w-32' />
                 ))}
               </div>
             </div>
@@ -50,22 +47,22 @@ export function CategoryScroll() {
   return (
     <div className='space-y-6'>
       <div className='flex flex-col gap-2 px-4 sm:flex-row sm:items-center sm:justify-between'>
-        <h2 className='text-lg sm:text-xl md:text-2xl font-bold'>{t(keys.categories.title)}</h2>
+        <h2 className='text-lg font-bold sm:text-xl md:text-2xl'>{t(keys.categories.title)}</h2>
         <Link
-          href="/catalog"
-          className='text-sm font-medium text-primary hover:underline flex items-center gap-1'
+          href='/catalog'
+          className='text-primary flex items-center gap-1 text-sm font-medium hover:underline'
         >
           {t(keys.categories.all)}
-          <ChevronRight className='w-4 h-4' />
+          <ChevronRight className='h-4 w-4' />
         </Link>
       </div>
 
       <div className='relative'>
         {/* Shadow gradients for scroll indication */}
-        <div className='absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none md:hidden' />
-        <div className='absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none md:hidden' />
+        <div className='from-background pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-8 bg-gradient-to-r to-transparent md:hidden' />
+        <div className='from-background pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-8 bg-gradient-to-l to-transparent md:hidden' />
 
-        <div className='pb-4 px-4'>
+        <div className='px-4 pb-4'>
           <InfiniteSlider gap={16} speed={80} speedOnHover={25} className='py-2'>
             {categories.map((category, index) => {
               const translation =
@@ -93,7 +90,7 @@ export function CategoryScroll() {
                   <Badge
                     variant='outline'
                     className={
-                      'px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer whitespace-nowrap border-2 hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-sm ' +
+                      'cursor-pointer rounded-lg border-2 px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-sm ' +
                       colorClass
                     }
                   >

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { type Table } from '@tanstack/react-table';
 import { toast } from 'sonner';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert';
 import { Input } from '@repo/ui/components/input';
 import { Label } from '@repo/ui/components/label';
 import { ConfirmDialog } from '@/components/confirm-dialog';
-import { useLocale } from '@/hooks/ui/useLocale';
 
 type ConfirmBulkDialogProps<T> = {
   open: boolean;
@@ -52,7 +52,7 @@ export function ConfirmBulkDialog<T>({
             return t(keys.table.actionSucceeded, {
               action,
               count,
-              entity: entityLabel
+              entity: entityLabel,
             });
           },
           error: t(keys.table.actionFailed, { action }),
@@ -77,10 +77,11 @@ export function ConfirmBulkDialog<T>({
       desc={
         <div className='space-y-4'>
           <p>
-            {confirmDesc || t(keys.table.defaultConfirmDesc, {
-              action: action.toLowerCase(),
-              entity: entityLabel
-            })}
+            {confirmDesc ||
+              t(keys.table.defaultConfirmDesc, {
+                action: action.toLowerCase(),
+                entity: entityLabel,
+              })}
           </p>
 
           <Label className='my-4 flex flex-col items-start gap-1.5'>
@@ -95,9 +96,7 @@ export function ConfirmBulkDialog<T>({
 
           <Alert variant='destructive' className='border-dashed'>
             <AlertTitle>{t(keys.table.warning)}</AlertTitle>
-            <AlertDescription>
-              {t(keys.table.operationRisk)}
-            </AlertDescription>
+            <AlertDescription>{t(keys.table.operationRisk)}</AlertDescription>
           </Alert>
         </div>
       }

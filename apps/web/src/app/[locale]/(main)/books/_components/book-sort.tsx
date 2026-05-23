@@ -1,6 +1,10 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { SortDirection } from '@repo/types';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/components/form';
 import {
@@ -10,9 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/select';
-import { useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { useLocale } from '@/hooks/ui/useLocale';
 import {
   BookSortField,
   bookSortSchema,
@@ -20,7 +21,6 @@ import {
   DEFAULT_BOOK_SORT_ORDER,
   type BookSortState,
 } from './book-query.utils';
-import { SortDirection } from '@repo/types';
 
 export interface BookSortProps {
   sort: BookSortState;
@@ -103,8 +103,12 @@ export default function BookSort({ sort, onSort, onReset }: BookSortProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={SortDirection.DESC}>{t(keys.sidebar.sort.order.desc)}</SelectItem>
-                    <SelectItem value={SortDirection.ASC}>{t(keys.sidebar.sort.order.asc)}</SelectItem>
+                    <SelectItem value={SortDirection.DESC}>
+                      {t(keys.sidebar.sort.order.desc)}
+                    </SelectItem>
+                    <SelectItem value={SortDirection.ASC}>
+                      {t(keys.sidebar.sort.order.asc)}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>

@@ -1,21 +1,25 @@
 import { UserApi } from '@/apis';
 import type { FindParams, UserResponse, UserRequest, PageParams } from '@/types';
-import { useListQuery, useItemQuery, useCreateMutation, useUpdateMutation, useDeleteMutation, type ListQueryOptions, type ItemQueryOptions, type CreateMutationOptions, type UpdateMutationOptions, type DeleteMutationOptions } from './factory';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+} from './factory';
 
 /**
  * Hook to fetch users with pagination
  * @param params Pagination parameters
  * @param options Query options
  */
-export const useUsers = (
-  params: PageParams = {},
-  options?: ListQueryOptions<UserResponse>
-) => {
-  return useListQuery<UserResponse>(
-    ['users', params],
-    () => UserApi.find(params),
-    options
-  );
+export const useUsers = (params: PageParams = {}, options?: ListQueryOptions<UserResponse>) => {
+  return useListQuery<UserResponse>(['users', params], () => UserApi.find(params), options);
 };
 
 /**
@@ -39,15 +43,11 @@ export const useSearchUsers = (
  * @param id User ID
  * @param options Query options
  */
-export const useUser = (
-  id: string,
-  options?: ItemQueryOptions<UserResponse>
-) => {
-  return useItemQuery<UserResponse>(
-    ['users', id],
-    () => UserApi.findById(id),
-    { enabled: !!id, ...options }
-  );
+export const useUser = (id: string, options?: ItemQueryOptions<UserResponse>) => {
+  return useItemQuery<UserResponse>(['users', id], () => UserApi.findById(id), {
+    enabled: !!id,
+    ...options,
+  });
 };
 
 /**
@@ -82,13 +82,6 @@ export const useUpdateUser = <TContext = unknown>(
  * Hook to delete a user
  * @param options Mutation options
  */
-export const useDeleteUser = <TContext = unknown>(
-  options?: DeleteMutationOptions<TContext>
-) => {
-  return useDeleteMutation<TContext>(
-    (id) => UserApi.delete(id),
-    [['users']],
-    options
-  );
+export const useDeleteUser = <TContext = unknown>(options?: DeleteMutationOptions<TContext>) => {
+  return useDeleteMutation<TContext>((id) => UserApi.delete(id), [['users']], options);
 };
-

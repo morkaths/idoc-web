@@ -96,7 +96,11 @@ export function BorrowBookDialog({ open, onOpenChange, onSubmit }: BorrowBookDia
                     <div className='grid gap-3'>
                       <FormLabel>{t(keys.borrow.notes.label)}</FormLabel>
                       <FormControl>
-                        <Textarea {...field} rows={2} placeholder={t(keys.borrow.notes.placeholder)} />
+                        <Textarea
+                          {...field}
+                          rows={2}
+                          placeholder={t(keys.borrow.notes.placeholder)}
+                        />
                       </FormControl>
                       <FormMessage />
                     </div>

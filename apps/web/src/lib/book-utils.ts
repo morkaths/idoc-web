@@ -7,7 +7,8 @@ const GOODREADS_NOPHOTO_URL = 'gr-assets.com/assets/nophoto';
 /**
  * Default fallback image for books without a cover
  */
-const DEFAULT_BOOK_COVER_FALLBACK = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300"%3E%3Crect fill="%23e2e8f0" width="200" height="300"/%3E%3Ctext x="50%25" y="50%25" font-family="system-ui" font-size="14" fill="%2394a3b8" text-anchor="middle" dominant-baseline="middle"%3ENo Cover%3C/text%3E%3C/svg%3E';
+const DEFAULT_BOOK_COVER_FALLBACK =
+  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300"%3E%3Crect fill="%23e2e8f0" width="200" height="300"/%3E%3Ctext x="50%25" y="50%25" font-family="system-ui" font-size="14" fill="%2394a3b8" text-anchor="middle" dominant-baseline="middle"%3ENo Cover%3C/text%3E%3C/svg%3E';
 
 /**
  * Check if a book cover URL is valid (not null/undefined and not a Goodreads placeholder)

@@ -4,11 +4,10 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from '@radix-ui/react-icons';
-import { type Table } from '@tanstack/react-table';
 import { cn, getPageNumbers } from '@/lib/utils';
-import { Button } from '@repo/ui/components/button';
-
+import { type Table } from '@tanstack/react-table';
 import { useLocale } from '@/hooks/ui/useLocale';
+import { Button } from '@repo/ui/components/button';
 
 type DataTablePaginationProps<TData> = {
   table: Table<TData>;
@@ -43,7 +42,7 @@ export function DataTablePagination<TData>({ table, className }: DataTablePagina
               if (newSize !== currentSize) table.setPageSize(newSize);
             }}
             className={cn(
-              'border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-8 w-[70px] rounded-md border px-2 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:ring-[3px]'
+              'border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-8 w-[70px] rounded-md border px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px]'
             )}
           >
             {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -91,7 +90,9 @@ export function DataTablePagination<TData>({ table, className }: DataTablePagina
                   className='h-8 min-w-8 px-2'
                   onClick={() => table.setPageIndex((pageNumber as number) - 1)}
                 >
-                  <span className='sr-only'>{t(keys.pagination.page)} {pageNumber}</span>
+                  <span className='sr-only'>
+                    {t(keys.pagination.page)} {pageNumber}
+                  </span>
                   {pageNumber}
                 </Button>
               )}

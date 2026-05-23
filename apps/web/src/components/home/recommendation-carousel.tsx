@@ -1,8 +1,9 @@
 'use client';
 
-import { useLocale } from '@/hooks/ui/useLocale';
 import { useSession } from 'next-auth/react';
+import { Heart } from 'lucide-react';
 import { useRecommendations } from '@/hooks/data/useRecommendation';
+import { useLocale } from '@/hooks/ui/useLocale';
 import {
   Carousel,
   CarouselContent,
@@ -10,9 +11,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@repo/ui/components/carousel';
-import { BookGridItem } from '@/components/book/book-grid-item';
 import { Skeleton } from '@repo/ui/components/skeleton';
-import { Heart } from 'lucide-react';
+import { BookGridItem } from '@/components/book/book-grid-item';
 
 export const RecommendationCarousel = () => {
   const { t, keys } = useLocale('home');
@@ -34,8 +34,8 @@ export const RecommendationCarousel = () => {
       <div className='mb-8 flex items-end justify-between'>
         <div className='flex flex-col space-y-2'>
           <div className='flex items-center gap-2'>
-            <Heart className='h-5 w-5 text-primary' />
-            <h2 className='text-3xl font-bold tracking-tight bg-gradient-to-br from-primary to-primary/60 bg-clip-text text-transparent'>
+            <Heart className='text-primary h-5 w-5' />
+            <h2 className='from-primary to-primary/60 bg-gradient-to-br bg-clip-text text-3xl font-bold tracking-tight text-transparent'>
               {t(keys.recommendations.title)}
             </h2>
           </div>
@@ -64,7 +64,10 @@ export const RecommendationCarousel = () => {
           >
             <CarouselContent className='-ml-6 py-6'>
               {books!.slice(0, 10).map((book) => (
-                <CarouselItem key={book.id} className='pl-6 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 py-4'>
+                <CarouselItem
+                  key={book.id}
+                  className='basis-1/2 py-4 pl-6 sm:basis-1/3 md:basis-1/4 lg:basis-1/5'
+                >
                   <BookGridItem book={book} />
                 </CarouselItem>
               ))}

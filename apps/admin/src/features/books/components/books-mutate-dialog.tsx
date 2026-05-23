@@ -108,7 +108,10 @@ export function BooksMutateDialog({
                     coverUrl = await uploadImage.mutateAsync({ file: coverFile, folder: 'books' });
                     toast.success('Cover image uploaded!', { id: 'upload-cover' });
                   } catch (error) {
-                    handleServerError(error, { toastId: 'upload-cover', fallback: 'Failed to upload cover image' });
+                    handleServerError(error, {
+                      toastId: 'upload-cover',
+                      fallback: 'Failed to upload cover image',
+                    });
                     throw error;
                   }
                 }
@@ -123,7 +126,10 @@ export function BooksMutateDialog({
                     fileId = fileResult.id;
                     toast.success('Book file uploaded!', { id: 'upload-file' });
                   } catch (error) {
-                    handleServerError(error, { toastId: 'upload-file', fallback: 'Failed to upload book file' });
+                    handleServerError(error, {
+                      toastId: 'upload-file',
+                      fallback: 'Failed to upload book file',
+                    });
                     throw error;
                   }
                 }
@@ -139,7 +145,10 @@ export function BooksMutateDialog({
                 setCoverFile(null);
                 setFiles([]);
               } catch (error) {
-                if (error instanceof Error && !['upload-cover', 'upload-file'].some(id => error.message.includes(id))) {
+                if (
+                  error instanceof Error &&
+                  !['upload-cover', 'upload-file'].some((id) => error.message.includes(id))
+                ) {
                   handleServerError(error);
                 }
               } finally {

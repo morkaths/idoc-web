@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { ChevronDownIcon } from 'lucide-react';
 import { type DateRange } from 'react-day-picker';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import { Calendar } from '@repo/ui/components/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui/components/popover';
-import { useLocale } from '@/hooks/ui/useLocale';
 
 type BorrowRangePickerProps = {
   borrowedDate: Date;

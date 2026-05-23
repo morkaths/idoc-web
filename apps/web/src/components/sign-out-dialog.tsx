@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import { ConfirmDialog } from '@/components/confirm-dialog';
 import { toast } from 'sonner';
 import { useLocale } from '@/hooks/ui/useLocale';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 
 interface SignOutDialogProps {
   open: boolean;
@@ -16,18 +16,15 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const { t, keys } = useLocale('auth');
 
   const handleSignOut = () => {
-    toast.promise(
-      signOut({ redirect: false }),
-      {
-        loading: t(keys.form.states.signOut.loading),
-        success: () => {
-          const currentPath = location.href;
-          router.replace('/sign-in?redirect=' + encodeURIComponent(currentPath));
-          return t(keys.form.states.signOut.success);
-        },
-        error: () => t(keys.form.states.signOut.error),
-      }
-    );
+    toast.promise(signOut({ redirect: false }), {
+      loading: t(keys.form.states.signOut.loading),
+      success: () => {
+        const currentPath = location.href;
+        router.replace('/sign-in?redirect=' + encodeURIComponent(currentPath));
+        return t(keys.form.states.signOut.success);
+      },
+      error: () => t(keys.form.states.signOut.error),
+    });
   };
 
   return (

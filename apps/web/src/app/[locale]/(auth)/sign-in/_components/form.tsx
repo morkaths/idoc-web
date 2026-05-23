@@ -100,7 +100,9 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
                   <FormControl>
                     <Input placeholder={t(keys.form.email.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message)}</FormMessage>
+                  <FormMessage>
+                    {fieldState.error?.message && t(fieldState.error.message)}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -113,7 +115,9 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
                   <FormControl>
                     <PasswordInput placeholder={t(keys.form.password.placeholder)} {...field} />
                   </FormControl>
-                  <FormMessage>{fieldState.error?.message && t(fieldState.error.message, { min: 6 })}</FormMessage>
+                  <FormMessage>
+                    {fieldState.error?.message && t(fieldState.error.message, { min: 6 })}
+                  </FormMessage>
                   <Link
                     href='/forgot-password'
                     className='text-muted-foreground absolute end-0 -top-0.5 text-sm font-medium hover:opacity-75'
@@ -133,7 +137,9 @@ export function SignInForm({ className, redirectTo, ...props }: SignInFormProps)
                 <span className='w-full border-t' />
               </div>
               <div className='relative flex justify-center text-xs uppercase'>
-                <span className='bg-background text-muted-foreground px-2'>{t(keys.signIn.or)}</span>
+                <span className='bg-background text-muted-foreground px-2'>
+                  {t(keys.signIn.or)}
+                </span>
               </div>
             </div>
 

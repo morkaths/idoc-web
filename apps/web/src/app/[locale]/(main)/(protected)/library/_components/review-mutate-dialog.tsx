@@ -120,10 +120,11 @@ export function ReviewMutateDialog({
                             }}
                           >
                             <Star
-                              className={`h-8 w-8 transition-colors ${star <= field.value
-                                ? 'fill-amber-400 text-amber-400'
-                                : 'text-muted-foreground/30 fill-transparent'
-                                }`}
+                              className={`h-8 w-8 transition-colors ${
+                                star <= field.value
+                                  ? 'fill-amber-400 text-amber-400'
+                                  : 'text-muted-foreground/30 fill-transparent'
+                              }`}
                             />
                           </button>
                         ))}

@@ -1,65 +1,65 @@
 export enum Environment {
-  Development = 'development',
-  Production = 'production',
+  Development = "development",
+  Production = "production",
 }
 
 export enum SortDirection {
-  ASC = 'asc',
-  DESC = 'desc',
+  ASC = "asc",
+  DESC = "desc",
 }
 
 export enum FilterOperator {
-  EQ = 'eq',
-  NE = 'ne',
-  GT = 'gt',
-  LT = 'lt',
-  LIKE = 'like',
-  IN = 'in',
+  EQ = "eq",
+  NE = "ne",
+  GT = "gt",
+  LT = "lt",
+  LIKE = "like",
+  IN = "in",
 }
 
 export enum NotificationType {
-  Info = 'INFO',
-  Success = 'SUCCESS',
-  Warning = 'WARNING',
-  Error = 'ERROR',
+  Info = "INFO",
+  Success = "SUCCESS",
+  Warning = "WARNING",
+  Error = "ERROR",
 }
 
 export enum RoleType {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-  STAFF = 'STAFF',
+  ADMIN = "ADMIN",
+  USER = "USER",
+  STAFF = "STAFF",
 }
 
 export enum UserStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  BANNED = 'BANNED',
-  LOCKED = 'LOCKED',
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  BANNED = "BANNED",
+  LOCKED = "LOCKED",
 }
 
 export enum BorrowStatus {
-  BORROWED = 'BORROWED',
-  RETURNED = 'RETURNED',
-  OVERDUE = 'OVERDUE',
-  CANCELED = 'CANCELED',
+  BORROWED = "BORROWED",
+  RETURNED = "RETURNED",
+  OVERDUE = "OVERDUE",
+  CANCELED = "CANCELED",
 }
 
 export enum ReviewStatus {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  REJECTED = 'rejected',
+  PENDING = "pending",
+  APPROVED = "approved",
+  REJECTED = "rejected",
 }
 
 export enum AuthProvider {
-  GOOGLE = 'GOOGLE',
-  FACEBOOK = 'FACEBOOK',
+  GOOGLE = "GOOGLE",
+  FACEBOOK = "FACEBOOK",
 }
 
 export enum RecommendationStrategy {
-  POPULARITY = 'popularity',
-  CONTENT = 'content',
-  USER_BASED = 'user_based',
-  ITEM_BASED = 'item_based',
-  SVD = 'svd',
-  HYBRID = 'hybrid',
+  POPULARITY = "popularity",
+  CONTENT = "content",
+  USER_BASED = "user_based",
+  ITEM_BASED = "item_based",
+  SVD = "svd",
+  HYBRID = "hybrid",
 }

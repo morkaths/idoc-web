@@ -1,16 +1,13 @@
 import { ApiEndpoint } from '@/config/api';
-import { ApiClient } from './config';
 import type { UserResponse, UserRequest, ApiResponse } from '../types';
+import { ApiClient } from './config';
 import { apiFactory } from './factory';
 
-const factory = apiFactory<UserResponse, UserRequest>(
-  ApiEndpoint.endpoints.users,
-  {
-    find: 'public',
-    findById: 'public',
-    search: 'public',
-  }
-);
+const factory = apiFactory<UserResponse, UserRequest>(ApiEndpoint.endpoints.users, {
+  find: 'public',
+  findById: 'public',
+  search: 'public',
+});
 
 export const UserApi = {
   ...factory,
@@ -21,9 +18,7 @@ export const UserApi = {
     });
   },
 
-  updateMe: async (
-    data: Partial<UserRequest>
-  ): Promise<ApiResponse<UserResponse>> => {
+  updateMe: async (data: Partial<UserRequest>): Promise<ApiResponse<UserResponse>> => {
     return ApiClient.patch<UserResponse>(ApiEndpoint.endpoints.users.updateMe(), {
       security: 'private',
       data,

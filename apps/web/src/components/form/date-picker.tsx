@@ -10,7 +10,12 @@ type DatePickerProps = {
   placeholder?: string;
 };
 
-export function DatePicker({ selected, onSelect, placeholder = 'Pick a date', disabled = false }: DatePickerProps & { disabled?: boolean }) {
+export function DatePicker({
+  selected,
+  onSelect,
+  placeholder = 'Pick a date',
+  disabled = false,
+}: DatePickerProps & { disabled?: boolean }) {
   return (
     <Popover>
       <PopoverTrigger asChild>

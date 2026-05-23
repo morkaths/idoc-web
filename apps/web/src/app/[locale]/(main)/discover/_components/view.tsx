@@ -1,17 +1,17 @@
 'use client';
 
 import * as React from 'react';
-import { useLocale as useLocaleIntl } from 'next-intl';
 import { useSession } from 'next-auth/react';
-import { useLocale } from '@/hooks/ui/useLocale';
+import { useLocale as useLocaleIntl } from 'next-intl';
+import { type CategoryTranslationResponse, type CategoryResponse } from '@/types';
+import { SortDirection, FilterOperator } from '@repo/types';
 import { useCategories } from '@/hooks/data/useCategory';
 import { useRecommendations } from '@/hooks/data/useRecommendation';
-import { SortDirection, FilterOperator } from '@repo/types';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { BookGridItems } from '@/components/book/book-grid-items';
-import { DiscoverHero } from './discover-hero';
 import { CategoryScroll } from './category-scroll';
 import { DiscoverBookSection } from './discover-book-section';
-import { type CategoryTranslationResponse, type CategoryResponse } from '@/types';
+import { DiscoverHero } from './discover-hero';
 
 export default function DiscoverView() {
   const { t, keys } = useLocale('discover');
@@ -57,19 +57,19 @@ export default function DiscoverView() {
   }, [categories]);
 
   return (
-    <div className='min-h-screen pb-20 space-y-12'>
+    <div className='min-h-screen space-y-12 pb-20'>
       <DiscoverHero />
 
       <div className='container mx-auto space-y-16'>
-
         <section className='space-y-4 px-4'>
           <CategoryScroll />
 
           <div className='grid gap-12'>
             {featuredCategories.map((category) => {
               const translation =
-                category.translations?.find((tr: CategoryTranslationResponse) => tr.lang === locale) ||
-                category.translations?.[0];
+                category.translations?.find(
+                  (tr: CategoryTranslationResponse) => tr.lang === locale
+                ) || category.translations?.[0];
               const categoryName = translation?.name || category.slug || 'Unnamed';
               const categoryDescription = translation?.description;
 
@@ -99,10 +99,10 @@ export default function DiscoverView() {
           {shouldShowForYouSection ? (
             <section className='space-y-4'>
               <div className='space-y-1'>
-                <h2 className='text-xl md:text-2xl font-bold tracking-tight'>
+                <h2 className='text-xl font-bold tracking-tight md:text-2xl'>
                   {t(keys.sections.forYou.title)}
                 </h2>
-                <p className='text-sm text-muted-foreground max-w-2xl'>
+                <p className='text-muted-foreground max-w-2xl text-sm'>
                   {t(keys.sections.forYou.subtitle)}
                 </p>
               </div>

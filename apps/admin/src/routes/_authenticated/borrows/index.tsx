@@ -1,7 +1,7 @@
 import z from 'zod';
 import { createFileRoute } from '@tanstack/react-router';
-import { Borrows } from '@/features/borrows';
 import { BorrowStatus } from '@/types';
+import { Borrows } from '@/features/borrows';
 
 const borrowsSearchSchema = z.object({
   page: z.coerce.number().optional().catch(1),
@@ -15,9 +15,7 @@ const borrowsSearchSchema = z.object({
     .catch([]),
 });
 
-export const Route = createFileRoute('/_authenticated/borrows/')(
-  {
-    validateSearch: borrowsSearchSchema,
-    component: Borrows,
-  }
-);
+export const Route = createFileRoute('/_authenticated/borrows/')({
+  validateSearch: borrowsSearchSchema,
+  component: Borrows,
+});

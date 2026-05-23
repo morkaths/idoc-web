@@ -1,3 +1,6 @@
+import { type Pagination as PaginationType } from '@/types';
+import { cn } from '@repo/ui/lib/utils';
+import { useLocale } from '@/hooks/ui/useLocale';
 import {
   Pagination as ShadcnPagination,
   PaginationContent,
@@ -6,10 +9,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@repo/ui/components/pagination";
-import { type Pagination as PaginationType } from "@/types";
-import { cn } from "@repo/ui/lib/utils";
-import { useLocale } from '@/hooks/ui/useLocale';
+} from '@repo/ui/components/pagination';
 
 type Props = {
   pagination: PaginationType;
@@ -29,14 +29,14 @@ export function Pagination({ pagination, onPageChange, className }: Props) {
   const renderLink = (p: number, label?: string | number, isActive = false) => (
     <PaginationItem key={p}>
       <PaginationLink
-        href="#"
+        href='#'
         isActive={isActive}
-        size="default"
-        className={cn(
-          "w-auto min-w-9 px-2 h-9",
-          !isActive && "border-transparent"
-        )}
-        onClick={(e) => { e.preventDefault(); if (p !== page) onPageChange(p); }}
+        size='default'
+        className={cn('h-9 w-auto min-w-9 px-2', !isActive && 'border-transparent')}
+        onClick={(e) => {
+          e.preventDefault();
+          if (p !== page) onPageChange(p);
+        }}
       >
         {label ?? p}
       </PaginationLink>
@@ -47,13 +47,18 @@ export function Pagination({ pagination, onPageChange, className }: Props) {
   const isLast = page >= pages;
 
   return (
-    <ShadcnPagination className={cn("mt-8", className)}>
+    <ShadcnPagination className={cn('mt-8', className)}>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            href="#"
-            onClick={(e) => { e.preventDefault(); if (!isFirst) onPageChange(page - 1); }}
-            className={cn(isFirst && "pointer-events-none opacity-50 select-none cursor-not-allowed")}
+            href='#'
+            onClick={(e) => {
+              e.preventDefault();
+              if (!isFirst) onPageChange(page - 1);
+            }}
+            className={cn(
+              isFirst && 'pointer-events-none cursor-not-allowed opacity-50 select-none'
+            )}
             aria-disabled={isFirst}
             tabIndex={isFirst ? -1 : 0}
           >
@@ -64,7 +69,11 @@ export function Pagination({ pagination, onPageChange, className }: Props) {
         {startPage > 1 && (
           <>
             {renderLink(1)}
-            {startPage > 2 && <PaginationItem><PaginationEllipsis /></PaginationItem>}
+            {startPage > 2 && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
           </>
         )}
 
@@ -72,16 +81,25 @@ export function Pagination({ pagination, onPageChange, className }: Props) {
 
         {endPage < pages && (
           <>
-            {endPage < pages - 1 && <PaginationItem><PaginationEllipsis /></PaginationItem>}
+            {endPage < pages - 1 && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
             {renderLink(pages)}
           </>
         )}
 
         <PaginationItem>
           <PaginationNext
-            href="#"
-            onClick={(e) => { e.preventDefault(); if (!isLast) onPageChange(page + 1); }}
-            className={cn(isLast && "pointer-events-none opacity-50 select-none cursor-not-allowed")}
+            href='#'
+            onClick={(e) => {
+              e.preventDefault();
+              if (!isLast) onPageChange(page + 1);
+            }}
+            className={cn(
+              isLast && 'pointer-events-none cursor-not-allowed opacity-50 select-none'
+            )}
             aria-disabled={isLast}
             tabIndex={isLast ? -1 : 0}
           >

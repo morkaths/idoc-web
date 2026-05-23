@@ -1,5 +1,11 @@
 import { BorrowApi } from '@/apis/borrow.api';
-import type { BorrowResponse, BorrowRequest, FindParams, RenewBorrowRequest, PageParams } from '@/types';
+import type {
+  BorrowResponse,
+  BorrowRequest,
+  FindParams,
+  RenewBorrowRequest,
+  PageParams,
+} from '@/types';
 import {
   useListQuery,
   useItemQuery,
@@ -18,15 +24,8 @@ import {
  * @param params Pagination parameters
  * @param options Query options
  */
-export const useBorrows = (
-  params: PageParams = {},
-  options?: ListQueryOptions<BorrowResponse>
-) => {
-  return useListQuery(
-    ['borrows', params],
-    () => BorrowApi.find(params),
-    options
-  );
+export const useBorrows = (params: PageParams = {}, options?: ListQueryOptions<BorrowResponse>) => {
+  return useListQuery(['borrows', params], () => BorrowApi.find(params), options);
 };
 
 /**
@@ -66,38 +65,26 @@ export const useSearchBorrows = (
  * @param id Borrow ID
  * @param options Query options
  */
-export const useBorrow = (
-  id: string,
-  options?: ItemQueryOptions<BorrowResponse>
-) => {
-  return useItemQuery<BorrowResponse>(
-    ['borrows', id],
-    () => BorrowApi.findById(id),
-    { enabled: !!id, ...options }
-  );
+export const useBorrow = (id: string, options?: ItemQueryOptions<BorrowResponse>) => {
+  return useItemQuery<BorrowResponse>(['borrows', id], () => BorrowApi.findById(id), {
+    enabled: !!id,
+    ...options,
+  });
 };
 
 /**
  * Hook to create a new borrow
  * @param options Mutation options
  */
-export const useCreateBorrow = (
-  options?: CreateMutationOptions<BorrowRequest, BorrowResponse>
-) => {
-  return useCreateMutation(
-    (data) => BorrowApi.create(data),
-    [['borrows']],
-    options
-  );
+export const useCreateBorrow = (options?: CreateMutationOptions<BorrowRequest, BorrowResponse>) => {
+  return useCreateMutation((data) => BorrowApi.create(data), [['borrows']], options);
 };
 
 /**
  * Hook to update an existing borrow
  * @param options Mutation options
  */
-export const useUpdateBorrow = (
-  options?: UpdateMutationOptions<BorrowRequest, BorrowResponse>
-) => {
+export const useUpdateBorrow = (options?: UpdateMutationOptions<BorrowRequest, BorrowResponse>) => {
   return useUpdateMutation(
     ({ id, data }) => BorrowApi.update(id, data),
     (variables) => [['borrows', variables.id], ['borrows']],
@@ -109,14 +96,8 @@ export const useUpdateBorrow = (
  * Hook to delete a borrow
  * @param options Mutation options
  */
-export const useDeleteBorrow = (
-  options?: DeleteMutationOptions
-) => {
-  return useDeleteMutation(
-    (id) => BorrowApi.delete(id),
-    [['borrows']],
-    options
-  );
+export const useDeleteBorrow = (options?: DeleteMutationOptions) => {
+  return useDeleteMutation((id) => BorrowApi.delete(id), [['borrows']], options);
 };
 
 /**
@@ -146,4 +127,3 @@ export const useReturnBorrow = <TContext = unknown>(
     options
   );
 };
-

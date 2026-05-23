@@ -1,7 +1,7 @@
 'use client';
 
-import { z } from 'zod';
 import { useState } from 'react';
+import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { KEYS, useLocale } from '@/hooks/ui/useLocale';
@@ -21,18 +21,26 @@ import { DatePicker } from '@/components/form/date-picker';
 import { BorrowRangePicker } from './borrows-ranger-picker';
 
 const ExtendFormSchema = z.object({
-  extraDays: z.number().int().min(1, 'Extra days must be at least 1').max(30, 'Extension cannot exceed 30 days'),
+  extraDays: z
+    .number()
+    .int()
+    .min(1, 'Extra days must be at least 1')
+    .max(30, 'Extension cannot exceed 30 days'),
   borrowedDate: z.union([z.date(), z.string(), z.number()]).optional(),
   dueDate: z.union([z.date(), z.string(), z.number()]).optional(),
   newDueDate: z.union([z.date(), z.string(), z.number()]).optional(),
-  notes: z.string().trim().optional().superRefine((val, ctx) => {
-    if (val && val.split(/\s+/).filter(Boolean).length > 500) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Notes cannot exceed 500 words',
-      });
-    }
-  }),
+  notes: z
+    .string()
+    .trim()
+    .optional()
+    .superRefine((val, ctx) => {
+      if (val && val.split(/\s+/).filter(Boolean).length > 500) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Notes cannot exceed 500 words',
+        });
+      }
+    }),
 });
 type ExtendForm = z.infer<typeof ExtendFormSchema>;
 
@@ -188,7 +196,9 @@ export function BorrowsExtendDialog({
                 name='notes'
                 render={({ field }) => (
                   <div className='mb-3 grid gap-3'>
-                    <FormLabel htmlFor='notes'>{t(keys.table.actions.extend.fields.notes)}</FormLabel>
+                    <FormLabel htmlFor='notes'>
+                      {t(keys.table.actions.extend.fields.notes)}
+                    </FormLabel>
                     <FormControl>
                       <textarea
                         id='notes'
@@ -207,7 +217,9 @@ export function BorrowsExtendDialog({
                   </Button>
                 </DialogClose>
                 <Button type='submit' disabled={isSubmitting}>
-                  {isSubmitting ? t(keys.table.actions.extend.loading) : t(keys.table.actions.extend.label)}
+                  {isSubmitting
+                    ? t(keys.table.actions.extend.loading)
+                    : t(keys.table.actions.extend.label)}
                 </Button>
               </DialogFooter>
             </fieldset>

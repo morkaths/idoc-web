@@ -1,4 +1,9 @@
-import { AuthProvider, BorrowStatus, RecommendationStrategy, RoleType } from './enum';
+import {
+  AuthProvider,
+  BorrowStatus,
+  RecommendationStrategy,
+  RoleType,
+} from "./enum";
 
 // --- User & Authentication ---
 
@@ -277,5 +282,3 @@ export interface RecommendationEvaluationResponse {
   k: number;
   sparsityAnalysis?: RecommendationSparsityAnalysis;
 }
-
-

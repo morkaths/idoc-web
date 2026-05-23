@@ -1,5 +1,5 @@
-import { AuthorApi } from '@/apis/author.api';
 import type { AuthorResponse, AuthorRequest, PageParams, FindParams } from '@/types';
+import { AuthorApi } from '@/apis/author.api';
 import {
   useListQuery,
   useItemQuery,
@@ -18,15 +18,8 @@ import {
  * @param params Pagination parameters
  * @param options Query options
  */
-export const useAuthors = (
-  params: PageParams = {},
-  options?: ListQueryOptions<AuthorResponse>
-) => {
-  return useListQuery<AuthorResponse>(
-    ['authors', params],
-    () => AuthorApi.find(params),
-    options
-  );
+export const useAuthors = (params: PageParams = {}, options?: ListQueryOptions<AuthorResponse>) => {
+  return useListQuery<AuthorResponse>(['authors', params], () => AuthorApi.find(params), options);
 };
 
 /**
@@ -50,15 +43,11 @@ export const useSearchAuthors = (
  * @param id Author ID
  * @param options Query options
  */
-export const useAuthor = (
-  id: string,
-  options?: ItemQueryOptions<AuthorResponse>
-) => {
-  return useItemQuery<AuthorResponse>(
-    ['authors', id],
-    () => AuthorApi.findById(id),
-    { enabled: !!id, ...options }
-  );
+export const useAuthor = (id: string, options?: ItemQueryOptions<AuthorResponse>) => {
+  return useItemQuery<AuthorResponse>(['authors', id], () => AuthorApi.findById(id), {
+    enabled: !!id,
+    ...options,
+  });
 };
 
 /**
@@ -93,12 +82,6 @@ export const useUpdateAuthor = <TContext = unknown>(
  * Hook to delete an author
  * @param options Mutation options
  */
-export const useDeleteAuthor = <TContext = unknown>(
-  options?: DeleteMutationOptions<TContext>
-) => {
-  return useDeleteMutation<TContext>(
-    (id) => AuthorApi.delete(id),
-    [['authors']],
-    options
-  );
+export const useDeleteAuthor = <TContext = unknown>(options?: DeleteMutationOptions<TContext>) => {
+  return useDeleteMutation<TContext>((id) => AuthorApi.delete(id), [['authors']], options);
 };

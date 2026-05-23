@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useQueries } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
-import { BookmarkApi } from '@/apis/bookmark.api';
 import type { BookResponse, BookRequest, BookmarkResponse, PageParams } from '@/types';
 import type { BookSearchParams } from '@/apis/book.api';
+import { BookmarkApi } from '@/apis/bookmark.api';
 import {
   useListQuery,
   useItemQuery,
@@ -30,7 +30,7 @@ function useBookListEnricher(booksQueryResult: ReturnType<typeof useListQuery<Bo
   const bookIds = useMemo(() => {
     const content = booksQueryResult.data.data;
     if (!content || !Array.isArray(content)) return [];
-    return content.map(b => b.id).sort();
+    return content.map((b) => b.id).sort();
   }, [booksQueryResult.data.data]);
 
   const userId = session?.user?.id;
@@ -48,9 +48,9 @@ function useBookListEnricher(booksQueryResult: ReturnType<typeof useListQuery<Bo
     const content = booksQueryResult.data.data;
     if (!content || !Array.isArray(content)) return [];
 
-    return content.map(book => ({
+    return content.map((book) => ({
       ...book,
-      bookmarkId: bookmarkData?.[book.id]?.id
+      bookmarkId: bookmarkData?.[book.id]?.id,
     }));
   }, [booksQueryResult.data.data, bookmarkData]);
 
@@ -96,10 +96,7 @@ export const useBooksByIds = (bookIds: string[], enabled = true) => {
  * @param params Pagination parameters
  * @param options Query options
  */
-export const useBooks = (
-  params: PageParams = {},
-  options?: ListQueryOptions<BookResponse>
-) => {
+export const useBooks = (params: PageParams = {}, options?: ListQueryOptions<BookResponse>) => {
   const booksQuery = useListQuery<BookResponse>(
     ['books', params],
     () => BookApi.find(params),
@@ -132,14 +129,16 @@ export const useSearchBooks = (
  * @param id Book ID
  * @param options Query options
  */
-export const useBook = (id: string | undefined, options?: Parameters<typeof useItemQuery<BookResponse>>[2]) => {
+export const useBook = (
+  id: string | undefined,
+  options?: Parameters<typeof useItemQuery<BookResponse>>[2]
+) => {
   const { status: authStatus } = useSession();
 
-  const query = useItemQuery<BookResponse>(
-    ['books', id],
-    () => BookApi.findById(id!),
-    { ...options, enabled: !!id && options?.enabled !== false }
-  );
+  const query = useItemQuery<BookResponse>(['books', id], () => BookApi.findById(id!), {
+    ...options,
+    enabled: !!id && options?.enabled !== false,
+  });
 
   const { data: bookmarkData } = useItemQuery<Record<string, BookmarkResponse>>(
     ['bookmarks', 'status', [id]],
@@ -160,7 +159,6 @@ export const useBook = (id: string | undefined, options?: Parameters<typeof useI
     data: enrichedBook,
   };
 };
-
 
 /**
  * Hook to create a new book
@@ -194,13 +192,6 @@ export const useUpdateBook = <TContext = unknown>(
  * Hook to delete a book
  * @param options Mutation options
  */
-export const useDeleteBook = <TContext = unknown>(
-  options?: DeleteMutationOptions<TContext>
-) => {
-  return useDeleteMutation<TContext>(
-    (id) => BookApi.delete(id),
-    [['books']],
-    options
-  );
+export const useDeleteBook = <TContext = unknown>(options?: DeleteMutationOptions<TContext>) => {
+  return useDeleteMutation<TContext>((id) => BookApi.delete(id), [['books']], options);
 };
-

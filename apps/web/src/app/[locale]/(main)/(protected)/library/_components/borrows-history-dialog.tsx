@@ -12,9 +12,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@repo/ui/components/dialog';
-import { BorrowTimeline } from './borrows-timeline';
-
 import { AppImage } from '@/components/app-image';
+import { BorrowTimeline } from './borrows-timeline';
 
 const CoverImage = ({ src, title }: { src?: string; title: string }) => {
   if (!src) {
@@ -26,14 +25,7 @@ const CoverImage = ({ src, title }: { src?: string; title: string }) => {
   }
 
   return (
-    <AppImage
-      src={src}
-      alt={title}
-      fill
-      sizes='64px'
-      className='object-cover'
-      loading='lazy'
-    />
+    <AppImage src={src} alt={title} fill sizes='64px' className='object-cover' loading='lazy' />
   );
 };
 
