@@ -20,13 +20,13 @@ export const AgentEndpoint = {
   },
   endpoints: {
     recommendations: {
-      sync: () => '/recommendations/sync',
+      sync: () => '/recommendations/cbf/sync',
       train: () => '/recommendations/train',
       evaluate: (strategy: string) => `/recommendations/evaluate/${strategy}`,
       popular: () => '/recommendations/popular',
-      similar: (bookId: string) => `/recommendations/similar/${bookId}`,
+      similar: (bookId: string) => `/recommendations/cbf/similar/${bookId}`,
       recommend: (userId: string, strategy: string) =>
-        `/recommendations/${userId}?strategy=${strategy}`,
+        `/recommendations?user_id=${userId}&strategy=${strategy}`,
     },
   },
 } as const;
