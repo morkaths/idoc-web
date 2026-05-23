@@ -32,69 +32,6 @@ export type SimilarRecommendationQueryOptions = ItemQueryOptions<SimilarBooksRes
   limit?: number;
 };
 
-const useEnrichedBooks = (
-  recData: RecommendationResponse | SimilarBooksResponse | null,
-  isLoadingRec: boolean,
-  isErrorRec: boolean
-) => {
-  const bookIds = useMemo(() => recData?.content?.map((item) => item.id) ?? [], [recData]);
-  const {
-    data: booksData,
-    isLoading: isLoadingBooks,
-    isError: isErrorBooks,
-  } = useBooksByIds(bookIds, bookIds.length > 0);
-
-  const data = useMemo<RecommendedBookResponse[]>(() => {
-    const books = booksData ?? [];
-
-    if (!books.length) return [];
-
-    const recMap = new Map(
-      recData?.content?.map((i) => [
-        i.id,
-        i as { id: string; score: number; reason?: string; predicted?: number },
-      ]) ?? []
-    );
-
-    return books
-      .map((book: BookResponse) => ({
-        ...book,
-        score: recMap.get(book.id)?.score,
-        reason: recMap.get(book.id)?.reason,
-        predicted: recMap.get(book.id)?.predicted,
-      }))
-      .sort(
-        (a: RecommendedBookResponse, b: RecommendedBookResponse) => (b.score ?? 0) - (a.score ?? 0)
-      );
-  }, [booksData, recData]);
-
-  const pagination = useMemo(() => {
-    if (!recData) return undefined;
-    return {
-      total: recData.total,
-      page: recData.page,
-      limit: recData.limit,
-      pages: recData.pages,
-      last: recData.last,
-    };
-  }, [recData]);
-
-  const strategy = useMemo(() => {
-    if (recData && 'strategy' in recData) {
-      return recData.strategy;
-    }
-    return undefined;
-  }, [recData]);
-
-  return {
-    data,
-    pagination,
-    isLoading: isLoadingRec || isLoadingBooks,
-    isError: isErrorRec || isErrorBooks,
-    strategy,
-  };
-};
-
 export const useRecommendations = (
   userId: string | undefined,
   options: RecommendationQueryOptions = {}
@@ -226,4 +163,67 @@ export const useLogRecommendationInteraction = (
     mutationFn: (req: RecommendationInteractionRequest) => RecommendationApi.logInteraction(req),
     ...options,
   });
+};
+
+const useEnrichedBooks = (
+  recData: RecommendationResponse | SimilarBooksResponse | null,
+  isLoadingRec: boolean,
+  isErrorRec: boolean
+) => {
+  const bookIds = useMemo(() => recData?.content?.map((item) => item.id) ?? [], [recData]);
+  const {
+    data: booksData,
+    isLoading: isLoadingBooks,
+    isError: isErrorBooks,
+  } = useBooksByIds(bookIds, bookIds.length > 0);
+
+  const data = useMemo<RecommendedBookResponse[]>(() => {
+    const books = booksData ?? [];
+
+    if (!books.length) return [];
+
+    const recMap = new Map(
+      recData?.content?.map((i) => [
+        i.id,
+        i as { id: string; score: number; reason?: string; predicted?: number },
+      ]) ?? []
+    );
+
+    return books
+      .map((book: BookResponse) => ({
+        ...book,
+        score: recMap.get(book.id)?.score,
+        reason: recMap.get(book.id)?.reason,
+        predicted: recMap.get(book.id)?.predicted,
+      }))
+      .sort(
+        (a: RecommendedBookResponse, b: RecommendedBookResponse) => (b.score ?? 0) - (a.score ?? 0)
+      );
+  }, [booksData, recData]);
+
+  const pagination = useMemo(() => {
+    if (!recData) return undefined;
+    return {
+      total: recData.total,
+      page: recData.page,
+      limit: recData.limit,
+      pages: recData.pages,
+      last: recData.last,
+    };
+  }, [recData]);
+
+  const strategy = useMemo(() => {
+    if (recData && 'strategy' in recData) {
+      return recData.strategy;
+    }
+    return undefined;
+  }, [recData]);
+
+  return {
+    data,
+    pagination,
+    isLoading: isLoadingRec || isLoadingBooks,
+    isError: isErrorRec || isErrorBooks,
+    strategy,
+  };
 };
