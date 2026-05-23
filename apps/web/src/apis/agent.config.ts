@@ -15,6 +15,61 @@ const agentAxios = axios.create({
   },
 });
 
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && value.constructor === Object;
+
+const toCamel = (obj: unknown): unknown => {
+  if (Array.isArray(obj)) {
+    return obj.map(v => toCamel(v));
+  } else if (isPlainObject(obj)) {
+    return Object.keys(obj).reduce((result, key) => {
+      const camelKey = key.replace(/([-_][a-z])/g, group =>
+        group.toUpperCase().replace('-', '').replace('_', '')
+      );
+      return {
+        ...result,
+        [camelKey]: toCamel(obj[key]),
+      };
+    }, {});
+  }
+  return obj;
+};
+
+const toSnake = (obj: unknown): unknown => {
+  if (Array.isArray(obj)) {
+    return obj.map(v => toSnake(v));
+  } else if (isPlainObject(obj)) {
+    return Object.keys(obj).reduce((result, key) => {
+      const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+      return {
+        ...result,
+        [snakeKey]: toSnake(obj[key]),
+      };
+    }, {});
+  }
+  return obj;
+};
+
+agentAxios.interceptors.request.use((config) => {
+  if (config.data) {
+    config.data = toSnake(config.data);
+  }
+  if (config.params) {
+    config.params = toSnake(config.params);
+  }
+  return config;
+});
+
+agentAxios.interceptors.response.use(
+  (response) => {
+    if (response.data) {
+      response.data = toCamel(response.data);
+    }
+    return response;
+  },
+  (error) => Promise.reject(error)
+);
+
 /**
  * Lightweight agent API client.
  */
@@ -43,6 +98,18 @@ export const AgentClient = {
   ): Promise<ApiResponse<T>> {
     try {
       const response = await agentAxios.post<T>(url, data, { params: options?.params });
+      return response.data as ApiResponse<T>;
+    } catch (error) {
+      return this.handleError<T>(error, url);
+    }
+  },
+
+  async delete<T>(
+    url: string,
+    options?: { params?: Record<string, unknown> }
+  ): Promise<ApiResponse<T>> {
+    try {
+      const response = await agentAxios.delete<T>(url, { params: options?.params });
       return response.data as ApiResponse<T>;
     } catch (error) {
       return this.handleError<T>(error, url);

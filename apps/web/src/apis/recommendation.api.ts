@@ -1,47 +1,62 @@
 import { AgentEndpoint } from '@/config/api';
-import { type ApiResponse, type RecommendationResponse, RecommendationStrategy } from '@/types';
+import {
+  type ApiResponse,
+  type RecommendationResponse,
+  RecommendationStrategy,
+  type FeedRequest,
+  type FeedResponse,
+  type RecommendationInteractionRequest,
+  type SimilarBooksResponse,
+} from '@/types';
 import { AgentClient } from './agent.config';
 
-/**
- * Maps frontend recommendation strategy to the corresponding backend Enum string.
- * @param {string} strategy - The frontend recommendation strategy.
- * @returns {string} The backend compatible recommendation strategy.
- */
-const mapStrategy = (strategy: string): string => {
-  switch (strategy) {
-    case 'content':
-      return 'cbf';
-    case 'item_based':
-      return 'ibcf';
-    case 'popularity':
-    case 'hybrid':
-      return strategy;
-    default:
-      return 'hybrid';
-  }
-};
 
 export const RecommendationApi = {
-  getPopular: (): Promise<ApiResponse<RecommendationResponse>> =>
-    AgentClient.get<RecommendationResponse>(AgentEndpoint.endpoints.recommendations.popular()),
+  getPopular: (page?: number, limit?: number): Promise<ApiResponse<RecommendationResponse>> => {
+    const resolvedLimit = limit ?? 10;
+    const offset = ((page ?? 1) - 1) * resolvedLimit;
+    return AgentClient.get<RecommendationResponse>(
+      AgentEndpoint.endpoints.recommendations.recommend('anonymous', 'popularity'),
+      { params: { limit: resolvedLimit, offset } }
+    );
+  },
 
-  getSimilar: (bookId: string): Promise<ApiResponse<RecommendationResponse>> =>
-    AgentClient.get<RecommendationResponse>(
-      AgentEndpoint.endpoints.recommendations.similar(bookId)
-    ),
+  getSimilar: (bookId: string, page?: number, limit?: number): Promise<ApiResponse<SimilarBooksResponse>> => {
+    const resolvedLimit = limit ?? 10;
+    const offset = ((page ?? 1) - 1) * resolvedLimit;
+    return AgentClient.get<SimilarBooksResponse>(
+      AgentEndpoint.endpoints.recommendations.similar(bookId),
+      { params: { limit: resolvedLimit, offset } }
+    );
+  },
 
   getForUser: (
     userId: string,
-    strategy: RecommendationStrategy = RecommendationStrategy.HYBRID
+    strategy: RecommendationStrategy = RecommendationStrategy.HYBRID,
+    page?: number,
+    limit?: number
   ): Promise<ApiResponse<RecommendationResponse>> => {
     if (strategy === RecommendationStrategy.POPULARITY && userId === 'anonymous') {
-      return RecommendationApi.getPopular();
+      return RecommendationApi.getPopular(page, limit);
     }
 
-    const mappedStrategy = mapStrategy(strategy);
-
+    const resolvedLimit = limit ?? 10;
+    const offset = ((page ?? 1) - 1) * resolvedLimit;
     return AgentClient.get<RecommendationResponse>(
-      AgentEndpoint.endpoints.recommendations.recommend(userId, mappedStrategy)
+      AgentEndpoint.endpoints.recommendations.recommend(userId, strategy),
+      { params: { limit: resolvedLimit, offset } }
     );
   },
+
+  getFeed: (req: FeedRequest): Promise<ApiResponse<FeedResponse>> =>
+    AgentClient.post<FeedResponse>(
+      AgentEndpoint.endpoints.recommendations.feed(),
+      req
+    ),
+
+  logInteraction: (req: RecommendationInteractionRequest): Promise<ApiResponse<boolean>> =>
+    AgentClient.post<boolean>(
+      AgentEndpoint.endpoints.recommendations.interactions(),
+      req
+    ),
 };

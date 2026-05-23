@@ -185,6 +185,30 @@ export const RecommendationRequestSchema = z.object({
   strategy: z.nativeEnum(RecommendationStrategy).optional(),
 });
 
+export const RecommendationInteractionRequestSchema = z.object({
+  impressionId: z.string(),
+  bookId: z.string(),
+  userId: z.string(),
+  interactionType: z.string(),
+});
+
+export const FeedSectionConfigSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  strategy: z.nativeEnum(RecommendationStrategy),
+  limit: z.number().int().max(50).default(10),
+  bookId: z.string().optional(),
+});
+
+export const FeedRequestSchema = z.object({
+  userId: z.string().default("anonymous"),
+  sections: z.array(FeedSectionConfigSchema),
+});
+
+export const SyncGroupRequestSchema = z.object({
+  since: z.string().optional(),
+});
+
 export type UserRequest = z.infer<typeof UserRequestSchema>;
 export type SignInRequest = z.infer<typeof SignInRequestSchema>;
 export type SignUpRequest = z.infer<typeof SignUpRequestSchema>;
@@ -209,3 +233,7 @@ export type ReviewRequest = z.infer<typeof ReviewRequestSchema>;
 export type BookmarkRequest = z.infer<typeof BookmarkRequestSchema>;
 export type FolderRequest = z.infer<typeof FolderRequestSchema>;
 export type RecommendationRequest = z.infer<typeof RecommendationRequestSchema>;
+export type RecommendationInteractionRequest = z.infer<typeof RecommendationInteractionRequestSchema>;
+export type FeedSectionConfig = z.infer<typeof FeedSectionConfigSchema>;
+export type FeedRequest = z.infer<typeof FeedRequestSchema>;
+export type SyncGroupRequest = z.infer<typeof SyncGroupRequestSchema>;

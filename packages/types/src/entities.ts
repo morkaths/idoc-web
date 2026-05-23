@@ -3,7 +3,8 @@ import {
   BorrowStatus,
   RecommendationStrategy,
   RoleType,
-} from "./enum";
+} from './enum';
+import { PageResponse } from './response';
 
 // --- User & Authentication ---
 
@@ -227,18 +228,57 @@ export interface RecommendationItem {
   id: string;
   score: number;
   reason?: string;
-  predictedRating?: number;
+  predicted?: number;
 }
 
-export interface RecommendationResponse {
+export interface RecommendationResponse extends PageResponse<RecommendationItem> {
   userId: string;
   strategy: RecommendationStrategy;
-  items: RecommendationItem[];
+  impressionId?: string;
+}
+
+export interface SimilarItem {
+  id: string;
+  score: number;
+  reason?: string;
+}
+
+export interface SimilarBooksResponse extends PageResponse<SimilarItem> {
+  bookId: string;
+}
+
+export interface FeedSection {
+  id: string;
+  type: string;
+  title: string;
+  strategy: RecommendationStrategy;
+  content: RecommendationItem[];
+}
+
+export interface FeedResponse {
+  userId: string;
+  impressionId?: string;
+  feedLayout: FeedSection[];
 }
 
 export interface RecommendedBookResponse extends BookResponse {
   score?: number;
   reason?: string;
+  predicted?: number;
+}
+
+export interface EnrichedFeedSection {
+  id: string;
+  type: string;
+  title: string;
+  strategy: RecommendationStrategy;
+  content: RecommendedBookResponse[];
+}
+
+export interface EnrichedFeedResponse {
+  userId?: string;
+  impressionId?: string;
+  feedLayout: EnrichedFeedSection[];
 }
 
 // --- Agent Tasks & Evaluation ---
@@ -276,10 +316,32 @@ export interface RecommendationSparsityAnalysis {
   deltaRmse?: number;
 }
 
-export interface RecommendationEvaluationResponse {
-  strategy: RecommendationStrategy;
-  metrics: RecommendationEvaluationMetrics;
-  sampleSize: number;
-  k: number;
-  sparsityAnalysis?: RecommendationSparsityAnalysis;
+export interface RecommendationMetricsResponse {
+  online_metrics: {
+    date: string;
+    strategy: string;
+    impressions: number;
+    fallbacks: number;
+    avg_latency_ms: number;
+    clicks: number;
+    borrows: number;
+    ctr: number;
+    cvr: number;
+  }[];
+  empirical_recall: {
+    date: string;
+    success_count: number;
+    total_consumption: number;
+    empirical_recall: number;
+  }[];
+  strategy_distribution: {
+    strategy: string;
+    count: number;
+    percentage: number;
+  }[];
+  offline_metrics: {
+    target: string;
+    metrics: RecommendationEvaluationMetrics;
+    sparsity?: RecommendationSparsityAnalysis;
+  }[];
 }

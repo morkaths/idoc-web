@@ -1,27 +1,44 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { RecommendationApi } from '@/apis/recommendation.api';
-import { type RecommendationStrategy } from '@/types';
-import { useItemQuery } from './factory';
+import type {
+  ApiResponse,
+  RecommendationStrategy,
+  RecommendationSyncResponse,
+  RecommendationTrainResponse,
+  RecommendationMetricsResponse,
+} from '@/types';
+import { useItemQuery, type ItemQueryOptions } from './factory';
 
-export const useRecommendationSync = () => {
+export const useRecommendationSync = (
+  options?: UseMutationOptions<ApiResponse<RecommendationSyncResponse>, Error, void>
+) => {
   return useMutation({
     mutationFn: () => RecommendationApi.sync(),
+    ...options,
   });
 };
 
-export const useRecommendationTrain = () => {
+export const useRecommendationTrain = (
+  options?: UseMutationOptions<
+    ApiResponse<RecommendationTrainResponse>,
+    Error,
+    RecommendationStrategy | undefined
+  >
+) => {
   return useMutation({
     mutationFn: (strategy?: RecommendationStrategy) => RecommendationApi.train(strategy),
+    ...options,
   });
 };
 
-export const useRecommendationEvaluation = (strategy: RecommendationStrategy) => {
+export const useRecommendationMetrics = (
+  startDate?: string,
+  endDate?: string,
+  options?: ItemQueryOptions<RecommendationMetricsResponse>
+) => {
   return useItemQuery(
-    ['recommendations', 'evaluation', strategy],
-    () => RecommendationApi.evaluate(strategy),
-    {
-      enabled: !!strategy,
-      staleTime: 0,
-    }
+    ['recommendations', 'metrics', startDate, endDate],
+    () => RecommendationApi.getMetrics(startDate, endDate),
+    options
   );
 };

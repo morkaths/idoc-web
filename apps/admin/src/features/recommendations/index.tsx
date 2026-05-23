@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import {
   useRecommendationSync,
   useRecommendationTrain,
-  useRecommendationEvaluation,
+  useRecommendationMetrics,
 } from '@/hooks/data/useRecommendation';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -39,7 +39,7 @@ export function Recommendations() {
 
   const syncMutation = useRecommendationSync();
   const trainMutation = useRecommendationTrain();
-  const { data: evaluation, isLoading: isEvalLoading } = useRecommendationEvaluation(strategy);
+  const { data: metricsData, isLoading: isEvalLoading } = useRecommendationMetrics();
 
   const handleSync = () => {
     syncMutation.mutate(undefined, {
@@ -63,10 +63,18 @@ export function Recommendations() {
     });
   };
 
-  // evaluation is query.data.data, which is RecommendationEvaluationResponse | RecommendationEvaluationResponse[]
-  const evalData = Array.isArray(evaluation) ? evaluation[0] : evaluation;
+  let target = 'all';
+  if (strategy === RecommendationStrategy.CBF) target = 'cbf';
+  else if (strategy === RecommendationStrategy.IBCF) target = 'ibcf';
+
+  const response = metricsData?.data;
+  // @ts-ignore - The response could be an array if misaligned, but typically object
+  const dataObj = Array.isArray(response) ? response[0] : response;
+  const offlineMetrics = dataObj?.offline_metrics || [];
+  const evalData = offlineMetrics.find((m: any) => m.target === target) || offlineMetrics.find((m: any) => m.target === 'all') || offlineMetrics[0];
+
   const metrics = evalData?.metrics || null;
-  const sparsity = evalData?.sparsityAnalysis || null;
+  const sparsity = evalData?.sparsity || null;
 
   return (
     <div className='flex flex-col gap-6'>

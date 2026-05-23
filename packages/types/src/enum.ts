@@ -57,9 +57,9 @@ export enum AuthProvider {
 
 export enum RecommendationStrategy {
   POPULARITY = "popularity",
-  CONTENT = "content",
-  USER_BASED = "user_based",
-  ITEM_BASED = "item_based",
+  CBF = "cbf",
+  UBCF = "ubcf",
+  IBCF = "ibcf",
   SVD = "svd",
   HYBRID = "hybrid",
 }
