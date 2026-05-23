@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { ColumnFiltersState, OnChangeFn, PaginationState } from '@tanstack/react-table';
 
 type SearchRecord = Record<string, unknown>;
@@ -24,20 +24,20 @@ type UseTableUrlStateParams = {
   };
   columnFilters?: Array<
     | {
-        columnId: string;
-        searchKey: string;
-        type?: 'string';
-        // Optional transformers for custom types
-        serialize?: (value: unknown) => unknown;
-        deserialize?: (value: unknown) => unknown;
-      }
+      columnId: string;
+      searchKey: string;
+      type?: 'string';
+      // Optional transformers for custom types
+      serialize?: (value: unknown) => unknown;
+      deserialize?: (value: unknown) => unknown;
+    }
     | {
-        columnId: string;
-        searchKey: string;
-        type: 'array';
-        serialize?: (value: unknown) => unknown;
-        deserialize?: (value: unknown) => unknown;
-      }
+      columnId: string;
+      searchKey: string;
+      type: 'array';
+      serialize?: (value: unknown) => unknown;
+      deserialize?: (value: unknown) => unknown;
+    }
   >;
 };
 
@@ -94,19 +94,47 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     }
     return collected;
   }, [columnFiltersCfg, search]);
-
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialColumnFilters);
+  const [prevFiltersStr, setPrevFiltersStr] = useState(() => JSON.stringify(initialColumnFilters));
 
+  const currentFiltersStr = JSON.stringify(initialColumnFilters);
+  if (currentFiltersStr !== prevFiltersStr) {
+    setPrevFiltersStr(currentFiltersStr);
+    setColumnFilters(initialColumnFilters);
+  }
   const pagination: PaginationState = useMemo(() => {
     const rawPage = (search as SearchRecord)[pageKey];
     const rawPageSize = (search as SearchRecord)[pageSizeKey];
-    const pageNum = typeof rawPage === 'number' ? rawPage : defaultPage;
-    const pageSizeNum = typeof rawPageSize === 'number' ? rawPageSize : defaultPageSize;
-    return { pageIndex: Math.max(0, pageNum - 1), pageSize: pageSizeNum };
+    const pageNum =
+      typeof rawPage === 'string'
+        ? Number.parseInt(rawPage, 10)
+        : typeof rawPage === 'number'
+          ? rawPage
+          : defaultPage;
+    const pageSizeNum =
+      typeof rawPageSize === 'string'
+        ? Number.parseInt(rawPageSize, 10)
+        : typeof rawPageSize === 'number'
+          ? rawPageSize
+          : defaultPageSize;
+
+    return {
+      pageIndex: Number.isNaN(pageNum) ? 0 : Math.max(0, pageNum - 1),
+      pageSize: Number.isNaN(pageSizeNum) ? defaultPageSize : pageSizeNum,
+    };
   }, [search, pageKey, pageSizeKey, defaultPage, defaultPageSize]);
 
-  const onPaginationChange: OnChangeFn<PaginationState> = (updater) => {
-    const next = typeof updater === 'function' ? updater(pagination) : updater;
+  const onPaginationChange: OnChangeFn<PaginationState> = useCallback((updater) => {
+    const currentPagination = pagination;
+    const next = typeof updater === 'function' ? updater(currentPagination) : updater;
+
+    if (
+      next.pageIndex === currentPagination.pageIndex &&
+      next.pageSize === currentPagination.pageSize
+    ) {
+      return;
+    }
+
     const nextPage = next.pageIndex + 1;
     const nextPageSize = next.pageSize;
     navigate({
@@ -116,7 +144,7 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
         [pageSizeKey]: nextPageSize === defaultPageSize ? undefined : nextPageSize,
       }),
     });
-  };
+  }, [defaultPage, defaultPageSize, navigate, pageKey, pageSizeKey, pagination]);
 
   const [globalFilter, setGlobalFilter] = useState<string | undefined>(() => {
     if (!globalFilterEnabled) return undefined;
@@ -124,22 +152,22 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     return typeof raw === 'string' ? raw : '';
   });
 
-  const onGlobalFilterChange: OnChangeFn<string> | undefined = globalFilterEnabled
-    ? (updater) => {
-        const next = typeof updater === 'function' ? updater(globalFilter ?? '') : updater;
-        const value = trimGlobal ? next.trim() : next;
-        setGlobalFilter(value);
-        navigate({
-          search: (prev) => ({
-            ...(prev as SearchRecord),
-            [pageKey]: undefined,
-            [globalFilterKey]: value ? value : undefined,
-          }),
-        });
-      }
-    : undefined;
+  const handleGlobalFilterChange = useCallback((updater: string | ((prev: string) => string)) => {
+    const next = typeof updater === 'function' ? updater(globalFilter ?? '') : updater;
+    const value = trimGlobal ? next.trim() : next;
+    setGlobalFilter(value);
+    navigate({
+      search: (prev) => ({
+        ...(prev as SearchRecord),
+        [pageKey]: undefined,
+        [globalFilterKey]: value ? value : undefined,
+      }),
+    });
+  }, [globalFilter, trimGlobal, navigate, pageKey, globalFilterKey]);
 
-  const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> = (updater) => {
+  const onGlobalFilterChange = globalFilterEnabled ? handleGlobalFilterChange : undefined;
+
+  const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> = useCallback((updater) => {
     const next = typeof updater === 'function' ? updater(columnFilters) : updater;
     setColumnFilters(next);
 
@@ -164,14 +192,19 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
         ...patch,
       }),
     });
-  };
+  }, [columnFilters, columnFiltersCfg, navigate, pageKey]);
 
-  const ensurePageInRange = (
+  const ensurePageInRange = useCallback((
     pageCount: number,
     opts: { resetTo?: 'first' | 'last' } = { resetTo: 'first' }
   ) => {
     const currentPage = (search as SearchRecord)[pageKey];
-    const pageNum = typeof currentPage === 'number' ? currentPage : defaultPage;
+    const pageNum =
+      typeof currentPage === 'string'
+        ? Number.parseInt(currentPage, 10)
+        : typeof currentPage === 'number'
+          ? currentPage
+          : defaultPage;
     if (pageCount > 0 && pageNum > pageCount) {
       navigate({
         replace: true,
@@ -181,7 +214,7 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
         }),
       });
     }
-  };
+  }, [search, pageKey, defaultPage, navigate]);
 
   return {
     globalFilter: globalFilterEnabled ? (globalFilter ?? '') : undefined,
