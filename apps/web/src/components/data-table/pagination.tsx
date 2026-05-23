@@ -7,13 +7,6 @@ import {
 import { type Table } from '@tanstack/react-table';
 import { cn, getPageNumbers } from '@/lib/utils';
 import { Button } from '@repo/ui/components/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui/components/select';
 
 import { useLocale } from '@/hooks/ui/useLocale';
 
@@ -42,23 +35,23 @@ export function DataTablePagination<TData>({ table, className }: DataTablePagina
           {t(keys.pagination.page)} {currentPage} {t(keys.pagination.of)} {totalPages}
         </div>
         <div className='flex items-center gap-2 @max-2xl/content:flex-row-reverse'>
-          <Select
+          <select
             value={`${table.getState().pagination.pageSize}`}
-            onValueChange={(value) => {
-              table.setPageSize(Number(value));
+            onChange={(event) => {
+              const newSize = Number(event.target.value);
+              const currentSize = table.getState().pagination.pageSize;
+              if (newSize !== currentSize) table.setPageSize(newSize);
             }}
+            className={cn(
+              'border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-8 w-[70px] rounded-md border px-2 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:ring-[3px]'
+            )}
           >
-            <SelectTrigger className='h-8 w-[70px]'>
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
-            </SelectTrigger>
-            <SelectContent side='top'>
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                {pageSize}
+              </option>
+            ))}
+          </select>
           <p className='hidden text-sm font-medium sm:block'>{t(keys.pagination.rowsPerPage)}</p>
         </div>
       </div>

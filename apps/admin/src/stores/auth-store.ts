@@ -49,6 +49,11 @@ export const useAuthStore = create<AuthState>()((set) => {
    * @param token The authentication tokens
    */
   const setAuthData = (user: UserResponse | null, token: TokenResponse | null) => {
+    const currentAuth = useAuthStore.getState().auth;
+    if (currentAuth.user?.id === user?.id && currentAuth.token?.accessToken === token?.accessToken) {
+      return;
+    }
+
     // If token exists, strip refreshToken before storing in client-side cookies
     const tokenToStore = token
       ? {

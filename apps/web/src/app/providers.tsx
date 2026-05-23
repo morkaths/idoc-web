@@ -10,6 +10,8 @@ import { NextIntlClientProvider, type AbstractIntlMessages } from 'next-intl';
 
 import { AuthSync } from "@/components/auth-sync";
 
+import { TooltipProvider } from "@repo/ui/components/tooltip";
+
 export function Providers({
   children,
   locale,
@@ -34,10 +36,12 @@ export function Providers({
         <AuthSync />
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
-            <ReaderProvider>
-              {children}
-              <Toaster duration={5000} />
-            </ReaderProvider>
+            <TooltipProvider>
+              <ReaderProvider>
+                {children}
+                <Toaster duration={5000} />
+              </ReaderProvider>
+            </TooltipProvider>
           </ThemeProvider>
         </QueryClientProvider>
       </NextIntlClientProvider>

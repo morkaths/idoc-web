@@ -2,7 +2,6 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { RoleType } from '@/types';
 import { toast } from 'sonner';
 import { AuthenticatedLayout } from '@/components/layout/authenticated-layout';
-import { UserApi } from '@/apis/user.api';
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: async ({ context, location }) => {
@@ -17,31 +16,26 @@ export const Route = createFileRoute('/_authenticated')({
       });
     }
 
-    try {
-      const response = await UserApi.me();
-      const user = response.data;
+    const user = auth.user;
 
-      if (!user) {
-        throw new Error('User data is missing');
+    if (!user) {
+      if (auth.token || auth.user) {
+        await auth.logout();
       }
+      throw redirect({
+        to: '/sign-in',
+        search: {
+          redirect: location.pathname,
+        },
+      });
+    }
 
-      auth.setUser(user);
-
-      const isAllowed = user.role === RoleType.ADMIN || user.role === RoleType.STAFF;
-      if (!isAllowed) {
-        toast.error('You do not have access to the admin page!');
-        throw redirect({
-          to: '/sign-in',
-          search: {
-            redirect: location.pathname,
-          },
-        });
+    const isAllowed = user.role === RoleType.ADMIN || user.role === RoleType.STAFF;
+    if (!isAllowed) {
+      toast.error('You do not have access to the admin page!');
+      if (auth.token || auth.user) {
+        await auth.logout();
       }
-    } catch (error) {
-      if (error instanceof Error && error.name === 'NavigationError') {
-        throw error;
-      }
-
       throw redirect({
         to: '/sign-in',
         search: {

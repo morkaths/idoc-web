@@ -231,9 +231,9 @@ export function BookDetailView({ id }: BookDetailViewProps) {
                   }),
                   {
                     loading: t(keys.borrow.states.loading),
-                    success: () => {
+                    success: (response) => {
                       setOpenBorrow(false);
-                      return t(keys.borrow.states.success);
+                      return response?.message || t(keys.borrow.states.success);
                     },
                     error: (err) => err?.message || t(keys.borrow.states.error),
                   }

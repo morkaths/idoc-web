@@ -528,6 +528,7 @@
         "status": "Trạng thái"
       },
       "states": {
+        "borrowed": "Đã mượn",
         "active": "Đang mượn",
         "overdue": "Quá hạn",
         "returned": "Đã trả"

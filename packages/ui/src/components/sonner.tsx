@@ -11,11 +11,18 @@ import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  let theme: ToasterProps["theme"] = "system"
+  
+  try {
+    const { theme: nextTheme = "system" } = useTheme()
+    theme = nextTheme as ToasterProps["theme"]
+  } catch (e) {
+    // Fallback to system theme if useTheme fails or is outside provider
+  }
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme={theme}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,

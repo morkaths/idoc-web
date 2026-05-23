@@ -19,7 +19,8 @@ export function Dashboard() {
         <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
         <div className='flex items-center space-x-2'>
           <Button>
-            <Download /> Download
+            <Download />
+            <span>Download</span>
           </Button>
         </div>
       </div>

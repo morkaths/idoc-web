@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
 import { AxiosError } from 'axios';
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -40,9 +40,15 @@ const queryClient = new QueryClient({
 
       if (error instanceof AxiosError) {
         if (error.response?.status === 401) {
-          useAuthStore.getState().auth.logout();
-          const redirect = router.state.location.pathname;
-          router.navigate({ to: '/sign-in', search: { redirect } });
+          const auth = useAuthStore.getState().auth;
+          if (auth.token || auth.user) {
+            auth.logout();
+          }
+
+          if (!window.location.pathname.includes('/sign-in')) {
+            const redirect = router.state.location.pathname;
+            router.navigate({ to: '/sign-in', search: { redirect } });
+          }
         } else if (error.response?.status === 500) {
           router.navigate({ to: '/500' });
         } else if (error.response?.status === 403) {
@@ -53,10 +59,22 @@ const queryClient = new QueryClient({
   }),
 });
 
+// Extract basepath from env.app.url
+const getBasePath = (url: string) => {
+  try {
+    const pathname = new URL(url).pathname;
+    return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  } catch (_e) {
+    return '/admin';
+  }
+};
+
+const basepath = getBasePath(env.app.url);
+
 // Create a new router instance
 const router = createRouter({
   routeTree,
-  basepath: '/admin',
+  basepath,
   context: { queryClient, auth: undefined! }, // auth will be injected by the provider or used in beforeLoad
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
@@ -71,7 +89,8 @@ declare module '@tanstack/react-router' {
 
 function App() {
   const { auth } = useAuthStore();
-  return <RouterProvider router={router} context={{ queryClient, auth }} />;
+  const context = useMemo(() => ({ queryClient, auth }), [auth]);
+  return <RouterProvider router={router} context={context} />;
 }
 
 // Render the app

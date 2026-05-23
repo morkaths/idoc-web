@@ -4,11 +4,21 @@ import { Users } from '@/features/users';
 import { UserStatus, RoleType } from '@repo/types';
 
 const usersSearchSchema = z.object({
-  page: z.number().optional().catch(1),
-  pageSize: z.number().optional().catch(10),
+  page: z.coerce.number().optional().catch(1),
+  pageSize: z.coerce.number().optional().catch(10),
   query: z.string().optional().catch(''),
-  status: z.array(z.enum(Object.values(UserStatus))).optional().catch([]),
-  role: z.array(z.enum(Object.values(RoleType))).optional().catch([]),
+  status: z
+    .preprocess(
+      (val) => (Array.isArray(val) ? val : val ? [val] : []),
+      z.array(z.enum(Object.values(UserStatus)))
+    )
+    .catch([]),
+  role: z
+    .preprocess(
+      (val) => (Array.isArray(val) ? val : val ? [val] : []),
+      z.array(z.enum(Object.values(RoleType)))
+    )
+    .catch([]),
 });
 
 export const Route = createFileRoute('/_authenticated/users/')({

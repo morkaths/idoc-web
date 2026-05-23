@@ -9,6 +9,14 @@ import {
 import { useMemo } from 'react';
 import type { ApiResponse, PageResponse } from '@/types';
 
+function assertMutationSuccess<T>(response: ApiResponse<T>): ApiResponse<T> {
+  if (!response.success) {
+    throw new Error(response.message || 'Request failed');
+  }
+
+  return response;
+}
+
 export type ListQueryOptions<T> = Omit<
   UseQueryOptions<ApiResponse<PageResponse<T>>, Error>,
   'queryKey' | 'queryFn'
@@ -131,7 +139,7 @@ export const useCreateMutation = <TRequest, TResponse, TContext = unknown>(
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn,
+    mutationFn: async (data) => assertMutationSuccess(await mutationFn(data)),
     onSuccess: (...args) => {
       const [data] = args;
       if (data.success) {
@@ -157,7 +165,7 @@ export const useUpdateMutation = <TRequest, TResponse, TContext = unknown>(
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn,
+    mutationFn: async (args) => assertMutationSuccess(await mutationFn(args)),
     onSuccess: (...args) => {
       const [data, variables] = args;
       if (data.success) {
@@ -184,7 +192,7 @@ export const useDeleteMutation = <TContext = unknown>(
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn,
+    mutationFn: async (id) => assertMutationSuccess(await mutationFn(id)),
     onSuccess: (...args) => {
       const [data] = args;
       if (data.success) {

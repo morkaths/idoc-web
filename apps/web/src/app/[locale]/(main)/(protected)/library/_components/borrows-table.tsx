@@ -1,4 +1,5 @@
 'use client';
+'use no memo';
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
@@ -31,7 +32,6 @@ export function BorrowsTable() {
   const { t, keys } = useLocale('library');
   const columns = useMemo(() => borrowsColumns(t, keys), [t, keys]);
   const router = useRouter();
-  const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
@@ -39,7 +39,9 @@ export function BorrowsTable() {
   const pathname = usePathname();
   const search = useMemo(() => Object.fromEntries(searchParams.entries()), [searchParams]);
   const searchRef = useRef(search);
-  searchRef.current = search;
+  useEffect(() => {
+    searchRef.current = search;
+  }, [search]);
 
   const navigate = useCallback(
     (opts: Parameters<NavigateFn>[0]) => {
@@ -76,6 +78,10 @@ export function BorrowsTable() {
 
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
+  const tableResetKey = useMemo(
+    () => JSON.stringify({ globalFilter: globalFilter ?? '', columnFilters }),
+    [globalFilter, columnFilters]
+  );
 
   const borrowParams = useMemo(
     () => buildBorrowFindParams(page, limit, globalFilter ?? '', sorting, columnFilters),
@@ -86,37 +92,6 @@ export function BorrowsTable() {
   const { data: borrowsData, isFetching: isBorrowsFetching } = useBorrowHistory(borrowParams);
   const borrows = borrowsData?.data ?? [];
   const borrowPagination = borrowsData?.pagination;
-
-  const table = useReactTable({
-    data: borrows,
-    columns,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters,
-      globalFilter,
-      pagination: {
-        pageIndex: Math.max(0, page - 1),
-        pageSize: pagination.pageSize ?? 10,
-      },
-    },
-    manualPagination: true,
-    pageCount: borrowPagination?.pages ?? 0,
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
-    onPaginationChange,
-    onGlobalFilterChange,
-    onColumnFiltersChange,
-  });
-
-  // Reset row selection when filters change
-  useEffect(() => {
-    setRowSelection({});
-  }, [globalFilter, columnFilters]);
 
   // Handle page reset on filter change if needed
   // Note: useTableUrlState already handles resetting to page 1 on filter changes
@@ -130,13 +105,105 @@ export function BorrowsTable() {
   }, [globalFilter, onPaginationChange, pagination.pageIndex]);
 
   useEffect(() => {
-    if (table.getPageCount() > 0) {
-      ensurePageInRange(table.getPageCount());
+    if (borrowPagination?.pages && borrowPagination.pages > 0) {
+      ensurePageInRange(borrowPagination.pages);
     }
-  }, [table.getPageCount(), ensurePageInRange]);
+  }, [borrowPagination?.pages, ensurePageInRange]);
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
+      <BorrowsTableContent
+        key={tableResetKey}
+        columns={columns}
+        borrows={borrows}
+        borrowPaginationPages={borrowPagination?.pages ?? 0}
+        isBorrowsFetching={isBorrowsFetching}
+        sorting={sorting}
+        setSorting={setSorting}
+        columnVisibility={columnVisibility}
+        setColumnVisibility={setColumnVisibility}
+        columnFilters={columnFilters}
+        globalFilter={globalFilter}
+        pagination={pagination}
+        onPaginationChange={onPaginationChange}
+        onGlobalFilterChange={onGlobalFilterChange}
+        onColumnFiltersChange={onColumnFiltersChange}
+        t={t}
+        keys={keys}
+      />
+    </div>
+  );
+}
+
+type BorrowsTableContentProps = {
+  columns: ReturnType<typeof borrowsColumns>;
+  borrows: ReturnType<typeof useBorrowHistory>['data'] extends infer T ? T extends { data?: infer D } ? D extends Array<unknown> ? D : never : never : never;
+  borrowPaginationPages: number;
+  isBorrowsFetching: boolean;
+  sorting: SortingState;
+  setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
+  columnVisibility: VisibilityState;
+  setColumnVisibility: React.Dispatch<React.SetStateAction<VisibilityState>>;
+  columnFilters: ReturnType<typeof useTableUrlState>['columnFilters'];
+  globalFilter?: string;
+  pagination: ReturnType<typeof useTableUrlState>['pagination'];
+  onPaginationChange: ReturnType<typeof useTableUrlState>['onPaginationChange'];
+  onGlobalFilterChange?: ReturnType<typeof useTableUrlState>['onGlobalFilterChange'];
+  onColumnFiltersChange: ReturnType<typeof useTableUrlState>['onColumnFiltersChange'];
+  t: ReturnType<typeof useLocale<'library'>>['t'];
+  keys: ReturnType<typeof useLocale<'library'>>['keys'];
+};
+
+function BorrowsTableContent({
+  columns,
+  borrows,
+  borrowPaginationPages,
+  isBorrowsFetching,
+  sorting,
+  setSorting,
+  columnVisibility,
+  setColumnVisibility,
+  columnFilters,
+  globalFilter,
+  pagination,
+  onPaginationChange,
+  onGlobalFilterChange,
+  onColumnFiltersChange,
+  t,
+  keys,
+}: BorrowsTableContentProps) {
+  const [rowSelection, setRowSelection] = useState({});
+
+  // TanStack Table intentionally returns unstable functions here.
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data: borrows,
+    columns,
+    state: {
+      sorting,
+      columnVisibility,
+      rowSelection,
+      columnFilters,
+      globalFilter,
+      pagination: {
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+      },
+    },
+    manualPagination: true,
+    pageCount: borrowPaginationPages,
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    onPaginationChange,
+    onGlobalFilterChange,
+    onColumnFiltersChange,
+  });
+
+  return (
+    <>
       <DataTableToolbar
         table={table}
         searchPlaceholder={t(keys.search.placeholder)}
@@ -145,9 +212,9 @@ export function BorrowsTable() {
             columnId: 'status',
             title: t(keys.table.columns.status),
             options: [
-              { label: 'Borrowed', value: BorrowStatus.BORROWED },
-              { label: 'Returned', value: BorrowStatus.RETURNED },
-              { label: 'Overdue', value: BorrowStatus.OVERDUE },
+              { label: t(keys.table.states.borrowed), value: BorrowStatus.BORROWED },
+              { label: t(keys.table.states.returned), value: BorrowStatus.RETURNED },
+              { label: t(keys.table.states.overdue), value: BorrowStatus.OVERDUE },
             ],
           },
         ]}
@@ -199,7 +266,7 @@ export function BorrowsTable() {
 
       <DataTablePagination table={table} className='mt-auto' />
       <BorrowsTableBulkActions table={table} />
-    </div>
+    </>
   );
 }
 

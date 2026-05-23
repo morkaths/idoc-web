@@ -19,7 +19,7 @@ type BorrowsTableRowActionsProps<TData> = {
 };
 
 export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsProps<TData>) {
-  const { t, KEYS } = useLocale('library');
+  const { t, KEYS, keys } = useLocale('library');
   const borrow = row.original as unknown as LoanResponse;
 
   const ctx = useBorrowsContext();
@@ -56,7 +56,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               setOpen('review');
             }}
           >
-            {t(KEYS.common.actions.review)}
+            {t(keys.table.actions.review.label)}
             <span className='ml-auto'>
               <Star size={16} />
             </span>
@@ -67,7 +67,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               setOpen('history');
             }}
           >
-            {t(KEYS.common.actions.history)}
+            {t(keys.table.actions.history.label)}
             <span className='ml-auto'>
               <History size={16} />
             </span>
@@ -78,7 +78,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               setOpen('extend');
             }}
           >
-            {t(KEYS.common.actions.extend)}
+            {t(keys.table.actions.extend.label)}
             <span className='ml-auto'>
               <Clock size={16} />
             </span>
@@ -93,7 +93,7 @@ export function BorrowsTableRowActions<TData>({ row }: BorrowsTableRowActionsPro
               setOpen('return');
             }}
           >
-            {t(KEYS.common.actions.return)}
+            {t(keys.table.actions.return.label)}
             <span className='ml-auto'>
               <Undo2 size={16} />
             </span>

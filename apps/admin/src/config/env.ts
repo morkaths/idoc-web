@@ -3,7 +3,7 @@ import { z } from 'zod';
 const envSchema = z.object({
   VITE_MODE: z.enum(['development', 'production']).default('development'),
   VITE_PORT: z.string().default('3001'),
-  VITE_BASE_URL: z.string().default('http://localhost:3001/admin'),
+  VITE_BASE_URL: z.string().default('http://localhost:3001/admin/'),
   VITE_API_URL: z.string().default('http://localhost:8000/api'),
   VITE_API_KEY: z.string().optional(),
   VITE_AGENT_URL: z.string().default('http://localhost:5000/api/v1'),

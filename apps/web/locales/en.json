@@ -533,6 +533,7 @@
         "status": "Status"
       },
       "states": {
+        "borrowed": "Borrowed",
         "active": "Active",
         "overdue": "Overdue",
         "returned": "Returned"

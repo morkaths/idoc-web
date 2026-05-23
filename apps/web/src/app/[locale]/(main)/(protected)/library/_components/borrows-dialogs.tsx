@@ -9,7 +9,7 @@ import {
   useReturnBorrow,
 } from '@/hooks/data/useBorrow';
 import { useCreateReview, useUpdateReview } from '@/hooks/data/useReview';
-import { KEYS, useLocale } from '@/hooks/ui/useLocale';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -28,7 +28,7 @@ import { ReviewMutateDialog } from './review-mutate-dialog';
 
 export function BorrowsDialogs() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { t, keys } = useLocale('library');
+  const { t, KEYS, keys } = useLocale('library');
   const { open, setOpen, currentRow, setCurrentRow } = useBorrowsContext();
 
   const createBorrowMut = useCreateBorrow();
@@ -47,9 +47,9 @@ export function BorrowsDialogs() {
         onSubmit={async (data) => {
           return toast.promise(createBorrowMut.mutateAsync(data as Parameters<typeof createBorrowMut.mutateAsync>[0]), {
             loading: t(keys.table.actions.mutate.loading),
-            success: () => {
+            success: (response) => {
               setOpen(null);
-              return t(keys.table.actions.mutate.success);
+              return response?.message || t(keys.table.actions.mutate.success);
             },
             error: (err) => err?.message || t(keys.table.actions.mutate.error),
           });
@@ -108,10 +108,10 @@ export function BorrowsDialogs() {
                 }),
                 {
                   loading: t(keys.table.actions.mutate.loading),
-                  success: () => {
+                  success: (response) => {
                     setOpen(null);
                     setCurrentRow(null);
-                    return t(keys.table.actions.mutate.success);
+                    return response?.message || t(keys.table.actions.mutate.success);
                   },
                   error: (err) => err?.message || t(keys.table.actions.mutate.error),
                 }
@@ -131,10 +131,10 @@ export function BorrowsDialogs() {
                 extendBorrowMut.mutateAsync({ id: currentRow.id, data }),
                 {
                   loading: t(keys.table.actions.extend.loading),
-                  success: () => {
+                  success: (response) => {
                     setOpen(null);
                     setCurrentRow(null);
-                    return t(keys.table.actions.extend.success);
+                    return response?.message || t(keys.table.actions.extend.success);
                   },
                   error: (err) => err?.message || t(keys.table.actions.extend.error),
                 }
@@ -158,30 +158,24 @@ export function BorrowsDialogs() {
                 content: data.content ?? '',
               };
 
-              const onSuccess = () => {
-                toast.success(
-                  existingReview
-                    ? t(keys.table.actions.review.messages.create.success)
-                    : t(keys.table.actions.review.messages.update.success)
-                );
-                setOpen(null);
-                setCurrentRow(null);
-              };
-
               const onError = (err: unknown) => {
                 const error = err as Record<string, unknown>;
                 toast.error(
                   (error?.message as string) ||
-                    (existingReview
-                      ? t(keys.table.actions.review.messages.create.error)
-                      : t(keys.table.actions.review.messages.update.error))
+                  (existingReview
+                    ? t(keys.table.actions.review.messages.create.error)
+                    : t(keys.table.actions.review.messages.update.error))
                 );
               };
 
               if (existingReview) {
                 return updateReviewMut
                   .mutateAsync({ id: existingReview.id, data: payload })
-                  .then(onSuccess)
+                  .then((response) => {
+                    toast.success(response?.message || t(keys.table.actions.review.messages.update.success));
+                    setOpen(null);
+                    setCurrentRow(null);
+                  })
                   .catch(onError);
               } else {
                 return createReviewMut
@@ -190,7 +184,11 @@ export function BorrowsDialogs() {
                     rating: payload.rating,
                     content: payload.content,
                   })
-                  .then(onSuccess)
+                  .then((response) => {
+                    toast.success(response?.message || t(keys.table.actions.review.messages.create.success));
+                    setOpen(null);
+                    setCurrentRow(null);
+                  })
                   .catch(onError);
               }
             }}
@@ -214,10 +212,10 @@ export function BorrowsDialogs() {
               try {
                 await toast.promise(returnBorrowMut.mutateAsync({ id: currentRow.id, data: undefined }), {
                   loading: t(keys.table.actions.return.loading),
-                  success: () => {
+                  success: (response) => {
                     setOpen(null);
                     setTimeout(() => setCurrentRow(null), 500);
-                    return t(keys.table.actions.return.success);
+                    return response?.message || t(keys.table.actions.return.success);
                   },
                   error: (err) => err?.message || t(keys.table.actions.return.error),
                 });

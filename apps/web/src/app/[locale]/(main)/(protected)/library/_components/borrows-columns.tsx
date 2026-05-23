@@ -1,4 +1,5 @@
 import type { LoanResponse } from '@/types';
+import { BorrowStatus } from '@/types';
 import { type ColumnDef } from '@tanstack/react-table';
 import { ImageOff } from 'lucide-react';
 import { Badge } from '@repo/ui/components/badge';
@@ -43,6 +44,7 @@ export interface BorrowTranslationKeys {
       status: string;
     };
     states: {
+      borrowed: string;
       active: string;
       overdue: string;
       returned: string;
@@ -206,20 +208,20 @@ export const borrowsColumns = (
       ),
       meta: { title: t(keys.table.columns.status) },
       cell: ({ row }) => {
-        const status = row.getValue('status') as string;
+        const status = row.getValue('status') as BorrowStatus | string;
         let color: 'default' | 'destructive' | 'outline' = 'default';
         let label = status;
 
         switch (status) {
-          case 'active':
+          case BorrowStatus.BORROWED:
             color = 'default';
-            label = t(keys.table.states.active);
+            label = t(keys.table.states.borrowed);
             break;
-          case 'overdue':
+          case BorrowStatus.OVERDUE:
             color = 'destructive';
             label = t(keys.table.states.overdue);
             break;
-          case 'returned':
+          case BorrowStatus.RETURNED:
             color = 'outline';
             label = t(keys.table.states.returned);
             break;

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
+import { useCallback, useMemo, useRef, useEffect } from 'react';
 import type { ColumnFiltersState, OnChangeFn, PaginationState } from '@tanstack/react-table';
 
 type SearchRecord = Record<string, unknown>;
@@ -24,19 +24,19 @@ type UseTableUrlStateParams = {
   };
   columnFilters?: Array<
     | {
-        columnId: string;
-        searchKey: string;
-        type?: 'string';
-        serialize?: (value: unknown) => unknown;
-        deserialize?: (value: unknown) => unknown;
-      }
+      columnId: string;
+      searchKey: string;
+      type?: 'string';
+      serialize?: (value: unknown) => unknown;
+      deserialize?: (value: unknown) => unknown;
+    }
     | {
-        columnId: string;
-        searchKey: string;
-        type: 'array';
-        serialize?: (value: unknown) => unknown;
-        deserialize?: (value: unknown) => unknown;
-      }
+      columnId: string;
+      searchKey: string;
+      type: 'array';
+      serialize?: (value: unknown) => unknown;
+      deserialize?: (value: unknown) => unknown;
+    }
   >;
 };
 
@@ -70,7 +70,9 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
 
   // Use refs to keep callbacks stable
   const searchRef = useRef(search);
-  searchRef.current = search;
+  useEffect(() => {
+    searchRef.current = search;
+  }, [search]);
 
   const initialColumnFilters: ColumnFiltersState = useMemo(() => {
     const collected: ColumnFiltersState = [];
@@ -92,40 +94,37 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     return collected;
   }, [columnFiltersCfg, search]);
 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialColumnFilters);
-
-  // Sync internal filter state if URL changes externally
-  useEffect(() => {
-    setColumnFilters(initialColumnFilters);
-  }, [initialColumnFilters]);
+  const columnFilters = initialColumnFilters;
 
   const pagination: PaginationState = useMemo(() => {
     const rawPage = (search as SearchRecord)[pageKey];
     const rawPageSize = (search as SearchRecord)[pageSizeKey];
-    
+
     // URL params are strings, need to parse them
-    const pageNum = typeof rawPage === 'string' 
-      ? parseInt(rawPage, 10) 
+    const pageNum = typeof rawPage === 'string'
+      ? parseInt(rawPage, 10)
       : (typeof rawPage === 'number' ? rawPage : defaultPage);
-      
+
     const pageSizeNum = typeof rawPageSize === 'string'
       ? parseInt(rawPageSize, 10)
       : (typeof rawPageSize === 'number' ? rawPageSize : defaultPageSize);
 
-    return { 
-      pageIndex: isNaN(pageNum) ? 0 : Math.max(0, pageNum - 1), 
-      pageSize: isNaN(pageSizeNum) ? defaultPageSize : pageSizeNum 
+    return {
+      pageIndex: isNaN(pageNum) ? 0 : Math.max(0, pageNum - 1),
+      pageSize: isNaN(pageSizeNum) ? defaultPageSize : pageSizeNum
     };
   }, [search, pageKey, pageSizeKey, defaultPage, defaultPageSize]);
 
   const paginationRef = useRef(pagination);
-  paginationRef.current = pagination;
+  useEffect(() => {
+    paginationRef.current = pagination;
+  }, [pagination]);
 
   const onPaginationChange: OnChangeFn<PaginationState> = useCallback(
     (updater) => {
       const currentPagination = paginationRef.current;
       const next = typeof updater === 'function' ? updater(currentPagination) : updater;
-      
+
       // Don't navigate if values haven't actually changed to avoid unnecessary re-renders
       if (next.pageIndex === currentPagination.pageIndex && next.pageSize === currentPagination.pageSize) {
         return;
@@ -134,50 +133,47 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
       const nextPage = next.pageIndex + 1;
       const nextPageSize = next.pageSize;
 
+      const nextQuery: Record<string, string> = {};
+
+      for (const [key, value] of Object.entries({
+        ...searchRef.current,
+        [pageKey]: nextPage <= defaultPage ? undefined : nextPage,
+        [pageSizeKey]: nextPageSize === defaultPageSize ? undefined : nextPageSize,
+      })) {
+        if (value === undefined || value === null) continue;
+        nextQuery[key] = String(value);
+      }
+
       navigate({
-        search: (prev) => ({
-          ...(prev as SearchRecord),
-          [pageKey]: nextPage <= defaultPage ? undefined : nextPage,
-          [pageSizeKey]: nextPageSize === defaultPageSize ? undefined : nextPageSize,
-        }),
+        search: nextQuery,
       });
     },
     [pageKey, pageSizeKey, defaultPage, defaultPageSize, navigate]
   );
 
-  const [globalFilter, setGlobalFilter] = useState<string>(() => {
+  const globalFilter = useMemo(() => {
     if (!globalFilterEnabled) return '';
     const raw = (search as SearchRecord)[globalFilterKey];
     return typeof raw === 'string' ? raw : '';
-  });
-
-  // Sync global filter if URL changes
-  useEffect(() => {
-    if (globalFilterEnabled) {
-      const raw = (search as SearchRecord)[globalFilterKey];
-      const value = typeof raw === 'string' ? raw : '';
-      setGlobalFilter(value);
-    }
   }, [search, globalFilterEnabled, globalFilterKey]);
 
   const onGlobalFilterChange: OnChangeFn<string> | undefined = useMemo(
     () =>
       globalFilterEnabled
         ? (updater: string | ((prev: string) => string)) => {
-            const next = typeof updater === 'function' ? updater(globalFilter) : updater;
-            const value = trimGlobal ? next.trim() : next;
-            
-            if (value === globalFilter) return;
+          const next = typeof updater === 'function' ? updater(globalFilter) : updater;
+          const value = trimGlobal ? next.trim() : next;
 
-            setGlobalFilter(value);
-            navigate({
-              search: (prev) => ({
-                ...(prev as SearchRecord),
-                [pageKey]: undefined,
-                [globalFilterKey]: value ? value : undefined,
-              }),
-            });
-          }
+          if (value === globalFilter) return;
+
+          navigate({
+            search: (prev) => ({
+              ...(prev as SearchRecord),
+              [pageKey]: undefined,
+              [globalFilterKey]: value ? value : undefined,
+            }),
+          });
+        }
         : undefined,
     [globalFilterEnabled, globalFilter, trimGlobal, navigate, pageKey, globalFilterKey]
   );
@@ -185,8 +181,6 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
   const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> = useCallback(
     (updater) => {
       const next = typeof updater === 'function' ? updater(columnFilters) : updater;
-      setColumnFilters(next);
-
       const patch: Record<string, unknown> = {};
       for (const cfg of columnFiltersCfg) {
         const found = next.find((f) => f.id === cfg.columnId);
@@ -200,13 +194,18 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
         }
       }
 
-      navigate({
-        search: (prev) => ({
-          ...(prev as SearchRecord),
-          [pageKey]: undefined,
-          ...patch,
-        }),
-      });
+      const nextQuery: Record<string, string> = {};
+
+      for (const [key, value] of Object.entries({
+        ...searchRef.current,
+        [pageKey]: undefined,
+        ...patch,
+      })) {
+        if (value === undefined || value === null) continue;
+        nextQuery[key] = String(value);
+      }
+
+      navigate({ search: nextQuery });
     },
     [columnFilters, columnFiltersCfg, navigate, pageKey]
   );
@@ -215,17 +214,24 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     (pageCount: number, opts: { resetTo?: 'first' | 'last' } = { resetTo: 'first' }) => {
       const currentSearch = searchRef.current;
       const rawPage = currentSearch[pageKey];
-      const pageNum = typeof rawPage === 'string' 
-        ? parseInt(rawPage, 10) 
+      const pageNum = typeof rawPage === 'string'
+        ? parseInt(rawPage, 10)
         : (typeof rawPage === 'number' ? rawPage : defaultPage);
-      
+
       if (pageCount > 0 && pageNum > pageCount) {
+        const nextQuery: Record<string, string> = {};
+
+        for (const [key, value] of Object.entries({
+          ...currentSearch,
+          [pageKey]: opts.resetTo === 'last' ? pageCount : undefined,
+        })) {
+          if (value === undefined || value === null) continue;
+          nextQuery[key] = String(value);
+        }
+
         navigate({
           replace: true,
-          search: (prev) => ({
-            ...(prev as SearchRecord),
-            [pageKey]: opts.resetTo === 'last' ? pageCount : undefined,
-          }),
+          search: nextQuery,
         });
       }
     },
