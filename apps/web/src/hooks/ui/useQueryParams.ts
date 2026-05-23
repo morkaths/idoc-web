@@ -1,7 +1,6 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
-import type { FilterItem, FindParams } from '@/types';
-import { SortDirection, FilterOperator } from '@/types';
+import { FilterOperator, type FilterItem, type FindParams, type SortDirection } from '@/types';
 
 /**
  * Custom hook để quản lý URL query parameters theo chuẩn FindParams

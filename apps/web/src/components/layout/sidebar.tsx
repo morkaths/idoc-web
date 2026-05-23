@@ -24,8 +24,8 @@ export function AppSidebar({
 }) {
   const [isMounted, setIsMounted] = useState(false);
   const navItems = useNavData();
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
   if (!isMounted) return null;

@@ -556,6 +556,10 @@
       "similarReaders": {
         "title": "似た読者が好んだ本",
         "subtitle": "同じような好みを持つ他の読者が何を読んでいるか発見しましょう。"
+      },
+      "becauseYouRead": {
+        "title": "{category}を読んだあなたへ",
+        "subtitle": "最近読んだ本と同じジャンルの本です。"
       }
     },
     "authPrompt": {

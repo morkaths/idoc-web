@@ -754,6 +754,10 @@
       "similarReaders": {
         "title": "Độc giả giống bạn cũng thích",
         "subtitle": "Khám phá những gì người khác có cùng sở thích đang đọc."
+      },
+      "becauseYouRead": {
+        "title": "Gợi ý vì bạn đã đọc {category}",
+        "subtitle": "Những cuốn sách cùng thể loại với các tác phẩm bạn đã đọc gần đây."
       }
     },
     "authPrompt": {

@@ -7,6 +7,8 @@ import { type CategoryTranslationResponse, type CategoryResponse } from '@/types
 import { SortDirection, FilterOperator } from '@repo/types';
 import { useCategories } from '@/hooks/data/useCategory';
 import { useRecommendations } from '@/hooks/data/useRecommendation';
+import { useBorrowHistory } from '@/hooks/data/useBorrow';
+import { useBooksByIds } from '@/hooks/data/useBook';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { BookGridItems } from '@/components/book/book-grid-items';
 import { CategoryScroll } from './category-scroll';
@@ -24,6 +26,62 @@ export default function DiscoverView() {
   const { data: recommendedBooks, isLoading: recommendationsLoading } = useRecommendations(userId, {
     enabled: authStatus === 'authenticated' && !!userId,
   });
+
+  const { data: borrowHistoryData } = useBorrowHistory(
+    { limit: 10 },
+    { enabled: authStatus === 'authenticated' && !!userId }
+  );
+
+  const borrowedBookIds = React.useMemo(() => {
+    return borrowHistoryData?.data?.map((loan) => loan.book.id) ?? [];
+  }, [borrowHistoryData?.data]);
+
+  const { data: fullBorrowedBooks } = useBooksByIds(
+    borrowedBookIds,
+    borrowedBookIds.length > 0
+  );
+
+  const recommendedCategories = React.useMemo(() => {
+    if (!fullBorrowedBooks || fullBorrowedBooks.length === 0) return [];
+
+    const freq: Record<string, { count: number; category: CategoryResponse }> = {};
+
+    fullBorrowedBooks.forEach((book) => {
+      book.categories?.forEach((cat) => {
+        if (!freq[cat.id]) {
+          freq[cat.id] = { count: 0, category: cat };
+        }
+        const item = freq[cat.id];
+        if (item) {
+          item.count += 1;
+        }
+      });
+    });
+
+    const sorted = Object.values(freq).sort((a, b) => b.count - a.count);
+    return sorted.map((item) => item.category);
+  }, [fullBorrowedBooks]);
+
+  const resolvedRecommendedCategories = React.useMemo(() => {
+    const list = [...recommendedCategories];
+
+    if (list.length >= 2) {
+      return list.slice(0, 2);
+    }
+
+    const existingIds = new Set(list.map((c) => c.id));
+    const allCategories = categoriesResponse?.data ?? [];
+
+    for (const cat of allCategories) {
+      if (list.length >= 2) break;
+      if (!existingIds.has(cat.id)) {
+        list.push(cat);
+        existingIds.add(cat.id);
+      }
+    }
+
+    return list.slice(0, 2);
+  }, [recommendedCategories, categoriesResponse?.data]);
 
   const categories = React.useMemo(
     () => categoriesResponse?.data ?? [],
@@ -113,6 +171,44 @@ export default function DiscoverView() {
               />
             </section>
           ) : null}
+
+          {resolvedRecommendedCategories.map((category) => {
+            const translation =
+              category.translations?.find(
+                (tr: CategoryTranslationResponse) => tr.lang === locale
+              ) || category.translations?.[0];
+            const categoryName = translation?.name || category.slug || 'Unnamed';
+            const isHistoryBased = recommendedCategories.some((c) => c.id === category.id);
+
+            const title = isHistoryBased
+              ? t(keys.sections.becauseYouRead.title, { category: categoryName })
+              : categoryName;
+
+            const description = isHistoryBased
+              ? t(keys.sections.becauseYouRead.subtitle)
+              : translation?.description;
+
+            return (
+              <DiscoverBookSection
+                key={`rec-${category.id}`}
+                title={title}
+                description={description}
+                params={{
+                  limit: 8,
+                  filters: [
+                    {
+                      field: 'categories.id',
+                      value: [category.id],
+                      operator: FilterOperator.IN,
+                    },
+                  ],
+                  sorts: [{ field: 'totalBorrows', direction: SortDirection.DESC }],
+                }}
+                initialLimit={8}
+                loadMoreStep={8}
+              />
+            );
+          })}
 
           <DiscoverBookSection
             title={t(keys.sections.newArrivals.title)}

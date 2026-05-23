@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { LoanResponse, ReviewResponse } from '@/types';
 import { Star, Loader2 } from 'lucide-react';
-import { useReviews } from '@/hooks/data/useReview';
+import { useSearchReviews } from '@/hooks/data/useReview';
 import { KEYS, useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -42,7 +42,7 @@ export function ReviewMutateDialog({
 }: ReviewMutateDialogProps) {
   const { t, keys } = useLocale('library');
   const { data: session } = useSession();
-  const { data: reviewsData } = useReviews(
+  const { data: reviewsData } = useSearchReviews(
     {
       filters: [
         { field: 'user', value: session?.user?.id },

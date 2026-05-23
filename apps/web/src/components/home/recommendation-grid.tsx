@@ -1,31 +1,31 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { Heart, type LucideIcon } from 'lucide-react';
+import { Sparkles, type LucideIcon, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { useRecommendations } from '@/hooks/data/useRecommendation';
-import { useLocale } from '@/hooks/ui/useLocale';
+import { useLocale, KEYS } from '@/hooks/ui/useLocale';
 import type { RecommendedBookResponse } from '@/types';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@repo/ui/components/carousel';
 import { Skeleton } from '@repo/ui/components/skeleton';
 import { BookGridItem } from '@/components/book/book-grid-item';
+import { Button } from '@repo/ui/components/button';
+import { BookmarkProvider } from '@/components/book/bookmark-provider';
 
-export const RecommendationCarousel = ({
-  books: propBooks,
-  title,
-  subtitle,
-  icon: Icon = Heart,
-}: {
+interface RecommendationGridProps {
   books?: RecommendedBookResponse[];
   title?: string;
   subtitle?: string;
   icon?: LucideIcon;
-}) => {
+  limit?: number;
+}
+
+export const RecommendationGrid = ({
+  books: propBooks,
+  title,
+  subtitle,
+  icon: Icon = Sparkles,
+  limit = 10,
+}: RecommendationGridProps) => {
   const { t, keys } = useLocale('home');
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
@@ -37,10 +37,14 @@ export const RecommendationCarousel = ({
   const isLoading = !propBooks && queryLoading;
 
   // Don't render if not logged in or session is still loading (when propBooks is not provided)
-  if (!propBooks && (status === 'loading' || !userId)) return null;
+  if (!propBooks && (status === 'loading' || !userId)) {
+    return null;
+  }
 
   // Don't render if loaded but no recommendations yet (new user / no history)
-  if (!isLoading && (!books || books.length === 0)) return null;
+  if (!isLoading && (!books || books.length === 0)) {
+    return null;
+  }
 
   return (
     <section className='container py-12 pb-20'>
@@ -54,12 +58,18 @@ export const RecommendationCarousel = ({
           </div>
           <p className='text-muted-foreground'>{subtitle || t(keys.recommendations.subtitle)}</p>
         </div>
+        <Button variant='ghost' className='text-primary hover:bg-primary/5 font-semibold' asChild>
+          <Link href='/discover'>
+            {t(KEYS.common.actions.viewAll)}
+            <ArrowRight className='ml-2 h-4 w-4' />
+          </Link>
+        </Button>
       </div>
 
       {isLoading ? (
-        <div className='flex gap-4 overflow-hidden py-6'>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className='min-w-[200px] flex-1 space-y-3'>
+        <div className='grid grid-cols-2 items-start justify-items-center gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
+          {Array.from({ length: limit }).map((_, i) => (
+            <div key={i} className='w-full max-w-[200px] space-y-3'>
               <Skeleton className='h-[280px] w-full rounded-xl' />
               <Skeleton className='h-4 w-3/4' />
               <Skeleton className='h-4 w-1/2' />
@@ -67,30 +77,15 @@ export const RecommendationCarousel = ({
           ))}
         </div>
       ) : (
-        <div className='px-6'>
-          <Carousel
-            opts={{
-              align: 'start',
-              loop: true,
-            }}
-            className='w-full'
-          >
-            <CarouselContent className='-ml-6 py-6'>
-              {books!.slice(0, 10).map((book) => (
-                <CarouselItem
-                  key={book.id}
-                  className='basis-1/2 py-4 pl-6 sm:basis-1/3 md:basis-1/4 lg:basis-1/5'
-                >
-                  <BookGridItem book={book} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className='hidden md:block'>
-              <CarouselPrevious className='-left-6' />
-              <CarouselNext className='-right-6' />
-            </div>
-          </Carousel>
-        </div>
+        <BookmarkProvider>
+          <div className='grid grid-cols-2 items-start justify-items-center gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
+            {books!.slice(0, limit).map((book) => (
+              <div key={book.id} className='w-full max-w-[200px]'>
+                <BookGridItem book={book} />
+              </div>
+            ))}
+          </div>
+        </BookmarkProvider>
       )}
     </section>
   );

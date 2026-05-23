@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Star, Trophy } from 'lucide-react';
 import { useBooks } from '@/hooks/data/useBook';
 import { useLocale } from '@/hooks/ui/useLocale';
+import type { BookResponse } from '@/types';
 import { Badge } from '@repo/ui/components/badge';
 import BookCover3d from '@repo/ui/components/book-cover-3d';
 import { Button } from '@repo/ui/components/button';
@@ -20,10 +21,13 @@ import {
 } from '@repo/ui/components/carousel';
 import { Skeleton } from '@repo/ui/components/skeleton';
 
-export const BannerCarousel = () => {
+export const BannerCarousel = ({ books: propBooks }: { books?: BookResponse[] }) => {
   const { t, keys } = useLocale('home');
-  const { data: booksResponse, isLoading } = useBooks();
-  const books = booksResponse?.data;
+  const { data: booksResponse, isLoading: queryLoading } = useBooks(undefined, {
+    enabled: !propBooks,
+  });
+  const books = propBooks ?? booksResponse?.data;
+  const isLoading = !propBooks && queryLoading;
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
 

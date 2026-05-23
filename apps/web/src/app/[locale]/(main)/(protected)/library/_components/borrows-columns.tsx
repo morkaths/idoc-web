@@ -1,5 +1,4 @@
-import type { LoanResponse } from '@/types';
-import { BorrowStatus } from '@/types';
+import { BorrowStatus, type LoanResponse } from '@/types';
 import { type ColumnDef } from '@tanstack/react-table';
 import { ImageOff } from 'lucide-react';
 import { Badge } from '@repo/ui/components/badge';

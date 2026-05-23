@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { FileResponse } from '@/types';
 import { FileArchive, FileCode, FilePlay, FileText, Sheet, Trash2, Loader2 } from 'lucide-react';
 import { FileApi } from '@/apis/file.api';
+import { toast } from 'sonner';
 
 export function FileItem({
   file,
@@ -50,7 +51,8 @@ export function FileItem({
       document.body.removeChild(link);
 
       URL.revokeObjectURL(downloadUrl);
-    } catch (error) {
+      toast.error('Tải tập tin thất bại');
+      // eslint-disable-next-line no-console
       console.error('Download failed:', error);
     } finally {
       setIsDownloading(false);

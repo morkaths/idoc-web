@@ -789,6 +789,10 @@
       "similarReaders": {
         "title": "Readers Like You Enjoyed",
         "subtitle": "Discover what others with similar tastes are reading."
+      },
+      "becauseYouRead": {
+        "title": "Because you read {category}",
+        "subtitle": "Books matching the genres of your recently read titles."
       }
     },
     "authPrompt": {

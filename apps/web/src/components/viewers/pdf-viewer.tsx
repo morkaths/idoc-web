@@ -1,18 +1,14 @@
 'use client';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Worker, Viewer, RotateDirection } from '@react-pdf-viewer/core';
-import '@react-pdf-viewer/core/lib/styles/index.css';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import type { RenderDownloadProps } from '@react-pdf-viewer/get-file';
 import type { RenderGoToPageProps } from '@react-pdf-viewer/page-navigation';
 import type { RenderPrintProps } from '@react-pdf-viewer/print';
 import type { RenderShowPropertiesProps } from '@react-pdf-viewer/properties';
 import type { RenderRotateProps } from '@react-pdf-viewer/rotate';
 import type { RenderShowSearchPopoverProps } from '@react-pdf-viewer/search';
-import '@react-pdf-viewer/search/lib/styles/index.css';
-import { SelectionMode } from '@react-pdf-viewer/selection-mode';
-import type { RenderSwitchSelectionModeProps } from '@react-pdf-viewer/selection-mode';
+import { SelectionMode, type RenderSwitchSelectionModeProps } from '@react-pdf-viewer/selection-mode';
 import type { RenderZoomInProps, RenderZoomOutProps } from '@react-pdf-viewer/zoom';
 import {
   Maximize,

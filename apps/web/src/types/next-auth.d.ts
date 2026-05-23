@@ -1,5 +1,5 @@
 import 'next-auth/jwt';
-import { type UserResponse } from '@repo/types';
+import { type UserResponse, type BookmarkResponse } from '@repo/types';
 import 'next-auth';
 
 declare module 'next-auth' {
@@ -9,7 +9,7 @@ declare module 'next-auth' {
     accessToken?: string;
     accessTokenExpiresIn?: number;
     emailVerified: Date | null;
-    bookmarks?: any[];
+    bookmarks?: BookmarkResponse[];
   }
 
   interface Session {

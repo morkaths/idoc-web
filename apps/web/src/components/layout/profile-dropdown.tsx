@@ -29,8 +29,8 @@ export function ProfileDropdown() {
   const [open, setOpen] = useDialogState();
   const [isMounted, setIsMounted] = useState(false);
   const { t, keys } = useLocale('navigation');
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
