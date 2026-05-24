@@ -76,6 +76,7 @@ export function BooksTable() {
     }));
   }, [categoriesData]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: books,
     columns,
@@ -106,9 +107,10 @@ export function BooksTable() {
     setRowSelection({});
   }, [globalFilter, columnFilters]);
 
+  const pageCount = table.getPageCount();
   useEffect(() => {
-    ensurePageInRange(table.getPageCount());
-  }, [table.getPageCount(), ensurePageInRange]);
+    ensurePageInRange(pageCount);
+  }, [pageCount, ensurePageInRange]);
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>

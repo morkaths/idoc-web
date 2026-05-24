@@ -74,6 +74,7 @@ export function TasksTable({ data }: DataTableProps) {
         ? paginationTyped.pageIndex + 1
         : 1;
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,

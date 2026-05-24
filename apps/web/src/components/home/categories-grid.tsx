@@ -35,9 +35,9 @@ export const CategoriesGrid = () => {
   };
 
   return (
-    <section className='container py-12'>
-      <div className='mb-8 flex items-end justify-between'>
-        <div className='flex flex-col space-y-2'>
+    <section className='container py-5 md:py-10'>
+      <div className='mb-6 flex items-end justify-between gap-4'>
+        <div className='flex flex-col space-y-1.5'>
           <div className='flex items-center gap-2'>
             <LayoutGrid className='text-primary h-5 w-5' />
             <h2 className='from-primary to-primary/60 bg-gradient-to-br bg-clip-text text-3xl font-bold tracking-tight text-transparent'>
@@ -55,16 +55,16 @@ export const CategoriesGrid = () => {
       </div>
 
       {isLoading ? (
-        <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
+        <div className='grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4'>
           {[1, 2, 3, 4, 5].map((i) => (
             <Skeleton
               key={i}
-              className={cn('h-40', i === 1 ? 'h-auto md:col-span-2 md:row-span-2' : '')}
+              className={cn('h-36 rounded-md md:h-40', i === 1 ? 'h-auto md:col-span-2 md:row-span-2' : '')}
             />
           ))}
         </div>
       ) : items.length > 0 ? (
-        <div className='grid auto-rows-[140px] grid-cols-2 gap-4 md:grid-cols-4 md:gap-6'>
+        <div className='grid auto-rows-[128px] grid-cols-2 gap-3 md:grid-cols-4 md:gap-4'>
           {items.map((category: CategoryResponse, index: number) => {
             const { translations, slug, id } = category;
             const translation =
@@ -82,7 +82,7 @@ export const CategoriesGrid = () => {
                 key={id}
                 href={`/catalog?category=${id}`}
                 className={cn(
-                  'group relative overflow-hidden border bg-gradient-to-br transition-all duration-300',
+                  'group relative overflow-hidden rounded-md border bg-gradient-to-br transition-all duration-300',
                   'hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl',
                   colorClass,
                   spanClass
@@ -90,13 +90,13 @@ export const CategoriesGrid = () => {
               >
                 <div className='bg-background/40 absolute inset-0 backdrop-blur-[2px] transition-colors group-hover:bg-transparent' />
 
-                <div className='relative z-10 flex h-full flex-col justify-between p-6 md:p-8'>
+                <div className='relative z-10 flex h-full flex-col justify-between p-4 md:p-5'>
                   <div className='space-y-1'>
-                    <h3 className='text-foreground group-hover:text-primary flex items-center gap-3 text-xl font-bold tracking-tight transition-colors md:text-2xl'>
-                      <Icon className='h-6 w-6 shrink-0' />
+                    <h3 className='text-foreground group-hover:text-primary flex items-center gap-2 text-base font-bold tracking-tight transition-colors md:text-xl'>
+                      <Icon className='h-5 w-5 shrink-0 md:h-6 md:w-6' />
                       {name}
                     </h3>
-                    <p className='text-muted-foreground/80 line-clamp-2 translate-y-2 text-sm font-medium opacity-0 transition-opacity duration-300 group-hover:translate-y-0 group-hover:opacity-100'>
+                    <p className='text-muted-foreground/80 line-clamp-2 translate-y-2 text-xs leading-relaxed font-medium opacity-0 transition-opacity duration-300 group-hover:translate-y-0 group-hover:opacity-100 md:text-sm'>
                       {description || t(keys.categories.description)}
                     </p>
                   </div>
@@ -108,7 +108,7 @@ export const CategoriesGrid = () => {
           })}
         </div>
       ) : (
-        <div className='flex h-[200px] items-center justify-center border-2 border-dashed'>
+        <div className='flex h-[160px] items-center justify-center border-2 border-dashed'>
           <p className='text-muted-foreground'>{t(keys.categories.empty)}</p>
         </div>
       )}

@@ -27,6 +27,7 @@ import { Route as ClerkauthRouteRouteImport } from './routes/clerk/(auth)/route'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
+import { Route as AuthenticatedStorageIndexRouteImport } from './routes/_authenticated/storage/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedRecommendationsIndexRouteImport } from './routes/_authenticated/recommendations/index'
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
@@ -133,6 +134,12 @@ const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
   path: '/tasks/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedStorageIndexRoute =
+  AuthenticatedStorageIndexRouteImport.update({
+    id: '/storage/',
+    path: '/storage/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsIndexRoute =
   AuthenticatedSettingsIndexRouteImport.update({
     id: '/',
@@ -262,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/recommendations': typeof AuthenticatedRecommendationsIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/storage': typeof AuthenticatedStorageIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
 }
@@ -295,6 +303,7 @@ export interface FileRoutesByTo {
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/recommendations': typeof AuthenticatedRecommendationsIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/storage': typeof AuthenticatedStorageIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
 }
@@ -333,6 +342,7 @@ export interface FileRoutesById {
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
   '/_authenticated/recommendations/': typeof AuthenticatedRecommendationsIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/_authenticated/storage/': typeof AuthenticatedStorageIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
 }
@@ -369,6 +379,7 @@ export interface FileRouteTypes {
     | '/help-center'
     | '/recommendations'
     | '/settings/'
+    | '/storage'
     | '/tasks'
     | '/users'
   fileRoutesByTo: FileRoutesByTo
@@ -402,6 +413,7 @@ export interface FileRouteTypes {
     | '/help-center'
     | '/recommendations'
     | '/settings'
+    | '/storage'
     | '/tasks'
     | '/users'
   id:
@@ -439,6 +451,7 @@ export interface FileRouteTypes {
     | '/_authenticated/help-center/'
     | '/_authenticated/recommendations/'
     | '/_authenticated/settings/'
+    | '/_authenticated/storage/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
   fileRoutesById: FileRoutesById
@@ -584,6 +597,13 @@ declare module '@tanstack/react-router' {
       path: '/tasks'
       fullPath: '/tasks'
       preLoaderRoute: typeof AuthenticatedTasksIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/storage/': {
+      id: '/_authenticated/storage/'
+      path: '/storage'
+      fullPath: '/storage'
+      preLoaderRoute: typeof AuthenticatedStorageIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings/': {
@@ -743,6 +763,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
   AuthenticatedRecommendationsIndexRoute: typeof AuthenticatedRecommendationsIndexRoute
+  AuthenticatedStorageIndexRoute: typeof AuthenticatedStorageIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
@@ -760,6 +781,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
   AuthenticatedRecommendationsIndexRoute:
     AuthenticatedRecommendationsIndexRoute,
+  AuthenticatedStorageIndexRoute: AuthenticatedStorageIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
 }

@@ -8,9 +8,11 @@ const booksSearchSchema = z.object({
   query: z.string().optional().catch(''),
   category: z
     .preprocess((val) => (Array.isArray(val) ? val : val ? [val] : []), z.array(z.string()))
+    .optional()
     .catch([]),
   language: z
     .preprocess((val) => (Array.isArray(val) ? val : val ? [val] : []), z.array(z.string()))
+    .optional()
     .catch([]),
 });
 

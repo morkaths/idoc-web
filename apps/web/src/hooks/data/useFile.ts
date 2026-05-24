@@ -77,6 +77,37 @@ export const useUploadFile = <TContext = unknown>(
 };
 
 /**
+ * Resolves mime type from file name if file type is empty
+ * @param fileName File name
+ */
+const getMimeType = (fileName: string): string => {
+  const ext = fileName.split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'epub':
+      return 'application/epub+zip';
+    case 'pdf':
+      return 'application/pdf';
+    case 'mobi':
+      return 'application/x-mobipocket-ebook';
+    case 'azw3':
+      return 'application/vnd.amazon.mobi8-ebook';
+    case 'txt':
+      return 'text/plain';
+    case 'png':
+      return 'image/png';
+    case 'jpg':
+    case 'jpeg':
+      return 'image/jpeg';
+    case 'gif':
+      return 'image/gif';
+    case 'svg':
+      return 'image/svg+xml';
+    default:
+      return 'application/octet-stream';
+  }
+};
+
+/**
  * Hook to upload a file using presigned URL
  * @param options Mutation options
  */
@@ -85,9 +116,10 @@ export const useUploadPresignedFile = <TContext = unknown>(
 ) => {
   return useCreateMutation<{ file: File; folder?: string }, FileResponse, TContext>(
     async ({ file, folder }) => {
+      const contentType = file.type || getMimeType(file.name);
       const result = await FileApi.uploadPresigned({
         fileName: file.name,
-        contentType: file.type,
+        contentType,
         folder,
       });
 
@@ -95,7 +127,7 @@ export const useUploadPresignedFile = <TContext = unknown>(
         throw new Error(result.message || 'Presigned upload failed');
       }
 
-      const success = await FileApi.uploadToPresignedUrl(result.data.uploadUrl, file);
+      const success = await FileApi.uploadToPresignedUrl(result.data.uploadUrl, file, contentType);
       if (!success) throw new Error('Upload to storage failed');
 
       return await FileApi.completePresignedUpload(result.data.uploadId);

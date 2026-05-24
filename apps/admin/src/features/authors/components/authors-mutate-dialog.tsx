@@ -71,7 +71,8 @@ export function AuthorsMutateDialog({
                 if (avatarFile) {
                   toast.loading('Uploading avatar...', { id: 'upload-image' });
                   try {
-                    avatar = await uploadImage.mutateAsync({ file: avatarFile, folder: 'authors' });
+                    const uploadResult = await uploadImage.mutateAsync({ file: avatarFile, folder: 'authors' });
+                    avatar = uploadResult.data || '';
                     toast.success('Avatar uploaded!', { id: 'upload-image' });
                   } catch (error) {
                     handleServerError(error, {

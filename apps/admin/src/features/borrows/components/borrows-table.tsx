@@ -57,11 +57,11 @@ export function BorrowsTable() {
     [page, limit, globalFilter, sorting, columnFilters]
   );
 
-  // fetch server-side page
   const { data: borrowsData, isFetching: isBorrowsFetching } = useBorrows(borrowParams);
   const borrows = borrowsData?.data ?? [];
   const borrowPagination = borrowsData?.pagination;
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: borrows,
     columns,
@@ -92,10 +92,10 @@ export function BorrowsTable() {
     setRowSelection({});
   }, [globalFilter, columnFilters]);
 
+  const pageCount = table.getPageCount();
   useEffect(() => {
-    ensurePageInRange(table.getPageCount());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [table.getPageCount(), ensurePageInRange]);
+    ensurePageInRange(pageCount);
+  }, [pageCount, ensurePageInRange]);
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>

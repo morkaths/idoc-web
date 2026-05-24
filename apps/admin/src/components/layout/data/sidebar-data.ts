@@ -23,6 +23,7 @@ import {
   UserPen,
   Bookmark,
   Sparkles,
+  Database,
 } from 'lucide-react';
 import { ClerkLogo } from '@/assets/clerk-logo';
 import { Logo } from '../logo';
@@ -112,6 +113,11 @@ export const sidebarData: SidebarData = {
           title: 'Recommendations',
           url: '/recommendations',
           icon: Sparkles,
+        },
+        {
+          title: 'Storage',
+          url: '/storage',
+          icon: Database,
         },
         {
           title: 'Apps',

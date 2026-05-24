@@ -3,11 +3,10 @@ import { ApiEndpoint } from '@/config/api';
 import type {
   FileResponse,
   FileRequest,
-  FindParams,
   PresignedUploadResponse,
   PresignedUploadRequest,
+  StorageUsageResponse,
   ApiResponse,
-  PageResponse,
 } from '@/types';
 import { ApiClient } from './config';
 import { apiFactory } from './factory';
@@ -20,13 +19,6 @@ const factory = apiFactory<FileResponse, FileRequest>(ApiEndpoint.endpoints.file
 
 export const FileApi = {
   ...factory,
-
-  findByUser: async (params?: FindParams): Promise<ApiResponse<PageResponse<FileResponse>>> => {
-    return ApiClient.get<PageResponse<FileResponse>>(ApiEndpoint.endpoints.files.findByUser(), {
-      security: 'private',
-      params,
-    });
-  },
 
   upload: async (file: File, folder: string = 'general'): Promise<ApiResponse<FileResponse>> => {
     const formData = new FormData();
@@ -50,12 +42,12 @@ export const FileApi = {
     });
   },
 
-  uploadToPresignedUrl: async (url: string, file: File): Promise<boolean> => {
+  uploadToPresignedUrl: async (url: string, file: File, contentType?: string): Promise<boolean> => {
     try {
       const cleanAxios = axios.create();
       const res = await cleanAxios.put(url, file, {
         headers: {
-          'Content-Type': file.type,
+          'Content-Type': contentType || file.type || 'application/octet-stream',
         },
       });
       return res.status >= 200 && res.status < 300;
@@ -73,10 +65,17 @@ export const FileApi = {
     );
   },
 
-  download: async (id: string): Promise<ApiResponse<Blob>> => {
+  download: async (id: string): Promise<Blob> => {
     return ApiClient.get<Blob>(ApiEndpoint.endpoints.files.download(id), {
       security: 'private',
       responseType: 'blob',
-    });
+    }) as unknown as Promise<Blob>;
+  },
+
+  getStorageUsage: async (): Promise<ApiResponse<StorageUsageResponse>> => {
+    return ApiClient.get<StorageUsageResponse>(
+      ApiEndpoint.endpoints.files.storageUsage(),
+      { security: 'private' }
+    );
   },
 };

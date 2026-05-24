@@ -1,7 +1,7 @@
 import { AgentEndpoint } from '@/config/api';
 import {
   type ApiResponse,
-  RecommendationStrategy,
+  TrainingTarget,
   type RecommendationSyncResponse,
   type RecommendationTrainResponse,
   type RecommendationMetricsResponse,
@@ -20,11 +20,7 @@ export const RecommendationApi = {
   removeBook: (bookId: string): Promise<ApiResponse<boolean>> =>
     AgentClient.delete<boolean>(AgentEndpoint.endpoints.recommendations.removeBook(bookId)),
 
-  train: (strategy?: RecommendationStrategy): Promise<ApiResponse<RecommendationTrainResponse>> => {
-    let target = 'all';
-    if (strategy === RecommendationStrategy.CBF || strategy === RecommendationStrategy.IBCF) {
-      target = strategy;
-    }
+  train: (target: TrainingTarget = TrainingTarget.ALL): Promise<ApiResponse<RecommendationTrainResponse>> => {
     return AgentClient.post<RecommendationTrainResponse>(
       AgentEndpoint.endpoints.recommendations.train(),
       {},

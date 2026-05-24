@@ -12,6 +12,7 @@ const borrowsSearchSchema = z.object({
       (val) => (Array.isArray(val) ? val : val ? [val] : []),
       z.array(z.nativeEnum(BorrowStatus))
     )
+    .optional()
     .catch([]),
 });
 

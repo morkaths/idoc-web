@@ -1,8 +1,12 @@
 'use client';
 
+import * as React from 'react';
 import { useSession } from 'next-auth/react';
-import { RecommendationStrategy } from '@repo/types';
+import { RecommendationStrategy, FilterOperator, SortDirection } from '@repo/types';
 import { useFeed } from '@/hooks/data/useRecommendation';
+import { useBorrowHistory } from '@/hooks/data/useBorrow';
+import { useBooksByIds, useSearchBooks } from '@/hooks/data/useBook';
+import { useCategories } from '@/hooks/data/useCategory';
 import { BannerCarousel } from '@/components/home/banner-carousel';
 import { RecommendationCarousel } from '@/components/home/recommendation-carousel';
 import { RecommendationGrid } from '@/components/home/recommendation-grid';
@@ -12,8 +16,10 @@ import { FeaturedAuthors } from '@/components/home/featured-authors';
 import { StatsSection } from '@/components/home/stats-section';
 import { CTASection } from '@/components/home/cta-section';
 import { Skeleton } from '@repo/ui/components/skeleton';
-import { useLocale, KEYS } from '@/hooks/ui/useLocale';
-import { Sparkles, Users } from 'lucide-react';
+import { useLocale } from '@/hooks/ui/useLocale';
+import { useLocale as useLocaleIntl } from 'next-intl';
+import { BookOpen } from 'lucide-react';
+import type { CategoryResponse, CategoryTranslationResponse } from '@/types';
 
 /**
  * Reusable skeleton loader for a book carousel section.
@@ -86,7 +92,8 @@ const HomeSkeleton = () => {
 
 export function HomeView() {
   const { data: session, status } = useSession();
-  const { t } = useLocale('home');
+  const { t: tDiscover, keys: discoverKeys } = useLocale('discover');
+  const locale = useLocaleIntl();
   const userId = session?.user?.id || 'anonymous';
 
   // Construct request object once authentication state is resolved
@@ -105,33 +112,172 @@ export function HomeView() {
         strategy: RecommendationStrategy.HYBRID,
         limit: 10,
       },
-      {
-        id: 'cbf',
-        title: 'Based on Your Interests',
-        strategy: RecommendationStrategy.CBF,
-        limit: 10,
-      },
-      {
-        id: 'ibcf',
-        title: 'Readers Like You Enjoyed',
-        strategy: RecommendationStrategy.IBCF,
-        limit: 10,
-      },
     ],
   } : undefined;
 
-  const { data: feedData, isLoading } = useFeed(feedRequest, {
+  const { data: feedData, isLoading: feedLoading } = useFeed(feedRequest, {
     enabled: status !== 'loading',
   });
 
-  if (isLoading || status === 'loading') {
+  // Fetch borrow history if user is authenticated
+  const { data: borrowHistoryData, isLoading: borrowHistoryLoading } = useBorrowHistory(
+    { limit: 10 },
+    { enabled: status === 'authenticated' && userId !== 'anonymous' }
+  );
+
+  const borrowedBookIds = React.useMemo(() => {
+    return borrowHistoryData?.data?.map((loan) => loan.book.id) ?? [];
+  }, [borrowHistoryData?.data]);
+
+  // Fetch full books to get categories
+  const { data: fullBorrowedBooks, isLoading: isBooksLoading } = useBooksByIds(
+    borrowedBookIds,
+    status === 'authenticated' && borrowedBookIds.length > 0
+  );
+
+  // Fetch all categories as fallback
+  const { data: categoriesResponse, isLoading: categoriesLoading } = useCategories({
+    limit: 20,
+  });
+
+  // Calculate recommended categories based on borrow history frequency
+  const recommendedCategories = React.useMemo(() => {
+    if (!fullBorrowedBooks || fullBorrowedBooks.length === 0) return [];
+
+    const freq: Record<string, { count: number; category: CategoryResponse }> = {};
+
+    fullBorrowedBooks.forEach((book) => {
+      book.categories?.forEach((cat) => {
+        if (!freq[cat.id]) {
+          freq[cat.id] = { count: 0, category: cat };
+        }
+        const item = freq[cat.id];
+        if (item) {
+          item.count += 1;
+        }
+      });
+    });
+
+    const sorted = Object.values(freq).sort((a, b) => b.count - a.count);
+    return sorted.map((item) => item.category);
+  }, [fullBorrowedBooks]);
+
+  // Resolve to exactly 2 categories (using fallbacks if needed)
+  const resolvedRecommendedCategories = React.useMemo(() => {
+    const list = [...recommendedCategories];
+
+    if (list.length >= 2) {
+      return list.slice(0, 2);
+    }
+
+    const existingIds = new Set(list.map((c) => c.id));
+    const allCategories = categoriesResponse?.data ?? [];
+
+    for (const cat of allCategories) {
+      if (list.length >= 2) break;
+      if (!existingIds.has(cat.id)) {
+        list.push(cat);
+        existingIds.add(cat.id);
+      }
+    }
+
+    return list.slice(0, 2);
+  }, [recommendedCategories, categoriesResponse?.data]);
+
+  // Query books for the resolved categories
+  const cat1 = resolvedRecommendedCategories[0];
+  const cat2 = resolvedRecommendedCategories[1];
+
+  const { data: cat1Data, isLoading: isCat1Loading } = useSearchBooks(
+    {
+      limit: 10,
+      filters: cat1
+        ? [
+            {
+              field: 'categories.id',
+              value: [cat1.id],
+              operator: FilterOperator.IN,
+            },
+          ]
+        : [],
+      sorts: [{ field: 'totalBorrows', direction: SortDirection.DESC }],
+    },
+    {
+      enabled: !!cat1,
+    }
+  );
+
+  const { data: cat2Data, isLoading: isCat2Loading } = useSearchBooks(
+    {
+      limit: 10,
+      filters: cat2
+        ? [
+            {
+              field: 'categories.id',
+              value: [cat2.id],
+              operator: FilterOperator.IN,
+            },
+          ]
+        : [],
+      sorts: [{ field: 'totalBorrows', direction: SortDirection.DESC }],
+    },
+    {
+      enabled: !!cat2,
+    }
+  );
+
+  const cat1Books = React.useMemo(() => {
+    return (cat1Data?.data ?? []).map((book) => ({
+      ...book,
+      strategy: RecommendationStrategy.HYBRID,
+    }));
+  }, [cat1Data?.data]);
+
+  const cat2Books = React.useMemo(() => {
+    return (cat2Data?.data ?? []).map((book) => ({
+      ...book,
+      strategy: RecommendationStrategy.HYBRID,
+    }));
+  }, [cat2Data?.data]);
+
+  // Determine title and subtitle based on whether it is history-based or fallback
+  const getCategoryTitleAndSubtitle = React.useCallback(
+    (category: CategoryResponse) => {
+      const translation =
+        category.translations?.find(
+          (tr: CategoryTranslationResponse) => tr.lang === locale
+        ) || category.translations?.[0];
+      const categoryName = translation?.name || category.slug || 'Unnamed';
+      const isHistoryBased = recommendedCategories.some((c) => c.id === category.id);
+
+      const title = isHistoryBased
+        ? tDiscover(discoverKeys.sections.becauseYouRead.title, { category: categoryName })
+        : categoryName;
+
+      const subtitle = isHistoryBased
+        ? tDiscover(discoverKeys.sections.becauseYouRead.subtitle)
+        : translation?.description;
+
+      return { title, subtitle };
+    },
+    [locale, recommendedCategories, tDiscover, discoverKeys.sections.becauseYouRead]
+  );
+
+  const isFeedLoading = feedLoading || status === 'loading';
+  const isBorrowHistoryLoading = borrowHistoryLoading || isBooksLoading;
+  const isCategoriesLoading = categoriesLoading || isCat1Loading || isCat2Loading;
+
+  const pageLoading =
+    isFeedLoading ||
+    (status === 'authenticated' && isBorrowHistoryLoading) ||
+    isCategoriesLoading;
+
+  if (pageLoading) {
     return <HomeSkeleton />;
   }
 
   const bannerBooks = feedData?.feedLayout?.find((s) => s.id === 'banner')?.content || [];
   const personalBooks = feedData?.feedLayout?.find((s) => s.id === 'personal')?.content || [];
-  const cbfBooks = feedData?.feedLayout?.find((s) => s.id === 'cbf')?.content || [];
-  const ibcfBooks = feedData?.feedLayout?.find((s) => s.id === 'ibcf')?.content || [];
 
   return (
     <div className='flex flex-col pb-20'>
@@ -141,21 +287,21 @@ export function HomeView() {
           <RecommendationCarousel books={personalBooks} />
         )}
 
-        {cbfBooks.length > 0 && (
+        {cat1 && cat1Books.length > 0 && (
           <RecommendationGrid
-            books={cbfBooks}
-            title={t(KEYS.discover.sections.interests.title)}
-            subtitle={t(KEYS.discover.sections.interests.subtitle)}
-            icon={Sparkles}
+            books={cat1Books}
+            title={getCategoryTitleAndSubtitle(cat1).title}
+            subtitle={getCategoryTitleAndSubtitle(cat1).subtitle}
+            icon={BookOpen}
           />
         )}
 
-        {ibcfBooks.length > 0 && (
+        {cat2 && cat2Books.length > 0 && (
           <RecommendationGrid
-            books={ibcfBooks}
-            title={t(KEYS.discover.sections.similarReaders.title)}
-            subtitle={t(KEYS.discover.sections.similarReaders.subtitle)}
-            icon={Users}
+            books={cat2Books}
+            title={getCategoryTitleAndSubtitle(cat2).title}
+            subtitle={getCategoryTitleAndSubtitle(cat2).subtitle}
+            icon={BookOpen}
           />
         )}
 

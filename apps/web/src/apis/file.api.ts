@@ -47,12 +47,12 @@ export const FileApi = {
     });
   },
 
-  uploadToPresignedUrl: async (url: string, file: File): Promise<boolean> => {
+  uploadToPresignedUrl: async (url: string, file: File, contentType?: string): Promise<boolean> => {
     try {
       const cleanAxios = axios.create();
       const res = await cleanAxios.put(url, file, {
         headers: {
-          'Content-Type': file.type,
+          'Content-Type': contentType || file.type || 'application/octet-stream',
         },
       });
       return res.status >= 200 && res.status < 300;

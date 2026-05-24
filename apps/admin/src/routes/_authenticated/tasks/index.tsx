@@ -11,12 +11,14 @@ const taskSearchSchema = z.object({
       (val) => (Array.isArray(val) ? val : val ? [val] : []),
       z.array(z.enum(statuses.map((status) => status.value)))
     )
+    .optional()
     .catch([]),
   priority: z
     .preprocess(
       (val) => (Array.isArray(val) ? val : val ? [val] : []),
       z.array(z.enum(priorities.map((priority) => priority.value)))
     )
+    .optional()
     .catch([]),
   filter: z.string().optional().catch(''),
 });

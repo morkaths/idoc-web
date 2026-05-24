@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Resolver, useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   BorrowRequestSchema,
@@ -99,7 +99,11 @@ export function BorrowsMutateDialog({
                       value={field.value}
                       onChange={field.onChange}
                       error={fieldState.error?.message}
-                      initialUser={initialData?.user}
+                      initialUser={initialData?.user ? {
+                        id: initialData.user.id,
+                        username: initialData.user.username,
+                        email: initialData.user.email || '',
+                      } : undefined}
                     />
                   </div>
                 )}

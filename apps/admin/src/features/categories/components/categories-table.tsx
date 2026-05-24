@@ -65,6 +65,7 @@ export function CategoriesTable() {
   const categories = categoriesData?.data ?? [];
   const categoryPagination = categoriesData?.pagination;
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: categories,
     columns,

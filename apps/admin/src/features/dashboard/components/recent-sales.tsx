@@ -5,7 +5,7 @@ export function RecentSales() {
     <div className='space-y-8'>
       <div className='flex items-center gap-4'>
         <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/01.png' alt='Avatar' />
+          <AvatarImage src='https://api.dicebear.com/7.x/adventurer/svg?seed=Olivia' alt='Avatar' />
           <AvatarFallback>OM</AvatarFallback>
         </Avatar>
         <div className='flex flex-1 flex-wrap items-center justify-between'>
@@ -18,7 +18,7 @@ export function RecentSales() {
       </div>
       <div className='flex items-center gap-4'>
         <Avatar className='flex h-9 w-9 items-center justify-center space-y-0 border'>
-          <AvatarImage src='/avatars/02.png' alt='Avatar' />
+          <AvatarImage src='https://api.dicebear.com/7.x/adventurer/svg?seed=Jackson' alt='Avatar' />
           <AvatarFallback>JL</AvatarFallback>
         </Avatar>
         <div className='flex flex-1 flex-wrap items-center justify-between'>
@@ -31,7 +31,7 @@ export function RecentSales() {
       </div>
       <div className='flex items-center gap-4'>
         <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/03.png' alt='Avatar' />
+          <AvatarImage src='https://api.dicebear.com/7.x/adventurer/svg?seed=Isabella' alt='Avatar' />
           <AvatarFallback>IN</AvatarFallback>
         </Avatar>
         <div className='flex flex-1 flex-wrap items-center justify-between'>
@@ -45,7 +45,7 @@ export function RecentSales() {
 
       <div className='flex items-center gap-4'>
         <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/04.png' alt='Avatar' />
+          <AvatarImage src='https://api.dicebear.com/7.x/adventurer/svg?seed=William' alt='Avatar' />
           <AvatarFallback>WK</AvatarFallback>
         </Avatar>
         <div className='flex flex-1 flex-wrap items-center justify-between'>
@@ -59,7 +59,7 @@ export function RecentSales() {
 
       <div className='flex items-center gap-4'>
         <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/05.png' alt='Avatar' />
+          <AvatarImage src='https://api.dicebear.com/7.x/adventurer/svg?seed=Sofia' alt='Avatar' />
           <AvatarFallback>SD</AvatarFallback>
         </Avatar>
         <div className='flex flex-1 flex-wrap items-center justify-between'>

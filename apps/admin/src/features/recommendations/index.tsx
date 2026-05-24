@@ -1,24 +1,14 @@
 import { useState } from 'react';
-import { RecommendationStrategy } from '@repo/types';
-import { Sparkles, RefreshCw, Play, BarChart3, TrendingUp, Target, Zap } from 'lucide-react';
-import { Loader2 } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from 'recharts';
+import { RecommendationStrategy, type TrainingTarget } from '@repo/types';
+import { Sparkles, BarChart3, TrendingUp, Target, Zap, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { type DateRange } from 'react-day-picker';
 import {
   useRecommendationSync,
   useRecommendationTrain,
   useRecommendationMetrics,
 } from '@/hooks/data/useRecommendation';
-import { Button } from '@repo/ui/components/button';
 import {
   Card,
   CardContent,
@@ -33,13 +23,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/select';
+import { DateRangePicker } from '@/components/form/date-range-picker';
+import { RecommendationHeader } from './components/recommendation-header';
+import { MetricCard } from './components/metric-card';
+import { SparsityAnalysis } from './components/sparsity-analysis';
+import { RecommendationSyncDialog } from './components/recommendation-sync-dialog';
+import { RecommendationTrainDialog } from './components/recommendation-train-dialog';
 
 export function Recommendations() {
   const [strategy, setStrategy] = useState<RecommendationStrategy>(RecommendationStrategy.HYBRID);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [isSyncOpen, setIsSyncOpen] = useState(false);
+  const [isTrainOpen, setIsTrainOpen] = useState(false);
+
+  const startDateStr = dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined;
+  const endDateStr = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined;
 
   const syncMutation = useRecommendationSync();
   const trainMutation = useRecommendationTrain();
-  const { data: metricsData, isLoading: isEvalLoading } = useRecommendationMetrics();
+  const { data: metricsData, isLoading: isEvalLoading } = useRecommendationMetrics(
+    startDateStr,
+    endDateStr
+  );
 
   const handleSync = () => {
     syncMutation.mutate(undefined, {
@@ -52,10 +57,10 @@ export function Recommendations() {
     });
   };
 
-  const handleTrain = () => {
-    trainMutation.mutate(strategy, {
+  const handleTrain = (target: TrainingTarget) => {
+    trainMutation.mutate(target, {
       onSuccess: () => {
-        toast.success(`Started training for ${strategy} strategy.`);
+        toast.success(`Started training for ${target} target.`);
       },
       onError: () => {
         toast.error('Failed to start training.');
@@ -67,43 +72,25 @@ export function Recommendations() {
   if (strategy === RecommendationStrategy.CBF) target = 'cbf';
   else if (strategy === RecommendationStrategy.IBCF) target = 'ibcf';
 
-  const response = metricsData?.data;
-  // @ts-ignore - The response could be an array if misaligned, but typically object
+  const response = metricsData;
   const dataObj = Array.isArray(response) ? response[0] : response;
   const offlineMetrics = dataObj?.offline_metrics || [];
-  const evalData = offlineMetrics.find((m: any) => m.target === target) || offlineMetrics.find((m: any) => m.target === 'all') || offlineMetrics[0];
+  const evalData =
+    offlineMetrics.find((m: { target?: string }) => m.target === target) ||
+    offlineMetrics.find((m: { target?: string }) => m.target === 'all') ||
+    offlineMetrics[0];
 
   const metrics = evalData?.metrics || null;
   const sparsity = evalData?.sparsity || null;
 
   return (
     <div className='flex flex-col gap-6'>
-      <div className='flex flex-wrap items-end justify-between gap-4'>
-        <div>
-          <h2 className='text-2xl font-bold tracking-tight'>Recommendation Management</h2>
-          <p className='text-muted-foreground'>
-            Synchronize data, train AI models, and monitor performance metrics.
-          </p>
-        </div>
-        <div className='flex items-center gap-2'>
-          <Button variant='outline' onClick={handleSync} disabled={syncMutation.isPending}>
-            {syncMutation.isPending ? (
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-            ) : (
-              <RefreshCw className='mr-2 h-4 w-4' />
-            )}
-            Sync Data
-          </Button>
-          <Button onClick={handleTrain} disabled={trainMutation.isPending}>
-            {trainMutation.isPending ? (
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-            ) : (
-              <Play className='mr-2 h-4 w-4' />
-            )}
-            Train Model
-          </Button>
-        </div>
-      </div>
+      <RecommendationHeader
+        onSyncClick={() => setIsSyncOpen(true)}
+        onTrainClick={() => setIsTrainOpen(true)}
+        isSyncing={syncMutation.isPending}
+        isTraining={trainMutation.isPending}
+      />
 
       <Card>
         <CardHeader>
@@ -113,23 +100,30 @@ export function Recommendations() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='mb-6 flex items-center gap-4'>
-            <span className='text-sm font-medium'>Target Strategy:</span>
-            <Select
-              value={strategy}
-              onValueChange={(v) => setStrategy(v as RecommendationStrategy)}
-            >
-              <SelectTrigger className='w-[200px]'>
-                <SelectValue placeholder='Select strategy' />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.values(RecommendationStrategy).map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className='mb-6 flex flex-wrap items-center gap-6'>
+            <div className='flex items-center gap-2'>
+              <span className='text-sm font-medium'>Target Strategy:</span>
+              <Select
+                value={strategy}
+                onValueChange={(v) => setStrategy(v as RecommendationStrategy)}
+              >
+                <SelectTrigger className='w-[200px]'>
+                  <SelectValue placeholder='Select strategy' />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(RecommendationStrategy).map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className='flex items-center gap-2'>
+              <span className='text-sm font-medium'>Date Range:</span>
+              <DateRangePicker value={dateRange} onChange={setDateRange} />
+            </div>
           </div>
 
           {isEvalLoading ? (
@@ -166,50 +160,7 @@ export function Recommendations() {
               </div>
 
               {sparsity && sparsity.frequencyBuckets && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className='text-base'>Sparsity Analysis (Long-tail)</CardTitle>
-                    <CardDescription>
-                      Performance across different user activity levels.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className='pt-0'>
-                    <div className='h-[300px] w-full'>
-                      <ResponsiveContainer width='100%' height='100%'>
-                        <BarChart data={sparsity.frequencyBuckets}>
-                          <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                          <XAxis
-                            dataKey='bucketName'
-                            fontSize={12}
-                            tickLine={false}
-                            axisLine={false}
-                          />
-                          <YAxis
-                            fontSize={12}
-                            tickLine={false}
-                            axisLine={false}
-                            tickFormatter={(v) => `${(v * 100).toFixed(0)}%`}
-                          />
-                          <Tooltip
-                            contentStyle={{
-                              borderRadius: '8px',
-                              border: 'none',
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                            }}
-                            formatter={(v: any) => [`${((v || 0) * 100).toFixed(2)}%`, 'NDCG']}
-                          />
-                          <Legend />
-                          <Bar
-                            dataKey='ndcgAtK'
-                            name='NDCG@K'
-                            fill='hsl(var(--primary))'
-                            radius={[4, 4, 0, 0]}
-                          />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
+                <SparsityAnalysis frequencyBuckets={sparsity.frequencyBuckets} />
               )}
             </div>
           ) : (
@@ -225,31 +176,21 @@ export function Recommendations() {
           )}
         </CardContent>
       </Card>
+
+      <RecommendationSyncDialog
+        open={isSyncOpen}
+        onOpenChange={setIsSyncOpen}
+        onConfirm={handleSync}
+        isLoading={syncMutation.isPending}
+      />
+
+      <RecommendationTrainDialog
+        open={isTrainOpen}
+        onOpenChange={setIsTrainOpen}
+        onSubmit={handleTrain}
+        isLoading={trainMutation.isPending}
+      />
     </div>
   );
 }
 
-function MetricCard({
-  title,
-  value,
-  icon: Icon,
-  description,
-}: {
-  title: string;
-  value: string;
-  icon: any;
-  description: string;
-}) {
-  return (
-    <Card>
-      <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-        <CardTitle className='text-sm font-medium'>{title}</CardTitle>
-        <Icon className='text-muted-foreground h-4 w-4' />
-      </CardHeader>
-      <CardContent>
-        <div className='text-2xl font-bold'>{value}</div>
-        <p className='text-muted-foreground mt-1 text-xs'>{description}</p>
-      </CardContent>
-    </Card>
-  );
-}

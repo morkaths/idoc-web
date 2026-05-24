@@ -8,6 +8,7 @@ const categoriesSearchSchema = z.object({
   query: z.string().optional().catch(''),
   lang: z
     .preprocess((val) => (Array.isArray(val) ? val : val ? [val] : []), z.array(z.string()))
+    .optional()
     .catch([]),
 });
 

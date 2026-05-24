@@ -63,3 +63,10 @@ export enum RecommendationStrategy {
   SVD = "svd",
   HYBRID = "hybrid",
 }
+
+export enum TrainingTarget {
+  ALL = 'all',
+  CBF = 'cbf',
+  IBCF = 'ibcf',
+}
+

@@ -12,12 +12,14 @@ const usersSearchSchema = z.object({
       (val) => (Array.isArray(val) ? val : val ? [val] : []),
       z.array(z.enum(Object.values(UserStatus)))
     )
+    .optional()
     .catch([]),
   role: z
     .preprocess(
       (val) => (Array.isArray(val) ? val : val ? [val] : []),
       z.array(z.enum(Object.values(RoleType)))
     )
+    .optional()
     .catch([]),
 });
 

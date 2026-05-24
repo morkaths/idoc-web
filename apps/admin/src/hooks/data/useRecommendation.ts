@@ -1,11 +1,11 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { RecommendationApi } from '@/apis/recommendation.api';
-import type {
-  ApiResponse,
-  RecommendationStrategy,
-  RecommendationSyncResponse,
-  RecommendationTrainResponse,
-  RecommendationMetricsResponse,
+import {
+  type ApiResponse,
+  type TrainingTarget,
+  type RecommendationSyncResponse,
+  type RecommendationTrainResponse,
+  type RecommendationMetricsResponse,
 } from '@/types';
 import { useItemQuery, type ItemQueryOptions } from './factory';
 
@@ -22,11 +22,11 @@ export const useRecommendationTrain = (
   options?: UseMutationOptions<
     ApiResponse<RecommendationTrainResponse>,
     Error,
-    RecommendationStrategy | undefined
+    TrainingTarget | undefined
   >
 ) => {
   return useMutation({
-    mutationFn: (strategy?: RecommendationStrategy) => RecommendationApi.train(strategy),
+    mutationFn: (target?: TrainingTarget) => RecommendationApi.train(target),
     ...options,
   });
 };

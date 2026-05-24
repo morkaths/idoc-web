@@ -47,7 +47,7 @@ export const RecommendationGrid = ({
   }
 
   return (
-    <section className='container py-12 pb-20'>
+    <section className='container py-5'>
       <div className='mb-8 flex items-end justify-between'>
         <div className='flex flex-col space-y-2'>
           <div className='flex items-center gap-2'>

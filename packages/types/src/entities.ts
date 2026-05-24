@@ -143,6 +143,18 @@ export interface LoanResponse {
   renewals?: LoanResponse.RenewalResponse[];
 }
 
+export interface BorrowResponse {
+  id: string;
+  book: BookResponse.Summary;
+  user: UserResponse.Summary & { email?: string };
+  borrowedDate: Date | string;
+  dueDate: Date | string;
+  returnDate?: Date | string;
+  status: BorrowStatus;
+  notes?: string;
+  renewals?: LoanResponse.RenewalResponse[];
+}
+
 export namespace LoanResponse {
   export interface RenewalResponse {
     renewedAt: Date | string;
@@ -224,6 +236,65 @@ export interface PresignedUploadResponse {
   uploadUrl: string;
 }
 
+// --- Storage Usage ---
+
+export interface S3UsageResponse {
+  connected: boolean;
+  totalFiles: number;
+  totalSize: number;
+  averageFileSize: number;
+  largestFileSize: number;
+  pendingFiles: number;
+  deletedFiles: number;
+  bucketName: string;
+  region: string;
+  endpoint: string | null;
+}
+
+export interface CloudinaryRawUsage {
+  plan?: string;
+  credits?: number;
+  storage?: { usage: number; limit?: number; used_percent?: number };
+  bandwidth?: { usage: number; limit?: number; used_percent?: number };
+  resources?: { usage: number };
+  transformations?: { usage: number; limit?: number; used_percent?: number };
+  requests?: number;
+  add_ons?: Record<string, unknown>;
+  error?: string;
+  [key: string]: unknown;
+}
+
+export interface CloudinaryUsageResponse {
+  connected: boolean;
+  plan: string | null;
+  cloudName: string;
+  lastUpdated: string;
+  totalResources: number;
+  derivedResources: number;
+  storageUsage: number;
+  storageLimit: number;
+  storageUsedPercent: number;
+  bandwidthUsage: number;
+  bandwidthLimit: number;
+  bandwidthUsedPercent: number;
+  transformationsUsage: number;
+  transformationsLimit: number;
+  transformationsUsedPercent: number;
+  requestsUsage: number;
+  requestsLimit: number;
+  requestsUsedPercent: number;
+  creditsUsage: number;
+  creditsLimit: number;
+  creditsUsedPercent: number;
+  maxImageSizeBytes: number;
+  maxVideoSizeBytes: number;
+  rawUsage: CloudinaryRawUsage;
+}
+
+export interface StorageUsageResponse {
+  s3: S3UsageResponse;
+  cloudinary: CloudinaryUsageResponse;
+}
 export interface RecommendationItem {
   id: string;
   score: number;

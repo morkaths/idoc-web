@@ -9,9 +9,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Languages } from '@/types';
 import { cn } from '@/lib/utils';
-import { useSearchAuthors } from '@/hooks/data/useAuthor';
+import { useSearchFiles } from '@/hooks/data/useFile';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
   Table,
@@ -22,16 +21,15 @@ import {
   TableRow,
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
-import { authorsColumns as columns } from './authors-columns';
-import { buildAuthorFindParams } from './authors-query.utils';
-import AuthorsTableBulkActions from './authors-table-bulk-actions';
+import { storageColumns as columns } from './storage-columns';
+import { buildStorageFindParams } from './storage-query.utils';
+import StorageTableBulkActions from './storage-table-bulk-actions';
 
-const route = getRouteApi('/_authenticated/authors/');
+const route = getRouteApi('/_authenticated/storage/');
 
-export function AuthorsTable() {
-  'use no memo';
+export function StorageTable() {
   const [rowSelection, setRowSelection] = useState({});
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: true }]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const {
@@ -47,25 +45,25 @@ export function AuthorsTable() {
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'query' },
-    columnFilters: [{ columnId: 'nationality', searchKey: 'nationality', type: 'array' }],
+    columnFilters: [{ columnId: 'contentType', searchKey: 'contentType', type: 'array' }],
   });
 
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
 
-  const authorParams = useMemo(
-    () => buildAuthorFindParams(page, limit, globalFilter ?? '', sorting, columnFilters),
+  const storageParams = useMemo(
+    () => buildStorageFindParams(page, limit, globalFilter ?? '', sorting, columnFilters),
     [page, limit, globalFilter, sorting, columnFilters]
   );
 
   // fetch server-side page
-  const { data: authorsData, isFetching: isAuthorsFetching } = useSearchAuthors(authorParams);
-  const authors = authorsData?.data ?? [];
-  const authorPagination = authorsData?.pagination;
+  const { data: filesData, isFetching: isFilesFetching } = useSearchFiles(storageParams);
+  const files = filesData?.data ?? [];
+  const filesPagination = filesData?.pagination;
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data: authors,
+    data: files,
     columns,
     state: {
       sorting,
@@ -79,7 +77,7 @@ export function AuthorsTable() {
       },
     },
     manualPagination: true,
-    pageCount: authorPagination?.pages ?? 0,
+    pageCount: filesPagination?.pages ?? 0,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -103,15 +101,18 @@ export function AuthorsTable() {
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Search authors...'
+        searchPlaceholder='Search files by name...'
         filters={[
           {
-            columnId: 'nationality',
-            title: 'Nationality',
-            options: Languages.filter((l) => l.enabled).map((l) => ({
-              label: l.label,
-              value: l.value,
-            })),
+            columnId: 'contentType',
+            title: 'File Type',
+            options: [
+              { label: 'PDF Document', value: 'application/pdf' },
+              { label: 'CSV Sheet', value: 'text/csv' },
+              { label: 'PNG Image', value: 'image/png' },
+              { label: 'JPEG Image', value: 'image/jpeg' },
+              { label: 'WebP Image', value: 'image/webp' },
+            ],
           },
         ]}
       />
@@ -158,7 +159,7 @@ export function AuthorsTable() {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  {isAuthorsFetching ? 'Loading...' : 'No results.'}
+                  {isFilesFetching ? 'Loading...' : 'No files found.'}
                 </TableCell>
               </TableRow>
             )}
@@ -167,9 +168,9 @@ export function AuthorsTable() {
       </div>
 
       <DataTablePagination table={table} className='mt-auto' />
-      <AuthorsTableBulkActions table={table} />
+      <StorageTableBulkActions table={table} />
     </div>
   );
 }
 
-export default AuthorsTable;
+export default StorageTable;

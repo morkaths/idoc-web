@@ -76,16 +76,16 @@ export const ApiEndpoint = {
     reviews: crud('/reviews'),
     files: {
       ...crud('/files'),
-      findByUser: () => '/files/user',
       download: (id: string) => `/files/${id}/download`,
       upload: () => '/files/upload',
       uploadPresigned: () => '/files/upload/presigned',
       completePresignedUpload: (uploadId: string) => `/files/upload/complete/${uploadId}`,
       view: (id: string) => `/files/${id}/view`,
+      storageUsage: () => '/storage/usage',
     },
     images: {
       upload: () => '/images/upload',
-      delete: (url: string) => `/images/${url}`,
+      delete: () => '/images',
     },
   },
 } as const;

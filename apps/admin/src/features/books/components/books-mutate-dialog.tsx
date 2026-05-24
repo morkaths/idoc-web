@@ -105,7 +105,8 @@ export function BooksMutateDialog({
                 if (coverFile) {
                   toast.loading('Uploading cover image...', { id: 'upload-cover' });
                   try {
-                    coverUrl = await uploadImage.mutateAsync({ file: coverFile, folder: 'books' });
+                    const uploadResult = await uploadImage.mutateAsync({ file: coverFile, folder: 'books' });
+                    coverUrl = uploadResult.data || '';
                     toast.success('Cover image uploaded!', { id: 'upload-cover' });
                   } catch (error) {
                     handleServerError(error, {
@@ -123,7 +124,7 @@ export function BooksMutateDialog({
                       file: files[0],
                       folder: 'books',
                     });
-                    fileId = fileResult.id;
+                    fileId = fileResult.data?.id || '';
                     toast.success('Book file uploaded!', { id: 'upload-file' });
                   } catch (error) {
                     handleServerError(error, {
