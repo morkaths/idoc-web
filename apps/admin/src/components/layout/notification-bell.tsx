@@ -21,8 +21,8 @@ import { cn } from '@/lib/utils';
 import type { NotificationResponse } from '@/types';
 
 /**
- * Helper to get the correct icon and styling for each notification type
- * @param type Notification type from the backend
+ * Helper to get the correct icon and styling for each notification type.
+ * @param type Notification type from the backend.
  */
 const getNotificationConfig = (type: string) => {
   switch (type) {
@@ -80,14 +80,10 @@ export function NotificationBell() {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant='ghost'
-          size='icon'
-          className='relative h-9 w-9 rounded-full hover:bg-accent/60 transition-all duration-300'
-        >
-          <Bell className='h-[19px] w-[19px] text-foreground/80' />
+        <Button variant='outline' size='icon' className='relative size-7'>
+          <Bell className='text-foreground/80' />
           {unreadCount > 0 && (
-            <span className='absolute -top-0.5 -right-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white shadow-sm ring-2 ring-background animate-fade-in'>
+            <span className='absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold text-white shadow-sm ring-2 ring-background animate-fade-in'>
               <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive/60 opacity-75' />
               <span className='relative'>{unreadCount > 99 ? '99+' : unreadCount}</span>
             </span>
@@ -104,10 +100,10 @@ export function NotificationBell() {
         <DropdownMenuLabel className='font-normal p-4 pb-3'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-2'>
-              <span className='text-sm font-semibold text-foreground'>Thông báo</span>
+              <span className='text-sm font-semibold text-foreground'>Notifications</span>
               {unreadCount > 0 && (
                 <span className='rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary dark:bg-primary/20'>
-                  {unreadCount} mới
+                  {unreadCount} new
                 </span>
               )}
             </div>
@@ -124,7 +120,7 @@ export function NotificationBell() {
                 ) : (
                   <CheckCheck className='h-3.5 w-3.5' />
                 )}
-                Đánh dấu đã đọc tất cả
+                Mark all as read
               </Button>
             )}
           </div>
@@ -136,16 +132,16 @@ export function NotificationBell() {
             {isLoading ? (
               <div className='flex h-[200px] flex-col items-center justify-center gap-2 text-muted-foreground'>
                 <Loader2 className='h-8 w-8 animate-spin text-primary/60' />
-                <span className='text-xs'>Đang tải thông báo...</span>
+                <span className='text-xs'>Loading notifications...</span>
               </div>
             ) : notifications.length === 0 ? (
               <div className='flex h-[200px] flex-col items-center justify-center gap-2 text-muted-foreground px-4 text-center'>
                 <div className='rounded-full bg-accent/40 p-3.5 border border-border/40'>
                   <Bell className='h-6 w-6 opacity-40' />
                 </div>
-                <span className='text-sm font-medium mt-1'>Không có thông báo nào</span>
+                <span className='text-sm font-medium mt-1'>No notifications yet</span>
                 <span className='text-xs opacity-75 max-w-[240px]'>
-                  Hệ thống sẽ gửi thông báo đến bạn khi có tiến trình mới hoàn tất.
+                  The system will send you notifications when new processes are completed.
                 </span>
               </div>
             ) : (

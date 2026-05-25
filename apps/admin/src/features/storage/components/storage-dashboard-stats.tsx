@@ -22,6 +22,7 @@ import { Badge } from '@repo/ui/components/badge';
 import { formatBytes } from './storage-columns';
 import { DEFAULT_CLOUDINARY_LIMITS, FILE_CATEGORIES_CONFIG } from '../data/data';
 import type { CloudinaryRawResponse } from '../data/schema';
+import { cn } from '@/lib/utils';
 
 type StorageDashboardStatsProps = {
   allFiles: FileResponse[];
@@ -226,12 +227,18 @@ export function StorageDashboardStats({
             <HardDrive size={56} />
           </div>
           <CardHeader className='pb-2'>
-            <div className='flex justify-between items-start'>
-              <CardTitle className='text-sm font-medium text-muted-foreground flex items-center gap-1.5'>
-                <HardDrive className='h-4 w-4 text-orange-500' /> S3 Storage
-              </CardTitle>
+            <div className='flex min-w-0 flex-col gap-1'>
+              <CardTitle className='text-sm font-medium text-muted-foreground'>S3 Storage</CardTitle>
               {s3 && (
-                <Badge variant={isS3Connected ? 'outline' : 'destructive'} className='text-[10px] h-4 px-1'>
+                <Badge
+                  variant='outline'
+                  className={cn(
+                    'w-fit h-4 px-1 text-[10px] font-semibold',
+                    isS3Connected
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300'
+                      : 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300'
+                  )}
+                >
                   {isS3Connected ? 'Connected' : 'Offline'}
                 </Badge>
               )}
@@ -290,12 +297,18 @@ export function StorageDashboardStats({
             <Cloud size={56} />
           </div>
           <CardHeader className='pb-2'>
-            <div className='flex justify-between items-start'>
-              <CardTitle className='text-sm font-medium text-muted-foreground flex items-center gap-1.5'>
-                <Cloud className='h-4 w-4 text-blue-500' /> Cloudinary Storage
-              </CardTitle>
+            <div className='flex min-w-0 flex-col gap-1'>
+              <CardTitle className='text-sm font-medium text-muted-foreground'>Cloudinary Storage</CardTitle>
               {cld && (
-                <Badge variant={isCldConnected ? 'outline' : 'destructive'} className='text-[10px] h-4 px-1'>
+                <Badge
+                  variant='outline'
+                  className={cn(
+                    'w-fit h-4 px-1 text-[10px] font-semibold',
+                    isCldConnected
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300'
+                      : 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300'
+                  )}
+                >
                   {isCldConnected ? 'Connected' : 'Offline'}
                 </Badge>
               )}
@@ -344,9 +357,7 @@ export function StorageDashboardStats({
             <Zap size={56} />
           </div>
           <CardHeader className='pb-2'>
-            <CardTitle className='text-sm font-medium text-muted-foreground flex items-center gap-1.5'>
-              <Zap className='h-4 w-4 text-yellow-500' /> Service Quotas
-            </CardTitle>
+            <CardTitle className='text-sm font-medium text-muted-foreground'>Service Quotas</CardTitle>
           </CardHeader>
           <CardContent className='space-y-3.5'>
             {cld ? (
@@ -408,9 +419,7 @@ export function StorageDashboardStats({
             <PieChart size={56} />
           </div>
           <CardHeader className='pb-2'>
-            <CardTitle className='text-sm font-medium text-muted-foreground flex items-center gap-1.5'>
-              <PieChart className='h-4 w-4 text-purple-500' /> Credits & Limits
-            </CardTitle>
+            <CardTitle className='text-sm font-medium text-muted-foreground'>Credits & Limits</CardTitle>
           </CardHeader>
           <CardContent className='space-y-3.5'>
             {cld ? (

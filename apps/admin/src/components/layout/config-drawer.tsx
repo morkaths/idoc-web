@@ -53,10 +53,10 @@ export function ConfigDrawer() {
       <SheetTrigger asChild>
         <Button
           size='icon'
-          variant='ghost'
+          variant='outline'
           aria-label='Open theme settings'
           aria-describedby='config-drawer-description'
-          className='rounded-md border'
+          className='size-7'
         >
           <Palette aria-hidden='true' />
         </Button>
