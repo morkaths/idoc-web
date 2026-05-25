@@ -1,6 +1,7 @@
 import {
   AuthProvider,
   BorrowStatus,
+  NotificationType,
   RecommendationStrategy,
   RoleType,
 } from './enum';
@@ -415,4 +416,17 @@ export interface RecommendationMetricsResponse {
     metrics: RecommendationEvaluationMetrics;
     sparsity?: RecommendationSparsityAnalysis;
   }[];
+}
+
+// --- Notifications ---
+
+export interface NotificationResponse {
+  id: string;
+  userId: string;
+  title: string;
+  content: string;
+  isRead: boolean;
+  type: NotificationType;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }

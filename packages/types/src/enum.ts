@@ -18,10 +18,12 @@ export enum FilterOperator {
 }
 
 export enum NotificationType {
-  Info = "INFO",
-  Success = "SUCCESS",
-  Warning = "WARNING",
-  Error = "ERROR",
+  Info = 'INFO',
+  Success = 'SUCCESS',
+  Warning = 'WARNING',
+  Error = 'ERROR',
+  RECOMMENDER_TRAINED_SUCCESS = 'RECOMMENDER_TRAINED_SUCCESS',
+  RECOMMENDER_TRAINED_FAILURE = 'RECOMMENDER_TRAINED_FAILURE',
 }
 
 export enum RoleType {

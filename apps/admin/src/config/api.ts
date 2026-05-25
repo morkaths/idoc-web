@@ -87,6 +87,12 @@ export const ApiEndpoint = {
       upload: () => '/images/upload',
       delete: () => '/images',
     },
+    notifications: {
+      find: () => '/notifications',
+      markRead: (id: string) => `/notifications/${id}/read`,
+      markAllRead: () => '/notifications/read-all',
+      countUnread: () => '/notifications/unread',
+    },
   },
 } as const;
 

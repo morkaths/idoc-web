@@ -9,6 +9,7 @@ import { SkipToMain } from '@/components/skip-to-main';
 import { ConfigDrawer } from './config-drawer';
 import { Header } from './header';
 import { Main } from './main';
+import { NotificationBell } from './notification-bell';
 import { ProfileDropdown } from './profile-dropdown';
 import { Search } from './search';
 import { ThemeSwitch } from './theme-switch';
@@ -56,6 +57,7 @@ function InnerLayout({ children }: AuthenticatedLayoutProps) {
         <div className='ms-auto flex items-center space-x-4'>
           <ThemeSwitch />
           <ConfigDrawer />
+          <NotificationBell />
           <ProfileDropdown />
         </div>
       </Header>
