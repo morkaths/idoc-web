@@ -23,12 +23,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/tabs';
 import { DateRangePicker } from '@/components/form/date-range-picker';
 import { RecommendationHeader } from './components/recommendation-header';
 import { MetricCard } from './components/metric-card';
 import { SparsityAnalysis } from './components/sparsity-analysis';
 import { RecommendationSyncDialog } from './components/recommendation-sync-dialog';
 import { RecommendationTrainDialog } from './components/recommendation-train-dialog';
+import { OnlineMetrics } from './components/online-metrics';
 
 export function Recommendations() {
   const [strategy, setStrategy] = useState<RecommendationStrategy>(RecommendationStrategy.HYBRID);
@@ -74,14 +76,48 @@ export function Recommendations() {
 
   const response = metricsData;
   const dataObj = Array.isArray(response) ? response[0] : response;
-  const offlineMetrics = dataObj?.offline_metrics || [];
+  const offlineMetrics = dataObj?.offlineMetrics || [];
+  
+  // Find model matching selected strategy target, case-insensitively
   const evalData =
-    offlineMetrics.find((m: { target?: string }) => m.target === target) ||
-    offlineMetrics.find((m: { target?: string }) => m.target === 'all') ||
+    offlineMetrics.find(
+      (m: any) =>
+        (m.target || m.modelName)?.toLowerCase() === target.toLowerCase()
+    ) ||
+    offlineMetrics.find(
+      (m: any) =>
+        (m.target || m.modelName)?.toLowerCase() === 'all'
+    ) ||
+    offlineMetrics.find(
+      (m: any) =>
+        (m.target || m.modelName)?.toLowerCase() === strategy.toLowerCase()
+    ) ||
     offlineMetrics[0];
 
-  const metrics = evalData?.metrics || null;
+  // Map and extract available metrics from flat or nested structure
+  const metrics = evalData
+    ? {
+        precisionAtK: evalData.precisionAtK ?? evalData.metrics?.precisionAtK ?? 0,
+        recallAtK: evalData.recallAtK ?? evalData.metrics?.recallAtK ?? 0,
+        ndcgAtK: evalData.ndcgAtK ?? evalData.metrics?.ndcgAtK ?? 0,
+        hitRate: evalData.hitRate ?? evalData.metrics?.hitRate ?? undefined,
+        rmse: evalData.rmse ?? evalData.metrics?.rmse,
+        mae: evalData.mae ?? evalData.metrics?.mae,
+        coverage: evalData.coverage ?? evalData.metrics?.coverage,
+      }
+    : null;
+
   const sparsity = evalData?.sparsity || null;
+
+  const formatPercentage = (val: number | undefined) => {
+    if (val === undefined || isNaN(val)) return 'N/A';
+    return (val * 100).toFixed(2) + '%';
+  };
+
+  const formatDecimal = (val: number | undefined, decimals = 4) => {
+    if (val === undefined || isNaN(val)) return 'N/A';
+    return val.toFixed(decimals);
+  };
 
   return (
     <div className='flex flex-col gap-6'>
@@ -92,90 +128,145 @@ export function Recommendations() {
         isTraining={trainMutation.isPending}
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Strategy Evaluation</CardTitle>
-          <CardDescription>
-            Select a strategy to view its performance metrics and analysis.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className='mb-6 flex flex-wrap items-center gap-6'>
-            <div className='flex items-center gap-2'>
-              <span className='text-sm font-medium'>Target Strategy:</span>
-              <Select
-                value={strategy}
-                onValueChange={(v) => setStrategy(v as RecommendationStrategy)}
-              >
-                <SelectTrigger className='w-[200px]'>
-                  <SelectValue placeholder='Select strategy' />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(RecommendationStrategy).map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+      <Tabs defaultValue='offline' className='w-full space-y-6'>
+        <div className='flex items-center justify-between border-b pb-2'>
+          <TabsList>
+            <TabsTrigger value='offline'>Offline Evaluation</TabsTrigger>
+            <TabsTrigger value='online'>Online Metrics</TabsTrigger>
+          </TabsList>
 
-            <div className='flex items-center gap-2'>
-              <span className='text-sm font-medium'>Date Range:</span>
-              <DateRangePicker value={dateRange} onChange={setDateRange} />
-            </div>
+          <div className='flex items-center gap-2'>
+            <span className='text-sm font-medium'>Date Range:</span>
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
           </div>
+        </div>
 
+        <TabsContent value='offline' className='space-y-6 mt-0'>
+          <Card>
+            <CardHeader>
+              <CardTitle>Strategy Evaluation</CardTitle>
+              <CardDescription>
+                Select a strategy to view its performance metrics and analysis.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className='mb-6 flex flex-wrap items-center gap-6'>
+                <div className='flex items-center gap-2'>
+                  <span className='text-sm font-medium'>Target Strategy:</span>
+                  <Select
+                    value={strategy}
+                    onValueChange={(v) => setStrategy(v as RecommendationStrategy)}
+                  >
+                    <SelectTrigger className='w-[200px]'>
+                      <SelectValue placeholder='Select strategy' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(RecommendationStrategy).map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {isEvalLoading ? (
+                <div className='flex h-[400px] items-center justify-center'>
+                  <Loader2 className='text-primary h-8 w-8 animate-spin' />
+                </div>
+              ) : metrics ? (
+                <div className='space-y-6'>
+                  <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+                    <MetricCard
+                      title='Precision@K'
+                      value={formatPercentage(metrics.precisionAtK)}
+                      icon={Target}
+                      description='Relevance of top recommendations'
+                    />
+                    <MetricCard
+                      title='Recall@K'
+                      value={formatPercentage(metrics.recallAtK)}
+                      icon={TrendingUp}
+                      description='Ability to find all relevant items'
+                    />
+                    <MetricCard
+                      title='NDCG@K'
+                      value={formatDecimal(metrics.ndcgAtK)}
+                      icon={BarChart3}
+                      description='Normalized Discounted Cumulative Gain'
+                    />
+                    <MetricCard
+                      title='Hit Rate'
+                      value={formatPercentage(metrics.hitRate)}
+                      icon={Zap}
+                      description='Presence of at least one relevant item'
+                    />
+                    {metrics.rmse !== undefined && (
+                      <MetricCard
+                        title='RMSE'
+                        value={formatDecimal(metrics.rmse)}
+                        icon={BarChart3}
+                        description='Root Mean Squared Error'
+                      />
+                    )}
+                    {metrics.mae !== undefined && (
+                      <MetricCard
+                        title='MAE'
+                        value={formatDecimal(metrics.mae)}
+                        icon={BarChart3}
+                        description='Mean Absolute Error'
+                      />
+                    )}
+                    {metrics.coverage !== undefined && (
+                      <MetricCard
+                        title='Coverage'
+                        value={formatPercentage(metrics.coverage)}
+                        icon={Target}
+                        description='Catalog Coverage'
+                      />
+                    )}
+                  </div>
+
+                  {sparsity && sparsity.frequencyBuckets && (
+                    <SparsityAnalysis frequencyBuckets={sparsity.frequencyBuckets} />
+                  )}
+                </div>
+              ) : (
+                <div className='flex h-[400px] flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed'>
+                  <Sparkles className='text-muted-foreground h-10 w-10 opacity-20' />
+                  <p className='text-muted-foreground text-lg font-medium'>
+                    No evaluation data available
+                  </p>
+                  <p className='text-muted-foreground text-sm'>
+                    Train the model first to generate metrics.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value='online' className='mt-0'>
           {isEvalLoading ? (
             <div className='flex h-[400px] items-center justify-center'>
               <Loader2 className='text-primary h-8 w-8 animate-spin' />
             </div>
-          ) : metrics ? (
-            <div className='space-y-6'>
-              <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-                <MetricCard
-                  title='Precision@K'
-                  value={(metrics.precisionAtK * 100).toFixed(2) + '%'}
-                  icon={Target}
-                  description='Relevance of top recommendations'
-                />
-                <MetricCard
-                  title='Recall@K'
-                  value={(metrics.recallAtK * 100).toFixed(2) + '%'}
-                  icon={TrendingUp}
-                  description='Ability to find all relevant items'
-                />
-                <MetricCard
-                  title='NDCG@K'
-                  value={metrics.ndcgAtK.toFixed(4)}
-                  icon={BarChart3}
-                  description='Normalized Discounted Cumulative Gain'
-                />
-                <MetricCard
-                  title='Hit Rate'
-                  value={(metrics.hitRate * 100).toFixed(2) + '%'}
-                  icon={Zap}
-                  description='Presence of at least one relevant item'
-                />
-              </div>
-
-              {sparsity && sparsity.frequencyBuckets && (
-                <SparsityAnalysis frequencyBuckets={sparsity.frequencyBuckets} />
-              )}
-            </div>
+          ) : dataObj ? (
+            <OnlineMetrics
+              onlineMetrics={dataObj.onlineMetrics || []}
+              strategyDistribution={dataObj.strategyDistribution || []}
+            />
           ) : (
             <div className='flex h-[400px] flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed'>
               <Sparkles className='text-muted-foreground h-10 w-10 opacity-20' />
               <p className='text-muted-foreground text-lg font-medium'>
-                No evaluation data available
-              </p>
-              <p className='text-muted-foreground text-sm'>
-                Train the model first to generate metrics.
+                No online metrics available
               </p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </TabsContent>
+      </Tabs>
 
       <RecommendationSyncDialog
         open={isSyncOpen}

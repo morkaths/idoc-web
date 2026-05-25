@@ -1,8 +1,5 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { TrainingTarget } from '@repo/types';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -29,17 +26,7 @@ import {
   FormMessage,
 } from '@repo/ui/components/form';
 import { Loader2, Play } from 'lucide-react';
-import { toast } from 'sonner';
-
-// ─── SCHEMA ─────────────────────────────────────────────────────────────────────
-
-const TrainFormSchema = z.object({
-  target: z.nativeEnum(TrainingTarget),
-});
-
-type TrainFormValues = z.infer<typeof TrainFormSchema>;
-
-// ─── PROPS ──────────────────────────────────────────────────────────────────────
+import { useRecommendationTrainForm } from '../data/use-recommendation-train-form';
 
 interface RecommendationTrainDialogProps {
   open: boolean;
@@ -48,29 +35,20 @@ interface RecommendationTrainDialogProps {
   isLoading: boolean;
 }
 
-// ─── COMPONENT ──────────────────────────────────────────────────────────────────
-
+/**
+ * A dialog to configure and execute recommendation model training.
+ * @param {RecommendationTrainDialogProps} props - The component properties.
+ */
 export function RecommendationTrainDialog({
   open,
   onOpenChange,
   onSubmit,
   isLoading,
 }: RecommendationTrainDialogProps) {
-  const form = useForm<TrainFormValues>({
-    resolver: zodResolver(TrainFormSchema),
-    defaultValues: {
-      target: TrainingTarget.ALL,
-    },
+  const { form, handleFormSubmit } = useRecommendationTrainForm({
+    onOpenChange,
+    onSubmit,
   });
-
-  const handleFormSubmit = async (data: TrainFormValues) => {
-    try {
-      onSubmit(data.target);
-      onOpenChange(false);
-    } catch {
-      toast.error('Failed to start training. Please try again.');
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
