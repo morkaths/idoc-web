@@ -116,9 +116,9 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
             <CardTitle className='text-base'>Strategy Distribution</CardTitle>
             <CardDescription>Active request split percentage</CardDescription>
           </CardHeader>
-          <CardContent className='flex h-[300px] flex-col items-center justify-center pt-0'>
+          <CardContent className='flex h-[280px] flex-col items-center justify-center pt-0 sm:h-[300px]'>
             {normalizedStrategyDistribution.length > 0 ? (
-              <ChartContainer config={strategyChartConfig} className='mx-auto h-[250px] w-full max-w-[250px]'>
+              <ChartContainer config={strategyChartConfig} className='mx-auto h-[220px] w-full max-w-[220px] sm:h-[250px] sm:max-w-[250px]'>
                 <PieChart>
                   <ChartTooltip
                     cursor={false}
@@ -127,7 +127,7 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
                         hideLabel
                         formatter={(value: unknown, name: unknown) => {
                           const strategyName = name !== undefined ? String(name) : 'unknown';
-                          const item = normalizedStrategyDistribution.find((d) => d.strategy === strategyName);
+                          const item = normalizedStrategyDistribution.find((d: StrategyDistItem) => d.strategy === strategyName);
                           const displayValue = typeof value === 'number' ? value : 0;
                           const percentage = item?.percentage !== undefined ? item.percentage.toFixed(2) : '0.00';
                           return (
@@ -166,7 +166,7 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
                   </Pie>
                   <ChartLegend
                     content={<ChartLegendContent nameKey='strategy' />}
-                    className='flex-wrap gap-2 text-xs'
+                    className='flex-wrap justify-center gap-2 text-xs sm:justify-start'
                   />
                 </PieChart>
               </ChartContainer>
@@ -183,13 +183,13 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
             <CardDescription>Total volume of served impressions</CardDescription>
           </CardHeader>
           <CardContent className='pt-0'>
-            <div className='h-[300px] w-full'>
+            <div className='h-[280px] w-full sm:h-[300px]'>
               {strategyAggregates.length > 0 ? (
-                <ChartContainer config={impressionsChartConfig} className='h-[250px] w-full'>
+                <ChartContainer config={impressionsChartConfig} className='h-[220px] w-full sm:h-[250px]'>
                   <BarChart data={strategyAggregates}>
                     <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                    <XAxis dataKey='strategy' fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                    <XAxis dataKey='strategy' fontSize={11} tickLine={false} axisLine={false} tickMargin={8} />
+                    <YAxis fontSize={11} tickLine={false} axisLine={false} />
                     <ChartTooltip
                       cursor={false}
                       content={<ChartTooltipContent indicator='dashed' />}
@@ -213,13 +213,13 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
             <CardDescription>Response speed of recommendation pipelines</CardDescription>
           </CardHeader>
           <CardContent className='pt-0'>
-            <div className='h-[300px] w-full'>
+            <div className='h-[280px] w-full sm:h-[300px]'>
               {strategyAggregates.length > 0 ? (
-                <ChartContainer config={latencyChartConfig} className='h-[250px] w-full'>
+                <ChartContainer config={latencyChartConfig} className='h-[220px] w-full sm:h-[250px]'>
                   <BarChart data={strategyAggregates}>
                     <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                    <XAxis dataKey='strategy' fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}ms`} />
+                    <XAxis dataKey='strategy' fontSize={11} tickLine={false} axisLine={false} tickMargin={8} />
+                    <YAxis fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}ms`} />
                     <ChartTooltip
                       cursor={false}
                       content={<ChartTooltipContent indicator='dashed' />}

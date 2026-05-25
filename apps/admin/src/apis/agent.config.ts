@@ -75,13 +75,11 @@ export const AgentClient = {
     options?: { params?: Record<string, unknown> }
   ): Promise<ApiResponse<T>> {
     try {
-      const response = await agentAxios.get<T>(url, { params: options?.params });
-      return {
-        success: true,
-        status: response.status,
-        message: 'OK',
-        data: response.data,
-      } as ApiResponse<T>;
+      const response = await agentAxios.get<ApiResponse<T>>(url, { params: options?.params });
+      if (response.data && 'success' in response.data && response.data.success === false) {
+        throw response.data;
+      }
+      return response.data;
     } catch (error) {
       return this.handleError<T>(error, url);
     }
@@ -93,13 +91,11 @@ export const AgentClient = {
     options?: { params?: Record<string, unknown> }
   ): Promise<ApiResponse<T>> {
     try {
-      const response = await agentAxios.post<T>(url, data, { params: options?.params });
-      return {
-        success: true,
-        status: response.status,
-        message: 'OK',
-        data: response.data,
-      } as ApiResponse<T>;
+      const response = await agentAxios.post<ApiResponse<T>>(url, data, { params: options?.params });
+      if (response.data && 'success' in response.data && response.data.success === false) {
+        throw response.data;
+      }
+      return response.data;
     } catch (error) {
       return this.handleError<T>(error, url);
     }
@@ -110,19 +106,20 @@ export const AgentClient = {
     options?: { params?: Record<string, unknown> }
   ): Promise<ApiResponse<T>> {
     try {
-      const response = await agentAxios.delete<T>(url, { params: options?.params });
-      return {
-        success: true,
-        status: response.status,
-        message: 'OK',
-        data: response.data,
-      } as ApiResponse<T>;
+      const response = await agentAxios.delete<ApiResponse<T>>(url, { params: options?.params });
+      if (response.data && 'success' in response.data && response.data.success === false) {
+        throw response.data;
+      }
+      return response.data;
     } catch (error) {
       return this.handleError<T>(error, url);
     }
   },
 
   handleError<T>(error: unknown, url: string): ApiResponse<T> {
+    if (error && typeof error === 'object' && 'success' in error) {
+      return error as ApiResponse<T>;
+    }
     if (axios.isAxiosError(error)) {
       return {
         success: false,

@@ -31,6 +31,10 @@ import { SparsityAnalysis } from './components/sparsity-analysis';
 import { RecommendationSyncDialog } from './components/recommendation-sync-dialog';
 import { RecommendationTrainDialog } from './components/recommendation-train-dialog';
 import { OnlineMetrics } from './components/online-metrics';
+import {
+  selectRecommendationOfflineMetric,
+  type RecommendationOfflineMetric,
+} from './data/recommendation-metrics';
 
 export function Recommendations() {
   const [strategy, setStrategy] = useState<RecommendationStrategy>(RecommendationStrategy.HYBRID);
@@ -70,41 +74,23 @@ export function Recommendations() {
     });
   };
 
-  let target = 'all';
-  if (strategy === RecommendationStrategy.CBF) target = 'cbf';
-  else if (strategy === RecommendationStrategy.IBCF) target = 'ibcf';
-
   const response = metricsData;
   const dataObj = Array.isArray(response) ? response[0] : response;
-  const offlineMetrics = dataObj?.offlineMetrics || [];
-  
-  // Find model matching selected strategy target, case-insensitively
-  const evalData =
-    offlineMetrics.find(
-      (m: any) =>
-        (m.target || m.modelName)?.toLowerCase() === target.toLowerCase()
-    ) ||
-    offlineMetrics.find(
-      (m: any) =>
-        (m.target || m.modelName)?.toLowerCase() === 'all'
-    ) ||
-    offlineMetrics.find(
-      (m: any) =>
-        (m.target || m.modelName)?.toLowerCase() === strategy.toLowerCase()
-    ) ||
-    offlineMetrics[0];
+  const offlineMetrics = (dataObj?.offlineMetrics || []) as RecommendationOfflineMetric[];
+
+  const evalData = selectRecommendationOfflineMetric(offlineMetrics, strategy);
 
   // Map and extract available metrics from flat or nested structure
   const metrics = evalData
     ? {
-        precisionAtK: evalData.precisionAtK ?? evalData.metrics?.precisionAtK ?? 0,
-        recallAtK: evalData.recallAtK ?? evalData.metrics?.recallAtK ?? 0,
-        ndcgAtK: evalData.ndcgAtK ?? evalData.metrics?.ndcgAtK ?? 0,
-        hitRate: evalData.hitRate ?? evalData.metrics?.hitRate ?? undefined,
-        rmse: evalData.rmse ?? evalData.metrics?.rmse,
-        mae: evalData.mae ?? evalData.metrics?.mae,
-        coverage: evalData.coverage ?? evalData.metrics?.coverage,
-      }
+      precisionAtK: evalData.precisionAtK ?? evalData.metrics?.precisionAtK ?? 0,
+      recallAtK: evalData.recallAtK ?? evalData.metrics?.recallAtK ?? 0,
+      ndcgAtK: evalData.ndcgAtK ?? evalData.metrics?.ndcgAtK ?? 0,
+      hitRate: evalData.metrics?.hitRate,
+      rmse: evalData.rmse ?? evalData.metrics?.rmse,
+      mae: evalData.mae ?? evalData.metrics?.mae,
+      coverage: evalData.coverage,
+    }
     : null;
 
   const sparsity = evalData?.sparsity || null;
@@ -129,14 +115,14 @@ export function Recommendations() {
       />
 
       <Tabs defaultValue='offline' className='w-full space-y-6'>
-        <div className='flex items-center justify-between border-b pb-2'>
-          <TabsList>
-            <TabsTrigger value='offline'>Offline Evaluation</TabsTrigger>
-            <TabsTrigger value='online'>Online Metrics</TabsTrigger>
+        <div className='flex flex-col gap-3 border-b pb-2 lg:flex-row lg:items-center lg:justify-between'>
+          <TabsList className='grid w-full grid-cols-2 lg:w-fit lg:flex'>
+            <TabsTrigger value='offline' className='w-full'>Offline Evaluation</TabsTrigger>
+            <TabsTrigger value='online' className='w-full'>Online Metrics</TabsTrigger>
           </TabsList>
 
-          <div className='flex items-center gap-2'>
-            <span className='text-sm font-medium'>Date Range:</span>
+          <div className='flex w-full flex-col gap-2 lg:w-auto lg:flex-row lg:items-center'>
+            <span className='text-sm font-medium lg:whitespace-nowrap'>Date Range:</span>
             <DateRangePicker value={dateRange} onChange={setDateRange} />
           </div>
         </div>

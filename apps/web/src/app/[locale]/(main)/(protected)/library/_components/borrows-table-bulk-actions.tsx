@@ -25,7 +25,7 @@ export function BorrowsTableBulkActions({ table }: Props) {
           icon: <Undo2 />,
           label: t(keys.table.bulkActions.return.label),
           onClick: async (items) => {
-            await Promise.all(items.map((it) => returnMut.mutateAsync(it.id)));
+            await Promise.all(items.map((it) => returnMut.mutateAsync({ id: it.id, data: undefined })));
             await qc.invalidateQueries({ queryKey: ['borrows'] });
           },
           variant: 'outline',

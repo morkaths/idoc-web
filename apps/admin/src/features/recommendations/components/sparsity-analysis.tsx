@@ -4,9 +4,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
 } from 'recharts';
 import {
   Card,
@@ -15,6 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@repo/ui/components/card';
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@repo/ui/components/chart';
 
 interface BucketData {
   bucketName: string;
@@ -24,6 +27,13 @@ interface BucketData {
 interface SparsityAnalysisProps {
   frequencyBuckets: BucketData[];
 }
+
+const chartConfig = {
+  ndcgAtK: {
+    label: 'NDCG@K',
+    color: 'var(--chart-1)',
+  },
+} satisfies ChartConfig;
 
 /**
  * Renders sparsity analysis (long-tail) performance metrics using Recharts.
@@ -39,7 +49,7 @@ export function SparsityAnalysis({ frequencyBuckets }: SparsityAnalysisProps) {
       </CardHeader>
       <CardContent className='pt-0'>
         <div className='h-[300px] w-full'>
-          <ResponsiveContainer width='100%' height='100%'>
+          <ChartContainer config={chartConfig} className='h-[250px] w-full'>
             <BarChart data={frequencyBuckets}>
               <CartesianGrid strokeDasharray='3 3' vertical={false} />
               <XAxis
@@ -54,26 +64,24 @@ export function SparsityAnalysis({ frequencyBuckets }: SparsityAnalysisProps) {
                 axisLine={false}
                 tickFormatter={(v) => `${(v * 100).toFixed(0)}%`}
               />
-              <Tooltip
-                contentStyle={{
-                  borderRadius: '8px',
-                  border: 'none',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                }}
-                formatter={(v: unknown) => {
-                  const value = typeof v === 'number' ? v : 0;
-                  return [`${(value * 100).toFixed(2)}%`, 'NDCG'];
-                }}
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    formatter={(v: unknown) => {
+                      const value = typeof v === 'number' ? v : 0;
+                      return [`${(value * 100).toFixed(2)}%`, 'NDCG@K'];
+                    }}
+                  />
+                }
               />
-              <Legend />
               <Bar
                 dataKey='ndcgAtK'
-                name='NDCG@K'
-                fill='hsl(var(--primary))'
+                fill='var(--color-ndcgAtK)'
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>
-          </ResponsiveContainer>
+          </ChartContainer>
         </div>
       </CardContent>
     </Card>

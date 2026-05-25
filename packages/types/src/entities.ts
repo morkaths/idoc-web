@@ -389,31 +389,41 @@ export interface RecommendationSparsityAnalysis {
 }
 
 export interface RecommendationMetricsResponse {
-  online_metrics: {
+  onlineMetrics: {
     date: string;
     strategy: string;
     impressions: number;
     fallbacks: number;
-    avg_latency_ms: number;
+    avgLatencyMs: number;
     clicks: number;
     borrows: number;
     ctr: number;
     cvr: number;
   }[];
-  empirical_recall: {
+  empiricalRecall: {
     date: string;
-    success_count: number;
-    total_consumption: number;
-    empirical_recall: number;
+    successCount: number;
+    totalConsumption: number;
+    empiricalRecall: number;
   }[];
-  strategy_distribution: {
+  strategyDistribution: {
     strategy: string;
     count: number;
     percentage: number;
   }[];
-  offline_metrics: {
-    target: string;
-    metrics: RecommendationEvaluationMetrics;
+  offlineMetrics: {
+    target?: string;
+    modelName?: string;
+    rmse?: number;
+    mae?: number;
+    precisionAtK?: number;
+    recallAtK?: number;
+    ndcgAtK?: number;
+    coverage?: number;
+    datasetSize?: number;
+    trainingDurationSec?: number;
+    createdAt?: string;
+    metrics?: RecommendationEvaluationMetrics;
     sparsity?: RecommendationSparsityAnalysis;
   }[];
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
 import { Calendar as CalendarIcon, X } from 'lucide-react';
 import { type DateRange } from 'react-day-picker';
 import { Button } from '@repo/ui/components/button';
@@ -27,6 +28,18 @@ export function DateRangePicker({
   className,
   disabled = false,
 }: DateRangePickerProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 640px)');
+    const updateMobileState = () => setIsMobile(mediaQuery.matches);
+
+    updateMobileState();
+    mediaQuery.addEventListener('change', updateMobileState);
+
+    return () => mediaQuery.removeEventListener('change', updateMobileState);
+  }, []);
+
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
     onChange(undefined);
@@ -40,7 +53,7 @@ export function DateRangePicker({
             id='date-range'
             variant='outline'
             className={cn(
-              'w-[280px] justify-start text-left font-normal relative pr-8',
+              'relative w-full justify-start pr-8 text-left font-normal sm:w-[280px]',
               !value && 'text-muted-foreground'
             )}
             disabled={disabled}
@@ -61,22 +74,22 @@ export function DateRangePicker({
               <button
                 type='button'
                 onClick={handleClear}
-                className='absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-0.5 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors'
+                className='absolute right-2 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
                 title='Clear range'
               >
-                <X className='h-3.5 w-3.5' />
+                <X className='h-3 w-3' />
               </button>
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className='w-auto p-0' align='start'>
+        <PopoverContent className='w-[calc(100vw-1rem)] p-0 sm:w-auto' align='start'>
           <Calendar
             initialFocus
             mode='range'
             defaultMonth={value?.from}
             selected={value}
             onSelect={onChange}
-            numberOfMonths={2}
+            numberOfMonths={isMobile ? 1 : 2}
           />
         </PopoverContent>
       </Popover>

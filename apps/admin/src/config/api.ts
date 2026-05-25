@@ -89,6 +89,7 @@ export const ApiEndpoint = {
     },
     notifications: {
       find: () => '/notifications',
+      stream: () => '/notifications/stream',
       markRead: (id: string) => `/notifications/${id}/read`,
       markAllRead: () => '/notifications/read-all',
       countUnread: () => '/notifications/unread',

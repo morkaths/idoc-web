@@ -22,7 +22,9 @@
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "gs": "^0.0.2",
+    "lucide-react": "^0.555.0",
     "motion": "^12.38.0",
-    "react-use-measure": "^2.1.7"
+    "react-use-measure": "^2.1.7",
+    "recharts": "^3.8.0"
   }
 }

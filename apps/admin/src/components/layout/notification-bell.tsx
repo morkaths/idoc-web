@@ -16,7 +16,7 @@ import {
 } from '@repo/ui/components/dropdown-menu';
 import { ScrollArea } from '@repo/ui/components/scroll-area';
 import { formatDistanceToNow } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import type { NotificationResponse } from '@/types';
 
@@ -53,6 +53,9 @@ const getNotificationConfig = (type: string) => {
 export function NotificationBell() {
   const { data: countData } = useUnreadNotificationsCount();
   const unreadCount = countData ?? 0;
+  const badgeLabel = unreadCount > 99 ? '99+' : unreadCount.toString();
+  // Slightly smaller text and tighter widths for better centering
+  const badgeSizeClass = unreadCount > 9 ? 'h-5 min-w-[20px] px-1 text-[7px] leading-none' : 'h-4 w-4 text-[8px] leading-none';
 
   const { data: notificationsList, isLoading } = useNotifications({
     page: 1,
@@ -83,9 +86,14 @@ export function NotificationBell() {
         <Button variant='outline' size='icon' className='relative size-7'>
           <Bell className='text-foreground/80' />
           {unreadCount > 0 && (
-            <span className='absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold text-white shadow-sm ring-2 ring-background animate-fade-in'>
+            <span
+              className={cn(
+                'absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full bg-destructive font-bold leading-none text-white shadow-sm ring-2 ring-background animate-fade-in tabular-nums',
+                badgeSizeClass
+              )}
+            >
               <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive/60 opacity-75' />
-              <span className='relative'>{unreadCount > 99 ? '99+' : unreadCount}</span>
+              <span className='relative'>{badgeLabel}</span>
             </span>
           )}
         </Button>
@@ -149,7 +157,7 @@ export function NotificationBell() {
                 const { Icon, iconClass, dotClass } = getNotificationConfig(item.type);
                 const formattedTime = formatDistanceToNow(new Date(item.createdAt), {
                   addSuffix: true,
-                  locale: vi,
+                  locale: enUS,
                 });
 
                 return (

@@ -41,8 +41,11 @@ export function FileItem({
       }
 
       setIsDownloading(true);
-      const blob = await FileApi.download(file.id);
-      const downloadUrl = URL.createObjectURL(blob);
+      const res = await FileApi.download(file.id);
+      if (!res.success || !res.data) {
+        throw new Error(res.message || 'Tải tập tin thất bại');
+      }
+      const downloadUrl = URL.createObjectURL(res.data);
       const link = document.createElement('a');
       link.href = downloadUrl;
       link.download = file.fileName;
@@ -51,6 +54,7 @@ export function FileItem({
       document.body.removeChild(link);
 
       URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
       toast.error('Tải tập tin thất bại');
       // eslint-disable-next-line no-console
       console.error('Download failed:', error);
