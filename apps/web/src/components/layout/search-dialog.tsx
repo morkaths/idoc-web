@@ -87,7 +87,7 @@ export function SearchDialog() {
                   key={book.id}
                   value={`${book.title}`}
                   onSelect={() => runCommand(() => router.push(`/books/${book.id}`))}
-                  className='aria-selected:bg-accent w-full cursor-pointer rounded-md p-2'
+                  className='w-full cursor-pointer rounded-md border border-transparent p-2 transition-colors hover:border-border/60 hover:bg-muted/40 aria-selected:border-border/60 aria-selected:bg-muted/60'
                 >
                   <div className='flex w-full items-start gap-3'>
                     <SearchBookCover title={book.title} src={book.coverUrl} />

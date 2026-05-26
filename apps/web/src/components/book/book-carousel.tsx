@@ -1,10 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import * as React from 'react';
 import type { BookResponse } from '@/types';
-import { ArrowRight, Sparkles, BookOpen, Heart } from 'lucide-react';
-import { Button } from '@repo/ui/components/button';
 import {
   Carousel,
   CarouselContent,
@@ -16,20 +13,9 @@ import { Skeleton } from '@repo/ui/components/skeleton';
 import { BookGridItem } from './book-grid-item';
 import { BookmarkProvider } from './bookmark-provider';
 
-const iconMap = {
-  sparkles: Sparkles,
-  'book-open': BookOpen,
-  heart: Heart,
-};
-
 interface BookCarouselProps {
   books?: BookResponse[];
   isLoading?: boolean;
-  title: string;
-  subtitle?: string;
-  icon?: keyof typeof iconMap;
-  viewAllHref?: string;
-  viewAllText?: string;
   emptyText?: string;
   limit?: number;
 }
@@ -40,71 +26,31 @@ interface BookCarouselProps {
 export const BookCarousel = ({
   books = [],
   isLoading = false,
-  title,
-  subtitle,
-  icon = 'sparkles',
-  viewAllHref,
-  viewAllText = 'Xem tất cả',
   emptyText = 'Không tìm thấy sách nào.',
   limit = 10,
 }: BookCarouselProps) => {
-  const Icon = iconMap[icon] || Sparkles;
-
   const displayBooks = React.useMemo(() => {
     return books.slice(0, limit);
   }, [books, limit]);
 
   if (!isLoading && displayBooks.length === 0) {
     return (
-      <section className='container py-6 pb-8 md:py-8 md:pb-10'>
-        <div className='mb-5 flex items-end justify-between'>
-          <div className='flex flex-col space-y-1.5'>
-            <div className='flex items-center gap-2'>
-              <Icon className='text-primary h-5 w-5' />
-              <h2 className='from-primary to-primary/60 bg-gradient-to-br bg-clip-text text-3xl font-bold tracking-tight text-transparent'>
-                {title}
-              </h2>
-            </div>
-            {subtitle && <p className='text-muted-foreground'>{subtitle}</p>}
-          </div>
-        </div>
-        <div className='flex h-[200px] items-center justify-center rounded-xl border-2 border-dashed'>
-          <p className='text-muted-foreground'>{emptyText}</p>
-        </div>
-      </section>
+      <div className='flex h-[200px] items-center justify-center rounded-xl border-2 border-dashed'>
+        <p className='text-muted-foreground'>{emptyText}</p>
+      </div>
     );
   }
 
   return (
-    <section className='container py-6 pb-8 md:py-8 md:pb-10'>
-      <div className='mb-5 flex items-end justify-between'>
-        <div className='flex flex-col space-y-1.5'>
-          <div className='flex items-center gap-2'>
-            <Icon className='text-primary h-5 w-5' />
-            <h2 className='from-primary to-primary/60 bg-gradient-to-br bg-clip-text text-3xl font-bold tracking-tight text-transparent'>
-              {title}
-            </h2>
-          </div>
-          {subtitle && <p className='text-muted-foreground'>{subtitle}</p>}
-        </div>
-        {viewAllHref && (
-          <Button variant='ghost' className='text-primary hover:bg-primary/5 font-semibold' asChild>
-            <Link href={viewAllHref}>
-              {viewAllText}
-              <ArrowRight className='ml-2 h-4 w-4' />
-            </Link>
-          </Button>
-        )}
-      </div>
-
+    <>
       {isLoading ? (
         <div className='px-2 md:px-4'>
           <Carousel className='w-full'>
-            <CarouselContent className='-ml-4 py-3 md:-ml-6 md:py-4'>
+            <CarouselContent className='ml-0 py-3 flex gap-x-5 md:py-3'>
               {[1, 2, 3, 4, 5].map((i) => (
                 <CarouselItem
                   key={i}
-                  className='basis-1/2 py-2 pl-4 sm:basis-1/3 sm:pl-5 md:basis-1/4 md:py-3 md:pl-6 lg:basis-1/5'
+                  className='basis-[190px] py-2 pl-0 sm:py-3 md:py-3'
                 >
                   <div className='group relative flex h-full w-full max-w-[180px] flex-col overflow-hidden rounded-md border border-gray-200/80 bg-zinc-50/90 pb-1 dark:border-zinc-800 dark:bg-zinc-900/80'>
                     <div className='pointer-events-none absolute top-0 right-0 left-0 h-[50%] overflow-hidden rounded-md'>
@@ -150,15 +96,17 @@ export const BookCarousel = ({
             <Carousel
               opts={{
                 align: 'start',
+                dragFree: true,
+                skipSnaps: true,
                 loop: displayBooks.length > 5,
               }}
               className='w-full'
             >
-              <CarouselContent className='-ml-4 py-3 md:-ml-6 md:py-4'>
+              <CarouselContent className='ml-0 py-3 flex gap-x-5 md:py-3'>
                 {displayBooks.map((book) => (
                   <CarouselItem
                     key={book.id}
-                    className='basis-1/2 py-2 pl-4 sm:basis-1/3 sm:pl-5 md:basis-1/4 md:py-3 md:pl-6 lg:basis-1/5'
+                    className='basis-[190px] py-2 pl-0 sm:py-3 md:py-3'
                   >
                     <BookGridItem book={book} />
                   </CarouselItem>
@@ -174,6 +122,6 @@ export const BookCarousel = ({
           </div>
         </BookmarkProvider>
       )}
-    </section>
+    </>
   );
 };

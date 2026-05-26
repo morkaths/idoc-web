@@ -11,6 +11,7 @@ import {
   CarouselPrevious,
 } from '@repo/ui/components/carousel';
 import { AppImage } from '@/components/app-image';
+import { useLocale } from '@/hooks/ui/useLocale';
 
 interface FeaturedAuthorsCarouselProps {
   authors: AuthorResponse[];
@@ -20,6 +21,8 @@ interface FeaturedAuthorsCarouselProps {
  * Client component that displays featured authors in a Carousel.
  */
 export const FeaturedAuthorsCarousel = ({ authors }: FeaturedAuthorsCarouselProps) => {
+  const { t, keys } = useLocale('navigation');
+
   return (
     <Carousel
       opts={{
@@ -55,7 +58,7 @@ export const FeaturedAuthorsCarousel = ({ authors }: FeaturedAuthorsCarouselProp
                 {author.name}
               </h3>
               <p className='text-muted-foreground line-clamp-1 text-sm'>
-                {author.nationality || 'Tác giả'}
+                {author.nationality || t(keys.authors.label)}
               </p>
             </Link>
           </CarouselItem>

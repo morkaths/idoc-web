@@ -173,6 +173,8 @@ export async function HomeView() {
     }
   }
 
+  const shuffledFeaturedAuthors = shuffleArray(featuredAuthors);
+
   // Create book fetch promises for selected categories
   const categoryBooksPromises = selectedCategories.map((cat) =>
     BookApi.search({
@@ -289,7 +291,7 @@ export async function HomeView() {
         <CategoryBookSections sections={categorySections} />
         <NewArrivalsSection books={newArrivalsBooks} />
         <CategoriesGridSection categories={gridCategories} />
-        <FeaturedAuthorsSection authors={featuredAuthors} />
+        <FeaturedAuthorsSection authors={shuffledFeaturedAuthors} />
         <StatsSection stats={stats} />
         <CTASection />
       </div>

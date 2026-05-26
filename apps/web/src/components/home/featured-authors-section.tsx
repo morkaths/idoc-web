@@ -9,6 +9,17 @@ interface FeaturedAuthorsSectionProps {
   authors: AuthorResponse[];
 }
 
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j] as T, shuffled[i] as T];
+  }
+
+  return shuffled;
+};
+
 /**
  * Server component that renders the authors layout section.
  * Receives featured authors via props and delegates carousel rendering to a client component.
@@ -16,6 +27,7 @@ interface FeaturedAuthorsSectionProps {
 export const FeaturedAuthorsSection = async ({ authors }: FeaturedAuthorsSectionProps) => {
   const t = await getTranslations('home');
   const tCommon = await getTranslations('common');
+  const displayAuthors = shuffleArray(authors);
 
   if (authors.length === 0) {
     return (
@@ -58,7 +70,7 @@ export const FeaturedAuthorsSection = async ({ authors }: FeaturedAuthorsSection
         </Button>
       </div>
 
-      <FeaturedAuthorsCarousel authors={authors} />
+      <FeaturedAuthorsCarousel authors={displayAuthors} />
     </section>
   );
 };

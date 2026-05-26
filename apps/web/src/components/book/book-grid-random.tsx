@@ -1,28 +1,14 @@
 'use client';
 
-import Link from 'next/link';
 import * as React from 'react';
 import type { BookResponse } from '@/types';
-import { ArrowRight, Sparkles, BookOpen, Heart } from 'lucide-react';
-import { Button } from '@repo/ui/components/button';
 import { Skeleton } from '@repo/ui/components/skeleton';
 import { BookGridItem } from './book-grid-item';
 import { BookmarkProvider } from './bookmark-provider';
 
-const iconMap = {
-  sparkles: Sparkles,
-  'book-open': BookOpen,
-  heart: Heart,
-};
-
 interface BookGridRandomProps {
   books?: BookResponse[];
   isLoading?: boolean;
-  title: string;
-  subtitle?: string;
-  icon?: keyof typeof iconMap;
-  viewAllHref?: string;
-  viewAllText?: string;
   emptyText?: string;
   limit?: number;
   shuffle?: boolean;
@@ -51,17 +37,10 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 export const BookGridRandom = ({
   books = [],
   isLoading = false,
-  title,
-  subtitle,
-  icon = 'sparkles',
-  viewAllHref,
-  viewAllText = 'Xem tất cả',
   emptyText = 'Không tìm thấy sách nào.',
   limit = 10,
   shuffle = false,
 }: BookGridRandomProps) => {
-  const Icon = iconMap[icon] || Sparkles;
-
   const [displayBooks, setDisplayBooks] = React.useState<BookResponse[]>(() => {
     return books.slice(0, limit);
   });
@@ -76,47 +55,14 @@ export const BookGridRandom = ({
 
   if (!isLoading && displayBooks.length === 0) {
     return (
-      <section className='container py-6 pb-8 md:py-8 md:pb-10'>
-        <div className='mb-5 flex items-end justify-between'>
-          <div className='flex flex-col space-y-1.5'>
-            <div className='flex items-center gap-2'>
-              <Icon className='text-primary h-5 w-5' />
-              <h2 className='from-primary to-primary/60 bg-gradient-to-br bg-clip-text text-3xl font-bold tracking-tight text-transparent'>
-                {title}
-              </h2>
-            </div>
-            {subtitle && <p className='text-muted-foreground'>{subtitle}</p>}
-          </div>
-        </div>
-        <div className='flex h-[200px] items-center justify-center rounded-xl border-2 border-dashed'>
-          <p className='text-muted-foreground'>{emptyText}</p>
-        </div>
-      </section>
+      <div className='flex h-[200px] items-center justify-center rounded-xl border-2 border-dashed'>
+        <p className='text-muted-foreground'>{emptyText}</p>
+      </div>
     );
   }
 
   return (
-    <section className='container py-6 pb-8 md:py-8 md:pb-10'>
-      <div className='mb-5 flex items-end justify-between'>
-        <div className='flex flex-col space-y-1.5'>
-          <div className='flex items-center gap-2'>
-            <Icon className='text-primary h-5 w-5' />
-            <h2 className='from-primary to-primary/60 bg-gradient-to-br bg-clip-text text-3xl font-bold tracking-tight text-transparent'>
-              {title}
-            </h2>
-          </div>
-          {subtitle && <p className='text-muted-foreground'>{subtitle}</p>}
-        </div>
-        {viewAllHref && (
-          <Button variant='ghost' className='text-primary hover:bg-primary/5 font-semibold' asChild>
-            <Link href={viewAllHref}>
-              {viewAllText}
-              <ArrowRight className='ml-2 h-4 w-4' />
-            </Link>
-          </Button>
-        )}
-      </div>
-
+    <>
       {isLoading ? (
         <div className='grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] items-start justify-items-center gap-6'>
           {Array.from({ length: limit }).map((_, i) => (
@@ -167,6 +113,6 @@ export const BookGridRandom = ({
           </div>
         </BookmarkProvider>
       )}
-    </section>
+    </>
   );
 };
