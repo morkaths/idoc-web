@@ -2,24 +2,24 @@
 
 import * as React from 'react';
 import { useSession } from 'next-auth/react';
+import { useLocale as useLocaleIntl } from 'next-intl';
+import type { CategoryResponse, CategoryTranslationResponse } from '@/types';
 import { RecommendationStrategy, FilterOperator, SortDirection } from '@repo/types';
-import { useFeed } from '@/hooks/data/useRecommendation';
-import { useBorrowHistory } from '@/hooks/data/useBorrow';
+import { BookOpen } from 'lucide-react';
 import { useBooksByIds, useSearchBooks } from '@/hooks/data/useBook';
+import { useBorrowHistory } from '@/hooks/data/useBorrow';
 import { useCategories } from '@/hooks/data/useCategory';
+import { useFeed } from '@/hooks/data/useRecommendation';
+import { useLocale } from '@/hooks/ui/useLocale';
+import { Skeleton } from '@repo/ui/components/skeleton';
 import { BannerCarousel } from '@/components/home/banner-carousel';
+import { CategoriesGrid } from '@/components/home/categories-grid';
+import { CTASection } from '@/components/home/cta-section';
+import { FeaturedAuthors } from '@/components/home/featured-authors';
+import { NewArrivals } from '@/components/home/new-arrivals';
 import { RecommendationCarousel } from '@/components/home/recommendation-carousel';
 import { RecommendationGrid } from '@/components/home/recommendation-grid';
-import { NewArrivals } from '@/components/home/new-arrivals';
-import { CategoriesGrid } from '@/components/home/categories-grid';
-import { FeaturedAuthors } from '@/components/home/featured-authors';
 import { StatsSection } from '@/components/home/stats-section';
-import { CTASection } from '@/components/home/cta-section';
-import { Skeleton } from '@repo/ui/components/skeleton';
-import { useLocale } from '@/hooks/ui/useLocale';
-import { useLocale as useLocaleIntl } from 'next-intl';
-import { BookOpen } from 'lucide-react';
-import type { CategoryResponse, CategoryTranslationResponse } from '@/types';
 
 /**
  * Reusable skeleton loader for a book carousel section.
@@ -76,7 +76,7 @@ const GridSkeleton = () => {
  */
 const HomeSkeleton = () => {
   return (
-    <div className='flex flex-col pb-20 space-y-12 md:space-y-24'>
+    <div className='flex flex-col space-y-12 pb-20 md:space-y-24'>
       {/* Banner Skeleton */}
       <div className='container py-8'>
         <Skeleton className='h-[400px] w-full rounded-md md:h-[500px]' />
@@ -97,23 +97,26 @@ export function HomeView() {
   const userId = session?.user?.id || 'anonymous';
 
   // Construct request object once authentication state is resolved
-  const feedRequest = status !== 'loading' ? {
-    userId,
-    sections: [
-      {
-        id: 'banner',
-        title: 'Top Featured',
-        strategy: RecommendationStrategy.POPULARITY,
-        limit: 5,
-      },
-      {
-        id: 'personal',
-        title: 'For You',
-        strategy: RecommendationStrategy.HYBRID,
-        limit: 10,
-      },
-    ],
-  } : undefined;
+  const feedRequest =
+    status !== 'loading'
+      ? {
+          userId,
+          sections: [
+            {
+              id: 'banner',
+              title: 'Top Featured',
+              strategy: RecommendationStrategy.POPULARITY,
+              limit: 5,
+            },
+            {
+              id: 'personal',
+              title: 'For You',
+              strategy: RecommendationStrategy.HYBRID,
+              limit: 10,
+            },
+          ],
+        }
+      : undefined;
 
   const { data: feedData, isLoading: feedLoading } = useFeed(feedRequest, {
     enabled: status !== 'loading',
@@ -244,9 +247,8 @@ export function HomeView() {
   const getCategoryTitleAndSubtitle = React.useCallback(
     (category: CategoryResponse) => {
       const translation =
-        category.translations?.find(
-          (tr: CategoryTranslationResponse) => tr.lang === locale
-        ) || category.translations?.[0];
+        category.translations?.find((tr: CategoryTranslationResponse) => tr.lang === locale) ||
+        category.translations?.[0];
       const categoryName = translation?.name || category.slug || 'Unnamed';
       const isHistoryBased = recommendedCategories.some((c) => c.id === category.id);
 
@@ -268,9 +270,7 @@ export function HomeView() {
   const isCategoriesLoading = categoriesLoading || isCat1Loading || isCat2Loading;
 
   const pageLoading =
-    isFeedLoading ||
-    (status === 'authenticated' && isBorrowHistoryLoading) ||
-    isCategoriesLoading;
+    isFeedLoading || (status === 'authenticated' && isBorrowHistoryLoading) || isCategoriesLoading;
 
   if (pageLoading) {
     return <HomeSkeleton />;
@@ -283,9 +283,7 @@ export function HomeView() {
     <div className='flex flex-col pb-20'>
       <BannerCarousel books={bannerBooks} />
       <div className='space-y-12 md:space-y-24'>
-        {personalBooks.length > 0 && (
-          <RecommendationCarousel books={personalBooks} />
-        )}
+        {personalBooks.length > 0 && <RecommendationCarousel books={personalBooks} />}
 
         {cat1 && cat1Books.length > 0 && (
           <RecommendationGrid

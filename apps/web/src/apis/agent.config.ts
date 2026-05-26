@@ -20,10 +20,10 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
 
 const toCamel = (obj: unknown): unknown => {
   if (Array.isArray(obj)) {
-    return obj.map(v => toCamel(v));
+    return obj.map((v) => toCamel(v));
   } else if (isPlainObject(obj)) {
     return Object.keys(obj).reduce((result, key) => {
-      const camelKey = key.replace(/([-_][a-z])/g, group =>
+      const camelKey = key.replace(/([-_][a-z])/g, (group) =>
         group.toUpperCase().replace('-', '').replace('_', '')
       );
       return {
@@ -37,10 +37,10 @@ const toCamel = (obj: unknown): unknown => {
 
 const toSnake = (obj: unknown): unknown => {
   if (Array.isArray(obj)) {
-    return obj.map(v => toSnake(v));
+    return obj.map((v) => toSnake(v));
   } else if (isPlainObject(obj)) {
     return Object.keys(obj).reduce((result, key) => {
-      const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+      const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
       return {
         ...result,
         [snakeKey]: toSnake(obj[key]),

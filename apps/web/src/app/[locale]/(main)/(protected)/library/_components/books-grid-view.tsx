@@ -28,4 +28,3 @@ export default function BookGridView({ filter }: { filter: Partial<FindParams> }
     </div>
   );
 }
-

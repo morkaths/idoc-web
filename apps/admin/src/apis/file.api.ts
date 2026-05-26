@@ -73,9 +73,8 @@ export const FileApi = {
   },
 
   getStorageUsage: async (): Promise<ApiResponse<StorageUsageResponse>> => {
-    return ApiClient.get<StorageUsageResponse>(
-      ApiEndpoint.endpoints.files.storageUsage(),
-      { security: 'private' }
-    );
+    return ApiClient.get<StorageUsageResponse>(ApiEndpoint.endpoints.files.storageUsage(), {
+      security: 'private',
+    });
   },
 };

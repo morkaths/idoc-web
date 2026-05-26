@@ -10,7 +10,6 @@ import {
 } from '@/types';
 import { AgentClient } from './agent.config';
 
-
 export const RecommendationApi = {
   getPopular: (page?: number, limit?: number): Promise<ApiResponse<RecommendationResponse>> => {
     const resolvedLimit = limit ?? 10;
@@ -21,7 +20,11 @@ export const RecommendationApi = {
     );
   },
 
-  getSimilar: (bookId: string, page?: number, limit?: number): Promise<ApiResponse<SimilarBooksResponse>> => {
+  getSimilar: (
+    bookId: string,
+    page?: number,
+    limit?: number
+  ): Promise<ApiResponse<SimilarBooksResponse>> => {
     const resolvedLimit = limit ?? 10;
     const offset = ((page ?? 1) - 1) * resolvedLimit;
     return AgentClient.get<SimilarBooksResponse>(
@@ -49,14 +52,8 @@ export const RecommendationApi = {
   },
 
   getFeed: (req: FeedRequest): Promise<ApiResponse<FeedResponse>> =>
-    AgentClient.post<FeedResponse>(
-      AgentEndpoint.endpoints.recommendations.feed(),
-      req
-    ),
+    AgentClient.post<FeedResponse>(AgentEndpoint.endpoints.recommendations.feed(), req),
 
   logInteraction: (req: RecommendationInteractionRequest): Promise<ApiResponse<boolean>> =>
-    AgentClient.post<boolean>(
-      AgentEndpoint.endpoints.recommendations.interactions(),
-      req
-    ),
+    AgentClient.post<boolean>(AgentEndpoint.endpoints.recommendations.interactions(), req),
 };

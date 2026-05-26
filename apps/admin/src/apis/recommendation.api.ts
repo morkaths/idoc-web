@@ -8,8 +8,6 @@ import {
 } from '@/types';
 import { AgentClient } from './agent.config';
 
-
-
 export const RecommendationApi = {
   sync: (): Promise<ApiResponse<RecommendationSyncResponse>> =>
     AgentClient.post<RecommendationSyncResponse>(AgentEndpoint.endpoints.recommendations.sync()),
@@ -20,7 +18,9 @@ export const RecommendationApi = {
   removeBook: (bookId: string): Promise<ApiResponse<boolean>> =>
     AgentClient.delete<boolean>(AgentEndpoint.endpoints.recommendations.removeBook(bookId)),
 
-  train: (target: TrainingTarget = TrainingTarget.ALL): Promise<ApiResponse<RecommendationTrainResponse>> => {
+  train: (
+    target: TrainingTarget = TrainingTarget.ALL
+  ): Promise<ApiResponse<RecommendationTrainResponse>> => {
     return AgentClient.post<RecommendationTrainResponse>(
       AgentEndpoint.endpoints.recommendations.train(),
       {},

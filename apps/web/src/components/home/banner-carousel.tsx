@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import * as React from 'react';
 import { isValidCover } from '@/lib/book-utils';
+import type { BookResponse } from '@/types';
 import { cn } from '@repo/ui/lib/utils';
 import Autoplay from 'embla-carousel-autoplay';
 import { motion } from 'framer-motion';
 import { ArrowRight, Star, Trophy } from 'lucide-react';
 import { useBooks } from '@/hooks/data/useBook';
 import { useLocale } from '@/hooks/ui/useLocale';
-import type { BookResponse } from '@/types';
 import { Badge } from '@repo/ui/components/badge';
 import BookCover3d from '@repo/ui/components/book-cover-3d';
 import { Button } from '@repo/ui/components/button';

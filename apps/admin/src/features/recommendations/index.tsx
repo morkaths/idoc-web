@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { format } from 'date-fns';
 import { RecommendationStrategy, type TrainingTarget } from '@repo/types';
 import { Sparkles, BarChart3, TrendingUp, Target, Zap, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { format } from 'date-fns';
 import { type DateRange } from 'react-day-picker';
+import { toast } from 'sonner';
 import {
   useRecommendationSync,
   useRecommendationTrain,
@@ -25,12 +25,12 @@ import {
 } from '@repo/ui/components/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/tabs';
 import { DateRangePicker } from '@/components/form/date-range-picker';
-import { RecommendationHeader } from './components/recommendation-header';
 import { MetricCard } from './components/metric-card';
-import { SparsityAnalysis } from './components/sparsity-analysis';
+import { OnlineMetrics } from './components/online-metrics';
+import { RecommendationHeader } from './components/recommendation-header';
 import { RecommendationSyncDialog } from './components/recommendation-sync-dialog';
 import { RecommendationTrainDialog } from './components/recommendation-train-dialog';
-import { OnlineMetrics } from './components/online-metrics';
+import { SparsityAnalysis } from './components/sparsity-analysis';
 import {
   selectRecommendationOfflineMetric,
   type RecommendationOfflineMetric,
@@ -83,14 +83,14 @@ export function Recommendations() {
   // Map and extract available metrics from flat or nested structure
   const metrics = evalData
     ? {
-      precisionAtK: evalData.precisionAtK ?? evalData.metrics?.precisionAtK ?? 0,
-      recallAtK: evalData.recallAtK ?? evalData.metrics?.recallAtK ?? 0,
-      ndcgAtK: evalData.ndcgAtK ?? evalData.metrics?.ndcgAtK ?? 0,
-      hitRate: evalData.metrics?.hitRate,
-      rmse: evalData.rmse ?? evalData.metrics?.rmse,
-      mae: evalData.mae ?? evalData.metrics?.mae,
-      coverage: evalData.coverage,
-    }
+        precisionAtK: evalData.precisionAtK ?? evalData.metrics?.precisionAtK ?? 0,
+        recallAtK: evalData.recallAtK ?? evalData.metrics?.recallAtK ?? 0,
+        ndcgAtK: evalData.ndcgAtK ?? evalData.metrics?.ndcgAtK ?? 0,
+        hitRate: evalData.metrics?.hitRate,
+        rmse: evalData.rmse ?? evalData.metrics?.rmse,
+        mae: evalData.mae ?? evalData.metrics?.mae,
+        coverage: evalData.coverage,
+      }
     : null;
 
   const sparsity = evalData?.sparsity || null;
@@ -116,9 +116,13 @@ export function Recommendations() {
 
       <Tabs defaultValue='offline' className='w-full space-y-6'>
         <div className='flex flex-col gap-3 border-b pb-2 lg:flex-row lg:items-center lg:justify-between'>
-          <TabsList className='grid w-full grid-cols-2 lg:w-fit lg:flex'>
-            <TabsTrigger value='offline' className='w-full'>Offline Evaluation</TabsTrigger>
-            <TabsTrigger value='online' className='w-full'>Online Metrics</TabsTrigger>
+          <TabsList className='grid w-full grid-cols-2 lg:flex lg:w-fit'>
+            <TabsTrigger value='offline' className='w-full'>
+              Offline Evaluation
+            </TabsTrigger>
+            <TabsTrigger value='online' className='w-full'>
+              Online Metrics
+            </TabsTrigger>
           </TabsList>
 
           <div className='flex w-full flex-col gap-2 lg:w-auto lg:flex-row lg:items-center'>
@@ -127,8 +131,8 @@ export function Recommendations() {
           </div>
         </div>
 
-        <TabsContent value='offline' className='space-y-6 mt-0'>
-          <Card>
+        <TabsContent value='offline' className='mt-0 space-y-6'>
+          <Card className='border-border/60 border shadow-sm'>
             <CardHeader>
               <CardTitle>Strategy Evaluation</CardTitle>
               <CardDescription>
@@ -270,4 +274,3 @@ export function Recommendations() {
     </div>
   );
 }
-

@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { type Row } from '@tanstack/react-table';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { type Row } from '@tanstack/react-table';
+import { FileApi } from '@/apis/file.api';
+import type { FileResponse } from '@/types';
 import { Download, Trash2, Copy, Link, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import type { FileResponse } from '@/types';
 import { Button } from '@repo/ui/components/button';
 import {
   DropdownMenu,
@@ -12,7 +13,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu';
-import { FileApi } from '@/apis/file.api';
 import { useStorageContext } from './storage-provider';
 
 type StorageTableRowActionsProps<TData> = {
@@ -66,10 +66,7 @@ export function StorageTableRowActions<TData>({ row }: StorageTableRowActionsPro
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align='end' className='w-48'>
-        <DropdownMenuItem
-          onClick={handleDownload}
-          disabled={isDownloading}
-        >
+        <DropdownMenuItem onClick={handleDownload} disabled={isDownloading}>
           {isDownloading ? (
             <Loader2 className='mr-2 h-4 w-4 animate-spin' />
           ) : (
@@ -78,9 +75,7 @@ export function StorageTableRowActions<TData>({ row }: StorageTableRowActionsPro
           Download
         </DropdownMenuItem>
 
-        <DropdownMenuItem
-          onClick={() => copyToClipboard(file.id, 'File ID copied to clipboard!')}
-        >
+        <DropdownMenuItem onClick={() => copyToClipboard(file.id, 'File ID copied to clipboard!')}>
           <Copy className='mr-2 h-4 w-4' />
           Copy ID
         </DropdownMenuItem>

@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { FileResponse } from '@/types';
 import { FileArchive, FileCode, FilePlay, FileText, Sheet, Trash2, Loader2 } from 'lucide-react';
-import { FileApi } from '@/apis/file.api';
 import { toast } from 'sonner';
+import { FileApi } from '@/apis/file.api';
 
 export function FileItem({
   file,

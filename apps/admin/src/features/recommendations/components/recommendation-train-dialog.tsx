@@ -1,6 +1,7 @@
 'use client';
 
 import { TrainingTarget } from '@repo/types';
+import { Loader2, Play } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
@@ -11,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@repo/ui/components/dialog';
+import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/components/form';
 import {
   Select,
   SelectContent,
@@ -18,14 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/select';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormLabel,
-  FormMessage,
-} from '@repo/ui/components/form';
-import { Loader2, Play } from 'lucide-react';
 import { useRecommendationTrainForm } from '../data/use-recommendation-train-form';
 
 interface RecommendationTrainDialogProps {
@@ -55,7 +49,7 @@ export function RecommendationTrainDialog({
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2'>
-            <Play className='h-5 w-5 text-primary' />
+            <Play className='text-primary h-5 w-5' />
             Train Recommendation Models
           </DialogTitle>
           <DialogDescription>
@@ -72,10 +66,7 @@ export function RecommendationTrainDialog({
                 render={({ field }) => (
                   <div className='grid gap-3'>
                     <FormLabel htmlFor='target'>Training Target</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger id='target'>
                           <SelectValue placeholder='Select training target' />
@@ -84,7 +75,9 @@ export function RecommendationTrainDialog({
                       <SelectContent>
                         <SelectItem value={TrainingTarget.ALL}>All Models (CBF & IBCF)</SelectItem>
                         <SelectItem value={TrainingTarget.CBF}>Content-Based (CBF) Only</SelectItem>
-                        <SelectItem value={TrainingTarget.IBCF}>Collaborative (IBCF) Only</SelectItem>
+                        <SelectItem value={TrainingTarget.IBCF}>
+                          Collaborative (IBCF) Only
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -92,10 +85,16 @@ export function RecommendationTrainDialog({
                 )}
               />
 
-              <div className='rounded-lg bg-muted p-3 text-xs text-muted-foreground space-y-1'>
-                <p className='font-semibold text-foreground'>Model descriptions:</p>
-                <p>• <strong>CBF:</strong> Analyzes book metadata (genres, description, author) to suggest similar content.</p>
-                <p>• <strong>IBCF:</strong> Collaborative approach based on user interaction histories and ratings.</p>
+              <div className='bg-muted text-muted-foreground space-y-1 rounded-lg p-3 text-xs'>
+                <p className='text-foreground font-semibold'>Model descriptions:</p>
+                <p>
+                  • <strong>CBF:</strong> Analyzes book metadata (genres, description, author) to
+                  suggest similar content.
+                </p>
+                <p>
+                  • <strong>IBCF:</strong> Collaborative approach based on user interaction
+                  histories and ratings.
+                </p>
               </div>
             </div>
 

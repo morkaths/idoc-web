@@ -16,10 +16,10 @@ const agentAxios = axios.create({
 
 const toCamel = (obj: any): any => {
   if (Array.isArray(obj)) {
-    return obj.map(v => toCamel(v));
+    return obj.map((v) => toCamel(v));
   } else if (obj !== null && obj !== undefined && obj.constructor === Object) {
     return Object.keys(obj).reduce((result, key) => {
-      const camelKey = key.replace(/([-_][a-z])/g, group =>
+      const camelKey = key.replace(/([-_][a-z])/g, (group) =>
         group.toUpperCase().replace('-', '').replace('_', '')
       );
       return {
@@ -33,10 +33,10 @@ const toCamel = (obj: any): any => {
 
 const toSnake = (obj: any): any => {
   if (Array.isArray(obj)) {
-    return obj.map(v => toSnake(v));
+    return obj.map((v) => toSnake(v));
   } else if (obj !== null && obj !== undefined && obj.constructor === Object) {
     return Object.keys(obj).reduce((result, key) => {
-      const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+      const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
       return {
         ...result,
         [snakeKey]: toSnake(obj[key]),
@@ -91,7 +91,9 @@ export const AgentClient = {
     options?: { params?: Record<string, unknown> }
   ): Promise<ApiResponse<T>> {
     try {
-      const response = await agentAxios.post<ApiResponse<T>>(url, data, { params: options?.params });
+      const response = await agentAxios.post<ApiResponse<T>>(url, data, {
+        params: options?.params,
+      });
       if (response.data && 'success' in response.data && response.data.success === false) {
         throw response.data;
       }

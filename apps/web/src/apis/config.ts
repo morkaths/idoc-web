@@ -152,7 +152,7 @@ const applyAuthHeader = async (config: InternalAxiosRequestConfig, useAuth: bool
       const { cookies } = await import('next/headers');
       const cookieStore = await cookies();
       const token = cookieStore.get(env.cookie.accessToken)?.value;
-      
+
       if (token) {
         config.headers.set('Authorization', `Bearer ${token}`);
       }

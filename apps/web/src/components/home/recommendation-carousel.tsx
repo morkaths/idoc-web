@@ -1,10 +1,10 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
+import type { RecommendedBookResponse } from '@/types';
 import { Heart, type LucideIcon } from 'lucide-react';
 import { useRecommendations } from '@/hooks/data/useRecommendation';
 import { useLocale } from '@/hooks/ui/useLocale';
-import type { RecommendedBookResponse } from '@/types';
 import {
   Carousel,
   CarouselContent,

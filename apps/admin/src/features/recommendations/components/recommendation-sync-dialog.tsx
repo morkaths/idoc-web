@@ -1,5 +1,6 @@
 'use client';
 
+import { Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
@@ -10,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@repo/ui/components/dialog';
-import { Loader2, RefreshCw } from 'lucide-react';
 
 interface RecommendationSyncDialogProps {
   open: boolean;
@@ -37,15 +37,16 @@ export function RecommendationSyncDialog({
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2'>
-            <RefreshCw className='h-5 w-5 text-primary' />
+            <RefreshCw className='text-primary h-5 w-5' />
             Sync Recommendation Data
           </DialogTitle>
           <DialogDescription>
-            This action will synchronize all user interactions, book metadata, and reading logs with the recommendation engine database. This might take a few moments.
+            This action will synchronize all user interactions, book metadata, and reading logs with
+            the recommendation engine database. This might take a few moments.
           </DialogDescription>
         </DialogHeader>
 
-        <div className='py-4 text-sm text-muted-foreground'>
+        <div className='text-muted-foreground py-4 text-sm'>
           Are you sure you want to proceed with the synchronization?
         </div>
 

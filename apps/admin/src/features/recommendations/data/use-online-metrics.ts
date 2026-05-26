@@ -71,7 +71,10 @@ export function useOnlineMetrics({
 
   // Calculate aggregated summary cards
   const summary = useMemo(() => {
-    const totalImpressions = normalizedOnlineMetrics.reduce((sum, item) => sum + item.impressions, 0);
+    const totalImpressions = normalizedOnlineMetrics.reduce(
+      (sum, item) => sum + item.impressions,
+      0
+    );
     const totalClicks = normalizedOnlineMetrics.reduce((sum, item) => sum + item.clicks, 0);
     const totalBorrows = normalizedOnlineMetrics.reduce((sum, item) => sum + item.borrows, 0);
     const totalFallbacks = normalizedOnlineMetrics.reduce((sum, item) => sum + item.fallbacks, 0);
@@ -97,15 +100,18 @@ export function useOnlineMetrics({
 
   // Aggregate data by strategy for chart visualization
   const strategyAggregates = useMemo(() => {
-    const aggregates: Record<string, {
-      strategy: string;
-      impressions: number;
-      clicks: number;
-      borrows: number;
-      fallbacks: number;
-      totalLatency: number;
-      latencyCount: number;
-    }> = {};
+    const aggregates: Record<
+      string,
+      {
+        strategy: string;
+        impressions: number;
+        clicks: number;
+        borrows: number;
+        fallbacks: number;
+        totalLatency: number;
+        latencyCount: number;
+      }
+    > = {};
 
     normalizedOnlineMetrics.forEach((m) => {
       const s = m.strategy;
@@ -131,7 +137,7 @@ export function useOnlineMetrics({
     return Object.values(aggregates).map((agg) => {
       const ctr = agg.impressions > 0 ? (agg.clicks / agg.impressions) * 100 : 0;
       const cvr = agg.impressions > 0 ? (agg.borrows / agg.impressions) * 100 : 0;
-      const avgLatencyMs = agg.latencyCount > 0 ? (agg.totalLatency / agg.latencyCount) : 0;
+      const avgLatencyMs = agg.latencyCount > 0 ? agg.totalLatency / agg.latencyCount : 0;
       return {
         strategy: agg.strategy,
         impressions: agg.impressions,

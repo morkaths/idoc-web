@@ -2,7 +2,6 @@ import { useQueries } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
 import type { BookResponse, BookRequest, PageParams } from '@/types';
 import type { BookSearchParams } from '@/apis/book.api';
-
 import {
   useListQuery,
   useItemQuery,
@@ -49,11 +48,7 @@ export const useBooksByIds = (bookIds: string[], enabled = true) => {
  * @param options Query options
  */
 export const useBooks = (params: PageParams = {}, options?: ListQueryOptions<BookResponse>) => {
-  return useListQuery<BookResponse>(
-    ['books', params],
-    () => BookApi.find(params),
-    options
-  );
+  return useListQuery<BookResponse>(['books', params], () => BookApi.find(params), options);
 };
 
 /**

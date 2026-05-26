@@ -5,10 +5,10 @@ import { useSession } from 'next-auth/react';
 import { useLocale as useLocaleIntl } from 'next-intl';
 import { type CategoryTranslationResponse, type CategoryResponse } from '@/types';
 import { SortDirection, FilterOperator } from '@repo/types';
+import { useBooksByIds } from '@/hooks/data/useBook';
+import { useBorrowHistory } from '@/hooks/data/useBorrow';
 import { useCategories } from '@/hooks/data/useCategory';
 import { useRecommendations } from '@/hooks/data/useRecommendation';
-import { useBorrowHistory } from '@/hooks/data/useBorrow';
-import { useBooksByIds } from '@/hooks/data/useBook';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { BookGridItems } from '@/components/book/book-grid-items';
 import { CategoryScroll } from './category-scroll';
@@ -36,10 +36,7 @@ export default function DiscoverView() {
     return borrowHistoryData?.data?.map((loan) => loan.book.id) ?? [];
   }, [borrowHistoryData?.data]);
 
-  const { data: fullBorrowedBooks } = useBooksByIds(
-    borrowedBookIds,
-    borrowedBookIds.length > 0
-  );
+  const { data: fullBorrowedBooks } = useBooksByIds(borrowedBookIds, borrowedBookIds.length > 0);
 
   const recommendedCategories = React.useMemo(() => {
     if (!fullBorrowedBooks || fullBorrowedBooks.length === 0) return [];

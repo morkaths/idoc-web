@@ -105,7 +105,10 @@ export function BooksMutateDialog({
                 if (coverFile) {
                   toast.loading('Uploading cover image...', { id: 'upload-cover' });
                   try {
-                    const uploadResult = await uploadImage.mutateAsync({ file: coverFile, folder: 'books' });
+                    const uploadResult = await uploadImage.mutateAsync({
+                      file: coverFile,
+                      folder: 'books',
+                    });
                     coverUrl = uploadResult.data || '';
                     toast.success('Cover image uploaded!', { id: 'upload-cover' });
                   } catch (error) {

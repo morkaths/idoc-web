@@ -46,7 +46,8 @@ export function StorageDialogs() {
           title={`Delete file: ${currentRow.fileName}?`}
           desc={
             <>
-              You are about to delete file <strong>{currentRow.fileName}</strong> with ID <strong>{currentRow.id}</strong>.
+              You are about to delete file <strong>{currentRow.fileName}</strong> with ID{' '}
+              <strong>{currentRow.id}</strong>.
               <br />
               This action cannot be undone.
             </>

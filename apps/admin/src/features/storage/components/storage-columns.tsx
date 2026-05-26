@@ -1,16 +1,9 @@
-import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import {
-  FileText,
-  FileImage,
-  FileCode,
-  FilePlay,
-  FileArchive,
-  Sheet,
-} from 'lucide-react';
+import { type ColumnDef } from '@tanstack/react-table';
 import type { FileResponse } from '@/types';
-import { Checkbox } from '@repo/ui/components/checkbox';
+import { FileText, FileImage, FileCode, FilePlay, FileArchive, Sheet } from 'lucide-react';
 import { Badge } from '@repo/ui/components/badge';
+import { Checkbox } from '@repo/ui/components/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table';
 import Highlight from '@/components/highlight';
 import { StorageTableRowActions } from './storage-table-row-actions';
@@ -94,7 +87,7 @@ export const storageColumns: ColumnDef<FileResponse>[] = [
       const contentType = String(row.original.contentType ?? '');
       const query = String(table.getState().globalFilter ?? '');
       return (
-        <div className='flex items-center gap-2 max-w-72 sm:max-w-96 md:max-w-124'>
+        <div className='flex max-w-72 items-center gap-2 sm:max-w-96 md:max-w-124'>
           {getFileIcon(contentType)}
           <span className='truncate font-medium'>
             <Highlight text={fileName} query={query} />
@@ -108,11 +101,7 @@ export const storageColumns: ColumnDef<FileResponse>[] = [
     header: ({ column }) => <DataTableColumnHeader column={column} title='Type' />,
     cell: ({ row }) => {
       const contentType = String(row.getValue('contentType') ?? 'unknown');
-      return (
-        <span className='text-muted-foreground text-xs whitespace-nowrap'>
-          {contentType}
-        </span>
-      );
+      return <span className='text-muted-foreground text-xs whitespace-nowrap'>{contentType}</span>;
     },
   },
   {

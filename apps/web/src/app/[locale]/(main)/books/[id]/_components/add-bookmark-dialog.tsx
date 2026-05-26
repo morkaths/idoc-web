@@ -32,7 +32,12 @@ type AddBookmarkDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-export function AddBookmarkDialog({ bookId, bookmarkId, open, onOpenChange }: AddBookmarkDialogProps) {
+export function AddBookmarkDialog({
+  bookId,
+  bookmarkId,
+  open,
+  onOpenChange,
+}: AddBookmarkDialogProps) {
   const { t, keys } = useLocale('book');
   const { data: session } = useSession();
   const [selectedFolder, setSelectedFolder] = useState<string>('');

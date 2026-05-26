@@ -1,10 +1,4 @@
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import {
   Card,
   CardContent,
@@ -13,7 +7,7 @@ import {
   CardTitle,
 } from '@repo/ui/components/card';
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -40,24 +34,17 @@ const chartConfig = {
  */
 export function SparsityAnalysis({ frequencyBuckets }: SparsityAnalysisProps) {
   return (
-    <Card>
+    <Card className='border-border/60 border shadow-sm'>
       <CardHeader>
         <CardTitle className='text-base'>Sparsity Analysis (Long-tail)</CardTitle>
-        <CardDescription>
-          Performance across different user activity levels.
-        </CardDescription>
+        <CardDescription>Performance across different user activity levels.</CardDescription>
       </CardHeader>
       <CardContent className='pt-0'>
         <div className='h-[300px] w-full'>
           <ChartContainer config={chartConfig} className='h-[250px] w-full'>
             <BarChart data={frequencyBuckets}>
               <CartesianGrid strokeDasharray='3 3' vertical={false} />
-              <XAxis
-                dataKey='bucketName'
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
+              <XAxis dataKey='bucketName' fontSize={12} tickLine={false} axisLine={false} />
               <YAxis
                 fontSize={12}
                 tickLine={false}
@@ -75,11 +62,7 @@ export function SparsityAnalysis({ frequencyBuckets }: SparsityAnalysisProps) {
                   />
                 }
               />
-              <Bar
-                dataKey='ndcgAtK'
-                fill='var(--color-ndcgAtK)'
-                radius={[4, 4, 0, 0]}
-              />
+              <Bar dataKey='ndcgAtK' fill='var(--color-ndcgAtK)' radius={[4, 4, 0, 0]} />
             </BarChart>
           </ChartContainer>
         </div>

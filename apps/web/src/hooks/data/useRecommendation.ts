@@ -82,19 +82,17 @@ export const useSimilarBooks = (
   return useEnrichedBooks(data, isLoading, isError);
 };
 
-export const useFeed = (
-  req: FeedRequest | undefined,
-  options?: ItemQueryOptions<FeedResponse>
-) => {
-  const { data: feedData, isLoading: isLoadingFeed, isError: isErrorFeed, ...rest } = useItemQuery(
-    ['recommendations', 'feed', req],
-    () => RecommendationApi.getFeed(req!),
-    {
-      ...options,
-      enabled: !!req && options?.enabled !== false,
-      staleTime: options?.staleTime ?? 5 * 60 * 1000,
-    }
-  );
+export const useFeed = (req: FeedRequest | undefined, options?: ItemQueryOptions<FeedResponse>) => {
+  const {
+    data: feedData,
+    isLoading: isLoadingFeed,
+    isError: isErrorFeed,
+    ...rest
+  } = useItemQuery(['recommendations', 'feed', req], () => RecommendationApi.getFeed(req!), {
+    ...options,
+    enabled: !!req && options?.enabled !== false,
+    staleTime: options?.staleTime ?? 5 * 60 * 1000,
+  });
 
   const feedLayout = useMemo(() => feedData?.feedLayout || [], [feedData?.feedLayout]);
 

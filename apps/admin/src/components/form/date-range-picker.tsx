@@ -1,13 +1,13 @@
 'use client';
 
-import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
+import { format } from 'date-fns';
 import { Calendar as CalendarIcon, X } from 'lucide-react';
 import { type DateRange } from 'react-day-picker';
+import { cn } from '@/lib/utils';
 import { Button } from '@repo/ui/components/button';
 import { Calendar } from '@repo/ui/components/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui/components/popover';
-import { cn } from '@/lib/utils';
 
 interface DateRangePickerProps {
   value: DateRange | undefined;
@@ -74,7 +74,7 @@ export function DateRangePicker({
               <button
                 type='button'
                 onClick={handleClear}
-                className='absolute right-2 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
+                className='text-muted-foreground hover:bg-muted hover:text-foreground absolute top-1/2 right-2 flex size-5 -translate-y-1/2 items-center justify-center rounded-md transition-colors'
                 title='Clear range'
               >
                 <X className='h-3 w-3' />

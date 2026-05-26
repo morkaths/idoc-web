@@ -99,11 +99,15 @@ export function BorrowsMutateDialog({
                       value={field.value}
                       onChange={field.onChange}
                       error={fieldState.error?.message}
-                      initialUser={initialData?.user ? {
-                        id: initialData.user.id,
-                        username: initialData.user.username,
-                        email: initialData.user.email || '',
-                      } : undefined}
+                      initialUser={
+                        initialData?.user
+                          ? {
+                              id: initialData.user.id,
+                              username: initialData.user.username,
+                              email: initialData.user.email || '',
+                            }
+                          : undefined
+                      }
                     />
                   </div>
                 )}

@@ -1,13 +1,5 @@
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
+import { Eye, Clock, Activity, AlertCircle } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 import {
   Card,
   CardContent,
@@ -15,6 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@repo/ui/components/card';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from '@repo/ui/components/chart';
 import {
   Table,
   TableBody,
@@ -24,18 +23,11 @@ import {
   TableRow,
 } from '@repo/ui/components/table';
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from '@repo/ui/components/chart';
-import { Eye, Clock, Activity, AlertCircle } from 'lucide-react';
-import {
   useOnlineMetrics,
   type OnlineMetricItem,
   type StrategyDistItem,
 } from '../data/use-online-metrics';
+import { MetricCard } from './metric-card';
 
 interface OnlineMetricsProps {
   onlineMetrics: OnlineMetricItem[];
@@ -46,7 +38,10 @@ interface OnlineMetricsProps {
  * Component to render online recommendation performance charts and tables.
  * @param {OnlineMetricsProps} props - The component properties.
  */
-export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }: OnlineMetricsProps) {
+export function OnlineMetrics({
+  onlineMetrics = [],
+  strategyDistribution = [],
+}: OnlineMetricsProps) {
   const {
     normalizedOnlineMetrics,
     normalizedStrategyDistribution,
@@ -61,64 +56,49 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
     <div className='space-y-6'>
       {/* Summary Cards */}
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>Online Impressions</CardTitle>
-            <Eye className='text-muted-foreground h-4 w-4' />
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>{summary.totalImpressions.toLocaleString()}</div>
-            <p className='text-muted-foreground mt-1 text-xs'>Total served recommendations</p>
-          </CardContent>
-        </Card>
+        <MetricCard
+          title='Online Impressions'
+          value={summary.totalImpressions.toLocaleString()}
+          icon={Eye}
+          description='Total served recommendations'
+        />
 
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>Average Latency</CardTitle>
-            <Clock className='text-muted-foreground h-4 w-4' />
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>{summary.avgLatencyMs.toFixed(1)} ms</div>
-            <p className='text-muted-foreground mt-1 text-xs'>Weighted response latency</p>
-          </CardContent>
-        </Card>
+        <MetricCard
+          title='Average Latency'
+          value={`${summary.avgLatencyMs.toFixed(1)} ms`}
+          icon={Clock}
+          description='Weighted response latency'
+        />
 
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>Overall CTR / CVR</CardTitle>
-            <Activity className='text-muted-foreground h-4 w-4' />
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>
-              {summary.ctr.toFixed(2)}% / {summary.cvr.toFixed(2)}%
-            </div>
-            <p className='text-muted-foreground mt-1 text-xs'>Click & Borrow conversion rates</p>
-          </CardContent>
-        </Card>
+        <MetricCard
+          title='Overall CTR / CVR'
+          value={`${summary.ctr.toFixed(2)}% / ${summary.cvr.toFixed(2)}%`}
+          icon={Activity}
+          description='Click & Borrow conversion rates'
+        />
 
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>Fallback Rate</CardTitle>
-            <AlertCircle className='text-muted-foreground h-4 w-4' />
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>{summary.fallbackRate.toFixed(2)}%</div>
-            <p className='text-muted-foreground mt-1 text-xs'>Percentage of fallback triggers</p>
-          </CardContent>
-        </Card>
+        <MetricCard
+          title='Fallback Rate'
+          value={`${summary.fallbackRate.toFixed(2)}%`}
+          icon={AlertCircle}
+          description='Percentage of fallback triggers'
+        />
       </div>
 
       {/* Charts Grid */}
       <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
         {/* Traffic Distribution Pie */}
-        <Card className='lg:col-span-1'>
+        <Card className='border-border/60 border shadow-sm lg:col-span-1'>
           <CardHeader>
             <CardTitle className='text-base'>Strategy Distribution</CardTitle>
             <CardDescription>Active request split percentage</CardDescription>
           </CardHeader>
           <CardContent className='flex h-[280px] flex-col items-center justify-center pt-0 sm:h-[300px]'>
             {normalizedStrategyDistribution.length > 0 ? (
-              <ChartContainer config={strategyChartConfig} className='mx-auto h-[220px] w-full max-w-[220px] sm:h-[250px] sm:max-w-[250px]'>
+              <ChartContainer
+                config={strategyChartConfig}
+                className='mx-auto h-[220px] w-full max-w-[220px] sm:h-[250px] sm:max-w-[250px]'
+              >
                 <PieChart>
                   <ChartTooltip
                     cursor={false}
@@ -127,17 +107,24 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
                         hideLabel
                         formatter={(value: unknown, name: unknown) => {
                           const strategyName = name !== undefined ? String(name) : 'unknown';
-                          const item = normalizedStrategyDistribution.find((d: StrategyDistItem) => d.strategy === strategyName);
+                          const item = normalizedStrategyDistribution.find(
+                            (d: StrategyDistItem) => d.strategy === strategyName
+                          );
                           const displayValue = typeof value === 'number' ? value : 0;
-                          const percentage = item?.percentage !== undefined ? item.percentage.toFixed(2) : '0.00';
+                          const percentage =
+                            item?.percentage !== undefined ? item.percentage.toFixed(2) : '0.00';
                           return (
                             <div className='flex items-center gap-2'>
                               <div
                                 className='h-2 w-2 rounded-full'
-                                style={{ backgroundColor: strategyChartConfig[strategyName]?.color }}
+                                style={{
+                                  backgroundColor: strategyChartConfig[strategyName]?.color,
+                                }}
                               />
                               <span className='font-medium'>{strategyName}:</span>
-                              <span>{displayValue.toLocaleString()} calls ({percentage}%)</span>
+                              <span>
+                                {displayValue.toLocaleString()} calls ({percentage}%)
+                              </span>
                             </div>
                           );
                         }}
@@ -155,13 +142,9 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
                     nameKey='strategy'
                   >
                     {normalizedStrategyDistribution.map((entry, index) => {
-                      const strategyColor = strategyChartConfig[entry.strategy]?.color || 'var(--primary)';
-                      return (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={strategyColor}
-                        />
-                      );
+                      const strategyColor =
+                        strategyChartConfig[entry.strategy]?.color || 'var(--primary)';
+                      return <Cell key={`cell-${index}`} fill={strategyColor} />;
                     })}
                   </Pie>
                   <ChartLegend
@@ -177,7 +160,7 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
         </Card>
 
         {/* Impressions by Strategy */}
-        <Card className='lg:col-span-1'>
+        <Card className='border-border/60 border shadow-sm lg:col-span-1'>
           <CardHeader>
             <CardTitle className='text-base'>Impressions by Strategy</CardTitle>
             <CardDescription>Total volume of served impressions</CardDescription>
@@ -185,20 +168,33 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
           <CardContent className='pt-0'>
             <div className='h-[280px] w-full sm:h-[300px]'>
               {strategyAggregates.length > 0 ? (
-                <ChartContainer config={impressionsChartConfig} className='h-[220px] w-full sm:h-[250px]'>
+                <ChartContainer
+                  config={impressionsChartConfig}
+                  className='h-[220px] w-full sm:h-[250px]'
+                >
                   <BarChart data={strategyAggregates}>
                     <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                    <XAxis dataKey='strategy' fontSize={11} tickLine={false} axisLine={false} tickMargin={8} />
+                    <XAxis
+                      dataKey='strategy'
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                    />
                     <YAxis fontSize={11} tickLine={false} axisLine={false} />
                     <ChartTooltip
                       cursor={false}
                       content={<ChartTooltipContent indicator='dashed' />}
                     />
-                    <Bar dataKey='impressions' fill='var(--color-impressions)' radius={[4, 4, 0, 0]} />
+                    <Bar
+                      dataKey='impressions'
+                      fill='var(--color-impressions)'
+                      radius={[4, 4, 0, 0]}
+                    />
                   </BarChart>
                 </ChartContainer>
               ) : (
-                <div className='flex h-full items-center justify-center text-muted-foreground text-sm'>
+                <div className='text-muted-foreground flex h-full items-center justify-center text-sm'>
                   No performance data available
                 </div>
               )}
@@ -207,7 +203,7 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
         </Card>
 
         {/* Avg Latency by Strategy */}
-        <Card className='lg:col-span-1'>
+        <Card className='border-border/60 border shadow-sm lg:col-span-1'>
           <CardHeader>
             <CardTitle className='text-base'>Average Latency (ms)</CardTitle>
             <CardDescription>Response speed of recommendation pipelines</CardDescription>
@@ -215,20 +211,38 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
           <CardContent className='pt-0'>
             <div className='h-[280px] w-full sm:h-[300px]'>
               {strategyAggregates.length > 0 ? (
-                <ChartContainer config={latencyChartConfig} className='h-[220px] w-full sm:h-[250px]'>
+                <ChartContainer
+                  config={latencyChartConfig}
+                  className='h-[220px] w-full sm:h-[250px]'
+                >
                   <BarChart data={strategyAggregates}>
                     <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                    <XAxis dataKey='strategy' fontSize={11} tickLine={false} axisLine={false} tickMargin={8} />
-                    <YAxis fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}ms`} />
+                    <XAxis
+                      dataKey='strategy'
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                    />
+                    <YAxis
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(v) => `${v}ms`}
+                    />
                     <ChartTooltip
                       cursor={false}
                       content={<ChartTooltipContent indicator='dashed' />}
                     />
-                    <Bar dataKey='avgLatencyMs' fill='var(--color-avgLatencyMs)' radius={[4, 4, 0, 0]} />
+                    <Bar
+                      dataKey='avgLatencyMs'
+                      fill='var(--color-avgLatencyMs)'
+                      radius={[4, 4, 0, 0]}
+                    />
                   </BarChart>
                 </ChartContainer>
               ) : (
-                <div className='flex h-full items-center justify-center text-muted-foreground text-sm'>
+                <div className='text-muted-foreground flex h-full items-center justify-center text-sm'>
                   No latency data available
                 </div>
               )}
@@ -238,7 +252,7 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
       </div>
 
       {/* Online Metrics Detailed Table */}
-      <Card>
+      <Card className='border-border/60 border shadow-sm'>
         <CardHeader>
           <CardTitle className='text-base'>Historical Daily Log</CardTitle>
           <CardDescription>Detailed breakdown of daily recommendation performance</CardDescription>
@@ -254,25 +268,29 @@ export function OnlineMetrics({ onlineMetrics = [], strategyDistribution = [] }:
                   <TableHead className='text-right'>Avg Latency</TableHead>
                   <TableHead className='text-right'>Fallbacks</TableHead>
                   <TableHead className='text-right'>CTR</TableHead>
-                  <TableHead className='text-right pr-6'>CVR</TableHead>
+                  <TableHead className='pr-6 text-right'>CVR</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {normalizedOnlineMetrics.length > 0 ? (
                   normalizedOnlineMetrics.map((row, idx) => (
                     <TableRow key={`${row.date}-${row.strategy}-${idx}`}>
-                      <TableCell className='font-medium pl-6'>{row.date}</TableCell>
+                      <TableCell className='pl-6 font-medium'>{row.date}</TableCell>
                       <TableCell className='capitalize'>{row.strategy}</TableCell>
-                      <TableCell className='text-right'>{row.impressions.toLocaleString()}</TableCell>
+                      <TableCell className='text-right'>
+                        {row.impressions.toLocaleString()}
+                      </TableCell>
                       <TableCell className='text-right'>{row.avgLatencyMs.toFixed(1)} ms</TableCell>
                       <TableCell className='text-right'>{row.fallbacks}</TableCell>
                       <TableCell className='text-right'>{(row.ctr * 100).toFixed(2)}%</TableCell>
-                      <TableCell className='text-right pr-6'>{(row.cvr * 100).toFixed(2)}%</TableCell>
+                      <TableCell className='pr-6 text-right'>
+                        {(row.cvr * 100).toFixed(2)}%
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={7} className='h-24 text-center text-muted-foreground'>
+                    <TableCell colSpan={7} className='text-muted-foreground h-24 text-center'>
                       No records found
                     </TableCell>
                   </TableRow>

@@ -1,14 +1,14 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { Sparkles, type LucideIcon, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import type { RecommendedBookResponse } from '@/types';
+import { Sparkles, type LucideIcon, ArrowRight } from 'lucide-react';
 import { useRecommendations } from '@/hooks/data/useRecommendation';
 import { useLocale, KEYS } from '@/hooks/ui/useLocale';
-import type { RecommendedBookResponse } from '@/types';
+import { Button } from '@repo/ui/components/button';
 import { Skeleton } from '@repo/ui/components/skeleton';
 import { BookGridItem } from '@/components/book/book-grid-item';
-import { Button } from '@repo/ui/components/button';
 import { BookmarkProvider } from '@/components/book/bookmark-provider';
 
 interface RecommendationGridProps {

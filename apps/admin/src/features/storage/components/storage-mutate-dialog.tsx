@@ -2,6 +2,8 @@ import { useState, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Upload, X, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useUploadPresignedFile } from '@/hooks/data/useFile';
+import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
   DialogClose,
@@ -11,10 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@repo/ui/components/dialog';
-import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { Label } from '@repo/ui/components/label';
-import { useUploadPresignedFile } from '@/hooks/data/useFile';
 import { formatBytes } from './storage-columns';
 
 type StorageMutateDialogProps = {
@@ -174,7 +174,7 @@ export function StorageMutateDialog({ open, onOpenChange }: StorageMutateDialogP
 
           <div
             className={`border-border flex flex-col items-center justify-center rounded-md border-2 border-dashed p-8 text-center transition-colors ${
-              isUploadingAll ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-accent/10'
+              isUploadingAll ? 'cursor-not-allowed opacity-50' : 'hover:bg-accent/10 cursor-pointer'
             }`}
             onClick={handleBoxClick}
             onDragOver={handleDragOver}
@@ -186,9 +186,7 @@ export function StorageMutateDialog({ open, onOpenChange }: StorageMutateDialogP
             <p className='text-foreground text-sm font-medium'>
               Drag & drop files here, or click to browse
             </p>
-            <p className='text-muted-foreground mt-1 text-xs'>
-              Support files up to 20MB
-            </p>
+            <p className='text-muted-foreground mt-1 text-xs'>Support files up to 20MB</p>
             <input
               type='file'
               ref={fileInputRef}
@@ -200,12 +198,15 @@ export function StorageMutateDialog({ open, onOpenChange }: StorageMutateDialogP
           </div>
 
           {uploadList.length > 0 && (
-            <div className='max-h-60 overflow-y-auto border rounded-md p-3 space-y-2'>
+            <div className='max-h-60 space-y-2 overflow-y-auto rounded-md border p-3'>
               {uploadList.map((item, idx) => (
-                <div key={idx} className='flex items-center justify-between gap-3 text-sm border-b pb-2 last:border-0 last:pb-0'>
+                <div
+                  key={idx}
+                  className='flex items-center justify-between gap-3 border-b pb-2 text-sm last:border-0 last:pb-0'
+                >
                   <div className='min-w-0 flex-1'>
                     <div className='flex items-center gap-2'>
-                      <span className='truncate font-medium block max-w-64 sm:max-w-80'>
+                      <span className='block max-w-64 truncate font-medium sm:max-w-80'>
                         {item.file.name}
                       </span>
                       <span className='text-muted-foreground text-xs whitespace-nowrap'>
@@ -213,7 +214,7 @@ export function StorageMutateDialog({ open, onOpenChange }: StorageMutateDialogP
                       </span>
                     </div>
                     {item.status === 'uploading' && (
-                      <div className='bg-muted mt-1.5 h-1.5 overflow-hidden rounded-full w-full'>
+                      <div className='bg-muted mt-1.5 h-1.5 w-full overflow-hidden rounded-full'>
                         <div
                           className='bg-primary h-full transition-all duration-300'
                           style={{ width: `${item.progress}%` }}
@@ -221,25 +222,23 @@ export function StorageMutateDialog({ open, onOpenChange }: StorageMutateDialogP
                       </div>
                     )}
                     {item.status === 'error' && item.errorMsg && (
-                      <p className='text-red-500 text-xs mt-0.5 truncate'>{item.errorMsg}</p>
+                      <p className='mt-0.5 truncate text-xs text-red-500'>{item.errorMsg}</p>
                     )}
                   </div>
 
-                  <div className='flex items-center gap-2 shrink-0'>
+                  <div className='flex shrink-0 items-center gap-2'>
                     {item.status === 'uploading' && (
                       <Loader2 className='text-primary h-4 w-4 animate-spin' />
                     )}
                     {item.status === 'success' && (
-                      <CheckCircle className='text-green-500 h-4 w-4' />
+                      <CheckCircle className='h-4 w-4 text-green-500' />
                     )}
-                    {item.status === 'error' && (
-                      <AlertCircle className='text-red-500 h-4 w-4' />
-                    )}
+                    {item.status === 'error' && <AlertCircle className='h-4 w-4 text-red-500' />}
                     {item.status === 'idle' && (
                       <button
                         type='button'
                         onClick={() => removeFile(idx)}
-                        className='text-muted-foreground hover:text-red-500 transition-colors'
+                        className='text-muted-foreground transition-colors hover:text-red-500'
                         aria-label='Remove file'
                       >
                         <X className='h-4 w-4' />

@@ -3,16 +3,9 @@ import { createFileRoute, Link, useNavigate, useRouter } from '@tanstack/react-r
 import { SignedIn, useAuth, UserButton } from '@clerk/clerk-react';
 import { ExternalLink, Loader2 } from 'lucide-react';
 import { ClerkLogo } from '@/assets/clerk-logo';
-import { Button } from '@repo/ui/components/button';
-import { Header } from '@/components/layout/header';
-import { Main } from '@/components/layout/main';
-import { Search } from '@/components/layout/search';
-import { ThemeSwitch } from '@/components/layout/theme-switch';
-import { LearnMore } from '@/components/learn-more';
-import { UsersDialogs } from '@/features/users/components/users-dialogs';
-import { UsersPrimaryButtons } from '@/features/users/components/users-primary-buttons';
-import { UsersProvider, useUsersContext } from '@/features/users/components/users-provider';
 import { useUsers } from '@/hooks/data/useUser';
+import { Badge } from '@repo/ui/components/badge';
+import { Button } from '@repo/ui/components/button';
 import {
   Table,
   TableBody,
@@ -21,7 +14,14 @@ import {
   TableHeader,
   TableRow,
 } from '@repo/ui/components/table';
-import { Badge } from '@repo/ui/components/badge';
+import { Header } from '@/components/layout/header';
+import { Main } from '@/components/layout/main';
+import { Search } from '@/components/layout/search';
+import { ThemeSwitch } from '@/components/layout/theme-switch';
+import { LearnMore } from '@/components/learn-more';
+import { UsersDialogs } from '@/features/users/components/users-dialogs';
+import { UsersPrimaryButtons } from '@/features/users/components/users-primary-buttons';
+import { UsersProvider, useUsersContext } from '@/features/users/components/users-provider';
 
 export const Route = createFileRoute('/clerk/_authenticated/user-management')({
   component: UserManagement,
@@ -186,7 +186,7 @@ function UserListTable() {
   if (isLoading) {
     return (
       <div className='flex h-96 items-center justify-center'>
-        <Loader2 className='size-8 animate-spin text-primary' />
+        <Loader2 className='text-primary size-8 animate-spin' />
       </div>
     );
   }

@@ -27,11 +27,7 @@ export function RecommendationHeader({
         </p>
       </div>
       <div className='flex flex-wrap items-center gap-3'>
-        <Button
-          variant='outline'
-          onClick={onSyncClick}
-          disabled={isSyncing}
-        >
+        <Button variant='outline' onClick={onSyncClick} disabled={isSyncing}>
           {isSyncing ? (
             <Loader2 className='mr-2 h-4 w-4 animate-spin' />
           ) : (

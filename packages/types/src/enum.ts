@@ -18,12 +18,12 @@ export enum FilterOperator {
 }
 
 export enum NotificationType {
-  Info = 'INFO',
-  Success = 'SUCCESS',
-  Warning = 'WARNING',
-  Error = 'ERROR',
-  RECOMMENDER_TRAINED_SUCCESS = 'RECOMMENDER_TRAINED_SUCCESS',
-  RECOMMENDER_TRAINED_FAILURE = 'RECOMMENDER_TRAINED_FAILURE',
+  Info = "INFO",
+  Success = "SUCCESS",
+  Warning = "WARNING",
+  Error = "ERROR",
+  RECOMMENDER_TRAINED_SUCCESS = "RECOMMENDER_TRAINED_SUCCESS",
+  RECOMMENDER_TRAINED_FAILURE = "RECOMMENDER_TRAINED_FAILURE",
 }
 
 export enum RoleType {
@@ -67,8 +67,7 @@ export enum RecommendationStrategy {
 }
 
 export enum TrainingTarget {
-  ALL = 'all',
-  CBF = 'cbf',
-  IBCF = 'ibcf',
+  ALL = "all",
+  CBF = "cbf",
+  IBCF = "ibcf",
 }
-

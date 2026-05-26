@@ -59,7 +59,10 @@ export const CategoriesGrid = () => {
           {[1, 2, 3, 4, 5].map((i) => (
             <Skeleton
               key={i}
-              className={cn('h-36 rounded-md md:h-40', i === 1 ? 'h-auto md:col-span-2 md:row-span-2' : '')}
+              className={cn(
+                'h-36 rounded-md md:h-40',
+                i === 1 ? 'h-auto md:col-span-2 md:row-span-2' : ''
+              )}
             />
           ))}
         </div>

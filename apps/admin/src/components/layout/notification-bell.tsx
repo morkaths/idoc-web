@@ -1,49 +1,49 @@
-import { Sparkles, AlertCircle, Info, Bell, CheckCheck, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+import { READ_NOTIFICATION_IDS_STORAGE_KEY, type NotificationResponse } from '@/types';
+import { enUS } from 'date-fns/locale';
+import { Bell, CheckCheck, Loader2, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
   useNotifications,
   useUnreadNotificationsCount,
   useMarkNotificationRead,
   useMarkAllNotificationsRead,
+  isNotificationRead,
 } from '@/hooks/data/useNotification';
 import { Button } from '@repo/ui/components/button';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@repo/ui/components/dialog';
+import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from '@repo/ui/components/dropdown-menu';
 import { ScrollArea } from '@repo/ui/components/scroll-area';
-import { formatDistanceToNow } from 'date-fns';
-import { enUS } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
-import type { NotificationResponse } from '@/types';
+import { getNotificationConfig } from './data/notification-config';
+import NotificationItem from './notification-item';
 
-/**
- * Helper to get the correct icon and styling for each notification type.
- * @param type Notification type from the backend.
- */
-const getNotificationConfig = (type: string) => {
-  switch (type) {
-    case 'RECOMMENDER_TRAINED_SUCCESS':
-      return {
-        Icon: Sparkles,
-        iconClass: 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/40 border-emerald-100 dark:border-emerald-900/50',
-        dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
-      };
-    case 'RECOMMENDER_TRAINED_FAILURE':
-      return {
-        Icon: AlertCircle,
-        iconClass: 'text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-950/40 border-rose-100 dark:border-rose-900/50',
-        dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
-      };
-    default:
-      return {
-        Icon: Info,
-        iconClass: 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-950/40 border-blue-100 dark:border-blue-900/50',
-        dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]',
-      };
+
+const loadStoredReadNotificationIds = () => {
+  if (typeof window === 'undefined') return new Set<string>();
+
+  try {
+    const raw = window.localStorage.getItem(READ_NOTIFICATION_IDS_STORAGE_KEY);
+    if (!raw) return new Set<string>();
+
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return new Set<string>();
+
+    return new Set(parsed.filter((value): value is string => typeof value === 'string'));
+  } catch (_error) {
+    return new Set<string>();
   }
 };
 
@@ -51,26 +51,89 @@ const getNotificationConfig = (type: string) => {
  * Component displaying a notification bell with a dropdown list of recent notifications
  */
 export function NotificationBell() {
+  const [selectedNotification, setSelectedNotification] = useState<NotificationResponse | null>(
+    null
+  );
+  const [locallyReadNotificationIds, setLocallyReadNotificationIds] = useState<Set<string>>(
+    loadStoredReadNotificationIds
+  );
   const { data: countData } = useUnreadNotificationsCount();
   const unreadCount = countData ?? 0;
-  const badgeLabel = unreadCount > 99 ? '99+' : unreadCount.toString();
-  // Slightly smaller text and tighter widths for better centering
-  const badgeSizeClass = unreadCount > 9 ? 'h-5 min-w-[20px] px-1 text-[7px] leading-none' : 'h-4 w-4 text-[8px] leading-none';
-
   const { data: notificationsList, isLoading } = useNotifications({
     page: 1,
     limit: 10,
   });
 
-  const notifications = notificationsList?.data ?? [];
+  const notificationData = notificationsList?.data ?? [];
+
+  const notifications = notificationData
+    .map((item) =>
+      locallyReadNotificationIds.has(item.id) ? { ...item, isRead: true } : item
+    )
+    .slice()
+    .sort((a, b) => {
+      const aRead = isNotificationRead(a);
+      const bRead = isNotificationRead(b);
+      if (aRead !== bRead) {
+        return Number(aRead) - Number(bRead);
+      }
+
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
+  const locallyUnreadOnServerCount = notificationData.reduce((count, item) => {
+    return count + (locallyReadNotificationIds.has(item.id) && !isNotificationRead(item) ? 1 : 0);
+  }, 0);
+
+  const safeUnreadCount = Math.max(0, unreadCount - locallyUnreadOnServerCount);
+  const safeBadgeLabel = safeUnreadCount > 99 ? '99+' : safeUnreadCount.toString();
+  const safeBadgeSizeClass =
+    safeUnreadCount > 9
+      ? 'h-5 min-w-[20px] px-1 text-[7px] leading-none'
+      : 'h-4 w-4 text-[8px] leading-none';
+
+  const currentSelectedNotification = selectedNotification
+    ? {
+      ...(notifications.find((n) => n.id === selectedNotification.id) ?? selectedNotification),
+    }
+    : null;
 
   const markReadMutation = useMarkNotificationRead();
   const markAllReadMutation = useMarkAllNotificationsRead();
 
-  const handleMarkRead = (id: string, isRead: boolean) => {
-    if (!isRead && !markReadMutation.isPending) {
-      markReadMutation.mutate(id);
+  const handleMarkRead = (id: string, isReadVal: boolean) => {
+    if (!isReadVal && !markReadMutation.isPending) {
+      // Only mark locally as read after the server confirms
+      markReadMutation.mutate(id, {
+        onSuccess: () => {
+          setLocallyReadNotificationIds((prev) => {
+            const next = new Set(prev);
+            next.add(id);
+            return next;
+          });
+        },
+      });
     }
+  };
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        READ_NOTIFICATION_IDS_STORAGE_KEY,
+        JSON.stringify(Array.from(locallyReadNotificationIds))
+      );
+    } catch (_error) {
+      // Ignore storage failures and keep the in-memory optimistic state.
+    }
+  }, [locallyReadNotificationIds]);
+
+  const openNotificationDetail = (item: NotificationResponse) => {
+    const isReadVal = isNotificationRead(item);
+    if (!isReadVal) {
+      handleMarkRead(item.id, isReadVal);
+    }
+
+    setSelectedNotification(item);
   };
 
   const handleMarkAllRead = (e: React.MouseEvent) => {
@@ -85,43 +148,43 @@ export function NotificationBell() {
       <DropdownMenuTrigger asChild>
         <Button variant='outline' size='icon' className='relative size-7'>
           <Bell className='text-foreground/80' />
-          {unreadCount > 0 && (
+          {safeUnreadCount > 0 && (
             <span
               className={cn(
-                'absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full bg-destructive font-bold leading-none text-white shadow-sm ring-2 ring-background animate-fade-in tabular-nums',
-                badgeSizeClass
+                'bg-destructive ring-background animate-fade-in absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full leading-none font-bold text-white tabular-nums shadow-sm ring-2',
+                safeBadgeSizeClass
               )}
             >
-              <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive/60 opacity-75' />
-              <span className='relative'>{badgeLabel}</span>
+              <span className='bg-destructive/60 absolute inline-flex h-full w-full animate-ping rounded-full opacity-75' />
+              <span className='relative'>{safeBadgeLabel}</span>
             </span>
           )}
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className='w-[380px] p-0 shadow-lg border border-border/80 bg-background/95 backdrop-blur-md transition-all duration-300'
+        className='border-border/80 bg-background/95 w-[380px] border p-0 shadow-lg backdrop-blur-md transition-all duration-300'
         align='end'
         alignOffset={-5}
         forceMount
       >
-        <DropdownMenuLabel className='font-normal p-4 pb-3'>
+        <DropdownMenuLabel className='p-4 pb-3 font-normal'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-2'>
-              <span className='text-sm font-semibold text-foreground'>Notifications</span>
-              {unreadCount > 0 && (
-                <span className='rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary dark:bg-primary/20'>
-                  {unreadCount} new
+              <span className='text-foreground text-sm font-semibold'>Notifications</span>
+              {safeUnreadCount > 0 && (
+                <span className='bg-primary/10 text-primary dark:bg-primary/20 rounded-full px-2 py-0.5 text-xs font-semibold'>
+                  {safeUnreadCount} new
                 </span>
               )}
             </div>
-            {unreadCount > 0 && (
+            {safeUnreadCount > 0 && (
               <Button
                 variant='ghost'
                 size='sm'
                 onClick={handleMarkAllRead}
                 disabled={markAllReadMutation.isPending}
-                className='h-7 px-2 text-xs text-muted-foreground hover:text-primary hover:bg-primary/5 gap-1.5 transition-colors font-medium'
+                className='text-muted-foreground hover:text-primary hover:bg-primary/5 h-7 gap-1.5 px-2 text-xs font-medium transition-colors'
               >
                 {markAllReadMutation.isPending ? (
                   <Loader2 className='h-3 w-3 animate-spin' />
@@ -138,68 +201,125 @@ export function NotificationBell() {
         <ScrollArea className='h-[350px] w-full'>
           <div className='flex flex-col py-1'>
             {isLoading ? (
-              <div className='flex h-[200px] flex-col items-center justify-center gap-2 text-muted-foreground'>
-                <Loader2 className='h-8 w-8 animate-spin text-primary/60' />
+              <div className='text-muted-foreground flex h-[200px] flex-col items-center justify-center gap-2'>
+                <Loader2 className='text-primary/60 h-8 w-8 animate-spin' />
                 <span className='text-xs'>Loading notifications...</span>
               </div>
             ) : notifications.length === 0 ? (
-              <div className='flex h-[200px] flex-col items-center justify-center gap-2 text-muted-foreground px-4 text-center'>
-                <div className='rounded-full bg-accent/40 p-3.5 border border-border/40'>
+              <div className='text-muted-foreground flex h-[200px] flex-col items-center justify-center gap-2 px-4 text-center'>
+                <div className='bg-accent/40 border-border/40 rounded-full border p-3.5'>
                   <Bell className='h-6 w-6 opacity-40' />
                 </div>
-                <span className='text-sm font-medium mt-1'>No notifications yet</span>
-                <span className='text-xs opacity-75 max-w-[240px]'>
+                <span className='mt-1 text-sm font-medium'>No notifications yet</span>
+                <span className='max-w-[240px] text-xs opacity-75'>
                   The system will send you notifications when new processes are completed.
                 </span>
               </div>
             ) : (
-              notifications.map((item: NotificationResponse) => {
-                const { Icon, iconClass, dotClass } = getNotificationConfig(item.type);
-                const formattedTime = formatDistanceToNow(new Date(item.createdAt), {
-                  addSuffix: true,
-                  locale: enUS,
-                });
-
-                return (
-                  <DropdownMenuItem
-                    key={item.id}
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      handleMarkRead(item.id, item.isRead);
-                    }}
-                    className={cn(
-                      'flex items-start gap-3 p-3.5 mx-1.5 my-0.5 rounded-lg cursor-pointer transition-all duration-200 border border-transparent select-none focus:bg-accent/80',
-                      !item.isRead
-                        ? 'bg-accent/40 font-medium hover:bg-accent/60 border-border/20 shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-accent/30'
-                    )}
-                  >
-                    <div className={cn('flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-lg border text-sm shadow-sm transition-transform duration-300 hover:scale-105', iconClass)}>
-                      <Icon className='h-4.5 w-4.5' />
-                    </div>
-                    <div className='flex flex-col flex-1 min-w-0 gap-0.5'>
-                      <div className='flex items-center justify-between gap-2'>
-                        <span className={cn('text-xs font-semibold truncate leading-tight', !item.isRead ? 'text-foreground' : 'text-muted-foreground')}>
-                          {item.title}
-                        </span>
-                        {!item.isRead && (
-                          <span className={cn('h-2 w-2 rounded-full shrink-0 animate-pulse', dotClass)} />
-                        )}
-                      </div>
-                      <p className='text-xs line-clamp-2 leading-relaxed text-muted-foreground/90 font-normal'>
-                        {item.content}
-                      </p>
-                      <span className='text-[10px] text-muted-foreground/75 font-normal mt-1'>
-                        {formattedTime}
-                      </span>
-                    </div>
-                  </DropdownMenuItem>
-                );
-              })
+              notifications.map((item: NotificationResponse) => (
+                <NotificationItem key={item.id} item={item} onOpen={openNotificationDetail} />
+              ))
             )}
           </div>
         </ScrollArea>
       </DropdownMenuContent>
+
+      <Dialog
+        open={selectedNotification !== null}
+        onOpenChange={(open) => !open && setSelectedNotification(null)}
+      >
+        <DialogContent className='sm:max-w-lg'>
+          <DialogHeader className='space-y-3 pr-10 text-start'>
+            <DialogTitle className='text-base'>Notification Details</DialogTitle>
+            <DialogDescription>
+              Review the full content of the notification and its current status.
+            </DialogDescription>
+          </DialogHeader>
+
+          {currentSelectedNotification && (
+            <div className='space-y-4 py-2'>
+              <div className='border-border/60 bg-muted/30 flex items-start gap-3 rounded-xl border p-4'>
+                {(() => {
+                  const { Icon, iconClass } = getNotificationConfig(
+                    currentSelectedNotification.type
+                  );
+
+                  return (
+                    <div
+                      className={cn(
+                        'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border text-sm shadow-sm',
+                        isNotificationRead(currentSelectedNotification)
+                          ? 'text-muted-foreground/70 border-muted-foreground/20'
+                          : iconClass
+                      )}
+                    >
+                      <Icon className='h-5 w-5' />
+                    </div>
+                  );
+                })()}
+                <div className='min-w-0 flex-1 space-y-1'>
+                  <div className='flex flex-wrap items-center gap-2'>
+                    <h3 className='text-foreground truncate text-sm font-semibold'>
+                      {currentSelectedNotification.title}
+                    </h3>
+                    <span
+                      className={cn(
+                        'rounded-full px-2 py-0.5 text-[10px] font-medium',
+                        isNotificationRead(currentSelectedNotification)
+                          ? 'bg-muted text-muted-foreground'
+                          : 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
+                      )}
+                    >
+                      {isNotificationRead(currentSelectedNotification) ? 'Read' : 'Unread'}
+                    </span>
+                  </div>
+                  <p className='text-muted-foreground text-xs leading-relaxed'>
+                    {currentSelectedNotification.content}
+                  </p>
+                </div>
+              </div>
+
+              <div className='border-border/60 grid gap-2 rounded-xl border p-4 text-sm'>
+                <div className='flex items-center justify-between gap-3'>
+                  <span className='text-muted-foreground'>Type</span>
+                  <span className='text-foreground font-medium'>
+                    {currentSelectedNotification.type}
+                  </span>
+                </div>
+                <div className='flex items-center justify-between gap-3'>
+                  <span className='text-muted-foreground'>Created</span>
+                  <span className='text-foreground font-medium'>
+                    {formatDistanceToNow(new Date(currentSelectedNotification.createdAt), {
+                      addSuffix: true,
+                      locale: enUS,
+                    })}
+                  </span>
+                </div>
+                <div className='flex items-center justify-between gap-3'>
+                  <span className='text-muted-foreground'>Updated</span>
+                  <span className='text-foreground font-medium'>
+                    {formatDistanceToNow(new Date(currentSelectedNotification.updatedAt), {
+                      addSuffix: true,
+                      locale: enUS,
+                    })}
+                  </span>
+                </div>
+              </div>
+
+              <div className='flex justify-end'>
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={() => setSelectedNotification(null)}
+                >
+                  <X className='mr-2 h-4 w-4' />
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </DropdownMenu>
   );
 }

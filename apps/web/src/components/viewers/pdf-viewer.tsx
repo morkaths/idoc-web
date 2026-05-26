@@ -8,7 +8,10 @@ import type { RenderPrintProps } from '@react-pdf-viewer/print';
 import type { RenderShowPropertiesProps } from '@react-pdf-viewer/properties';
 import type { RenderRotateProps } from '@react-pdf-viewer/rotate';
 import type { RenderShowSearchPopoverProps } from '@react-pdf-viewer/search';
-import { SelectionMode, type RenderSwitchSelectionModeProps } from '@react-pdf-viewer/selection-mode';
+import {
+  SelectionMode,
+  type RenderSwitchSelectionModeProps,
+} from '@react-pdf-viewer/selection-mode';
 import type { RenderZoomInProps, RenderZoomOutProps } from '@react-pdf-viewer/zoom';
 import {
   Maximize,

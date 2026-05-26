@@ -233,7 +233,9 @@ export type ReviewRequest = z.infer<typeof ReviewRequestSchema>;
 export type BookmarkRequest = z.infer<typeof BookmarkRequestSchema>;
 export type FolderRequest = z.infer<typeof FolderRequestSchema>;
 export type RecommendationRequest = z.infer<typeof RecommendationRequestSchema>;
-export type RecommendationInteractionRequest = z.infer<typeof RecommendationInteractionRequestSchema>;
+export type RecommendationInteractionRequest = z.infer<
+  typeof RecommendationInteractionRequestSchema
+>;
 export type FeedSectionConfig = z.infer<typeof FeedSectionConfigSchema>;
 export type FeedRequest = z.infer<typeof FeedRequestSchema>;
 export type SyncGroupRequest = z.infer<typeof SyncGroupRequestSchema>;
