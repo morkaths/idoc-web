@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { LayoutGrid, Loader2 } from 'lucide-react';
 import { getRouteApi } from '@tanstack/react-router';
 import {
   type SortingState,
@@ -11,6 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { Languages } from '@/types';
+import { LayoutGrid, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSearchCategories } from '@/hooks/data/useCategory';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';

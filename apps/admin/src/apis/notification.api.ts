@@ -2,13 +2,15 @@ import { ApiEndpoint } from '@/config/api';
 import type { ApiResponse, NotificationResponse, PageParams, PageResponse } from '@/types';
 import { ApiClient } from './config';
 
-
 export const NotificationApi = {
   find: async (params?: PageParams): Promise<ApiResponse<PageResponse<NotificationResponse>>> => {
-    return ApiClient.get<PageResponse<NotificationResponse>>(ApiEndpoint.endpoints.notifications.find(), {
-      security: 'private',
-      params,
-    });
+    return ApiClient.get<PageResponse<NotificationResponse>>(
+      ApiEndpoint.endpoints.notifications.find(),
+      {
+        security: 'private',
+        params,
+      }
+    );
   },
 
   markRead: async (id: string): Promise<ApiResponse<void>> => {

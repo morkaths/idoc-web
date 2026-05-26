@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import type { NotificationResponse } from '@/types';
 import { enUS } from 'date-fns/locale';
-import { isNotificationRead } from '@/hooks/data/useNotification';
 import { cn } from '@/lib/utils';
+import { isNotificationRead } from '@/hooks/data/useNotification';
 import { Button } from '@repo/ui/components/button';
 import { DropdownMenuItem } from '@repo/ui/components/dropdown-menu';
 import { getNotificationConfig } from './data/notification-config';
@@ -59,7 +59,7 @@ export default function NotificationItem({ item, onOpen }: Props) {
             {item.title}
           </span>
           {!isRead && (
-            <span className='h-2 w-2 shrink-0 animate-pulse rounded-full bg-destructive' />
+            <span className='bg-destructive h-2 w-2 shrink-0 animate-pulse rounded-full' />
           )}
         </div>
 

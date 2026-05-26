@@ -33,7 +33,7 @@ export function BookGridItems({
         {[...Array(10)].map((_, i) => (
           <div
             key={i}
-            className={`group relative flex h-full w-[180px] min-w-[180px] max-w-[180px] shrink-0 flex-col overflow-hidden rounded-md border border-gray-200/80 bg-zinc-50/90 pb-1 dark:border-zinc-800 dark:bg-zinc-900/80`}
+            className={`group relative flex h-full w-full max-w-[180px] flex-col overflow-hidden rounded-md border border-gray-200/80 bg-zinc-50/90 pb-1 dark:border-zinc-800 dark:bg-zinc-900/80`}
           >
             <div
               className={`pointer-events-none absolute top-0 right-0 left-0 h-[50%] overflow-hidden rounded-md`}

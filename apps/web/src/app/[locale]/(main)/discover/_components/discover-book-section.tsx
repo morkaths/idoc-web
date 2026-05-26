@@ -15,6 +15,23 @@ type DiscoverBookSectionProps = {
   loadMoreStep?: number;
 };
 
+/**
+ * Shuffles an array in place using the Fisher-Yates algorithm.
+ * @template T
+ * @param {T[]} array - The array to shuffle.
+ * @returns {T[]} The shuffled array.
+ */
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = shuffled[i];
+    shuffled[i] = shuffled[j] as T;
+    shuffled[j] = temp as T;
+  }
+  return shuffled;
+};
+
 export function DiscoverBookSection({
   title,
   description,
@@ -47,12 +64,13 @@ export function DiscoverBookSection({
     if (!nextBooks.length) return;
 
     setBooks((current) => {
-      if (page === 1) return nextBooks;
+      const shuffledNext = shuffleArray(nextBooks);
+      if (page === 1) return shuffledNext;
 
       const seenIds = new Set(current.map((book) => book.id));
       const merged = [...current];
 
-      for (const book of nextBooks) {
+      for (const book of shuffledNext) {
         if (!seenIds.has(book.id)) {
           merged.push(book);
           seenIds.add(book.id);

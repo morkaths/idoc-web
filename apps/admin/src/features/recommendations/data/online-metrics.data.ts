@@ -1,5 +1,5 @@
-import { Eye, Clock, Activity, AlertCircle } from 'lucide-react';
 import type React from 'react';
+import { Eye, Clock, Activity, AlertCircle } from 'lucide-react';
 
 /** Skeleton bar heights (%) for the Impressions chart placeholder */
 export const BAR_HEIGHTS_1 = [55, 35, 75, 45] as const;

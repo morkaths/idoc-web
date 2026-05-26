@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { UsersRound, Loader2 } from 'lucide-react';
 import { getRouteApi } from '@tanstack/react-router';
 import {
   type SortingState,
@@ -11,6 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { RoleType, UserStatus } from '@/types';
+import { UsersRound, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSearchUsers } from '@/hooks/data/useUser';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';

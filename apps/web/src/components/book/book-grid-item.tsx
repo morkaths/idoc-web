@@ -74,7 +74,7 @@ export function BookGridItem({ book, onClick }: BookGridItemProps) {
     <>
       <div
         onClick={handleClick}
-        className={`group pb-1 relative flex h-full w-[180px] shrink-0 cursor-pointer flex-col rounded-md border border-gray-200/80 bg-zinc-50/90 transition-colors duration-200 hover:border-gray-300 dark:border-zinc-800 dark:bg-zinc-900/80 dark:hover:border-zinc-700`}
+        className={`group relative flex h-full w-full max-w-[180px] cursor-pointer flex-col rounded-md border border-gray-200/80 bg-zinc-50/90 pb-1 transition-colors duration-200 hover:border-gray-300 dark:border-zinc-800 dark:bg-zinc-900/80 dark:hover:border-zinc-700`}
         role='button'
         tabIndex={0}
         onKeyDown={(e) => {

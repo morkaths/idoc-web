@@ -30,7 +30,6 @@ import { ScrollArea } from '@repo/ui/components/scroll-area';
 import { getNotificationConfig } from './data/notification-config';
 import NotificationItem from './notification-item';
 
-
 const loadStoredReadNotificationIds = () => {
   if (typeof window === 'undefined') return new Set<string>();
 
@@ -67,9 +66,7 @@ export function NotificationBell() {
   const notificationData = notificationsList?.data ?? [];
 
   const notifications = notificationData
-    .map((item) =>
-      locallyReadNotificationIds.has(item.id) ? { ...item, isRead: true } : item
-    )
+    .map((item) => (locallyReadNotificationIds.has(item.id) ? { ...item, isRead: true } : item))
     .slice()
     .sort((a, b) => {
       const aRead = isNotificationRead(a);
@@ -94,8 +91,8 @@ export function NotificationBell() {
 
   const currentSelectedNotification = selectedNotification
     ? {
-      ...(notifications.find((n) => n.id === selectedNotification.id) ?? selectedNotification),
-    }
+        ...(notifications.find((n) => n.id === selectedNotification.id) ?? selectedNotification),
+      }
     : null;
 
   const markReadMutation = useMarkNotificationRead();

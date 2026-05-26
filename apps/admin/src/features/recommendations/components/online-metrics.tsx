@@ -23,12 +23,12 @@ import {
   TableHeader,
   TableRow,
 } from '@repo/ui/components/table';
+import { BAR_HEIGHTS_1, BAR_HEIGHTS_2, buildMetricCards } from '../data/online-metrics.data';
 import {
   useOnlineMetrics,
   type OnlineMetricItem,
   type StrategyDistItem,
 } from '../data/use-online-metrics';
-import { BAR_HEIGHTS_1, BAR_HEIGHTS_2, buildMetricCards } from '../data/online-metrics.data';
 import { MetricCard } from './metric-card';
 
 interface OnlineMetricsProps {
@@ -36,7 +36,6 @@ interface OnlineMetricsProps {
   strategyDistribution: StrategyDistItem[];
   isLoading?: boolean;
 }
-
 
 /**
  * Component to render online recommendation performance charts and tables.
@@ -74,9 +73,7 @@ export function OnlineMetrics({
                 </CardContent>
               </Card>
             ))
-          : buildMetricCards(summary).map((card) => (
-              <MetricCard key={card.title} {...card} />
-            ))}
+          : buildMetricCards(summary).map((card) => <MetricCard key={card.title} {...card} />)}
       </div>
 
       {/* ── Charts grid ──────────────────────────────────────────────── */}
@@ -175,10 +172,7 @@ export function OnlineMetrics({
               <div className='flex h-[220px] w-full items-end justify-between gap-2 px-2 sm:h-[250px]'>
                 {BAR_HEIGHTS_1.map((pct, i) => (
                   <div key={i} className='flex flex-1 flex-col items-center gap-2'>
-                    <Skeleton
-                      className='w-full rounded-t-sm'
-                      style={{ height: `${pct}%` }}
-                    />
+                    <Skeleton className='w-full rounded-t-sm' style={{ height: `${pct}%` }} />
                     <Skeleton className='h-3 w-10' />
                   </div>
                 ))}
@@ -228,19 +222,13 @@ export function OnlineMetrics({
               <div className='flex h-[220px] w-full items-end justify-between gap-2 px-2 sm:h-[250px]'>
                 {BAR_HEIGHTS_2.map((pct, i) => (
                   <div key={i} className='flex flex-1 flex-col items-center gap-2'>
-                    <Skeleton
-                      className='w-full rounded-t-sm'
-                      style={{ height: `${pct}%` }}
-                    />
+                    <Skeleton className='w-full rounded-t-sm' style={{ height: `${pct}%` }} />
                     <Skeleton className='h-3 w-10' />
                   </div>
                 ))}
               </div>
             ) : strategyAggregates.length > 0 ? (
-              <ChartContainer
-                config={latencyChartConfig}
-                className='h-[220px] w-full sm:h-[250px]'
-              >
+              <ChartContainer config={latencyChartConfig} className='h-[220px] w-full sm:h-[250px]'>
                 <BarChart data={strategyAggregates}>
                   <CartesianGrid strokeDasharray='3 3' vertical={false} />
                   <XAxis

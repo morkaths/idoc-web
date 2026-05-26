@@ -127,9 +127,7 @@ export const useMarkAllNotificationsRead = () => {
             ...current,
             data: {
               ...current.data,
-              content: current.data.content.map(
-                (item) => ({ ...item, isRead: true })
-              ),
+              content: current.data.content.map((item) => ({ ...item, isRead: true })),
             },
           };
         }

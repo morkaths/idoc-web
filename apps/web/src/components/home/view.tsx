@@ -1,312 +1,296 @@
-'use client';
-
-import * as React from 'react';
-import { useSession } from 'next-auth/react';
-import { useLocale as useLocaleIntl } from 'next-intl';
-import type { CategoryResponse, CategoryTranslationResponse } from '@/types';
-import { RecommendationStrategy, FilterOperator, SortDirection } from '@repo/types';
-import { BookOpen } from 'lucide-react';
-import { useBooksByIds, useSearchBooks } from '@/hooks/data/useBook';
-import { useBorrowHistory } from '@/hooks/data/useBorrow';
-import { useCategories } from '@/hooks/data/useCategory';
-import { useFeed } from '@/hooks/data/useRecommendation';
-import { useLocale } from '@/hooks/ui/useLocale';
-import { Skeleton } from '@repo/ui/components/skeleton';
-import { BannerCarousel } from '@/components/home/banner-carousel';
-import { CategoriesGrid } from '@/components/home/categories-grid';
+import { BookApi, CategoryApi, BorrowApi, AuthorApi, UserApi, RecommendationApi } from '@/apis';
+import { auth } from '@/auth';
+import type { BookResponse, CategoryResponse, RecommendedBookResponse } from '@/types';
+import { FilterOperator, RecommendationStrategy, SortDirection } from '@repo/types';
+import { BannerSection } from '@/components/home/banner-section';
+import { CategoriesGridSection } from '@/components/home/categories-grid-section';
+import { CategoryBookSections } from '@/components/home/category-book-sections';
 import { CTASection } from '@/components/home/cta-section';
-import { FeaturedAuthors } from '@/components/home/featured-authors';
-import { NewArrivals } from '@/components/home/new-arrivals';
-import { RecommendationCarousel } from '@/components/home/recommendation-carousel';
-import { RecommendationGrid } from '@/components/home/recommendation-grid';
+import { FeaturedAuthorsSection } from '@/components/home/featured-authors-section';
+import { NewArrivalsSection } from '@/components/home/new-arrivals-section';
+import { PersonalRecommendationSection } from '@/components/home/personal-recommendation-section';
 import { StatsSection } from '@/components/home/stats-section';
 
 /**
- * Reusable skeleton loader for a book carousel section.
+ * Shuffles an array in place using the Fisher-Yates algorithm.
+ * @param {Array} array - The array to shuffle.
+ * @returns {Array} The shuffled array.
  */
-const CarouselSkeleton = () => {
-  return (
-    <div className='container py-12 pb-20'>
-      <div className='mb-8 flex flex-col space-y-2'>
-        <Skeleton className='h-8 w-48' />
-        <Skeleton className='h-4 w-64' />
-      </div>
-      <div className='flex gap-4 overflow-hidden py-6'>
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className='min-w-[200px] flex-1 space-y-3'>
-            <Skeleton className='h-[280px] w-full rounded-xl' />
-            <Skeleton className='h-4 w-3/4' />
-            <Skeleton className='h-4 w-1/2' />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = shuffled[i];
+    if (temp && shuffled[j]) {
+      shuffled[i] = shuffled[j]!;
+      shuffled[j] = temp;
+    }
+  }
+  return shuffled;
 };
 
 /**
- * Reusable skeleton loader for a book grid section.
+ * Helper to fetch multiple books by ID in parallel.
+ * Replaces BookApi.findByIds since bulk fetching is not supported on the backend.
+ * @param {string[]} ids - Array of book IDs to fetch.
+ * @returns {Promise<BookResponse[]>} A promise resolving to the list of fetched books.
  */
-const GridSkeleton = () => {
-  return (
-    <div className='container py-12 pb-20'>
-      <div className='mb-8 flex items-end justify-between'>
-        <div className='flex flex-col space-y-2'>
-          <Skeleton className='h-8 w-48' />
-          <Skeleton className='h-4 w-64' />
-        </div>
-        <Skeleton className='h-10 w-24' />
-      </div>
-      <div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start justify-items-center gap-6'>
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className='w-[200px] min-w-[200px] max-w-[200px] shrink-0 space-y-3'>
-            <Skeleton className='h-[280px] w-full rounded-xl' />
-            <Skeleton className='h-4 w-3/4' />
-            <Skeleton className='h-4 w-1/2' />
-          </div>
-        ))}
-      </div>
-    </div>
+const fetchBooksByIds = async (ids: string[]): Promise<BookResponse[]> => {
+  const promises = ids.map((id) =>
+    BookApi.findById(id)
+      .then((res) => res.data)
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error(`Failed to fetch book ${id}:`, err);
+        return null;
+      })
   );
+  const results = await Promise.all(promises);
+  return results.filter((book): book is BookResponse => !!book);
 };
 
 /**
- * Unified skeleton loader for the entire Home page layout.
- * Prevents layout shifting by matching the structure of main components.
+ * Structural container for the landing page.
+ * Rendered as a Server Component, wrapping isolated section components with centralized data fetching.
  */
-const HomeSkeleton = () => {
-  return (
-    <div className='flex flex-col space-y-12 pb-20 md:space-y-24'>
-      {/* Banner Skeleton */}
-      <div className='container py-8'>
-        <Skeleton className='h-[400px] w-full rounded-md md:h-[500px]' />
-      </div>
+export async function HomeView() {
+  const session = await auth();
+  const userId = session?.user?.id;
 
-      {/* Recommendations Carousel & Grid Skeletons */}
-      <CarouselSkeleton />
-      <GridSkeleton />
-      <GridSkeleton />
-    </div>
-  );
-};
-
-export function HomeView() {
-  const { data: session, status } = useSession();
-  const { t: tDiscover, keys: discoverKeys } = useLocale('discover');
-  const locale = useLocaleIntl();
-  const userId = session?.user?.id || 'anonymous';
-
-  // Construct request object once authentication state is resolved
-  const feedRequest =
-    status !== 'loading'
-      ? {
-          userId,
-          sections: [
-            {
-              id: 'banner',
-              title: 'Top Featured',
-              strategy: RecommendationStrategy.POPULARITY,
-              limit: 5,
-            },
-            {
-              id: 'personal',
-              title: 'For You',
-              strategy: RecommendationStrategy.HYBRID,
-              limit: 10,
-            },
-          ],
-        }
-      : undefined;
-
-  const { data: feedData, isLoading: feedLoading } = useFeed(feedRequest, {
-    enabled: status !== 'loading',
-  });
-
-  // Fetch borrow history if user is authenticated
-  const { data: borrowHistoryData, isLoading: borrowHistoryLoading } = useBorrowHistory(
-    { limit: 10 },
-    { enabled: status === 'authenticated' && userId !== 'anonymous' }
-  );
-
-  const borrowedBookIds = React.useMemo(() => {
-    return borrowHistoryData?.data?.map((loan) => loan.book.id) ?? [];
-  }, [borrowHistoryData?.data]);
-
-  // Fetch full books to get categories
-  const { data: fullBorrowedBooks, isLoading: isBooksLoading } = useBooksByIds(
-    borrowedBookIds,
-    status === 'authenticated' && borrowedBookIds.length > 0
-  );
-
-  // Fetch all categories as fallback
-  const { data: categoriesResponse, isLoading: categoriesLoading } = useCategories({
-    limit: 20,
-  });
-
-  // Calculate recommended categories based on borrow history frequency
-  const recommendedCategories = React.useMemo(() => {
-    if (!fullBorrowedBooks || fullBorrowedBooks.length === 0) return [];
-
-    const freq: Record<string, { count: number; category: CategoryResponse }> = {};
-
-    fullBorrowedBooks.forEach((book) => {
-      book.categories?.forEach((cat) => {
-        if (!freq[cat.id]) {
-          freq[cat.id] = { count: 0, category: cat };
-        }
-        const item = freq[cat.id];
-        if (item) {
-          item.count += 1;
-        }
-      });
-    });
-
-    const sorted = Object.values(freq).sort((a, b) => b.count - a.count);
-    return sorted.map((item) => item.category);
-  }, [fullBorrowedBooks]);
-
-  // Resolve to exactly 2 categories (using fallbacks if needed)
-  const resolvedRecommendedCategories = React.useMemo(() => {
-    const list = [...recommendedCategories];
-
-    if (list.length >= 2) {
-      return list.slice(0, 2);
-    }
-
-    const existingIds = new Set(list.map((c) => c.id));
-    const allCategories = categoriesResponse?.data ?? [];
-
-    for (const cat of allCategories) {
-      if (list.length >= 2) break;
-      if (!existingIds.has(cat.id)) {
-        list.push(cat);
-        existingIds.add(cat.id);
-      }
-    }
-
-    return list.slice(0, 2);
-  }, [recommendedCategories, categoriesResponse?.data]);
-
-  // Query books for the resolved categories
-  const cat1 = resolvedRecommendedCategories[0];
-  const cat2 = resolvedRecommendedCategories[1];
-
-  const { data: cat1Data, isLoading: isCat1Loading } = useSearchBooks(
-    {
+  // --- Phase 1: Parallel fetches for top-level meta & base data ---
+  const [
+    popularRecRes,
+    newArrivalsRes,
+    categoriesGridRes,
+    featuredAuthorsRes,
+    categoriesAllRes,
+    personalRecRes,
+    borrowHistoryRes,
+    booksCountRes,
+    authorsCountRes,
+  ] = await Promise.allSettled([
+    RecommendationApi.getPopular(1, 5),
+    BookApi.search({
+      sorts: [{ field: 'createdAt', direction: SortDirection.DESC }],
       limit: 10,
-      filters: cat1
-        ? [
-            {
-              field: 'categories.id',
-              value: [cat1.id],
-              operator: FilterOperator.IN,
-            },
-          ]
-        : [],
-      sorts: [{ field: 'totalBorrows', direction: SortDirection.DESC }],
-    },
-    {
-      enabled: !!cat1,
-    }
-  );
+    }),
+    CategoryApi.find({ limit: 11 }),
+    AuthorApi.find({ limit: 15 }),
+    CategoryApi.find({ limit: 20 }), // for category recommendations selection
+    RecommendationApi.getForUser(userId || 'anonymous', RecommendationStrategy.HYBRID, 1, 10),
+    userId ? BorrowApi.history({ limit: 10 }) : Promise.resolve(null),
+    BookApi.find({ limit: 1 }),
+    AuthorApi.find({ limit: 1 }),
+  ]);
 
-  const { data: cat2Data, isLoading: isCat2Loading } = useSearchBooks(
-    {
-      limit: 10,
-      filters: cat2
-        ? [
-            {
-              field: 'categories.id',
-              value: [cat2.id],
-              operator: FilterOperator.IN,
-            },
-          ]
-        : [],
-      sorts: [{ field: 'totalBorrows', direction: SortDirection.DESC }],
-    },
-    {
-      enabled: !!cat2,
-    }
-  );
+  // Extract Phase 1 values
+  const popularRecData = popularRecRes.status === 'fulfilled' ? popularRecRes.value?.data : null;
+  const newArrivalsBooks =
+    newArrivalsRes.status === 'fulfilled' ? (newArrivalsRes.value?.data?.content ?? []) : [];
+  const gridCategories =
+    categoriesGridRes.status === 'fulfilled' ? (categoriesGridRes.value?.data?.content ?? []) : [];
+  const featuredAuthors =
+    featuredAuthorsRes.status === 'fulfilled'
+      ? (featuredAuthorsRes.value?.data?.content ?? [])
+      : [];
+  const allCats =
+    categoriesAllRes.status === 'fulfilled' ? (categoriesAllRes.value?.data?.content ?? []) : [];
+  const personalRecData = personalRecRes.status === 'fulfilled' ? personalRecRes.value?.data : null;
+  const borrowHistory =
+    borrowHistoryRes.status === 'fulfilled' ? (borrowHistoryRes.value?.data?.content ?? []) : [];
+  const booksCount =
+    booksCountRes.status === 'fulfilled' ? (booksCountRes.value?.data?.total ?? 0) : 0;
+  const authorsCount =
+    authorsCountRes.status === 'fulfilled' ? (authorsCountRes.value?.data?.total ?? 0) : 0;
 
-  const cat1Books = React.useMemo(() => {
-    return (cat1Data?.data ?? []).map((book) => ({
-      ...book,
-      strategy: RecommendationStrategy.HYBRID,
-    }));
-  }, [cat1Data?.data]);
-
-  const cat2Books = React.useMemo(() => {
-    return (cat2Data?.data ?? []).map((book) => ({
-      ...book,
-      strategy: RecommendationStrategy.HYBRID,
-    }));
-  }, [cat2Data?.data]);
-
-  // Determine title and subtitle based on whether it is history-based or fallback
-  const getCategoryTitleAndSubtitle = React.useCallback(
-    (category: CategoryResponse) => {
-      const translation =
-        category.translations?.find((tr: CategoryTranslationResponse) => tr.lang === locale) ||
-        category.translations?.[0];
-      const categoryName = translation?.name || category.slug || 'Unnamed';
-      const isHistoryBased = recommendedCategories.some((c) => c.id === category.id);
-
-      const title = isHistoryBased
-        ? tDiscover(discoverKeys.sections.becauseYouRead.title, { category: categoryName })
-        : categoryName;
-
-      const subtitle = isHistoryBased
-        ? tDiscover(discoverKeys.sections.becauseYouRead.subtitle)
-        : translation?.description;
-
-      return { title, subtitle };
-    },
-    [locale, recommendedCategories, tDiscover, discoverKeys.sections.becauseYouRead]
-  );
-
-  const isFeedLoading = feedLoading || status === 'loading';
-  const isBorrowHistoryLoading = borrowHistoryLoading || isBooksLoading;
-  const isCategoriesLoading = categoriesLoading || isCat1Loading || isCat2Loading;
-
-  const pageLoading =
-    isFeedLoading || (status === 'authenticated' && isBorrowHistoryLoading) || isCategoriesLoading;
-
-  if (pageLoading) {
-    return <HomeSkeleton />;
+  // eslint-disable-next-line no-console
+  console.log('[DEBUG] HomeView Phase 1 values:', {
+    userId,
+    popularRecDataExists: !!popularRecData,
+    popularRecDataContentLength: popularRecData?.content?.length,
+    newArrivalsBooksLength: newArrivalsBooks.length,
+    gridCategoriesLength: gridCategories.length,
+    personalRecDataExists: !!personalRecData,
+    personalRecDataContentLength: personalRecData?.content?.length,
+  });
+  if (popularRecRes.status === 'rejected') {
+    // eslint-disable-next-line no-console
+    console.error('[DEBUG] popularRecRes failed:', popularRecRes.reason);
+  }
+  if (personalRecRes.status === 'rejected') {
+    // eslint-disable-next-line no-console
+    console.error('[DEBUG] personalRecRes failed:', personalRecRes.reason);
   }
 
-  const bannerBooks = feedData?.feedLayout?.find((s) => s.id === 'banner')?.content || [];
-  const personalBooks = feedData?.feedLayout?.find((s) => s.id === 'personal')?.content || [];
+  // --- Process Category Recommendations Selection ---
+  let recommendedCategories: CategoryResponse[] = [];
+  if (userId && borrowHistory.length > 0) {
+    try {
+      const borrowedBookIds = borrowHistory.map((loan) => loan.book.id);
+      if (borrowedBookIds.length > 0) {
+        const fullBorrowedBooks = await fetchBooksByIds(borrowedBookIds);
+        const freq: Record<string, { count: number; category: CategoryResponse }> = {};
+
+        fullBorrowedBooks.forEach((book) => {
+          book.categories?.forEach((cat) => {
+            if (!freq[cat.id]) {
+              freq[cat.id] = { count: 0, category: cat };
+            }
+            const item = freq[cat.id];
+            if (item) {
+              item.count += 1;
+            }
+          });
+        });
+
+        const sorted = Object.values(freq).sort((a, b) => b.count - a.count);
+        recommendedCategories = sorted.map((item) => item.category);
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to resolve recommended categories from history on server:', err);
+    }
+  }
+
+  const shuffledHistory = shuffleArray(recommendedCategories);
+  const shuffledAll = shuffleArray(allCats);
+  const selectedCategories: CategoryResponse[] = [];
+  const selectedIds = new Set<string>();
+
+  // Fetch books for multiple recommended categories (e.g. up to 3 categories)
+  const maxCategorySections = 3;
+
+  for (const cat of shuffledHistory) {
+    if (selectedCategories.length >= maxCategorySections) break;
+    selectedCategories.push(cat);
+    selectedIds.add(cat.id);
+  }
+  for (const cat of shuffledAll) {
+    if (selectedCategories.length >= maxCategorySections) break;
+    if (!selectedIds.has(cat.id)) {
+      selectedCategories.push(cat);
+      selectedIds.add(cat.id);
+    }
+  }
+
+  // Create book fetch promises for selected categories
+  const categoryBooksPromises = selectedCategories.map((cat) =>
+    BookApi.search({
+      limit: 10,
+      filters: [
+        {
+          field: 'categories.id',
+          value: [cat.id],
+          operator: FilterOperator.IN,
+        },
+      ],
+      sorts: [{ field: 'totalBorrows', direction: SortDirection.DESC }],
+    })
+  );
+
+  // --- Phase 2: Parallel fetches for detailed books & counts ---
+  const popularIds = popularRecData?.content?.map((item) => item.id) ?? [];
+  const personalIds = personalRecData?.content?.map((item) => item.id) ?? [];
+
+  const [
+    popularBooksRes,
+    personalBooksRes,
+    usersCountRes,
+    borrowsCountRes,
+    ...categoryBooksResults
+  ] = await Promise.allSettled([
+    popularIds.length > 0 ? fetchBooksByIds(popularIds) : Promise.resolve([]),
+    personalIds.length > 0 ? fetchBooksByIds(personalIds) : Promise.resolve([]),
+    userId ? UserApi.find({ limit: 1 }) : Promise.resolve(null),
+    userId ? BorrowApi.find({ limit: 1 }) : Promise.resolve(null),
+    ...categoryBooksPromises,
+  ]);
+
+  // Extract and sort Popular Books
+  let popularBooks: BookResponse[] = [];
+  if (popularBooksRes.status === 'fulfilled' && popularBooksRes.value) {
+    popularBooks = popularBooksRes.value as BookResponse[];
+    if (popularBooks.length > 0 && popularRecData?.content) {
+      const scoreMap = new Map(popularRecData.content.map((item) => [item.id, item.score]));
+      popularBooks = [...popularBooks].sort(
+        (a, b) => (scoreMap.get(b.id) ?? 0) - (scoreMap.get(a.id) ?? 0)
+      );
+    }
+  }
+
+  // eslint-disable-next-line no-console
+  console.log('[DEBUG] HomeView Phase 2 values:', {
+    popularBooksLength: popularBooks.length,
+    popularBooksResStatus: popularBooksRes.status,
+    personalBooksResStatus: personalBooksRes.status,
+  });
+  if (popularBooksRes.status === 'rejected') {
+    // eslint-disable-next-line no-console
+    console.error('[DEBUG] popularBooksRes failed:', popularBooksRes.reason);
+  }
+  if (personalBooksRes.status === 'rejected') {
+    // eslint-disable-next-line no-console
+    console.error('[DEBUG] personalBooksRes failed:', personalBooksRes.reason);
+  }
+
+  // Extract and enrich/sort Personal Recommendation Books
+  let personalRecBooks: RecommendedBookResponse[] = [];
+  if (
+    personalBooksRes.status === 'fulfilled' &&
+    personalBooksRes.value &&
+    personalRecData?.content
+  ) {
+    const personalBooks = personalBooksRes.value as BookResponse[];
+    const recMap = new Map(personalRecData.content.map((i) => [i.id, i]));
+    personalRecBooks = personalBooks
+      .map((book) => ({
+        ...book,
+        score: recMap.get(book.id)?.score,
+        reason: recMap.get(book.id)?.reason,
+        predicted: recMap.get(book.id)?.predicted,
+      }))
+      .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  }
+
+  // Extract dynamic Category Book sections
+  const categorySections: { category: CategoryResponse; books: BookResponse[] }[] = [];
+  selectedCategories.forEach((cat, index) => {
+    const res = categoryBooksResults[index];
+    const books = res?.status === 'fulfilled' && res.value ? (res.value.data?.content ?? []) : [];
+    if (books.length > 0) {
+      categorySections.push({
+        category: cat,
+        books,
+      });
+    }
+  });
+
+  const usersCount =
+    usersCountRes.status === 'fulfilled' && usersCountRes.value
+      ? (usersCountRes.value.data?.total ?? 0)
+      : 0;
+  const borrowsCount =
+    borrowsCountRes.status === 'fulfilled' && borrowsCountRes.value
+      ? (borrowsCountRes.value.data?.total ?? 0)
+      : 0;
+
+  const stats = {
+    books: booksCount,
+    users: usersCount,
+    authors: authorsCount,
+    borrows: borrowsCount,
+  };
 
   return (
     <div className='flex flex-col pb-20'>
-      <BannerCarousel books={bannerBooks} />
+      <BannerSection books={popularBooks} />
       <div className='space-y-12 md:space-y-24'>
-        {personalBooks.length > 0 && <RecommendationCarousel books={personalBooks} />}
-
-        {cat1 && cat1Books.length > 0 && (
-          <RecommendationGrid
-            books={cat1Books}
-            title={getCategoryTitleAndSubtitle(cat1).title}
-            subtitle={getCategoryTitleAndSubtitle(cat1).subtitle}
-            icon={BookOpen}
-          />
-        )}
-
-        {cat2 && cat2Books.length > 0 && (
-          <RecommendationGrid
-            books={cat2Books}
-            title={getCategoryTitleAndSubtitle(cat2).title}
-            subtitle={getCategoryTitleAndSubtitle(cat2).subtitle}
-            icon={BookOpen}
-          />
-        )}
-
-        <NewArrivals />
-        <CategoriesGrid />
-        <FeaturedAuthors />
-        <StatsSection />
+        {personalRecBooks.length > 0 && <PersonalRecommendationSection books={personalRecBooks} />}
+        <CategoryBookSections sections={categorySections} />
+        <NewArrivalsSection books={newArrivalsBooks} />
+        <CategoriesGridSection categories={gridCategories} />
+        <FeaturedAuthorsSection authors={featuredAuthors} />
+        <StatsSection stats={stats} />
         <CTASection />
       </div>
     </div>
