@@ -16,15 +16,15 @@ export function LibraryView() {
         <h1 className='mb-2 text-2xl font-bold'>{t(keys.title)}</h1>
         <p className='text-muted-foreground'>{t(keys.description)}</p>
       </div>
-      <Tabs defaultValue='books' className='w-full'>
+      <Tabs defaultValue='recommendations' className='w-full'>
         <TabsList className='mb-6'>
-          <TabsTrigger value='books'>{t(keys.tabs.books)}</TabsTrigger>
-          <TabsTrigger value='borrows'>{t(keys.tabs.borrows)}</TabsTrigger>
+          <TabsTrigger value='recommendations'>{t(keys.tabs.recommendations)}</TabsTrigger>
+          <TabsTrigger value='history'>{t(keys.tabs.history)}</TabsTrigger>
         </TabsList>
-        <TabsContent value='books'>
-          <BookGridView filter={{}} />
+        <TabsContent value='recommendations'>
+          <BookGridView />
         </TabsContent>
-        <TabsContent value='borrows'>
+        <TabsContent value='history'>
           <BorrowsProvider>
             <div className='@container/content flex w-full max-w-full flex-col gap-4 overflow-hidden sm:gap-6'>
               <div className='flex flex-wrap items-end justify-end gap-4 sm:gap-6'>

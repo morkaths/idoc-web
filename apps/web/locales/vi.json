@@ -510,8 +510,8 @@
     "title": "Thư viện của tôi",
     "description": "Quản lý sách đang mượn và xem lại lịch sử mượn sách cá nhân.",
     "tabs": {
-      "books": "Danh sách sách",
-      "borrows": "Danh sách mượn"
+      "recommendations": "Gợi ý",
+      "history": "Lịch sử"
     },
     "search": {
       "placeholder": "Tìm kiếm bản mượn..."

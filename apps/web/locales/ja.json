@@ -500,6 +500,199 @@
       }
     }
   },
+  "library": {
+    "title": "マイライブラリ",
+    "description": "借りている本を管理し、個人の貸出履歴を確認します。",
+    "tabs": {
+      "recommendations": "おすすめ",
+      "history": "履歴"
+    },
+    "search": {
+      "placeholder": "貸出履歴を検索..."
+    },
+    "table": {
+      "entity": "貸出",
+      "columns": {
+        "cover": "表紙",
+        "book": "書籍",
+        "renewals": "延長回数",
+        "borrowedDate": "貸出日",
+        "dueDate": "返却期限日",
+        "returnDate": "返却日",
+        "status": "状態"
+      },
+      "states": {
+        "borrowed": "貸出中",
+        "active": "有効",
+        "overdue": "期限切れ",
+        "returned": "返却済み"
+      },
+      "actions": {
+        "view": {
+          "label": "閲覧",
+          "loading": "リダイレクト中..."
+        },
+        "extend": {
+          "label": "延長",
+          "title": "貸出延長",
+          "description": "追加の日数を選択するか、この貸出の新しい返却期限日を指定してください。",
+          "loading": "貸出を延長中...",
+          "success": "貸出が正常に延長されました！",
+          "error": "貸出の延長に失敗しました。もう一度お試しください。",
+          "fields": {
+            "borrowedDate": "貸出日",
+            "extraDays": "追加日数",
+            "borrowRange": "貸出期間",
+            "notes": "備考",
+            "placeholder": "延長する日数を入力",
+            "error": "新しい返却期限日は、現在の期限日より少なくとも1日後である必要があります。",
+            "maxError": "延長期間は30日を超えることはできません。"
+          }
+        },
+        "mutate": {
+          "create": {
+            "title": "貸出追加",
+            "description": "新しい貸出情報を入力してください。",
+            "submit": "作成"
+          },
+          "update": {
+            "title": "貸出編集",
+            "description": "以下の貸出情報を更新してください。",
+            "submit": "変更を保存"
+          },
+          "fields": {
+            "book": "書籍",
+            "dueDate": "返却期限日",
+            "notes": "備考",
+            "placeholder": "日付を選択"
+          },
+          "loading": "保存中...",
+          "success": "正常に保存されました！",
+          "error": "保存に失敗しました。もう一度お試しください。",
+          "cancel": "キャンセル"
+        },
+        "review": {
+          "label": "レビュー",
+          "create": "レビュー作成",
+          "update": "レビュー更新",
+          "description": "「{title}」についての感想を共有してください",
+          "fallback": "この本についての感想を共有してください",
+          "rating": {
+            "label": "評価",
+            "error": "評価を選択してください",
+            "value": {
+              "excellent": "大変満足",
+              "good": "満足",
+              "neutral": "普通",
+              "poor": "不満",
+              "terrible": "大変不満"
+            }
+          },
+          "content": {
+            "label": "コメント",
+            "placeholder": "ここにレビューを書いてください..."
+          },
+          "actions": {
+            "submit": "レビューを送信",
+            "update": "レビューを更新"
+          },
+          "messages": {
+            "create": {
+              "success": "レビューが正常に作成されました！",
+              "error": "レビューの作成に失敗しました。もう一度お試しください。"
+            },
+            "update": {
+              "success": "レビューが正常に更新されました！",
+              "error": "レビューの更新に失敗しました。もう一度お試しください。"
+            }
+          }
+        },
+        "return": {
+          "label": "返却",
+          "title": "この貸出（ID: {borrowId}）を返却しますか？",
+          "loading": "返却処理中...",
+          "success": "正常に返却されました！",
+          "error": "返却に失敗しました。もう一度お試しください。",
+          "confirmDesc": "本当に<strong>{title}</strong>を返却しますか？<br></br>この操作は取り消せません。"
+        },
+        "history": {
+          "label": "履歴",
+          "title": "貸出履歴",
+          "description": "この貸出記録のイベントタイムライン。",
+          "unknownTitle": "不明なタイトル",
+          "unknownAuthor": "不明な著者",
+          "noCategory": "カテゴリなし",
+          "loading": "貸出履歴を読み込み中...",
+          "success": "貸出履歴が正常に読み込まれました！",
+          "error": "貸出履歴の読み込みに失敗しました。もう一度お試しください。",
+          "timeline": {
+            "borrowed": {
+              "title": "貸出",
+              "content": "ユーザー <strong>{username}</strong> が <strong>{title}</strong> を借りました。"
+            },
+            "renewal": {
+              "title": "延長 #{index}",
+              "content": "<strong>{date}</strong> まで延長されました。"
+            },
+            "returned": {
+              "title": "返却済み",
+              "content": "アイテムが返却されました。"
+            },
+            "overdue": {
+              "title": "期限切れ",
+              "content": "<strong>{date}</strong> から期限切れになっています。"
+            },
+            "due": {
+              "title": "返却期限",
+              "content": "返却期限は <strong>{date}</strong> です。"
+            },
+            "unknown": "不明な日付"
+          }
+        }
+      },
+      "bulkActions": {
+        "return": {
+          "label": "返却",
+          "tooltip": "選択した貸出を返却",
+          "confirmDesc": "選択した貸出を返却しますか？"
+        },
+        "export": {
+          "label": "エクスポート",
+          "tooltip": "選択した貸出をエクスポート",
+          "confirmDesc": "選択した貸出をエクスポートしますか？",
+          "loading": "貸出情報をエクスポート中...",
+          "success": "エクスポートが完了しました！",
+          "error": "エクスポートに失敗しました。もう一度お試しください。"
+        }
+      }
+    },
+    "review": {
+      "create": "書籍をレビュー",
+      "update": "レビューを更新",
+      "title": "貸出レビュー",
+      "description": "「{title}」についての感想を共有してください。",
+      "fallback": "この本についての感想を共有してください。",
+      "rating": {
+        "label": "あなたの評価",
+        "error": "評価を選択してください！",
+        "value": {
+          "excellent": "素晴らしい！",
+          "good": "良い！",
+          "neutral": "普通！",
+          "poor": "悪い！",
+          "terrible": "最悪！"
+        }
+      },
+      "content": {
+        "label": "レビュー内容",
+        "placeholder": "この本の良かった点や悪かった点は何ですか？"
+      },
+      "actions": {
+        "submit": "レビューを送信",
+        "update": "レビューを更新"
+      }
+    }
+  },
   "home": {
     "hero": {
       "title": "知識の世界を探索する",

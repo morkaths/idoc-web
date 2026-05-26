@@ -20,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@repo/ui/components/card';
+import { Skeleton } from '@repo/ui/components/skeleton';
 import { DEFAULT_CLOUDINARY_LIMITS, FILE_CATEGORIES_CONFIG } from '../data/data';
 import type { CloudinaryRawResponse } from '../data/schema';
 import { formatBytes } from './storage-columns';
@@ -27,7 +28,6 @@ import { formatBytes } from './storage-columns';
 type StorageDashboardStatsProps = {
   allFiles: FileResponse[];
   isLoading: boolean;
-  /** Real-time usage data from /storage/usage API */
   usageData?: StorageUsageResponse;
   isUsageLoading?: boolean;
 };
@@ -126,10 +126,76 @@ export function StorageDashboardStats({
 
   if (isLoading || isUsageLoading) {
     return (
-      <div className='grid animate-pulse gap-4 md:grid-cols-2 lg:grid-cols-4'>
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className='bg-muted h-[180px] rounded-xl' />
-        ))}
+      <div className='space-y-6'>
+        {/* Row 1 – 4 provider cards */}
+        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i} className='border-border/60 overflow-hidden border shadow-sm'>
+              <CardHeader className='pb-2'>
+                <Skeleton className='h-3.5 w-28' />
+                <Skeleton className='h-3 w-14' />
+              </CardHeader>
+              <CardContent className='space-y-3'>
+                <Skeleton className='h-7 w-24' />
+                <Skeleton className='h-3 w-full' />
+                <Skeleton className='h-3 w-3/4' />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Row 2 – 3 analysis cards */}
+        <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
+          {/* File Format Allocation – col-span-2 */}
+          <Card className='border-border/60 col-span-full border shadow-sm md:col-span-1 lg:col-span-2'>
+            <CardHeader className='pb-2'>
+              <Skeleton className='h-4 w-40' />
+              <Skeleton className='h-3 w-52' />
+            </CardHeader>
+            <CardContent className='space-y-3 pt-2'>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className='space-y-1'>
+                  <div className='flex justify-between'>
+                    <Skeleton className='h-3 w-20' />
+                    <Skeleton className='h-3 w-28' />
+                  </div>
+                  <Skeleton className='h-1.5 w-full rounded-full' />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Upload Activity bar chart */}
+          <Card className='border-border/60 border shadow-sm'>
+            <CardHeader className='pb-2'>
+              <Skeleton className='h-4 w-32' />
+              <Skeleton className='h-3 w-44' />
+            </CardHeader>
+            <CardContent className='flex h-[160px] items-end justify-between gap-1 px-4 pb-2'>
+              {[32, 48, 26, 54, 38, 44, 30].map((h, i) => (
+                <div key={i} className='flex flex-1 flex-col items-center gap-1'>
+                  <Skeleton className='w-full rounded-t-sm' style={{ height: `${h}px` }} />
+                  <Skeleton className='h-2.5 w-5' />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Folder Utilization */}
+          <Card className='border-border/60 overflow-hidden border shadow-sm lg:hidden'>
+            <CardHeader className='pb-2'>
+              <Skeleton className='h-4 w-36' />
+            </CardHeader>
+            <CardContent className='space-y-2'>
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className='flex items-center justify-between'>
+                  <Skeleton className='h-3 w-20' />
+                  <Skeleton className='h-3 w-24' />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }

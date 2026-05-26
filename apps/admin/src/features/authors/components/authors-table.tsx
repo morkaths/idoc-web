@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
+import { UserSearch, Loader2 } from 'lucide-react';
 import { getRouteApi } from '@tanstack/react-router';
 import {
   type SortingState,
@@ -157,8 +158,22 @@ export function AuthorsTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  {isAuthorsFetching ? 'Loading...' : 'No results.'}
+                <TableCell colSpan={columns.length} className='py-16 text-center'>
+                  {isAuthorsFetching ? (
+                    <Loader2 className='text-primary mx-auto h-5 w-5 animate-spin' />
+                  ) : (
+                    <div className='flex flex-col items-center gap-3'>
+                      <div className='bg-muted rounded-full p-4'>
+                        <UserSearch className='text-muted-foreground h-10 w-10' />
+                      </div>
+                      <div className='space-y-1'>
+                        <p className='text-foreground font-medium'>No authors found</p>
+                        <p className='text-muted-foreground text-sm'>
+                          Try adjusting your search or filter to find what you&apos;re looking for.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </TableCell>
               </TableRow>
             )}

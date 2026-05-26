@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createFileRoute, Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { SignedIn, useAuth, UserButton } from '@clerk/clerk-react';
-import { ExternalLink, Loader2 } from 'lucide-react';
+import { ExternalLink, Loader2, UsersRound } from 'lucide-react';
 import { ClerkLogo } from '@/assets/clerk-logo';
 import { useUsers } from '@/hooks/data/useUser';
 import { Badge } from '@repo/ui/components/badge';
@@ -206,8 +206,18 @@ function UserListTable() {
         <TableBody>
           {users.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className='h-24 text-center'>
-                No users found.
+              <TableCell colSpan={5} className='py-16 text-center'>
+                <div className='flex flex-col items-center gap-3'>
+                  <div className='bg-muted rounded-full p-4'>
+                    <UsersRound className='text-muted-foreground h-10 w-10' />
+                  </div>
+                  <div className='space-y-1'>
+                    <p className='text-foreground font-medium'>No users found</p>
+                    <p className='text-muted-foreground text-sm'>
+                      There are no users matching your criteria.
+                    </p>
+                  </div>
+                </div>
               </TableCell>
             </TableRow>
           ) : (

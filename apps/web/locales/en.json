@@ -515,8 +515,8 @@
     "title": "My Library",
     "description": "Manage your borrowed books and explore your personal library history.",
     "tabs": {
-      "books": "Book List",
-      "borrows": "Borrow List"
+      "recommendations": "Recommendations",
+      "history": "History"
     },
     "search": {
       "placeholder": "Search borrows..."

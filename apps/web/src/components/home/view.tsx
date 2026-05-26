@@ -57,9 +57,9 @@ const GridSkeleton = () => {
         </div>
         <Skeleton className='h-10 w-24' />
       </div>
-      <div className='grid grid-cols-2 items-start justify-items-center gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
+      <div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start justify-items-center gap-6'>
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className='w-full max-w-[200px] space-y-3'>
+          <div key={i} className='w-[200px] min-w-[200px] max-w-[200px] shrink-0 space-y-3'>
             <Skeleton className='h-[280px] w-full rounded-xl' />
             <Skeleton className='h-4 w-3/4' />
             <Skeleton className='h-4 w-1/2' />

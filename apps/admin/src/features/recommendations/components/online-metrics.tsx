@@ -1,4 +1,4 @@
-import { Eye, Clock, Activity, AlertCircle } from 'lucide-react';
+import { BarChart3, Loader2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 import {
   Card,
@@ -14,6 +14,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from '@repo/ui/components/chart';
+import { Skeleton } from '@repo/ui/components/skeleton';
 import {
   Table,
   TableBody,
@@ -27,20 +28,25 @@ import {
   type OnlineMetricItem,
   type StrategyDistItem,
 } from '../data/use-online-metrics';
+import { BAR_HEIGHTS_1, BAR_HEIGHTS_2, buildMetricCards } from '../data/online-metrics.data';
 import { MetricCard } from './metric-card';
 
 interface OnlineMetricsProps {
   onlineMetrics: OnlineMetricItem[];
   strategyDistribution: StrategyDistItem[];
+  isLoading?: boolean;
 }
+
 
 /**
  * Component to render online recommendation performance charts and tables.
+ * Shows skeleton placeholders while data is loading, with a spinner synced to the table card.
  * @param {OnlineMetricsProps} props - The component properties.
  */
 export function OnlineMetrics({
   onlineMetrics = [],
   strategyDistribution = [],
+  isLoading = false,
 }: OnlineMetricsProps) {
   const {
     normalizedOnlineMetrics,
@@ -54,50 +60,47 @@ export function OnlineMetrics({
 
   return (
     <div className='space-y-6'>
-      {/* Summary Cards */}
-      <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-        <MetricCard
-          title='Online Impressions'
-          value={summary.totalImpressions.toLocaleString()}
-          icon={Eye}
-          description='Total served recommendations'
-        />
-
-        <MetricCard
-          title='Average Latency'
-          value={`${summary.avgLatencyMs.toFixed(1)} ms`}
-          icon={Clock}
-          description='Weighted response latency'
-        />
-
-        <MetricCard
-          title='Overall CTR / CVR'
-          value={`${summary.ctr.toFixed(2)}% / ${summary.cvr.toFixed(2)}%`}
-          icon={Activity}
-          description='Click & Borrow conversion rates'
-        />
-
-        <MetricCard
-          title='Fallback Rate'
-          value={`${summary.fallbackRate.toFixed(2)}%`}
-          icon={AlertCircle}
-          description='Percentage of fallback triggers'
-        />
+      {/* ── Summary metric cards ─────────────────────────────────────── */}
+      <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i} className='border-border/60 overflow-hidden border shadow-sm'>
+                <CardHeader className='pb-2'>
+                  <Skeleton className='h-4 w-36' />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className='h-8 w-32' />
+                  <Skeleton className='mt-2 h-3 w-40' />
+                </CardContent>
+              </Card>
+            ))
+          : buildMetricCards(summary).map((card) => (
+              <MetricCard key={card.title} {...card} />
+            ))}
       </div>
 
-      {/* Charts Grid */}
+      {/* ── Charts grid ──────────────────────────────────────────────── */}
       <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
-        {/* Traffic Distribution Pie */}
-        <Card className='border-border/60 border shadow-sm lg:col-span-1'>
+        {/* Strategy Distribution Pie */}
+        <Card className='border-border/60 border shadow-sm'>
           <CardHeader>
             <CardTitle className='text-base'>Strategy Distribution</CardTitle>
             <CardDescription>Active request split percentage</CardDescription>
           </CardHeader>
-          <CardContent className='flex h-[280px] flex-col items-center justify-center pt-0 sm:h-[300px]'>
-            {normalizedStrategyDistribution.length > 0 ? (
+          <CardContent className='flex flex-col items-center justify-center pt-0'>
+            {isLoading ? (
+              <div className='flex w-full flex-col items-center justify-center gap-4 py-6'>
+                <Skeleton className='h-[160px] w-[160px] rounded-full sm:h-[180px] sm:w-[180px]' />
+                <div className='flex flex-wrap justify-center gap-2'>
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className='h-3.5 w-16' />
+                  ))}
+                </div>
+              </div>
+            ) : normalizedStrategyDistribution.length > 0 ? (
               <ChartContainer
                 config={strategyChartConfig}
-                className='mx-auto h-[220px] w-full max-w-[220px] sm:h-[250px] sm:max-w-[250px]'
+                className='mx-auto h-[220px] w-full max-w-[240px] sm:h-[260px] sm:max-w-[260px]'
               >
                 <PieChart>
                   <ChartTooltip
@@ -149,109 +152,131 @@ export function OnlineMetrics({
                   </Pie>
                   <ChartLegend
                     content={<ChartLegendContent nameKey='strategy' />}
-                    className='flex-wrap justify-center gap-2 text-xs sm:justify-start'
+                    className='flex-wrap justify-center gap-2 text-xs'
                   />
                 </PieChart>
               </ChartContainer>
             ) : (
-              <div className='text-muted-foreground text-sm'>No distribution data available</div>
+              <div className='text-muted-foreground py-10 text-sm'>
+                No distribution data available
+              </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Impressions by Strategy */}
-        <Card className='border-border/60 border shadow-sm lg:col-span-1'>
+        {/* Impressions by Strategy Bar */}
+        <Card className='border-border/60 border shadow-sm'>
           <CardHeader>
             <CardTitle className='text-base'>Impressions by Strategy</CardTitle>
             <CardDescription>Total volume of served impressions</CardDescription>
           </CardHeader>
           <CardContent className='pt-0'>
-            <div className='h-[280px] w-full sm:h-[300px]'>
-              {strategyAggregates.length > 0 ? (
-                <ChartContainer
-                  config={impressionsChartConfig}
-                  className='h-[220px] w-full sm:h-[250px]'
-                >
-                  <BarChart data={strategyAggregates}>
-                    <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                    <XAxis
-                      dataKey='strategy'
-                      fontSize={11}
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
+            {isLoading ? (
+              <div className='flex h-[220px] w-full items-end justify-between gap-2 px-2 sm:h-[250px]'>
+                {BAR_HEIGHTS_1.map((pct, i) => (
+                  <div key={i} className='flex flex-1 flex-col items-center gap-2'>
+                    <Skeleton
+                      className='w-full rounded-t-sm'
+                      style={{ height: `${pct}%` }}
                     />
-                    <YAxis fontSize={11} tickLine={false} axisLine={false} />
-                    <ChartTooltip
-                      cursor={false}
-                      content={<ChartTooltipContent indicator='dashed' />}
-                    />
-                    <Bar
-                      dataKey='impressions'
-                      fill='var(--color-impressions)'
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ChartContainer>
-              ) : (
-                <div className='text-muted-foreground flex h-full items-center justify-center text-sm'>
-                  No performance data available
-                </div>
-              )}
-            </div>
+                    <Skeleton className='h-3 w-10' />
+                  </div>
+                ))}
+              </div>
+            ) : strategyAggregates.length > 0 ? (
+              <ChartContainer
+                config={impressionsChartConfig}
+                className='h-[220px] w-full sm:h-[250px]'
+              >
+                <BarChart data={strategyAggregates}>
+                  <CartesianGrid strokeDasharray='3 3' vertical={false} />
+                  <XAxis
+                    dataKey='strategy'
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                  />
+                  <YAxis fontSize={11} tickLine={false} axisLine={false} />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent indicator='dashed' />}
+                  />
+                  <Bar
+                    dataKey='impressions'
+                    fill='var(--color-impressions)'
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className='text-muted-foreground flex h-[220px] items-center justify-center text-sm sm:h-[250px]'>
+                No performance data available
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Avg Latency by Strategy */}
-        <Card className='border-border/60 border shadow-sm lg:col-span-1'>
+        {/* Avg Latency by Strategy Bar */}
+        <Card className='border-border/60 border shadow-sm'>
           <CardHeader>
             <CardTitle className='text-base'>Average Latency (ms)</CardTitle>
             <CardDescription>Response speed of recommendation pipelines</CardDescription>
           </CardHeader>
           <CardContent className='pt-0'>
-            <div className='h-[280px] w-full sm:h-[300px]'>
-              {strategyAggregates.length > 0 ? (
-                <ChartContainer
-                  config={latencyChartConfig}
-                  className='h-[220px] w-full sm:h-[250px]'
-                >
-                  <BarChart data={strategyAggregates}>
-                    <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                    <XAxis
-                      dataKey='strategy'
-                      fontSize={11}
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
+            {isLoading ? (
+              <div className='flex h-[220px] w-full items-end justify-between gap-2 px-2 sm:h-[250px]'>
+                {BAR_HEIGHTS_2.map((pct, i) => (
+                  <div key={i} className='flex flex-1 flex-col items-center gap-2'>
+                    <Skeleton
+                      className='w-full rounded-t-sm'
+                      style={{ height: `${pct}%` }}
                     />
-                    <YAxis
-                      fontSize={11}
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(v) => `${v}ms`}
-                    />
-                    <ChartTooltip
-                      cursor={false}
-                      content={<ChartTooltipContent indicator='dashed' />}
-                    />
-                    <Bar
-                      dataKey='avgLatencyMs'
-                      fill='var(--color-avgLatencyMs)'
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ChartContainer>
-              ) : (
-                <div className='text-muted-foreground flex h-full items-center justify-center text-sm'>
-                  No latency data available
-                </div>
-              )}
-            </div>
+                    <Skeleton className='h-3 w-10' />
+                  </div>
+                ))}
+              </div>
+            ) : strategyAggregates.length > 0 ? (
+              <ChartContainer
+                config={latencyChartConfig}
+                className='h-[220px] w-full sm:h-[250px]'
+              >
+                <BarChart data={strategyAggregates}>
+                  <CartesianGrid strokeDasharray='3 3' vertical={false} />
+                  <XAxis
+                    dataKey='strategy'
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                  />
+                  <YAxis
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(v) => `${v}ms`}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent indicator='dashed' />}
+                  />
+                  <Bar
+                    dataKey='avgLatencyMs'
+                    fill='var(--color-avgLatencyMs)'
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className='text-muted-foreground flex h-[220px] items-center justify-center text-sm sm:h-[250px]'>
+                No latency data available
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Online Metrics Detailed Table */}
+      {/* ── Historical Daily Log table ────────────────────────────────── */}
       <Card className='border-border/60 border shadow-sm'>
         <CardHeader>
           <CardTitle className='text-base'>Historical Daily Log</CardTitle>
@@ -272,7 +297,14 @@ export function OnlineMetrics({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {normalizedOnlineMetrics.length > 0 ? (
+                {isLoading ? (
+                  // Single spinner row while fetching
+                  <TableRow>
+                    <TableCell colSpan={7} className='h-32 text-center'>
+                      <Loader2 className='text-primary mx-auto h-5 w-5 animate-spin' />
+                    </TableCell>
+                  </TableRow>
+                ) : normalizedOnlineMetrics.length > 0 ? (
                   normalizedOnlineMetrics.map((row, idx) => (
                     <TableRow key={`${row.date}-${row.strategy}-${idx}`}>
                       <TableCell className='pl-6 font-medium'>{row.date}</TableCell>
@@ -290,8 +322,18 @@ export function OnlineMetrics({
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={7} className='text-muted-foreground h-24 text-center'>
-                      No records found
+                    <TableCell colSpan={7} className='py-12 text-center'>
+                      <div className='flex flex-col items-center gap-3'>
+                        <div className='bg-muted rounded-full p-4'>
+                          <BarChart3 className='text-muted-foreground h-8 w-8' />
+                        </div>
+                        <div className='space-y-1'>
+                          <p className='text-foreground font-medium'>No records found</p>
+                          <p className='text-muted-foreground text-sm'>
+                            There are currently no online recommendation metrics available.
+                          </p>
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

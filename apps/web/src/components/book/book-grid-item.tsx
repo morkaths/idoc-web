@@ -74,7 +74,7 @@ export function BookGridItem({ book, onClick }: BookGridItemProps) {
     <>
       <div
         onClick={handleClick}
-        className={`group pb-1} relative flex h-full w-full max-w-[200px] cursor-pointer flex-col rounded-md border border-gray-200/80 bg-zinc-50/90 transition-colors duration-200 hover:border-gray-300 dark:border-zinc-800 dark:bg-zinc-900/80 dark:hover:border-zinc-700`}
+        className={`group pb-1 relative flex h-full w-[180px] shrink-0 cursor-pointer flex-col rounded-md border border-gray-200/80 bg-zinc-50/90 transition-colors duration-200 hover:border-gray-300 dark:border-zinc-800 dark:bg-zinc-900/80 dark:hover:border-zinc-700`}
         role='button'
         tabIndex={0}
         onKeyDown={(e) => {
@@ -102,7 +102,7 @@ export function BookGridItem({ book, onClick }: BookGridItemProps) {
         </div>
 
         {/* Content */}
-        <div className={`flex flex-grow flex-col p-2 pt-0.5 sm:p-2 sm:pt-0.5`}>
+        <div className={`flex flex-grow flex-col !p-2.5 !pt-0.5 sm:!p-3 sm:!pt-0.5`}>
           <span className='text-muted-foreground mb-0.5 block text-left text-[10px] font-medium tracking-wide sm:text-xs'>
             Ebook
           </span>
