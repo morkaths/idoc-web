@@ -17,13 +17,21 @@ export const themeConfig = {
     { label: 'Nunito', value: 'Nunito, sans-serif' },
     { label: 'System', value: 'system-ui, sans-serif' },
   ],
-  radiuses: ['0', '0.25rem', '0.5rem', '0.75rem', '1rem'],
+  radiuses: ['0', '0.3rem', '0.5rem', '0.7rem', '1.3rem'],
   defaults: {
     mode: 'system' as const,
     color: 'modern-minimal',
     radius: '0.5rem',
     font: 'Inter, sans-serif',
   },
+};
+
+export const radiusLabelMap: Record<string, string> = {
+  '0': 'none',
+  '0.3rem': 'SM',
+  '0.5rem': 'MD',
+  '0.7rem': 'LG',
+  '1.3rem': 'XL',
 };
 
 export const themeColors: Record<string, ThemePreset> = {

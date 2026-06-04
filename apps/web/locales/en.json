@@ -124,6 +124,7 @@
         "description": "Books you have added to your wish list for future borrowing."
       }
     },
+    "chatbot": "AI Assistant",
     "user": {
       "signIn": "Sign In",
       "signUp": "Sign Up",
@@ -798,6 +799,67 @@
     "authPrompt": {
       "title": "Want a Personalized Experience?",
       "description": "Sign in to let iDoc suggest the best books based on your reading history and interests."
+    }
+  },
+  "chatbot": {
+    "title": "iDoc Library AI Assistant",
+    "welcomeTitle": "<highlight1>iDoc</highlight1> Library <highlight2>AI</highlight2> Assistant",
+    "errorMessage": "Sorry, there was an error connecting to the AI server. Please try again later.",
+    "thinking": "AI Assistant is thinking...",
+    "typing": "Typing...",
+    "inputPlaceholder": "Ask AI assistant using {modelName}...",
+    "disclaimer": "AI can make mistakes. Consider checking important information.",
+    "copied": "Copied!",
+    "retry": "Retry",
+    "edit": "Edit",
+    "voiceInput": "Voice input",
+    "recording": "Recording...",
+    "welcomeSubtitle": "Welcome! How can I help you today? Here are a few suggestions to get you started.",
+    "widget": {
+      "title": "Ask AI Assistant",
+      "headerTitle": "iDoc Library AI Assistant",
+      "headerTitleText": "iDoc <highlight>Assistant</highlight>",
+      "clear": "Clear",
+      "openFullPage": "Open in full page",
+      "minimize": "Minimize",
+      "placeholder": "Ask iDoc assistant...",
+      "welcome": "Hi! How can I help you today with book searching or borrowing?",
+      "online": "Active"
+    },
+    "sidebar": {
+      "searchPlaceholder": "Search...",
+      "newChat": "New Chat",
+      "collapseSidebar": "Collapse Sidebar",
+      "noConversations": "No conversations yet.",
+      "noResults": "No results found.",
+      "options": "Options",
+      "rename": "Rename",
+      "delete": "Delete",
+      "renameTitle": "Rename Chat",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "prompts": {
+      "discover": {
+        "title": "Discover Great Books",
+        "desc": "Recommend some popular sci-fi books in the library.",
+        "short": "Sci-fi recommendations"
+      },
+      "borrow": {
+        "title": "Borrowing Process",
+        "desc": "How do I borrow books and extend my loan periods?",
+        "short": "How to borrow"
+      },
+      "author": {
+        "title": "Search by Author",
+        "desc": "Find works by author Nguyen Nhat Anh.",
+        "short": "Search by author"
+      },
+      "selfhelp": {
+        "title": "Self-Help Books",
+        "desc": "Suggest good books on communication skills and self-learning.",
+        "short": "Self-Help Books"
+      }
     }
   }
 }

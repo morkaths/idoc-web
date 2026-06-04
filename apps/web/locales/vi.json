@@ -124,6 +124,7 @@
         "description": "Sách bạn đã lưu để mượn trong tương lai."
       }
     },
+    "chatbot": "Trợ lý AI",
     "user": {
       "signIn": "Đăng nhập",
       "signUp": "Đăng ký",
@@ -763,6 +764,67 @@
     "authPrompt": {
       "title": "Bạn muốn trải nghiệm cá nhân hóa?",
       "description": "Đăng nhập để iDoc đề xuất những cuốn sách tốt nhất dựa trên lịch sử đọc và sở thích của bạn."
+    }
+  },
+  "chatbot": {
+    "title": "Trợ lý AI iDoc Library",
+    "welcomeTitle": "<highlight2>Trợ lý</highlight2> AI <highlight1>iDoc</highlight1> Library",
+    "errorMessage": "Xin lỗi, đã có lỗi kết nối đến máy chủ AI. Vui lòng thử lại sau.",
+    "thinking": "Trợ lý AI đang suy nghĩ...",
+    "typing": "Đang trả lời...",
+    "inputPlaceholder": "Hỏi trợ lý AI bằng {modelName}...",
+    "disclaimer": "AI có thể đưa ra câu trả lời không chính xác. Hãy kiểm tra thông tin quan trọng.",
+    "copied": "Đã copy!",
+    "retry": "Khôi phục",
+    "edit": "Chỉnh sửa",
+    "voiceInput": "Nhập bằng giọng nói",
+    "recording": "Đang ghi âm...",
+    "welcomeSubtitle": "Chào mừng bạn! Tôi có thể giúp gì cho bạn hôm nay? Hãy bắt đầu với một vài gợi ý dưới đây.",
+    "widget": {
+      "title": "Hỏi trợ lý AI",
+      "headerTitle": "Trợ lý AI Thư viện iDoc",
+      "headerTitleText": "Trợ lý <highlight>iDoc</highlight>",
+      "clear": "Xóa",
+      "openFullPage": "Mở rộng toàn trang",
+      "minimize": "Thu nhỏ",
+      "placeholder": "Hỏi trợ lý iDoc...",
+      "welcome": "Chào bạn! Tôi có thể giúp gì cho bạn hôm nay về tìm sách, mượn sách?",
+      "online": "Đang hoạt động"
+    },
+    "sidebar": {
+      "searchPlaceholder": "Tìm kiếm...",
+      "newChat": "Cuộc trò chuyện mới",
+      "collapseSidebar": "Thu gọn Sidebar",
+      "noConversations": "Chưa có cuộc hội thoại nào.",
+      "noResults": "Không tìm thấy kết quả.",
+      "options": "Tùy chọn",
+      "rename": "Đổi tên",
+      "delete": "Xóa",
+      "renameTitle": "Đổi tên cuộc trò chuyện",
+      "cancel": "Hủy",
+      "save": "Lưu"
+    },
+    "prompts": {
+      "discover": {
+        "title": "Khám phá sách hay",
+        "desc": "Gợi ý cho tôi các sách khoa học viễn tưởng nổi bật.",
+        "short": "Gợi ý sách hay"
+      },
+      "borrow": {
+        "title": "Quy trình mượn sách",
+        "desc": "Tôi có thể mượn sách và gia hạn thời gian mượn như thế nào?",
+        "short": "Cách mượn sách"
+      },
+      "author": {
+        "title": "Tìm theo tác giả",
+        "desc": "Tìm kiếm những tác phẩm của nhà văn Nguyễn Nhật Ánh.",
+        "short": "Tìm theo tác giả"
+      },
+      "selfhelp": {
+        "title": "Tìm sách phát triển bản thân",
+        "desc": "Gợi ý các cuốn sách hay về kỹ năng giao tiếp và tự học.",
+        "short": "Sách phát triển bản thân"
+      }
     }
   }
 }

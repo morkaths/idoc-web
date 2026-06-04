@@ -1,6 +1,6 @@
 import { useTheme } from '@/context/theme-provider';
 import { cn } from '@/lib/utils';
-import { Palette, RotateCcw, Dices, Sun, Moon } from 'lucide-react';
+import { Palette, RotateCcw, Dices, Sun, Moon, Ban } from 'lucide-react';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -19,7 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@repo/ui/components/sheet';
-import { themeColors, themeConfig } from '@/components/layout/data/theme-data';
+import { themeColors, themeConfig, radiusLabelMap } from '@/components/layout/data/theme-data';
 
 export function ConfigDrawer() {
   const { resetTheme, setRadius, setFont } = useTheme();
@@ -171,17 +171,21 @@ function RadiusConfig() {
         onReset={() => setRadius(themeConfig.defaults.radius)}
       />
       <div className='grid grid-cols-5 gap-2'>
-        {themeConfig.radiuses.map((r) => (
-          <Button
-            key={r}
-            variant={radius === r ? 'default' : 'outline'}
-            size='sm'
-            className='w-full'
-            onClick={() => setRadius(r)}
-          >
-            {r === '0' ? '0' : parseFloat(r)}
-          </Button>
-        ))}
+        {themeConfig.radiuses.map((r) => {
+          const label = radiusLabelMap[r] ?? (r === '0' ? '0' : parseFloat(r).toString());
+
+          return (
+            <Button
+              key={r}
+              variant={radius === r ? 'default' : 'outline'}
+              size='sm'
+              className='w-full'
+              onClick={() => setRadius(r)}
+            >
+              {label === 'none' ? <Ban className='size-4' /> : label}
+            </Button>
+          );
+        })}
       </div>
     </div>
   );

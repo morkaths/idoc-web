@@ -19,6 +19,7 @@
   },
   "registries": {
     "@magicui": "https://magicui.design/r/{name}.json",
-    "@smoothui": "https://smoothui.dev/r/{name}.json"
+    "@smoothui": "https://smoothui.dev/r/{name}.json",
+    "@spell": "https://spell.sh/r/{name}.json"
   }
 }

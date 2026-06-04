@@ -1,6 +1,6 @@
 import { type SVGProps } from 'react';
 import { Root as Radio, Item } from '@radix-ui/react-radio-group';
-import { CircleCheck, Layout, Palette, RotateCcw, Dices, Sun, Moon } from 'lucide-react';
+import { CircleCheck, Layout, Palette, RotateCcw, Dices, Sun, Moon, Ban } from 'lucide-react';
 import { IconDir } from '@/assets/custom/icon-dir';
 import { IconLayoutCompact } from '@/assets/custom/icon-layout-compact';
 import { IconLayoutDefault } from '@/assets/custom/icon-layout-default';
@@ -31,7 +31,7 @@ import {
 } from '@repo/ui/components/sheet';
 import { useSidebar } from '@repo/ui/components/sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/tabs';
-import { themeColors, themeConfig } from '@/components/layout/data/theme-data';
+import { themeColors, themeConfig, radiusLabelMap } from '@/components/layout/data/theme-data';
 
 export function ConfigDrawer() {
   const { setOpen } = useSidebar();
@@ -266,17 +266,21 @@ function RadiusConfig() {
         onReset={() => setRadius(themeConfig.defaults.radius)}
       />
       <div className='grid grid-cols-5 gap-2'>
-        {themeConfig.radiuses.map((r) => (
-          <Button
-            key={r}
-            variant={radius === r ? 'default' : 'outline'}
-            size='sm'
-            className='w-full'
-            onClick={() => setRadius(r)}
-          >
-            {r === '0' ? '0' : parseFloat(r)}
-          </Button>
-        ))}
+        {themeConfig.radiuses.map((r) => {
+          const label = radiusLabelMap[r] ?? (r === '0' ? '0' : parseFloat(r).toString());
+
+          return (
+            <Button
+              key={r}
+              variant={radius === r ? 'default' : 'outline'}
+              size='sm'
+              className='w-full'
+              onClick={() => setRadius(r)}
+            >
+              {label === 'none' ? <Ban className='size-4' /> : label}
+            </Button>
+          );
+        })}
       </div>
     </div>
   );

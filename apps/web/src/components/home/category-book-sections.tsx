@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { BookResponse, CategoryResponse, CategoryTranslationResponse } from '@/types';
-import { getLocale } from 'next-intl/server';
 import { Library } from 'lucide-react';
+import { getLocale } from 'next-intl/server';
 import { BookGridRandom } from '@/components/book/book-grid-random';
 import { CategoryIcons } from './data/category-data';
 

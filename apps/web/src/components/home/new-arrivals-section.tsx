@@ -1,7 +1,7 @@
-import type { BookResponse } from '@/types';
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import type { BookResponse } from '@/types';
 import { BadgePlus } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { BookCarousel } from '@/components/book/book-carousel';
 
 interface NewArrivalsSectionProps {
@@ -28,7 +28,10 @@ export const NewArrivalsSection = async ({ books }: NewArrivalsSectionProps) => 
           </div>
           <p className='text-muted-foreground'>{t('newArrivals.subtitle')}</p>
         </div>
-        <Link href='/books?sort=createdAt&order=desc' className='text-primary hover:bg-primary/5 font-semibold'>
+        <Link
+          href='/books?sort=createdAt&order=desc'
+          className='text-primary hover:bg-primary/5 font-semibold'
+        >
           {tCommon('actions.viewAll')}
         </Link>
       </div>

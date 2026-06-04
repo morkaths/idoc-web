@@ -46,12 +46,9 @@ export const BookCarousel = ({
       {isLoading ? (
         <div className='px-2 md:px-4'>
           <Carousel className='w-full'>
-            <CarouselContent className='ml-0 py-3 flex gap-x-5 md:py-3'>
+            <CarouselContent className='ml-0 flex gap-x-5 py-3 md:py-3'>
               {[1, 2, 3, 4, 5].map((i) => (
-                <CarouselItem
-                  key={i}
-                  className='basis-[190px] py-2 pl-0 sm:py-3 md:py-3'
-                >
+                <CarouselItem key={i} className='basis-[190px] py-2 pl-0 sm:py-3 md:py-3'>
                   <div className='group relative flex h-full w-full max-w-[180px] flex-col overflow-hidden rounded-md border border-gray-200/80 bg-zinc-50/90 pb-1 dark:border-zinc-800 dark:bg-zinc-900/80'>
                     <div className='pointer-events-none absolute top-0 right-0 left-0 h-[50%] overflow-hidden rounded-md'>
                       <Skeleton className='h-full w-full rounded-none bg-zinc-100/80 dark:bg-zinc-800/40' />
@@ -102,12 +99,9 @@ export const BookCarousel = ({
               }}
               className='w-full'
             >
-              <CarouselContent className='ml-0 py-3 flex gap-x-5 md:py-3'>
+              <CarouselContent className='ml-0 flex gap-x-5 py-3 md:py-3'>
                 {displayBooks.map((book) => (
-                  <CarouselItem
-                    key={book.id}
-                    className='basis-[190px] py-2 pl-0 sm:py-3 md:py-3'
-                  >
+                  <CarouselItem key={book.id} className='basis-[190px] py-2 pl-0 sm:py-3 md:py-3'>
                     <BookGridItem book={book} />
                   </CarouselItem>
                 ))}

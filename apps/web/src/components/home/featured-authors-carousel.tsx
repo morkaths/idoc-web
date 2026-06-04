@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import * as React from 'react';
 import type { AuthorResponse } from '@/types';
+import { useLocale } from '@/hooks/ui/useLocale';
 import {
   Carousel,
   CarouselContent,
@@ -11,7 +12,6 @@ import {
   CarouselPrevious,
 } from '@repo/ui/components/carousel';
 import { AppImage } from '@/components/app-image';
-import { useLocale } from '@/hooks/ui/useLocale';
 
 interface FeaturedAuthorsCarouselProps {
   authors: AuthorResponse[];
