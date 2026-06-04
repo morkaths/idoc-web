@@ -37,8 +37,6 @@ export namespace UserResponse {
   }
 }
 
-export type UserSummaryResponse = UserResponse.Summary;
-
 export interface TokenResponse {
   accessToken: string;
   type: string;
@@ -87,8 +85,6 @@ export namespace AuthorResponse {
   }
 }
 
-export type AuthorSummaryResponse = AuthorResponse.Summary;
-
 export interface BookResponse {
   id: string;
   title: string;
@@ -127,8 +123,6 @@ export namespace BookResponse {
     authors: AuthorResponse.Summary[];
   }
 }
-
-export type BookSummaryResponse = BookResponse.Summary;
 
 // --- Activities & Social ---
 
@@ -197,8 +191,6 @@ export namespace BookmarkResponse {
   }
 }
 
-export type BookmarkSummaryResponse = BookmarkResponse.Summary;
-
 export interface FolderResponse {
   id: string;
   userId: string;
@@ -215,8 +207,6 @@ export namespace FolderResponse {
     name: string;
   }
 }
-
-export type FolderSummaryResponse = FolderResponse.Summary;
 
 // --- Files ---
 
