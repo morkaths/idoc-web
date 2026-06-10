@@ -10,3 +10,4 @@ export * from './borrow.api';
 export * from './file.api';
 export * from './image.api';
 export * from './recommendation.api';
+export * from './chatbot.api';

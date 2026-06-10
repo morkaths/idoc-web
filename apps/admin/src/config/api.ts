@@ -18,20 +18,7 @@ export const AgentEndpoint = {
     baseURL: env.agent.url,
     timeout: 15_000,
   },
-  endpoints: {
-    recommendations: {
-      sync: () => '/recommendations/sync',
-      syncBook: (bookId: string) => `/recommendations/sync/${bookId}`,
-      train: () => '/recommendations/train',
-      metrics: () => '/recommendations/metrics',
-      similar: (bookId: string) => `/recommendations/similar/${bookId}`,
-      recommend: (userId: string, strategy: string) =>
-        `/recommendations?user_id=${userId}&strategy=${strategy}`,
-      interactions: () => '/recommendations/interactions',
-      feed: () => '/recommendations/feed',
-      removeBook: (bookId: string) => `/recommendations/${bookId}`,
-    },
-  },
+  endpoints: {},
 } as const;
 
 export const ApiEndpoint = {
@@ -93,6 +80,18 @@ export const ApiEndpoint = {
       markRead: (id: string) => `/notifications/${id}/read`,
       markAllRead: () => '/notifications/read-all',
       countUnread: () => '/notifications/unread',
+    },
+    recommendations: {
+      sync: () => '/recommendations/sync',
+      syncBook: (bookId: string) => `/recommendations/sync/${bookId}`,
+      train: () => '/recommendations/train',
+      metrics: () => '/recommendations/metrics',
+      similar: (bookId: string) => `/recommendations/similar/${bookId}`,
+      recommend: (userId: string, strategy: string) =>
+        `/recommendations?user_id=${userId}&strategy=${strategy}`,
+      interactions: () => '/recommendations/interactions',
+      feed: () => '/recommendations/feed',
+      removeBook: (bookId: string) => `/recommendations/${bookId}`,
     },
   },
 } as const;

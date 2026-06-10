@@ -1,4 +1,4 @@
-import { AgentEndpoint } from '@/config/api';
+import { ApiEndpoint } from '@/config/api';
 import {
   type ApiResponse,
   type RecommendationResponse,
@@ -8,14 +8,14 @@ import {
   type RecommendationInteractionRequest,
   type SimilarBooksResponse,
 } from '@/types';
-import { AgentClient } from './agent.config';
+import { ApiClient } from './config';
 
 export const RecommendationApi = {
   getPopular: (page?: number, limit?: number): Promise<ApiResponse<RecommendationResponse>> => {
     const resolvedLimit = limit ?? 10;
     const offset = ((page ?? 1) - 1) * resolvedLimit;
-    return AgentClient.get<RecommendationResponse>(
-      AgentEndpoint.endpoints.recommendations.recommend('anonymous', 'popularity'),
+    return ApiClient.get<RecommendationResponse>(
+      ApiEndpoint.endpoints.recommendations.recommend('anonymous', 'popularity'),
       { params: { limit: resolvedLimit, offset } }
     );
   },
@@ -27,8 +27,8 @@ export const RecommendationApi = {
   ): Promise<ApiResponse<SimilarBooksResponse>> => {
     const resolvedLimit = limit ?? 10;
     const offset = ((page ?? 1) - 1) * resolvedLimit;
-    return AgentClient.get<SimilarBooksResponse>(
-      AgentEndpoint.endpoints.recommendations.similar(bookId),
+    return ApiClient.get<SimilarBooksResponse>(
+      ApiEndpoint.endpoints.recommendations.similar(bookId),
       { params: { limit: resolvedLimit, offset } }
     );
   },
@@ -45,15 +45,15 @@ export const RecommendationApi = {
 
     const resolvedLimit = limit ?? 10;
     const offset = ((page ?? 1) - 1) * resolvedLimit;
-    return AgentClient.get<RecommendationResponse>(
-      AgentEndpoint.endpoints.recommendations.recommend(userId, strategy),
+    return ApiClient.get<RecommendationResponse>(
+      ApiEndpoint.endpoints.recommendations.recommend(userId, strategy),
       { params: { limit: resolvedLimit, offset } }
     );
   },
 
   getFeed: (req: FeedRequest): Promise<ApiResponse<FeedResponse>> =>
-    AgentClient.post<FeedResponse>(AgentEndpoint.endpoints.recommendations.feed(), req),
+    ApiClient.post<FeedResponse>(ApiEndpoint.endpoints.recommendations.feed(), { data: req }),
 
   logInteraction: (req: RecommendationInteractionRequest): Promise<ApiResponse<boolean>> =>
-    AgentClient.post<boolean>(AgentEndpoint.endpoints.recommendations.interactions(), req),
+    ApiClient.post<boolean>(ApiEndpoint.endpoints.recommendations.interactions(), { data: req }),
 };

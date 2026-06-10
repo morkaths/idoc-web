@@ -1,4 +1,4 @@
-import { AgentEndpoint } from '@/config/api';
+import { ApiEndpoint } from '@/config/api';
 import {
   type ApiResponse,
   TrainingTarget,
@@ -6,24 +6,23 @@ import {
   type RecommendationTrainResponse,
   type RecommendationMetricsResponse,
 } from '@/types';
-import { AgentClient } from './agent.config';
+import { ApiClient } from './config';
 
 export const RecommendationApi = {
   sync: (): Promise<ApiResponse<RecommendationSyncResponse>> =>
-    AgentClient.post<RecommendationSyncResponse>(AgentEndpoint.endpoints.recommendations.sync()),
+    ApiClient.post<RecommendationSyncResponse>(ApiEndpoint.endpoints.recommendations.sync()),
 
   syncBook: (bookId: string): Promise<ApiResponse<boolean>> =>
-    AgentClient.post<boolean>(AgentEndpoint.endpoints.recommendations.syncBook(bookId)),
+    ApiClient.post<boolean>(ApiEndpoint.endpoints.recommendations.syncBook(bookId)),
 
   removeBook: (bookId: string): Promise<ApiResponse<boolean>> =>
-    AgentClient.delete<boolean>(AgentEndpoint.endpoints.recommendations.removeBook(bookId)),
+    ApiClient.delete<boolean>(ApiEndpoint.endpoints.recommendations.removeBook(bookId)),
 
   train: (
     target: TrainingTarget = TrainingTarget.ALL
   ): Promise<ApiResponse<RecommendationTrainResponse>> => {
-    return AgentClient.post<RecommendationTrainResponse>(
-      AgentEndpoint.endpoints.recommendations.train(),
-      {},
+    return ApiClient.post<RecommendationTrainResponse>(
+      ApiEndpoint.endpoints.recommendations.train(),
       { params: { target } }
     );
   },
@@ -32,8 +31,8 @@ export const RecommendationApi = {
     startDate?: string,
     endDate?: string
   ): Promise<ApiResponse<RecommendationMetricsResponse>> => {
-    return AgentClient.get<RecommendationMetricsResponse>(
-      AgentEndpoint.endpoints.recommendations.metrics(),
+    return ApiClient.get<RecommendationMetricsResponse>(
+      ApiEndpoint.endpoints.recommendations.metrics(),
       { params: { start_date: startDate, end_date: endDate } }
     );
   },
