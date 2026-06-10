@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { process } from 'zod/v4/core';
 
 const envSchema = z.object({
   VITE_MODE: z.enum(['development', 'production']).default('development'),
@@ -16,8 +17,9 @@ const getEnv = () => {
   if (typeof import.meta !== 'undefined' && import.meta.env) {
     return import.meta.env;
   }
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env;
+  const globalProcess = typeof globalThis !== 'undefined' ? (globalThis).process : undefined;
+  if (globalProcess && globalProcess.env) {
+    return globalProcess.env;
   }
   return {};
 };
@@ -34,14 +36,15 @@ if (!parsed.success) {
     }
   });
   /* eslint-enable no-console */
-  if (typeof process !== 'undefined' && process.exit) {
-    process.exit(1);
+  const globalProcess = typeof globalThis !== 'undefined' ? (globalThis as any).process : undefined;
+  if (globalProcess && globalProcess.exit) {
+    globalProcess.exit(1);
   } else {
     throw new Error('Invalid Environment Variables');
   }
 }
 
-const _env = parsed.data;
+const _env = parsed.data!;
 export const env = {
   app: {
     mode: _env.VITE_MODE,
