@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { process } from 'zod/v4/core';
 
 const envSchema = z.object({
   VITE_MODE: z.enum(['development', 'production']).default('development'),
@@ -12,12 +11,19 @@ const envSchema = z.object({
   VITE_USER_COOKIE_KEY: z.string().default('authuser'),
 });
 
+interface GlobalProcess {
+  env?: Record<string, string>;
+  exit?: (code?: number) => void;
+}
+
 // Safely get environment variables
 const getEnv = () => {
   if (typeof import.meta !== 'undefined' && import.meta.env) {
     return import.meta.env;
   }
-  const globalProcess = typeof globalThis !== 'undefined' ? (globalThis).process : undefined;
+  const globalProcess = typeof globalThis !== 'undefined'
+    ? (globalThis as unknown as { process?: GlobalProcess }).process
+    : undefined;
   if (globalProcess && globalProcess.env) {
     return globalProcess.env;
   }
@@ -36,7 +42,9 @@ if (!parsed.success) {
     }
   });
   /* eslint-enable no-console */
-  const globalProcess = typeof globalThis !== 'undefined' ? (globalThis as any).process : undefined;
+  const globalProcess = typeof globalThis !== 'undefined'
+    ? (globalThis as unknown as { process?: GlobalProcess }).process
+    : undefined;
   if (globalProcess && globalProcess.exit) {
     globalProcess.exit(1);
   } else {
