@@ -33,7 +33,7 @@ export const RecommendationApi = {
   ): Promise<ApiResponse<RecommendationMetricsResponse>> => {
     return ApiClient.get<RecommendationMetricsResponse>(
       ApiEndpoint.endpoints.recommendations.metrics(),
-      { params: { start_date: startDate, end_date: endDate } }
+      { params: { startDate, endDate } }
     );
   },
 };

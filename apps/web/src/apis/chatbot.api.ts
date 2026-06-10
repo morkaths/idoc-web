@@ -28,32 +28,29 @@ export interface ChatSession {
 }
 
 export const ChatbotApi = {
-  /**
-   * Gửi tin nhắn đến chatbot (non-streaming)
-   */
+
   chat: (req: ChatMessageRequest): Promise<ApiResponse<ChatMessageResponse>> => {
-    return ApiClient.post<ChatMessageResponse>(ApiEndpoint.endpoints.chatbot.chat(), { data: req });
+    const { sessionId, ...body } = req;
+    return ApiClient.post<ChatMessageResponse>(ApiEndpoint.endpoints.chatbot.chat(), {
+      data: body,
+      params: sessionId ? { sessionId } : undefined,
+    });
   },
 
-  /**
-   * Lấy danh sách các session chat của user
-   */
   getSessions: (): Promise<ApiResponse<ChatSession[]>> => {
     return ApiClient.get<ChatSession[]>(ApiEndpoint.endpoints.chatbot.sessions());
   },
 
-  /**
-   * Lấy lịch sử chat của một session cụ thể
-   */
   getHistory: (sessionId: string): Promise<ApiResponse<ChatMessageResponse[]>> => {
     return ApiClient.get<ChatMessageResponse[]>(ApiEndpoint.endpoints.chatbot.history(sessionId));
   },
 
-  /**
-   * Gửi tin nhắn dạng Streaming (Server-Sent Events)
-   */
   stream: async function* (req: ChatMessageRequest): AsyncGenerator<string, void, unknown> {
-    const url = `${ApiEndpoint.meta.baseURL}${ApiEndpoint.endpoints.chatbot.stream()}`;
+    const { sessionId, ...body } = req;
+    let url = `${ApiEndpoint.meta.baseURL}${ApiEndpoint.endpoints.chatbot.stream()}`;
+    if (sessionId) {
+      url += `?sessionId=${encodeURIComponent(sessionId)}`;
+    }
     const token = getAccessToken();
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -68,13 +65,7 @@ export const ChatbotApi = {
     const response = await fetch(url, {
       method: 'POST',
       headers,
-      body: JSON.stringify({
-        content: req.content,
-        provider: req.provider,
-        model: req.model,
-        temperature: req.temperature,
-        session_id: req.sessionId,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok || !response.body) {
