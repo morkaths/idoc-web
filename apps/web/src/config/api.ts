@@ -101,7 +101,7 @@ export const ApiEndpoint = {
       metrics: () => '/ai/recommendations/metrics',
       similar: (bookId: string) => `/ai/recommendations/similar/${bookId}`,
       recommend: (userId: string, strategy: string) =>
-        `/ai/recommendations?user_id=${userId}&strategy=${strategy}`,
+        `/ai/recommendations?userId=${userId}&strategy=${strategy}`,
       interactions: () => '/ai/recommendations/interactions',
       feed: () => '/ai/recommendations/feed',
       removeBook: (bookId: string) => `/ai/recommendations/${bookId}`,
