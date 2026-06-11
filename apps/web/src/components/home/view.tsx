@@ -30,23 +30,19 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 };
 
 /**
- * Helper to fetch multiple books by ID in parallel.
- * Replaces BookApi.findByIds since bulk fetching is not supported on the backend.
+ * Helper to fetch multiple books by ID in bulk.
  * @param {string[]} ids - Array of book IDs to fetch.
  * @returns {Promise<BookResponse[]>} A promise resolving to the list of fetched books.
  */
 const fetchBooksByIds = async (ids: string[]): Promise<BookResponse[]> => {
-  const promises = ids.map((id) =>
-    BookApi.findById(id)
-      .then((res) => res.data)
-      .catch((err) => {
-        // eslint-disable-next-line no-console
-        console.error(`Failed to fetch book ${id}:`, err);
-        return null;
-      })
-  );
-  const results = await Promise.all(promises);
-  return results.filter((book): book is BookResponse => !!book);
+  try {
+    const res = await BookApi.findByIds(ids);
+    return res.data || [];
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to fetch books in bulk:', err);
+    return [];
+  }
 };
 
 /**

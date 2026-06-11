@@ -46,6 +46,9 @@ export const authConfig = {
             password: credentials.password as string,
           });
 
+          // eslint-disable-next-line no-console
+          console.log('[AUTH DEBUG] login response:', JSON.stringify(response, null, 2));
+
           if (response?.success && response.data) {
             const { data } = response;
             await setAuthCookies(data);
@@ -58,10 +61,17 @@ export const authConfig = {
               emailVerified: null,
             };
           }
+
+          // eslint-disable-next-line no-console
+          console.error('[AUTH DEBUG] login failed, response data:', response);
+          throw new CredentialsSignin();
         } catch (_error: any) {
+          if (_error instanceof CredentialsSignin) {
+            throw _error;
+          }
           // eslint-disable-next-line no-console
           console.error(
-            '[AUTH ERROR DEBUG]:',
+            '[AUTH ERROR DEBUG] real exception:',
             _error?.response?.data || _error?.message || _error
           );
           throw new CredentialsSignin();

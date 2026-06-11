@@ -4,7 +4,7 @@ const crud = (path: string) => ({
   find: () => path,
   search: () => `${path}/search`,
   findById: (id: string) => `${path}/${id}`,
-  findByIds: (ids: readonly string[]) => `${path}/bulk?ids=${ids.join(',')}`,
+  findByIds: (ids: readonly string[]) => `${path}/ids?ids=${ids.join(',')}`,
   create: () => path,
   createMany: () => `${path}/bulk`,
   update: (id: string) => `${path}/${id}`,

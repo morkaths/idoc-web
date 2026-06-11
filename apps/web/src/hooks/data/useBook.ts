@@ -1,4 +1,3 @@
-import { useQueries } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
 import type { BookResponse, BookRequest, PageParams } from '@/types';
 import type { BookSearchParams } from '@/apis/book.api';
@@ -15,30 +14,19 @@ import {
 } from './factory';
 
 export const useBooksByIds = (bookIds: string[], enabled = true) => {
-  const queries = useQueries({
-    queries: bookIds.map((bookId) => ({
-      queryKey: ['books', bookId],
-      queryFn: () => BookApi.findById(bookId),
-      enabled: enabled && !!bookId,
+  const query = useItemQuery<BookResponse[]>(
+    ['books', 'bulk', bookIds],
+    () => BookApi.findByIds(bookIds),
+    {
+      enabled: enabled && bookIds.length > 0,
       staleTime: 10 * 60 * 1000,
-    })),
-  });
-
-  const booksById = new Map(
-    queries
-      .map((query) => query.data?.data)
-      .filter((book): book is BookResponse => !!book)
-      .map((book) => [book.id, book] as const)
+    }
   );
 
-  const data = bookIds
-    .map((bookId) => booksById.get(bookId))
-    .filter((book): book is BookResponse => !!book);
-
   return {
-    data,
-    isLoading: queries.some((query) => query.isLoading),
-    isError: queries.some((query) => query.isError),
+    data: query.data || [],
+    isLoading: query.isLoading,
+    isError: query.isError,
   };
 };
 
