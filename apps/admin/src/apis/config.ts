@@ -110,22 +110,18 @@ export const ApiClient = {
     options: ApiOptions = {}
   ): Promise<ApiResponse<T>> {
     const { security = 'private', ...axiosOptions } = options;
-    try {
-      const api = getInstance(security);
-      const response = await api.request<ApiResponse<T>>({
-        method,
-        url,
-        ...axiosOptions,
-      });
+    const api = getInstance(security);
+    const response = await api.request<ApiResponse<T>>({
+      method,
+      url,
+      ...axiosOptions,
+    });
 
-      if (response.data && 'success' in response.data && response.data.success === false) {
-        throw response.data;
-      }
-
-      return response.data;
-    } catch (error) {
-      throw error;
+    if (response.data && 'success' in response.data && response.data.success === false) {
+      throw response.data;
     }
+
+    return response.data;
   },
 
   get<T>(url: string, options?: ApiOptions) {

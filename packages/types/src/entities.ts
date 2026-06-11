@@ -401,21 +401,6 @@ export interface RecommendationMetricsResponse {
     count: number;
     percentage: number;
   }[];
-  offlineMetrics: {
-    target?: string;
-    modelName?: string;
-    rmse?: number;
-    mae?: number;
-    precisionAtK?: number;
-    recallAtK?: number;
-    ndcgAtK?: number;
-    coverage?: number;
-    datasetSize?: number;
-    trainingDurationSec?: number;
-    createdAt?: string;
-    metrics?: RecommendationEvaluationMetrics;
-    sparsity?: RecommendationSparsityAnalysis;
-  }[];
 }
 
 // --- Notifications ---
