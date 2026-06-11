@@ -1,3 +1,10 @@
 {
-  "buildCommand": "cd ../.. && npx turbo run build --filter=admin"
+  "buildCommand": "cd ../.. && npx turbo run build --filter=admin",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
