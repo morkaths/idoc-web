@@ -19,7 +19,6 @@
     "format:write": "prettier --write .",
     "format": "npm run format:write",
     "clean": "rimraf dist",
-    "test": "echo \"Error: no test specified\" && exit 0",
-    "prepare": "husky"
+    "test": "echo \"Error: no test specified\" && exit 0"
   }
 }
