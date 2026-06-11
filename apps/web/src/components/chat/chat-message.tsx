@@ -22,6 +22,8 @@ import {
 } from '@repo/ui/components/collapsible';
 import { FilePreview } from './file-preview';
 import { MarkdownRenderer } from './markdown-renderer';
+import { BookGridItems } from '@/components/book/book-grid-items';
+import { type BookResponse } from '@/types';
 
 const chatBubbleVariants = cva(
   'group/message relative break-words rounded-md p-3 text-sm sm:max-w-[70%] border transition-all duration-200',
@@ -168,6 +170,7 @@ export interface Message {
   experimental_attachments?: Attachment[];
   toolInvocations?: ToolInvocation[];
   parts?: MessagePart[];
+  books?: BookResponse[];
 }
 
 export interface ChatMessageProps extends Message {
@@ -191,6 +194,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   onRetry,
   onEdit,
   isLoading = false,
+  books,
 }) => {
   const files = useMemo(() => {
     return experimental_attachments?.map((attachment) => {
@@ -342,7 +346,15 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             <span className='text-muted-foreground text-xs'>{t(keys.thinking)}</span>
           </div>
         ) : (
-          <MarkdownRenderer>{content}</MarkdownRenderer>
+          <>
+            <MarkdownRenderer>{content}</MarkdownRenderer>
+            {books && books.length > 0 && (
+              <div className='border-border/60 mt-4 border-t pt-3 flex flex-col gap-2 w-full'>
+                <span className='text-muted-foreground text-xs font-semibold mb-2'>Sách liên quan:</span>
+                <BookGridItems data={books} />
+              </div>
+            )}
+          </>
         )}
       </div>
 

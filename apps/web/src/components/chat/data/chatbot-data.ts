@@ -1,9 +1,48 @@
 import { SparklesIcon, BookOpenIcon, LibraryIcon, HelpCircleIcon } from 'lucide-react';
 
 export const AI_MODELS = [
-  { id: 'gemini-flash', name: 'Gemini 2.5 Flash', desc: 'Fast & responsive for general tasks' },
-  { id: 'gemini-pro', name: 'Gemini 2.5 Pro', desc: 'Complex reasoning & writing' },
-  { id: 'idoc-bot', name: 'iDoc Assistant', desc: 'Specialized in library & catalog lookup' },
+  {
+    id: 'gemini-1.5-flash',
+    name: 'Gemini 1.5 Flash',
+    desc: 'Google\'s fast & responsive model for general tasks',
+    provider: 'gemini',
+    model: 'gemini-1.5-flash',
+  },
+  {
+    id: 'gemini-1.5-pro',
+    name: 'Gemini 1.5 Pro',
+    desc: 'Google\'s advanced model for complex reasoning',
+    provider: 'gemini',
+    model: 'gemini-1.5-pro',
+  },
+  {
+    id: 'deepseek-chat',
+    name: 'DeepSeek Chat',
+    desc: 'High-quality reasoning and coding assistant from DeepSeek',
+    provider: 'deepseek',
+    model: 'deepseek-chat',
+  },
+  {
+    id: 'llama-3.3-70b',
+    name: 'Llama 3.3 70B',
+    desc: 'State-of-the-art model from Meta via Cloudflare',
+    provider: 'cloudflare',
+    model: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+  },
+  {
+    id: 'llama-3.2-3b',
+    name: 'Llama 3.2 3B',
+    desc: 'Fast & lightweight model from Meta via Cloudflare',
+    provider: 'cloudflare',
+    model: '@cf/meta/llama-3.2-3b-instruct',
+  },
+  {
+    id: 'gpt-4o-mini',
+    name: 'GPT-4o Mini',
+    desc: 'OpenAI\'s cost-efficient and smart model',
+    provider: 'openai',
+    model: 'gpt-4o-mini',
+  },
 ] as const;
 
 export type AIModel = (typeof AI_MODELS)[number];

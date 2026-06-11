@@ -11,14 +11,8 @@ import { useTheme } from "next-themes";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  let theme: ToasterProps["theme"] = "system";
-
-  try {
-    const { theme: nextTheme = "system" } = useTheme();
-    theme = nextTheme as ToasterProps["theme"];
-  } catch (e) {
-    // Fallback to system theme if useTheme fails or is outside provider
-  }
+  const { theme: nextTheme = "system" } = useTheme();
+  const theme = nextTheme as ToasterProps["theme"];
 
   return (
     <Sonner

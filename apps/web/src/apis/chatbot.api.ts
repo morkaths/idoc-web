@@ -99,11 +99,14 @@ export const ChatbotApi = {
       buffer = lines.pop() || '';
 
       for (const line of lines) {
-        const trimmed = line.trim();
-        if (trimmed.startsWith('event: ')) {
-          currentEvent = trimmed.slice(7).trim();
-        } else if (trimmed.startsWith('data: ')) {
-          const dataContent = trimmed.slice(6).trim();
+        const cleanLine = line.endsWith('\r') ? line.slice(0, -1) : line;
+        if (cleanLine.startsWith('event:')) {
+          currentEvent = cleanLine.slice(6).trim();
+        } else if (cleanLine.startsWith('data:')) {
+          let dataContent = cleanLine.slice(5);
+          if (dataContent.startsWith(' ')) {
+            dataContent = dataContent.slice(1);
+          }
           if (dataContent) {
             if (currentEvent === 'session') {
               currentEvent = '';
@@ -113,18 +116,21 @@ export const ChatbotApi = {
               currentEvent = '';
               continue;
             }
-            yield dataContent;
+            yield dataContent.replace(/\\n/g, '\n');
           }
         }
       }
     }
 
     if (buffer) {
-      const trimmed = buffer.trim();
-      if (trimmed.startsWith('data: ')) {
-        const dataContent = trimmed.slice(6).trim();
+      const cleanLine = buffer.endsWith('\r') ? buffer.slice(0, -1) : buffer;
+      if (cleanLine.startsWith('data:')) {
+        let dataContent = cleanLine.slice(5);
+        if (dataContent.startsWith(' ')) {
+          dataContent = dataContent.slice(1);
+        }
         if (dataContent && dataContent !== '[DONE]' && currentEvent !== 'session' && currentEvent !== 'DONE') {
-          yield dataContent;
+          yield dataContent.replace(/\\n/g, '\n');
         }
       }
     }

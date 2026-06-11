@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { GENRES } from './data/genres-data';
 
 interface MarkdownRendererProps {
   children: string;
@@ -18,8 +19,17 @@ const escapeHtml = (text: string) => {
 const renderMarkdown = (text: string) => {
   if (!text) return '';
 
+  let formatted = text;
+  GENRES.forEach(({ key, query }) => {
+    const escapedKey = key.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const regex = new RegExp(`(?<![a-zA-ZÀ-ỹ\\d])${escapedKey}(?![a-zA-ZÀ-ỹ\\d])`, 'g');
+    formatted = formatted.replace(regex, (match) => {
+      return `<a href="/books?query=${encodeURIComponent(query)}" class="inline-flex items-center rounded-md border border-primary/20 bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary hover:bg-primary/20 hover:text-primary transition-all duration-200 no-underline" style="text-decoration: none;">${match}</a>`;
+    });
+  });
+
   // Format code blocks ```code```
-  let formatted = text.replace(/```([\s\S]*?)```/g, (_, code) => {
+  formatted = formatted.replace(/```([\s\S]*?)```/g, (_, code) => {
     return `<pre class="bg-muted-foreground/10 text-foreground p-3 rounded-none overflow-x-auto my-2 border border-border/50 font-mono text-xs leading-relaxed"><code>${escapeHtml(code.trim())}</code></pre>`;
   });
 

@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import Image from 'next/image';
 import { Upload, X } from 'lucide-react';
 
 interface ImageUploadProps {
@@ -69,10 +70,12 @@ export function ImageUpload({
       >
         {preview ? (
           <div className='relative h-43 w-31'>
-            <img
+            <Image
               src={preview}
               alt='Preview'
-              className='h-full w-full rounded-md border object-cover'
+              fill
+              unoptimized
+              className='rounded-md border object-cover'
             />
             <button
               type='button'
