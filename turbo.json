@@ -12,7 +12,10 @@
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
         "AUTH_SECRET",
-        "GOOGLE_CLIENT_SECRET"
+        "GOOGLE_CLIENT_SECRET",
+        "VITE_API_URL",
+        "VITE_MODE",
+        "VITE_BASE_URL"
       ]
     },
     "format": {
