@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
+import { useChat } from '@/context/chat-provider';
 import { PanelLeftOpenIcon } from 'lucide-react';
 import { useLocale } from '@/hooks/ui/useLocale';
-import { useChat } from '@/context/chat-provider';
 import { Button } from '@repo/ui/components/button';
-import { AI_MODELS } from '@/components/chat/data/chatbot-data';
 import { ChatInput, ChatMessage, ChatMessageList } from '@/components/chat';
+import { AI_MODELS } from '@/components/chat/data/chatbot-data';
 import { ChatSidebar } from './sidebar';
 import { WelcomeScreen } from './welcome-screen';
 

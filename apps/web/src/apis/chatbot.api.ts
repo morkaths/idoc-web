@@ -29,7 +29,6 @@ export interface ChatSession {
 }
 
 export const ChatbotApi = {
-
   chat: (req: ChatMessageRequest): Promise<ApiResponse<ChatMessageResponse>> => {
     const { sessionId, ...body } = req;
     return ApiClient.post<ChatMessageResponse>(ApiEndpoint.endpoints.chatbot.chat(), {
@@ -82,7 +81,9 @@ export const ChatbotApi = {
 
     if (!response.ok || !response.body) {
       const errorText = await response.text().catch(() => '');
-      throw new Error(`Không thể kết nối đến Chatbot Stream: ${response.status} ${response.statusText}. ${errorText}`);
+      throw new Error(
+        `Không thể kết nối đến Chatbot Stream: ${response.status} ${response.statusText}. ${errorText}`
+      );
     }
 
     const reader = response.body.getReader();
@@ -129,7 +130,12 @@ export const ChatbotApi = {
         if (dataContent.startsWith(' ')) {
           dataContent = dataContent.slice(1);
         }
-        if (dataContent && dataContent !== '[DONE]' && currentEvent !== 'session' && currentEvent !== 'DONE') {
+        if (
+          dataContent &&
+          dataContent !== '[DONE]' &&
+          currentEvent !== 'session' &&
+          currentEvent !== 'DONE'
+        ) {
           yield dataContent.replace(/\\n/g, '\n');
         }
       }

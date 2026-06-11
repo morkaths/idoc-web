@@ -1,44 +1,25 @@
+import type { TrafficWeeklyStat } from '@/types';
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { Skeleton } from '@repo/ui/components/skeleton';
 
-const data = [
-  {
-    name: 'Mon',
-    clicks: Math.floor(Math.random() * 900) + 100,
-    uniques: Math.floor(Math.random() * 700) + 80,
-  },
-  {
-    name: 'Tue',
-    clicks: Math.floor(Math.random() * 900) + 100,
-    uniques: Math.floor(Math.random() * 700) + 80,
-  },
-  {
-    name: 'Wed',
-    clicks: Math.floor(Math.random() * 900) + 100,
-    uniques: Math.floor(Math.random() * 700) + 80,
-  },
-  {
-    name: 'Thu',
-    clicks: Math.floor(Math.random() * 900) + 100,
-    uniques: Math.floor(Math.random() * 700) + 80,
-  },
-  {
-    name: 'Fri',
-    clicks: Math.floor(Math.random() * 900) + 100,
-    uniques: Math.floor(Math.random() * 700) + 80,
-  },
-  {
-    name: 'Sat',
-    clicks: Math.floor(Math.random() * 900) + 100,
-    uniques: Math.floor(Math.random() * 700) + 80,
-  },
-  {
-    name: 'Sun',
-    clicks: Math.floor(Math.random() * 900) + 100,
-    uniques: Math.floor(Math.random() * 700) + 80,
-  },
-];
+interface AnalyticsChartProps {
+  data?: TrafficWeeklyStat[];
+  isLoading?: boolean;
+}
 
-export function AnalyticsChart() {
+export const AnalyticsChart = ({ data, isLoading }: AnalyticsChartProps) => {
+  if (isLoading) {
+    return <Skeleton className='h-[300px] w-full' />;
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className='text-muted-foreground flex h-[300px] items-center justify-center text-sm'>
+        No analytics data available
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width='100%' height={300}>
       <AreaChart data={data}>
@@ -63,4 +44,4 @@ export function AnalyticsChart() {
       </AreaChart>
     </ResponsiveContainer>
   );
-}
+};

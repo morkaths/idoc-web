@@ -415,3 +415,59 @@ export interface NotificationResponse {
   createdAt: Date | string;
   updatedAt: Date | string;
 }
+
+// --- Dashboard Statistics ---
+
+export interface DashboardCardStat {
+  value: string | number;
+  change: string;
+}
+
+export interface MonthlyOverviewStat {
+  name: string;
+  total: number;
+}
+
+export interface RecentSaleStat {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  amount: string;
+}
+
+export interface TrafficWeeklyStat {
+  name: string;
+  clicks: number;
+  uniques: number;
+}
+
+export interface ReferrerStat {
+  name: string;
+  value: number;
+}
+
+export interface DeviceStat {
+  name: string;
+  value: number;
+}
+
+export interface DashboardStatsResponse {
+  overview: {
+    totalRevenue: DashboardCardStat;
+    subscriptions: DashboardCardStat;
+    sales: DashboardCardStat;
+    activeNow: DashboardCardStat;
+    monthlyData: MonthlyOverviewStat[];
+    recentSales: RecentSaleStat[];
+  };
+  analytics: {
+    totalClicks: DashboardCardStat;
+    uniqueVisitors: DashboardCardStat;
+    bounceRate: DashboardCardStat;
+    avgSession: DashboardCardStat;
+    weeklyTraffic: TrafficWeeklyStat[];
+    referrers: ReferrerStat[];
+    devices: DeviceStat[];
+  };
+}

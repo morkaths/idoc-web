@@ -60,7 +60,7 @@ export const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListP
         <button
           onClick={scrollToBottom}
           className={cn(
-            'text-muted-foreground hover:text-foreground absolute bottom-4 right-4 z-20 flex h-9 w-9 items-center justify-center transition-all duration-200 active:scale-95',
+            'text-muted-foreground hover:text-foreground absolute right-4 bottom-4 z-20 flex h-9 w-9 items-center justify-center transition-all duration-200 active:scale-95',
             showScrollButton
               ? 'pointer-events-auto translate-y-0 opacity-100'
               : 'pointer-events-none translate-y-2 opacity-0'

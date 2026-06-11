@@ -4,14 +4,14 @@ export const AI_MODELS = [
   {
     id: 'gemini-1.5-flash',
     name: 'Gemini 1.5 Flash',
-    desc: 'Google\'s fast & responsive model for general tasks',
+    desc: "Google's fast & responsive model for general tasks",
     provider: 'gemini',
     model: 'gemini-1.5-flash',
   },
   {
     id: 'gemini-1.5-pro',
     name: 'Gemini 1.5 Pro',
-    desc: 'Google\'s advanced model for complex reasoning',
+    desc: "Google's advanced model for complex reasoning",
     provider: 'gemini',
     model: 'gemini-1.5-pro',
   },
@@ -39,7 +39,7 @@ export const AI_MODELS = [
   {
     id: 'gpt-4o-mini',
     name: 'GPT-4o Mini',
-    desc: 'OpenAI\'s cost-efficient and smart model',
+    desc: "OpenAI's cost-efficient and smart model",
     provider: 'openai',
     model: 'gpt-4o-mini',
   },

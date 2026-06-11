@@ -10,3 +10,4 @@ export * from './file.api';
 export * from './image.api';
 export * from './auth.api';
 export * from './notification.api';
+export * from './dashboard.api';

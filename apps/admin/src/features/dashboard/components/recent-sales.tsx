@@ -1,84 +1,57 @@
+import type { RecentSaleStat } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/avatar';
+import { Skeleton } from '@repo/ui/components/skeleton';
 
-export function RecentSales() {
+interface RecentSalesProps {
+  data?: RecentSaleStat[];
+  isLoading?: boolean;
+}
+
+export const RecentSales = ({ data, isLoading }: RecentSalesProps) => {
+  if (isLoading) {
+    return (
+      <div className='space-y-8'>
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className='flex items-center gap-4'>
+            <Skeleton className='h-9 w-9 rounded-full' />
+            <div className='flex flex-1 flex-wrap items-center justify-between gap-2'>
+              <div className='space-y-2'>
+                <Skeleton className='h-4 w-[120px]' />
+                <Skeleton className='h-3 w-[160px]' />
+              </div>
+              <Skeleton className='h-4 w-[60px]' />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className='text-muted-foreground flex h-[200px] items-center justify-center text-sm'>
+        No recent sales available
+      </div>
+    );
+  }
+
   return (
     <div className='space-y-8'>
-      <div className='flex items-center gap-4'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage src='https://api.dicebear.com/7.x/adventurer/svg?seed=Olivia' alt='Avatar' />
-          <AvatarFallback>OM</AvatarFallback>
-        </Avatar>
-        <div className='flex flex-1 flex-wrap items-center justify-between'>
-          <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Olivia Martin</p>
-            <p className='text-muted-foreground text-sm'>olivia.martin@email.com</p>
+      {data.map((sale) => (
+        <div key={sale.id} className='flex items-center gap-4'>
+          <Avatar className='h-9 w-9'>
+            <AvatarImage src={sale.avatar} alt='Avatar' />
+            <AvatarFallback>{sale.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <div className='flex flex-1 flex-wrap items-center justify-between gap-2'>
+            <div className='space-y-1'>
+              <p className='text-sm leading-none font-medium'>{sale.name}</p>
+              <p className='text-muted-foreground text-sm'>{sale.email}</p>
+            </div>
+            <div className='font-medium'>{sale.amount}</div>
           </div>
-          <div className='font-medium'>+$1,999.00</div>
         </div>
-      </div>
-      <div className='flex items-center gap-4'>
-        <Avatar className='flex h-9 w-9 items-center justify-center space-y-0 border'>
-          <AvatarImage
-            src='https://api.dicebear.com/7.x/adventurer/svg?seed=Jackson'
-            alt='Avatar'
-          />
-          <AvatarFallback>JL</AvatarFallback>
-        </Avatar>
-        <div className='flex flex-1 flex-wrap items-center justify-between'>
-          <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Jackson Lee</p>
-            <p className='text-muted-foreground text-sm'>jackson.lee@email.com</p>
-          </div>
-          <div className='font-medium'>+$39.00</div>
-        </div>
-      </div>
-      <div className='flex items-center gap-4'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage
-            src='https://api.dicebear.com/7.x/adventurer/svg?seed=Isabella'
-            alt='Avatar'
-          />
-          <AvatarFallback>IN</AvatarFallback>
-        </Avatar>
-        <div className='flex flex-1 flex-wrap items-center justify-between'>
-          <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Isabella Nguyen</p>
-            <p className='text-muted-foreground text-sm'>isabella.nguyen@email.com</p>
-          </div>
-          <div className='font-medium'>+$299.00</div>
-        </div>
-      </div>
-
-      <div className='flex items-center gap-4'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage
-            src='https://api.dicebear.com/7.x/adventurer/svg?seed=William'
-            alt='Avatar'
-          />
-          <AvatarFallback>WK</AvatarFallback>
-        </Avatar>
-        <div className='flex flex-1 flex-wrap items-center justify-between'>
-          <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>William Kim</p>
-            <p className='text-muted-foreground text-sm'>will@email.com</p>
-          </div>
-          <div className='font-medium'>+$99.00</div>
-        </div>
-      </div>
-
-      <div className='flex items-center gap-4'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage src='https://api.dicebear.com/7.x/adventurer/svg?seed=Sofia' alt='Avatar' />
-          <AvatarFallback>SD</AvatarFallback>
-        </Avatar>
-        <div className='flex flex-1 flex-wrap items-center justify-between'>
-          <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Sofia Davis</p>
-            <p className='text-muted-foreground text-sm'>sofia.davis@email.com</p>
-          </div>
-          <div className='font-medium'>+$39.00</div>
-        </div>
-      </div>
+      ))}
     </div>
   );
-}
+};

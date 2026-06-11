@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { PROMPT_SUGGESTIONS, ORB_THEME_COLORS } from '@/components/chat/data/chatbot-data';
 import { useTheme } from '@/context/theme-provider';
-import SiriOrb from '@/components/siri-orb';
 import { HighlightedText } from '@repo/ui/components/highlighted-text';
+import { PROMPT_SUGGESTIONS, ORB_THEME_COLORS } from '@/components/chat/data/chatbot-data';
+import SiriOrb from '@/components/siri-orb';
 
 interface WelcomeScreenProps {
   onSendSuggestedPrompt: (promptText: string) => void;
@@ -37,7 +37,7 @@ export const WelcomeScreen = ({ onSendSuggestedPrompt }: WelcomeScreenProps) => 
           <div className='h-[128px] w-[128px]' />
         )}
       </div>
-      <h2 className='text-foreground text-2xl sm:text-3xl font-bold tracking-tight'>
+      <h2 className='text-foreground text-2xl font-bold tracking-tight sm:text-3xl'>
         {t.rich('welcomeTitle', {
           highlight1: (chunks) => (
             <HighlightedText delay={0.2} from='left'>

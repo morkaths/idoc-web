@@ -58,8 +58,12 @@ export const authConfig = {
               emailVerified: null,
             };
           }
-          throw new CredentialsSignin();
-        } catch (_error) {
+        } catch (_error: any) {
+          // eslint-disable-next-line no-console
+          console.error(
+            '[AUTH ERROR DEBUG]:',
+            _error?.response?.data || _error?.message || _error
+          );
           throw new CredentialsSignin();
         }
       },

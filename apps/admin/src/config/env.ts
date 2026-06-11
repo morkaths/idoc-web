@@ -20,9 +20,10 @@ const getEnv = () => {
   if (typeof import.meta !== 'undefined' && import.meta.env) {
     return import.meta.env;
   }
-  const globalProcess = typeof globalThis !== 'undefined'
-    ? (globalThis as unknown as { process?: GlobalProcess }).process
-    : undefined;
+  const globalProcess =
+    typeof globalThis !== 'undefined'
+      ? (globalThis as unknown as { process?: GlobalProcess }).process
+      : undefined;
   if (globalProcess && globalProcess.env) {
     return globalProcess.env;
   }
@@ -41,9 +42,10 @@ if (!parsed.success) {
     }
   });
   /* eslint-enable no-console */
-  const globalProcess = typeof globalThis !== 'undefined'
-    ? (globalThis as unknown as { process?: GlobalProcess }).process
-    : undefined;
+  const globalProcess =
+    typeof globalThis !== 'undefined'
+      ? (globalThis as unknown as { process?: GlobalProcess }).process
+      : undefined;
   if (globalProcess && globalProcess.exit) {
     globalProcess.exit(1);
   } else {

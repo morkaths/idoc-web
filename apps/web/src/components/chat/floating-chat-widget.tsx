@@ -2,18 +2,18 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import React from 'react';
+import { useChat } from '@/context/chat-provider';
+import { useTheme } from '@/context/theme-provider';
 import { cn } from '@/lib/utils';
 import { SparklesIcon, MinusIcon, Maximize2Icon, Trash2 } from 'lucide-react';
-import SiriOrb from '../siri-orb';
-import { HighlightedText } from '@repo/ui/components/highlighted-text';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
-import { useTheme } from '@/context/theme-provider';
-import { useChat } from '@/context/chat-provider';
-import { WIDGET_SUGGESTIONS, ORB_THEME_COLORS } from './data/chatbot-data';
+import { HighlightedText } from '@repo/ui/components/highlighted-text';
+import SiriOrb from '../siri-orb';
 import { ChatInput } from './chat-input';
 import { ChatMessage } from './chat-message';
 import { ChatMessageList } from './chat-message-list';
+import { WIDGET_SUGGESTIONS, ORB_THEME_COLORS } from './data/chatbot-data';
 
 export interface FloatingChatButtonProps {
   isOpen: boolean;
@@ -42,7 +42,7 @@ export const FloatingChatButton = ({ isOpen, onClick, title }: FloatingChatButto
       <button
         type='button'
         title={title}
-        className='relative z-50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background border border-border shadow-sm'
+        className='bg-background border-border relative z-50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border shadow-sm'
       />
     );
   }
@@ -56,10 +56,10 @@ export const FloatingChatButton = ({ isOpen, onClick, title }: FloatingChatButto
       onClick={onClick}
       title={title}
       className={cn(
-        'relative z-50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border shadow-lg hover:scale-105 active:scale-95 transition-all duration-200',
+        'relative z-50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border shadow-lg transition-all duration-200 hover:scale-105 active:scale-95',
         isDark
-          ? 'bg-zinc-950 border-zinc-800 hover:bg-zinc-900 text-white'
-          : 'bg-white border-zinc-200 hover:bg-zinc-50 text-black'
+          ? 'border-zinc-800 bg-zinc-950 text-white hover:bg-zinc-900'
+          : 'border-zinc-200 bg-white text-black hover:bg-zinc-50'
       )}
     >
       <SiriOrb size='32px' colors={orbColors} />
@@ -136,18 +136,20 @@ export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps)
   }
 
   return (
-    <div className='border-border bg-background animate-in slide-in-from-bottom-6 mb-4 flex h-[520px] w-[350px] flex-col overflow-hidden rounded-md border duration-300 ease-out sm:w-[380px] shadow-2xl'>
+    <div className='border-border bg-background animate-in slide-in-from-bottom-6 mb-4 flex h-[520px] w-[350px] flex-col overflow-hidden rounded-md border shadow-2xl duration-300 ease-out sm:w-[380px]'>
       {/* Header */}
       <header className='bg-muted/30 flex h-14 shrink-0 items-center justify-between border-b px-4'>
         <div className='flex items-center gap-2.5'>
-          <div className={cn(
-            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border shadow-sm overflow-hidden',
-            isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-zinc-200'
-          )}>
+          <div
+            className={cn(
+              'flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full border shadow-sm',
+              isDark ? 'border-zinc-800 bg-zinc-950' : 'border-zinc-200 bg-white'
+            )}
+          >
             <SiriOrb size='32px' colors={headerOrbColors} />
           </div>
           <div className='text-left'>
-            <h3 className='text-foreground text-xs font-bold flex items-center gap-1'>
+            <h3 className='text-foreground flex items-center gap-1 text-xs font-bold'>
               {t.rich(keys.widget.headerTitleText, {
                 highlight: (chunks) => (
                   <HighlightedText delay={0.2} from='left'>
@@ -245,9 +247,7 @@ export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps)
                     ? () => handleRegenerateMessage(message.id, setInputValue)
                     : undefined
                 }
-                onEdit={
-                  message.role === 'user' ? () => setInputValue(message.content) : undefined
-                }
+                onEdit={message.role === 'user' ? () => setInputValue(message.content) : undefined}
               />
             ))}
           </ChatMessageList>

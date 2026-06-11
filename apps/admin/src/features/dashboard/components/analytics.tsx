@@ -1,3 +1,4 @@
+import type { DashboardStatsResponse } from '@/types';
 import {
   Card,
   CardContent,
@@ -5,9 +6,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@repo/ui/components/card';
+import { Skeleton } from '@repo/ui/components/skeleton';
 import { AnalyticsChart } from './analytics-chart';
 
-export function Analytics() {
+interface AnalyticsProps {
+  data?: DashboardStatsResponse['analytics'];
+  isLoading?: boolean;
+}
+
+export const Analytics = ({ data, isLoading }: AnalyticsProps) => {
   return (
     <div className='space-y-4'>
       <Card>
@@ -16,7 +23,7 @@ export function Analytics() {
           <CardDescription>Weekly clicks and unique visitors</CardDescription>
         </CardHeader>
         <CardContent className='px-6'>
-          <AnalyticsChart />
+          <AnalyticsChart data={data?.weeklyTraffic} isLoading={isLoading} />
         </CardContent>
       </Card>
       <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
@@ -38,8 +45,17 @@ export function Analytics() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>1,248</div>
-            <p className='text-muted-foreground text-xs'>+12.4% vs last week</p>
+            {isLoading ? (
+              <div className='space-y-2'>
+                <Skeleton className='h-8 w-[80px]' />
+                <Skeleton className='h-4 w-[120px]' />
+              </div>
+            ) : (
+              <>
+                <div className='text-2xl font-bold'>{data?.totalClicks.value}</div>
+                <p className='text-muted-foreground text-xs'>{data?.totalClicks.change}</p>
+              </>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -60,8 +76,17 @@ export function Analytics() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>832</div>
-            <p className='text-muted-foreground text-xs'>+5.8% vs last week</p>
+            {isLoading ? (
+              <div className='space-y-2'>
+                <Skeleton className='h-8 w-[80px]' />
+                <Skeleton className='h-4 w-[120px]' />
+              </div>
+            ) : (
+              <>
+                <div className='text-2xl font-bold'>{data?.uniqueVisitors.value}</div>
+                <p className='text-muted-foreground text-xs'>{data?.uniqueVisitors.change}</p>
+              </>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -81,8 +106,17 @@ export function Analytics() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>42%</div>
-            <p className='text-muted-foreground text-xs'>-3.2% vs last week</p>
+            {isLoading ? (
+              <div className='space-y-2'>
+                <Skeleton className='h-8 w-[80px]' />
+                <Skeleton className='h-4 w-[120px]' />
+              </div>
+            ) : (
+              <>
+                <div className='text-2xl font-bold'>{data?.bounceRate.value}</div>
+                <p className='text-muted-foreground text-xs'>{data?.bounceRate.change}</p>
+              </>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -103,8 +137,17 @@ export function Analytics() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>3m 24s</div>
-            <p className='text-muted-foreground text-xs'>+18s vs last week</p>
+            {isLoading ? (
+              <div className='space-y-2'>
+                <Skeleton className='h-8 w-[80px]' />
+                <Skeleton className='h-4 w-[120px]' />
+              </div>
+            ) : (
+              <>
+                <div className='text-2xl font-bold'>{data?.avgSession.value}</div>
+                <p className='text-muted-foreground text-xs'>{data?.avgSession.change}</p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -116,14 +159,10 @@ export function Analytics() {
           </CardHeader>
           <CardContent>
             <SimpleBarList
-              items={[
-                { name: 'Direct', value: 512 },
-                { name: 'Product Hunt', value: 238 },
-                { name: 'Twitter', value: 174 },
-                { name: 'Blog', value: 104 },
-              ]}
+              items={data?.referrers || []}
               barClass='bg-primary'
               valueFormatter={(n) => `${n}`}
+              isLoading={isLoading}
             />
           </CardContent>
         </Card>
@@ -134,30 +173,43 @@ export function Analytics() {
           </CardHeader>
           <CardContent>
             <SimpleBarList
-              items={[
-                { name: 'Desktop', value: 74 },
-                { name: 'Mobile', value: 22 },
-                { name: 'Tablet', value: 4 },
-              ]}
+              items={data?.devices || []}
               barClass='bg-muted-foreground'
               valueFormatter={(n) => `${n}%`}
+              isLoading={isLoading}
             />
           </CardContent>
         </Card>
       </div>
     </div>
   );
-}
+};
 
-function SimpleBarList({
-  items,
-  valueFormatter,
-  barClass,
-}: {
+interface SimpleBarListProps {
   items: { name: string; value: number }[];
   valueFormatter: (n: number) => string;
   barClass: string;
-}) {
+  isLoading?: boolean;
+}
+
+const SimpleBarList = ({ items, valueFormatter, barClass, isLoading }: SimpleBarListProps) => {
+  if (isLoading) {
+    return (
+      <div className='space-y-4'>
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className='space-y-2'>
+            <Skeleton className='h-3 w-[80px]' />
+            <Skeleton className='h-2 w-full' />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return <div className='text-muted-foreground py-4 text-center text-sm'>No data available</div>;
+  }
+
   const max = Math.max(...items.map((i) => i.value), 1);
   return (
     <ul className='space-y-3'>
@@ -177,4 +229,4 @@ function SimpleBarList({
       })}
     </ul>
   );
-}
+};

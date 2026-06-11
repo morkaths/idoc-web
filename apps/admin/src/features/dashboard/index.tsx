@@ -1,4 +1,5 @@
 import { Download } from 'lucide-react';
+import { useDashboardStats } from '@/hooks/data/useDashboard';
 import { Button } from '@repo/ui/components/button';
 import {
   Card,
@@ -7,12 +8,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@repo/ui/components/card';
+import { Skeleton } from '@repo/ui/components/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/tabs';
 import { Analytics } from './components/analytics';
 import { Overview } from './components/overview';
 import { RecentSales } from './components/recent-sales';
 
-export function Dashboard() {
+export const Dashboard = () => {
+  const { data: stats, isLoading } = useDashboardStats();
+
   return (
     <>
       <div className='mb-2 flex items-center justify-between space-y-2'>
@@ -39,6 +43,7 @@ export function Dashboard() {
         </div>
         <TabsContent value='overview' className='space-y-4'>
           <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+            {/* Total Revenue */}
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>Total Revenue</CardTitle>
@@ -56,10 +61,23 @@ export function Dashboard() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>$45,231.89</div>
-                <p className='text-muted-foreground text-xs'>+20.1% from last month</p>
+                {isLoading ? (
+                  <div className='space-y-2'>
+                    <Skeleton className='h-8 w-[100px]' />
+                    <Skeleton className='h-4 w-[140px]' />
+                  </div>
+                ) : (
+                  <>
+                    <div className='text-2xl font-bold'>{stats?.overview.totalRevenue.value}</div>
+                    <p className='text-muted-foreground text-xs'>
+                      {stats?.overview.totalRevenue.change}
+                    </p>
+                  </>
+                )}
               </CardContent>
             </Card>
+
+            {/* Subscriptions */}
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>Subscriptions</CardTitle>
@@ -79,10 +97,23 @@ export function Dashboard() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>+2350</div>
-                <p className='text-muted-foreground text-xs'>+180.1% from last month</p>
+                {isLoading ? (
+                  <div className='space-y-2'>
+                    <Skeleton className='h-8 w-[100px]' />
+                    <Skeleton className='h-4 w-[140px]' />
+                  </div>
+                ) : (
+                  <>
+                    <div className='text-2xl font-bold'>{stats?.overview.subscriptions.value}</div>
+                    <p className='text-muted-foreground text-xs'>
+                      {stats?.overview.subscriptions.change}
+                    </p>
+                  </>
+                )}
               </CardContent>
             </Card>
+
+            {/* Sales */}
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>Sales</CardTitle>
@@ -101,10 +132,21 @@ export function Dashboard() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>+12,234</div>
-                <p className='text-muted-foreground text-xs'>+19% from last month</p>
+                {isLoading ? (
+                  <div className='space-y-2'>
+                    <Skeleton className='h-8 w-[100px]' />
+                    <Skeleton className='h-4 w-[140px]' />
+                  </div>
+                ) : (
+                  <>
+                    <div className='text-2xl font-bold'>{stats?.overview.sales.value}</div>
+                    <p className='text-muted-foreground text-xs'>{stats?.overview.sales.change}</p>
+                  </>
+                )}
               </CardContent>
             </Card>
+
+            {/* Active Now */}
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>Active Now</CardTitle>
@@ -122,8 +164,19 @@ export function Dashboard() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>+573</div>
-                <p className='text-muted-foreground text-xs'>+201 since last hour</p>
+                {isLoading ? (
+                  <div className='space-y-2'>
+                    <Skeleton className='h-8 w-[100px]' />
+                    <Skeleton className='h-4 w-[140px]' />
+                  </div>
+                ) : (
+                  <>
+                    <div className='text-2xl font-bold'>{stats?.overview.activeNow.value}</div>
+                    <p className='text-muted-foreground text-xs'>
+                      {stats?.overview.activeNow.change}
+                    </p>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -133,24 +186,30 @@ export function Dashboard() {
                 <CardTitle>Overview</CardTitle>
               </CardHeader>
               <CardContent className='ps-2'>
-                <Overview />
+                <Overview data={stats?.overview.monthlyData} isLoading={isLoading} />
               </CardContent>
             </Card>
             <Card className='col-span-1 lg:col-span-3'>
               <CardHeader>
                 <CardTitle>Recent Sales</CardTitle>
-                <CardDescription>You made 265 sales this month.</CardDescription>
+                <CardDescription>
+                  {isLoading
+                    ? 'Loading recent sales...'
+                    : `You made ${stats?.overview.recentSales.length || 0} sales this month.`}
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <RecentSales />
+                <RecentSales data={stats?.overview.recentSales} isLoading={isLoading} />
               </CardContent>
             </Card>
           </div>
         </TabsContent>
         <TabsContent value='analytics' className='space-y-4'>
-          <Analytics />
+          <Analytics data={stats?.analytics} isLoading={isLoading} />
         </TabsContent>
       </Tabs>
     </>
   );
-}
+};
+
+export default Dashboard;

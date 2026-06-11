@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { motion } from 'motion/react';
-import { cn } from '@repo/ui/lib/utils';
+import { motion } from "motion/react";
+import { cn } from "@repo/ui/lib/utils";
 
-type From = 'left' | 'right' | 'top' | 'bottom';
+type From = "left" | "right" | "top" | "bottom";
 
 interface HighlightedTextProps {
   children: React.ReactNode;
@@ -16,27 +16,27 @@ interface HighlightedTextProps {
 
 const fromVariants = {
   left: {
-    hidden: { x: '-100%' },
-    visible: { x: '0%' },
+    hidden: { x: "-100%" },
+    visible: { x: "0%" },
   },
   right: {
-    hidden: { x: '100%' },
-    visible: { x: '0%' },
+    hidden: { x: "100%" },
+    visible: { x: "0%" },
   },
   top: {
-    hidden: { y: '-100%' },
-    visible: { y: '0%' },
+    hidden: { y: "-100%" },
+    visible: { y: "0%" },
   },
   bottom: {
-    hidden: { y: '100%' },
-    visible: { y: '0%' },
+    hidden: { y: "100%" },
+    visible: { y: "0%" },
   },
 };
 
 export function HighlightedText({
   children,
   className,
-  from = 'bottom',
+  from = "bottom",
   delay = 0,
   inView = false,
   once = true,
@@ -46,25 +46,25 @@ export function HighlightedText({
   return (
     <motion.span
       className={cn(
-        'relative inline-flex overflow-hidden align-baseline',
+        "relative inline-flex overflow-hidden align-baseline",
         className,
       )}
-      initial='hidden'
-      whileInView={inView ? 'visible' : undefined}
-      animate={inView ? undefined : 'visible'}
+      initial="hidden"
+      whileInView={inView ? "visible" : undefined}
+      animate={inView ? undefined : "visible"}
       viewport={{ once }}
     >
       <motion.span
-        className='absolute inset-0 -left-[0.3em] -right-[0.3em] bg-black dark:bg-white z-0'
+        className="absolute inset-0 -left-[0.3em] -right-[0.3em] bg-black dark:bg-white z-0"
         variants={variants}
         transition={{
-          type: 'spring',
+          type: "spring",
           damping: 30,
           stiffness: 300,
           delay,
         }}
       />
-      <span className='relative z-10 mix-blend-difference text-white pl-[0.3em] pr-[0.3em]'>
+      <span className="relative z-10 mix-blend-difference text-white pl-[0.3em] pr-[0.3em]">
         {children}
       </span>
     </motion.span>

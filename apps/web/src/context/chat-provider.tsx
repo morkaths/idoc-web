@@ -2,9 +2,9 @@
 
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { ChatbotApi, BookApi } from '@/apis';
+import { type BookResponse } from '@/types';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { AI_MODELS } from '@/components/chat/data/chatbot-data';
-import { type BookResponse } from '@/types';
 
 export interface Message {
   id: string;
@@ -32,7 +32,10 @@ type ChatContextType = {
   createNewChat: () => void;
   deleteChat: (id: string, e: React.MouseEvent) => void;
   handleSendMessage: (content: string) => Promise<void>;
-  handleRegenerateMessage: (messageId: string, setInputValue?: (val: string) => void) => Promise<void>;
+  handleRegenerateMessage: (
+    messageId: string,
+    setInputValue?: (val: string) => void
+  ) => Promise<void>;
   handleRenameConversation: (id: string, newTitle: string) => void;
   setActiveConversationId: (id: string | null) => void;
 };
@@ -237,7 +240,9 @@ export function ChatProvider({ children }: ChatProviderProps) {
                 if (convIdx !== -1) {
                   const targetConv = updated[convIdx];
                   if (targetConv) {
-                    const msgIdx = targetConv.messages.findIndex((m) => m.id === assistantMessageId);
+                    const msgIdx = targetConv.messages.findIndex(
+                      (m) => m.id === assistantMessageId
+                    );
                     if (msgIdx !== -1 && targetConv.messages[msgIdx]) {
                       targetConv.messages[msgIdx].sources = sourceIds;
                       targetConv.messages[msgIdx].books = books;
@@ -314,7 +319,10 @@ export function ChatProvider({ children }: ChatProviderProps) {
   };
 
   // Regenerate assistant message or retry
-  const handleRegenerateMessage = async (messageId: string, setInputValue?: (val: string) => void) => {
+  const handleRegenerateMessage = async (
+    messageId: string,
+    setInputValue?: (val: string) => void
+  ) => {
     if (isLoading) return;
 
     const currentConversationId = activeConversationId;
@@ -379,7 +387,9 @@ export function ChatProvider({ children }: ChatProviderProps) {
                   if (convIdx !== -1) {
                     const targetConv = updated[convIdx];
                     if (targetConv) {
-                      const msgIdx = targetConv.messages.findIndex((m) => m.id === assistantMessageId);
+                      const msgIdx = targetConv.messages.findIndex(
+                        (m) => m.id === assistantMessageId
+                      );
                       if (msgIdx !== -1 && targetConv.messages[msgIdx]) {
                         targetConv.messages[msgIdx].sources = sourceIds;
                         targetConv.messages[msgIdx].books = books;
@@ -402,9 +412,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
               if (convIdx !== -1) {
                 const targetConv = updated[convIdx];
                 if (targetConv) {
-                  const msgIdx = targetConv.messages.findIndex(
-                    (m) => m.id === assistantMessageId
-                  );
+                  const msgIdx = targetConv.messages.findIndex((m) => m.id === assistantMessageId);
                   if (msgIdx !== -1 && targetConv.messages[msgIdx]) {
                     targetConv.messages[msgIdx].content = accumulatedText;
                   }

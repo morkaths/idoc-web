@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { type BookResponse } from '@/types';
 import { cva, type VariantProps } from 'class-variance-authority';
 import {
   Ban,
@@ -20,10 +21,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@repo/ui/components/collapsible';
+import { BookGridItems } from '@/components/book/book-grid-items';
 import { FilePreview } from './file-preview';
 import { MarkdownRenderer } from './markdown-renderer';
-import { BookGridItems } from '@/components/book/book-grid-items';
-import { type BookResponse } from '@/types';
 
 const chatBubbleVariants = cva(
   'group/message relative break-words rounded-md p-3 text-sm sm:max-w-[70%] border transition-all duration-200',
@@ -349,8 +349,10 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           <>
             <MarkdownRenderer>{content}</MarkdownRenderer>
             {books && books.length > 0 && (
-              <div className='border-border/60 mt-4 border-t pt-3 flex flex-col gap-2 w-full'>
-                <span className='text-muted-foreground text-xs font-semibold mb-2'>Sách liên quan:</span>
+              <div className='border-border/60 mt-4 flex w-full flex-col gap-2 border-t pt-3'>
+                <span className='text-muted-foreground mb-2 text-xs font-semibold'>
+                  Sách liên quan:
+                </span>
                 <BookGridItems data={books} />
               </div>
             )}
