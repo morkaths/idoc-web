@@ -1,3 +1,4 @@
+import { getSession } from 'next-auth/react';
 import { ApiEndpoint } from '@/config/api';
 import env from '@/config/env';
 import type { ApiResponse } from '@/types';
@@ -51,7 +52,18 @@ export const ChatbotApi = {
     if (sessionId) {
       url += `?sessionId=${encodeURIComponent(sessionId)}`;
     }
-    const token = getAccessToken();
+
+    let token = getAccessToken();
+    if (!token && typeof window !== 'undefined') {
+      try {
+        const session = await getSession();
+        token = session?.accessToken || null;
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Error getting session token:', e);
+      }
+    }
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
@@ -69,25 +81,50 @@ export const ChatbotApi = {
     });
 
     if (!response.ok || !response.body) {
-      throw new Error('Không thể kết nối đến Chatbot Stream');
+      const errorText = await response.text().catch(() => '');
+      throw new Error(`Không thể kết nối đến Chatbot Stream: ${response.status} ${response.statusText}. ${errorText}`);
     }
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');
+    let buffer = '';
+    let currentEvent = '';
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split('\n');
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
 
       for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const dataContent = line.slice(6).trim();
+        const trimmed = line.trim();
+        if (trimmed.startsWith('event: ')) {
+          currentEvent = trimmed.slice(7).trim();
+        } else if (trimmed.startsWith('data: ')) {
+          const dataContent = trimmed.slice(6).trim();
           if (dataContent) {
+            if (currentEvent === 'session') {
+              currentEvent = '';
+              continue;
+            }
+            if (currentEvent === 'DONE' || dataContent === '[DONE]') {
+              currentEvent = '';
+              continue;
+            }
             yield dataContent;
           }
+        }
+      }
+    }
+
+    if (buffer) {
+      const trimmed = buffer.trim();
+      if (trimmed.startsWith('data: ')) {
+        const dataContent = trimmed.slice(6).trim();
+        if (dataContent && dataContent !== '[DONE]' && currentEvent !== 'session' && currentEvent !== 'DONE') {
+          yield dataContent;
         }
       }
     }

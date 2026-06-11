@@ -2,15 +2,15 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import React from 'react';
-import { useLocale as useNextLocale } from 'next-intl';
 import { cn } from '@/lib/utils';
+import { ChatbotApi } from '@/apis';
 import { SparklesIcon, MinusIcon, Maximize2Icon, Trash2 } from 'lucide-react';
 import SiriOrb from '../siri-orb';
 import { HighlightedText } from '@repo/ui/components/highlighted-text';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import { useTheme } from '@/context/theme-provider';
-import { WIDGET_SUGGESTIONS, ORB_THEME_COLORS } from './data/chatbot-data';
+import { AI_MODELS, WIDGET_SUGGESTIONS, ORB_THEME_COLORS } from './data/chatbot-data';
 import { ChatInput } from './chat-input';
 import { ChatMessage } from './chat-message';
 import { ChatMessageList } from './chat-message-list';
@@ -92,7 +92,6 @@ export interface FloatingChatWindowProps {
  * FloatingChatWindow component renders the chat dialogue popup window.
  */
 export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps) => {
-  const locale = useNextLocale();
   const { t, keys } = useLocale('chatbot');
   const router = useRouter();
   const pathname = usePathname();
@@ -103,7 +102,8 @@ export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps)
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [inputValue, setInputValue] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
-  const [selectedModelId, setSelectedModelId] = React.useState('gemini-flash');
+  const [selectedModelId, setSelectedModelId] = React.useState('gemini-1.5-flash');
+  const [widgetSessionId, setWidgetSessionId] = React.useState<string | undefined>(undefined);
 
   const isDark = resolvedMode === 'dark';
 
@@ -120,6 +120,13 @@ export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps)
         console.error('Failed to parse floating chat history', e);
       }
     }
+
+    let sId = localStorage.getItem('idoc_floating_chat_session_id');
+    if (!sId) {
+      sId = Math.random().toString(36).substring(7);
+      localStorage.setItem('idoc_floating_chat_session_id', sId);
+    }
+    setWidgetSessionId(sId);
   }, []);
 
   // Save chat session
@@ -130,6 +137,9 @@ export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps)
 
   const clearChat = () => {
     saveMessages([]);
+    const newSId = Math.random().toString(36).substring(7);
+    localStorage.setItem('idoc_floating_chat_session_id', newSId);
+    setWidgetSessionId(newSId);
   };
 
   // Expand to full page chat and sync messages
@@ -194,51 +204,25 @@ export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps)
     saveMessages(messagesWithPlaceholder);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: updatedMessages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-          model: selectedModelId,
-          locale: locale,
-        }),
+      const foundModel = AI_MODELS.find((m) => m.id === selectedModelId);
+      const streamGenerator = ChatbotApi.stream({
+        content: textToSend || inputValue,
+        provider: foundModel?.provider,
+        model: foundModel?.model || selectedModelId,
+        sessionId: widgetSessionId,
       });
 
-      if (!response.ok) {
-        throw new Error('API request failed');
-      }
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
       let accumulatedText = '';
-
-      if (reader) {
-        while (!done) {
-          const { value, done: readerDone } = await reader.read();
-          done = readerDone;
-          if (value) {
-            const chunk = decoder.decode(value, { stream: !done });
-            accumulatedText += chunk;
-
-            setMessages((prev) => {
-              const current = [...prev];
-              const msgIdx = current.findIndex((m) => m.id === assistantMessageId);
-              if (msgIdx !== -1 && current[msgIdx]) {
-                current[msgIdx].content = accumulatedText;
-              }
-              return current;
-            });
+      for await (const chunk of streamGenerator) {
+        accumulatedText += chunk;
+        setMessages((prev) => {
+          const current = [...prev];
+          const msgIdx = current.findIndex((m) => m.id === assistantMessageId);
+          if (msgIdx !== -1 && current[msgIdx]) {
+            current[msgIdx].content = accumulatedText;
           }
-        }
-      } else {
-        const data = await response.json();
-        accumulatedText = data.content || '';
+          return current;
+        });
       }
 
       // Save final state
@@ -295,51 +279,25 @@ export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps)
       setIsLoading(true);
 
       try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            messages: messagesBefore.map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
-            model: selectedModelId,
-            locale: locale,
-          }),
+        const foundModel = AI_MODELS.find((m) => m.id === selectedModelId);
+        const streamGenerator = ChatbotApi.stream({
+          content: lastUserMessage.content,
+          provider: foundModel?.provider,
+          model: foundModel?.model || selectedModelId,
+          sessionId: widgetSessionId,
         });
 
-        if (!response.ok) {
-          throw new Error('API request failed');
-        }
-
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-        let done = false;
         let accumulatedText = '';
-
-        if (reader) {
-          while (!done) {
-            const { value, done: readerDone } = await reader.read();
-            done = readerDone;
-            if (value) {
-              const chunk = decoder.decode(value, { stream: !done });
-              accumulatedText += chunk;
-
-              setMessages((prev) => {
-                const current = [...prev];
-                const msgIdx = current.findIndex((m) => m.id === assistantMessageId);
-                if (msgIdx !== -1 && current[msgIdx]) {
-                  current[msgIdx].content = accumulatedText;
-                }
-                return current;
-              });
+        for await (const chunk of streamGenerator) {
+          accumulatedText += chunk;
+          setMessages((prev) => {
+            const current = [...prev];
+            const msgIdx = current.findIndex((m) => m.id === assistantMessageId);
+            if (msgIdx !== -1 && current[msgIdx]) {
+              current[msgIdx].content = accumulatedText;
             }
-          }
-        } else {
-          const data = await response.json();
-          accumulatedText = data.content || '';
+            return current;
+          });
         }
 
         setMessages((prev) => {

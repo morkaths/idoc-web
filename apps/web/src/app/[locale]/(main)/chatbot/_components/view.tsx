@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useLocale as useNextLocale } from 'next-intl';
 import { PanelLeftOpenIcon } from 'lucide-react';
+import { ChatbotApi } from '@/apis';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import { AI_MODELS, type AIModel } from '@/components/chat/data/chatbot-data';
@@ -27,7 +27,6 @@ interface Conversation {
 }
 
 export const ChatbotView = () => {
-  const locale = useNextLocale();
   const { t, keys } = useLocale('chatbot');
 
   // UI state
@@ -169,60 +168,30 @@ export const ChatbotView = () => {
 
     try {
       // Call local API route /api/chat
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: conversation.messages.slice(0, -1).map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-          model: activeModel.id,
-          locale,
-        }),
+      const streamGenerator = ChatbotApi.stream({
+        content: textToSend || inputValue,
+        provider: activeModel.provider,
+        model: activeModel.model,
+        sessionId: currentConversationId ?? undefined,
       });
 
-      if (!response.ok) {
-        throw new Error('API request failed');
-      }
-
-      // Handle streaming response
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
       let accumulatedText = '';
-
-      if (reader) {
-        while (!done) {
-          const { value, done: readerDone } = await reader.read();
-          done = readerDone;
-          if (value) {
-            const chunk = decoder.decode(value, { stream: !done });
-            accumulatedText += chunk;
-
-            // Update the message content in real time
-            setConversations((prev) => {
-              const updated = [...prev];
-              const convIdx = updated.findIndex((c) => c.id === currentConversationId);
-              if (convIdx !== -1) {
-                const targetConv = updated[convIdx];
-                if (targetConv) {
-                  const msgIdx = targetConv.messages.findIndex((m) => m.id === assistantMessageId);
-                  if (msgIdx !== -1 && targetConv.messages[msgIdx]) {
-                    targetConv.messages[msgIdx].content = accumulatedText;
-                  }
-                }
+      for await (const chunk of streamGenerator) {
+        accumulatedText += chunk;
+        setConversations((prev) => {
+          const updated = [...prev];
+          const convIdx = updated.findIndex((c) => c.id === currentConversationId);
+          if (convIdx !== -1) {
+            const targetConv = updated[convIdx];
+            if (targetConv) {
+              const msgIdx = targetConv.messages.findIndex((m) => m.id === assistantMessageId);
+              if (msgIdx !== -1 && targetConv.messages[msgIdx]) {
+                targetConv.messages[msgIdx].content = accumulatedText;
               }
-              return updated;
-            });
+            }
           }
-        }
-      } else {
-        // Fallback for non-streaming
-        const data = await response.json();
-        accumulatedText = data.content || '';
+          return updated;
+        });
       }
 
       // Save final state to LocalStorage
@@ -302,59 +271,32 @@ export const ChatbotView = () => {
       setIsLoading(true);
 
       try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            messages: messagesBefore.map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
-            model: activeModel.id,
-            locale,
-          }),
+        const streamGenerator = ChatbotApi.stream({
+          content: lastUserMessage.content,
+          provider: activeModel.provider,
+          model: activeModel.model,
+          sessionId: currentConversationId ?? undefined,
         });
 
-        if (!response.ok) {
-          throw new Error('API request failed');
-        }
-
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-        let done = false;
         let accumulatedText = '';
-
-        if (reader) {
-          while (!done) {
-            const { value, done: readerDone } = await reader.read();
-            done = readerDone;
-            if (value) {
-              const chunk = decoder.decode(value, { stream: !done });
-              accumulatedText += chunk;
-
-              setConversations((prev) => {
-                const updated = [...prev];
-                const convIdx = updated.findIndex((c) => c.id === currentConversationId);
-                if (convIdx !== -1) {
-                  const targetConv = updated[convIdx];
-                  if (targetConv) {
-                    const msgIdx = targetConv.messages.findIndex(
-                      (m) => m.id === assistantMessageId
-                    );
-                    if (msgIdx !== -1 && targetConv.messages[msgIdx]) {
-                      targetConv.messages[msgIdx].content = accumulatedText;
-                    }
-                  }
+        for await (const chunk of streamGenerator) {
+          accumulatedText += chunk;
+          setConversations((prev) => {
+            const updated = [...prev];
+            const convIdx = updated.findIndex((c) => c.id === currentConversationId);
+            if (convIdx !== -1) {
+              const targetConv = updated[convIdx];
+              if (targetConv) {
+                const msgIdx = targetConv.messages.findIndex(
+                  (m) => m.id === assistantMessageId
+                );
+                if (msgIdx !== -1 && targetConv.messages[msgIdx]) {
+                  targetConv.messages[msgIdx].content = accumulatedText;
                 }
-                return updated;
-              });
+              }
             }
-          }
-        } else {
-          const data = await response.json();
-          accumulatedText = data.content || '';
+            return updated;
+          });
         }
 
         setConversations((prev) => {
