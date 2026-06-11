@@ -3,32 +3,17 @@
 import { useRouter, usePathname } from 'next/navigation';
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { ChatbotApi } from '@/apis';
 import { SparklesIcon, MinusIcon, Maximize2Icon, Trash2 } from 'lucide-react';
 import SiriOrb from '../siri-orb';
 import { HighlightedText } from '@repo/ui/components/highlighted-text';
 import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import { useTheme } from '@/context/theme-provider';
-import { AI_MODELS, WIDGET_SUGGESTIONS, ORB_THEME_COLORS } from './data/chatbot-data';
+import { useChat } from '@/context/chat-provider';
+import { WIDGET_SUGGESTIONS, ORB_THEME_COLORS } from './data/chatbot-data';
 import { ChatInput } from './chat-input';
 import { ChatMessage } from './chat-message';
 import { ChatMessageList } from './chat-message-list';
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: string;
-}
-
-interface Conversation {
-  id: string;
-  title: string;
-  messages: Message[];
-  createdAt: string;
-}
-
 
 export interface FloatingChatButtonProps {
   isOpen: boolean;
@@ -63,7 +48,6 @@ export const FloatingChatButton = ({ isOpen, onClick, title }: FloatingChatButto
   }
 
   const isDark = resolvedMode === 'dark';
-
   const orbColors = isDark ? ORB_THEME_COLORS.dark : ORB_THEME_COLORS.light;
 
   return (
@@ -99,234 +83,52 @@ export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps)
 
   const isChatbotPage = pathname.endsWith('/chatbot') || pathname.includes('/chatbot/');
 
-  const [messages, setMessages] = React.useState<Message[]>([]);
   const [inputValue, setInputValue] = React.useState('');
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [selectedModelId, setSelectedModelId] = React.useState('gemini-1.5-flash');
-  const [widgetSessionId, setWidgetSessionId] = React.useState<string | undefined>(undefined);
+
+  const {
+    selectedModelId,
+    setSelectedModelId,
+    conversations,
+    activeConversationId,
+    activeConversation,
+    isLoading,
+    createNewChat,
+    handleSendMessage,
+    handleRegenerateMessage,
+    setActiveConversationId,
+  } = useChat();
 
   const isDark = resolvedMode === 'dark';
-
   const headerOrbColors = isDark ? ORB_THEME_COLORS.dark : ORB_THEME_COLORS.light;
 
-  // Load chat session from localstorage on mount
+  const messages = activeConversation ? activeConversation.messages : [];
+
+  // Default to active conversation if available on load
   React.useEffect(() => {
-    const saved = localStorage.getItem('idoc_floating_chat');
-    if (saved) {
-      try {
-        setMessages(JSON.parse(saved) as Message[]);
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error('Failed to parse floating chat history', e);
-      }
+    if (!activeConversationId && conversations.length > 0 && conversations[0]) {
+      setActiveConversationId(conversations[0].id);
     }
-
-    let sId = localStorage.getItem('idoc_floating_chat_session_id');
-    if (!sId) {
-      sId = Math.random().toString(36).substring(7);
-      localStorage.setItem('idoc_floating_chat_session_id', sId);
-    }
-    setWidgetSessionId(sId);
-  }, []);
-
-  // Save chat session
-  const saveMessages = (updated: Message[]) => {
-    setMessages(updated);
-    localStorage.setItem('idoc_floating_chat', JSON.stringify(updated));
-  };
+  }, [activeConversationId, conversations, setActiveConversationId]);
 
   const clearChat = () => {
-    saveMessages([]);
-    const newSId = Math.random().toString(36).substring(7);
-    localStorage.setItem('idoc_floating_chat_session_id', newSId);
-    setWidgetSessionId(newSId);
+    createNewChat();
   };
 
-  // Expand to full page chat and sync messages
+  // Expand to full page chat
   const handleExpand = () => {
-    if (messages.length > 0) {
-      const savedChats = localStorage.getItem('idoc_chats');
-      let currentChats: Conversation[] = [];
-      if (savedChats) {
-        try {
-          currentChats = JSON.parse(savedChats) as Conversation[];
-        } catch (_e) { }
-      }
-
-      const firstUserMessage = messages.find((m) => m.role === 'user');
-      const title = firstUserMessage
-        ? firstUserMessage.content.substring(0, 30) +
-        (firstUserMessage.content.length > 30 ? '...' : '')
-        : t(keys.sidebar.newChat);
-
-      const newChat: Conversation = {
-        id: Math.random().toString(36).substring(7),
-        title,
-        messages: [...messages],
-        createdAt: new Date().toISOString(),
-      };
-
-      const updatedChats = [newChat, ...currentChats];
-      localStorage.setItem('idoc_chats', JSON.stringify(updatedChats));
-      localStorage.removeItem('idoc_floating_chat');
-    }
-
     router.push('/chatbot');
     onClose();
   };
 
-  const handleSendMessage = async (textToSend?: string) => {
-    const content = (textToSend || inputValue).trim();
-    if (!content && textToSend === undefined) return;
-
-    const userMessage: Message = {
-      id: Math.random().toString(36).substring(7),
-      role: 'user',
-      content,
-      timestamp: new Date().toISOString(),
-    };
-
-    const updatedMessages = [...messages, userMessage];
-    saveMessages(updatedMessages);
-    if (!textToSend) setInputValue('');
-    setIsLoading(true);
-
-    // Add assistant placeholder
-    const assistantMessageId = Math.random().toString(36).substring(7);
-    const assistantMessage: Message = {
-      id: assistantMessageId,
-      role: 'assistant',
-      content: '',
-      timestamp: new Date().toISOString(),
-    };
-
-    const messagesWithPlaceholder = [...updatedMessages, assistantMessage];
-    saveMessages(messagesWithPlaceholder);
-
-    try {
-      const foundModel = AI_MODELS.find((m) => m.id === selectedModelId);
-      const streamGenerator = ChatbotApi.stream({
-        content: textToSend || inputValue,
-        provider: foundModel?.provider,
-        model: foundModel?.model || selectedModelId,
-        sessionId: widgetSessionId,
-      });
-
-      let accumulatedText = '';
-      for await (const chunk of streamGenerator) {
-        accumulatedText += chunk;
-        setMessages((prev) => {
-          const current = [...prev];
-          const msgIdx = current.findIndex((m) => m.id === assistantMessageId);
-          if (msgIdx !== -1 && current[msgIdx]) {
-            current[msgIdx].content = accumulatedText;
-          }
-          return current;
-        });
-      }
-
-      // Save final state
-      setMessages((prev) => {
-        const current = [...prev];
-        const msgIdx = current.findIndex((m) => m.id === assistantMessageId);
-        if (msgIdx !== -1 && current[msgIdx]) {
-          current[msgIdx].content = accumulatedText;
-        }
-        localStorage.setItem('idoc_floating_chat', JSON.stringify(current));
-        return current;
-      });
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error in floating chat widget:', error);
-      setMessages((prev) => {
-        const current = [...prev];
-        const msgIdx = current.findIndex((m) => m.id === assistantMessageId);
-        if (msgIdx !== -1 && current[msgIdx]) {
-          current[msgIdx].content = t(keys.errorMessage);
-        }
-        localStorage.setItem('idoc_floating_chat', JSON.stringify(current));
-        return current;
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRegenerateMessage = async (messageId: string) => {
+  const onSubmitMessage = async (contentOverride?: string) => {
     if (isLoading) return;
+    const content = (contentOverride || inputValue).trim();
+    if (!content) return;
 
-    const msgIdx = messages.findIndex((m) => m.id === messageId);
-    if (msgIdx === -1) return;
-
-    const targetMessage = messages[msgIdx];
-    if (!targetMessage) return;
-
-    if (targetMessage.role === 'assistant') {
-      const messagesBefore = messages.slice(0, msgIdx);
-      const lastUserMessage = messagesBefore[messagesBefore.length - 1];
-      if (!lastUserMessage || lastUserMessage.role !== 'user') return;
-
-      const assistantMessageId = Math.random().toString(36).substring(7);
-      const assistantMessage: Message = {
-        id: assistantMessageId,
-        role: 'assistant',
-        content: '',
-        timestamp: new Date().toISOString(),
-      };
-
-      const updatedMessages = [...messagesBefore, assistantMessage];
-      saveMessages(updatedMessages);
-      setIsLoading(true);
-
-      try {
-        const foundModel = AI_MODELS.find((m) => m.id === selectedModelId);
-        const streamGenerator = ChatbotApi.stream({
-          content: lastUserMessage.content,
-          provider: foundModel?.provider,
-          model: foundModel?.model || selectedModelId,
-          sessionId: widgetSessionId,
-        });
-
-        let accumulatedText = '';
-        for await (const chunk of streamGenerator) {
-          accumulatedText += chunk;
-          setMessages((prev) => {
-            const current = [...prev];
-            const msgIdx = current.findIndex((m) => m.id === assistantMessageId);
-            if (msgIdx !== -1 && current[msgIdx]) {
-              current[msgIdx].content = accumulatedText;
-            }
-            return current;
-          });
-        }
-
-        setMessages((prev) => {
-          const current = [...prev];
-          const msgIdx = current.findIndex((m) => m.id === assistantMessageId);
-          if (msgIdx !== -1 && current[msgIdx]) {
-            current[msgIdx].content = accumulatedText;
-          }
-          localStorage.setItem('idoc_floating_chat', JSON.stringify(current));
-          return current;
-        });
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error in floating chat widget regenerate:', error);
-        setMessages((prev) => {
-          const current = [...prev];
-          const msgIdx = current.findIndex((m) => m.id === assistantMessageId);
-          if (msgIdx !== -1 && current[msgIdx]) {
-            current[msgIdx].content = t(keys.errorMessage);
-          }
-          localStorage.setItem('idoc_floating_chat', JSON.stringify(current));
-          return current;
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    } else if (targetMessage.role === 'user') {
-      setInputValue(targetMessage.content);
+    if (!contentOverride) {
+      setInputValue('');
     }
+    await handleSendMessage(content);
   };
 
   if (isChatbotPage || !isOpen) {
@@ -413,7 +215,7 @@ export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps)
                 return (
                   <button
                     key={idx}
-                    onClick={() => handleSendMessage(text)}
+                    onClick={() => onSubmitMessage(text)}
                     className='border-border/80 hover:border-primary/50 bg-background hover:bg-muted/30 group flex w-full items-center gap-2.5 rounded-md border p-2.5 text-left text-[11px] transition-all'
                   >
                     <item.icon className='text-primary h-3.5 w-3.5 shrink-0' />
@@ -433,13 +235,14 @@ export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps)
                 id={message.id}
                 role={message.role}
                 content={message.content}
+                books={message.books}
                 createdAt={message.timestamp ? new Date(message.timestamp) : undefined}
                 isLoading={
                   isLoading && index === messages.length - 1 && message.role === 'assistant'
                 }
                 onRetry={
                   message.role === 'assistant'
-                    ? () => handleRegenerateMessage(message.id)
+                    ? () => handleRegenerateMessage(message.id, setInputValue)
                     : undefined
                 }
                 onEdit={
@@ -455,7 +258,10 @@ export const FloatingChatWindow = ({ isOpen, onClose }: FloatingChatWindowProps)
           <ChatInput
             value={inputValue}
             onChange={setInputValue}
-            onSubmit={() => handleSendMessage()}
+            onSubmit={(e) => {
+              if (e) e.preventDefault();
+              onSubmitMessage();
+            }}
             isLoading={isLoading}
             selectedModelId={selectedModelId}
             onModelChange={setSelectedModelId}
