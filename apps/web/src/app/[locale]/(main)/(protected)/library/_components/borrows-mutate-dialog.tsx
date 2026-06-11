@@ -1,180 +1,142 @@
 'use client';
 
-import { z } from 'zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { Borrow } from "@/types/schema";
-import { Button } from "@repo/ui/components/button";
+import { BorrowRequestSchema, type LoanResponse, type BorrowRequest } from '@/types';
+import { useLocale } from '@/hooks/ui/useLocale';
+import { Button } from '@repo/ui/components/button';
 import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@repo/ui/components/dialog";
-import { Input } from "@repo/ui/components/input";
-import { DatePicker } from '@/components/form/date-picker';
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@repo/ui/components/dialog';
 import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/components/form';
-import { UserCombobox } from './users-combobox';
+import { Input } from '@repo/ui/components/input';
+import { DatePicker } from '@/components/form/date-picker';
 import { ItemCombobox } from './items-combobox';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@repo/ui/components/select';
-
-const BorrowFormSchema = z.object({
-    userId: z.string().min(1, "User ID is required"),
-    itemId: z.string().min(1, "Item ID is required"),
-    expireTime: z.union([z.date(), z.string(), z.number()]).refine(val => !!val, { message: "Expire time is required" }),
-    status: z.string().optional(),
-    note: z.string().optional(),
-});
-type BorrowForm = z.infer<typeof BorrowFormSchema>;
 
 type BorrowsMutateDialogProps = {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    initialData?: Partial<Borrow>;
-    onSubmit: (data: Partial<Borrow>) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  initialData?: Partial<LoanResponse>;
+  onSubmit: (data: BorrowRequest) => void;
 };
 
 export function BorrowsMutateDialog({
-    open,
-    onOpenChange,
-    initialData,
-    onSubmit,
+  open,
+  onOpenChange,
+  initialData,
+  onSubmit,
 }: BorrowsMutateDialogProps) {
-    const form = useForm<BorrowForm>({
-        resolver: zodResolver(BorrowFormSchema),
-        defaultValues: {
-            userId: initialData?.userId ?? "",
-            itemId: initialData?.itemId ?? "",
-            expireTime: initialData?.expireTime ? new Date(initialData.expireTime) : undefined,
-            status: initialData?.status ?? "",
-            note: initialData?.note ?? "",
-        },
-    });
+  const { t, keys } = useLocale('library');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const form = useForm<BorrowRequest>({
+    resolver: zodResolver(BorrowRequestSchema),
+    defaultValues: {
+      bookId: initialData?.book?.id ?? '',
+      dueDate: initialData?.dueDate ? new Date(initialData.dueDate) : undefined,
+      notes: initialData?.notes ?? '',
+    },
+  });
 
-    return (
-        <Dialog modal={true} open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-100 max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle>{initialData?.id ? "Edit Borrow" : "Add Borrow"}</DialogTitle>
-                    <DialogDescription>
-                        {initialData?.id
-                            ? "Update the borrow information below."
-                            : "Enter the information for the new borrow."}
-                    </DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(async (data) => {
-                            onSubmit({
-                                ...initialData,
-                                ...data,
-                                expireTime: data.expireTime ? new Date(data.expireTime) : undefined,
-                            });
-                            onOpenChange(false);
-                            form.reset();
-                        })}
-                        className='space-y-4 px-0.5'
-                    >
+  const mutateKeys = keys.table.actions.mutate;
+  const isEdit = !!initialData?.id;
 
-                        <FormField
-                            control={form.control}
-                            name="userId"
-                            render={({ field, fieldState }) => (
-                                <div className="grid gap-3">
-                                    <FormLabel htmlFor="userId">User</FormLabel>
-                                    <UserCombobox
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        error={fieldState.error?.message}
-                                    />
-                                </div>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="itemId"
-                            render={({ field, fieldState }) => (
-                                <div className="grid gap-3">
-                                    <FormLabel htmlFor="itemId">Item</FormLabel>
-                                    <ItemCombobox
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        error={fieldState.error?.message}
-                                    />
-                                </div>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="expireTime"
-                            render={({ field }) => (
-                                <div className="grid gap-3">
-                                    <FormLabel htmlFor="expireTime">Expire Time</FormLabel>
-                                    <FormControl>
-                                        <DatePicker
-                                            selected={field.value ? new Date(field.value) : undefined}
-                                            onSelect={field.onChange}
-                                            placeholder="Pick a date"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </div>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="status"
-                            render={({ field }) => (
-                                <div className="grid gap-3 mb-3">
-                                    <FormLabel htmlFor="status">Status</FormLabel>
-                                    <FormControl>
-                                        <Select value={field.value} onValueChange={field.onChange}>
-                                            <SelectTrigger id="status" className="w-full">
-                                                <SelectValue placeholder="Select status" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectItem value="active">Active</SelectItem>
-                                                    <SelectItem value="returned">Returned</SelectItem>
-                                                    <SelectItem value="overdue">Overdue</SelectItem>
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </div>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="note"
-                            render={({ field }) => (
-                                <div className="grid gap-3 mb-3">
-                                    <FormLabel htmlFor="note">Note</FormLabel>
-                                    <FormControl>
-                                        <Input id="note" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </div>
-                            )}
-                        />
+  return (
+    <Dialog modal={true} open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-100'>
+        <DialogHeader>
+          <DialogTitle>
+            {isEdit ? t(mutateKeys.update.title) : t(mutateKeys.create.title)}
+          </DialogTitle>
+          <DialogDescription>
+            {isEdit ? t(mutateKeys.update.description) : t(mutateKeys.create.description)}
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(async (data) => {
+              if (isSubmitting) return;
+              setIsSubmitting(true);
+              try {
+                await onSubmit(data);
+                onOpenChange(false);
+                form.reset();
+              } finally {
+                setIsSubmitting(false);
+              }
+            })}
+            className='space-y-4 px-0.5'
+          >
+            <fieldset disabled={isSubmitting} className='space-y-4'>
+              <FormField
+                control={form.control}
+                name='bookId'
+                render={({ field, fieldState }) => (
+                  <div className='grid gap-3'>
+                    <FormLabel htmlFor='bookId'>{t(mutateKeys.fields.book)}</FormLabel>
+                    <ItemCombobox
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={fieldState.error?.message}
+                    />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='dueDate'
+                render={({ field }) => (
+                  <div className='grid gap-3'>
+                    <FormLabel htmlFor='dueDate'>{t(mutateKeys.fields.dueDate)}</FormLabel>
+                    <FormControl>
+                      <DatePicker
+                        selected={field.value ? new Date(field.value) : undefined}
+                        onSelect={field.onChange}
+                        placeholder={t(mutateKeys.fields.placeholder)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='notes'
+                render={({ field }) => (
+                  <div className='mb-3 grid gap-3'>
+                    <FormLabel htmlFor='notes'>{t(mutateKeys.fields.notes)}</FormLabel>
+                    <FormControl>
+                      <Input id='notes' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                )}
+              />
 
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button variant="outline" type="button">
-                                    Cancel
-                                </Button>
-                            </DialogClose>
-                            <Button type="submit">
-                                {initialData?.id ? "Save changes" : "Create"}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
-    );
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant='outline' type='button'>
+                    {t(mutateKeys.cancel)}
+                  </Button>
+                </DialogClose>
+                <Button type='submit' disabled={isSubmitting}>
+                  {isSubmitting
+                    ? t(mutateKeys.loading)
+                    : isEdit
+                      ? t(mutateKeys.update.submit)
+                      : t(mutateKeys.create.submit)}
+                </Button>
+              </DialogFooter>
+            </fieldset>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
 }

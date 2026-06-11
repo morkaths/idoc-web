@@ -1,69 +1,83 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
-import type { Book, FindParams, Pagination } from '@/types';
+import type { BookResponse, BookRequest, FindParams, PageParams } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+} from './factory';
 
-type BookResponse = { data: Book[]; pagination?: Pagination };
+/**
+ * Hook to fetch books
+ * @param params Pagination parameters
+ * @param options Query options
+ */
+export const useBooks = (params: PageParams = {}, options?: ListQueryOptions<BookResponse>) => {
+  return useListQuery<BookResponse>(['books', params], () => BookApi.find(params), options);
+};
 
-export const useBooks = (
+/**
+ * Hook to search books
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchBooks = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<BookResponse, Error, BookResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: ListQueryOptions<BookResponse>
 ) => {
-  return useQuery<BookResponse, Error, BookResponse, any[]>({
-    queryKey: ['books', params],
-    queryFn: async () => {
-      const res = await BookApi.find(params);
-      return res;
-    },
-    enabled: true,
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
+  return useListQuery<BookResponse>(
+    ['books', 'search', params],
+    () => BookApi.search(params),
+    options
+  );
+};
+
+/**
+ * Hook to fetch a single book by ID
+ * @param id Book ID
+ * @param options Query options
+ */
+export const useBook = (id: string, options?: ItemQueryOptions<BookResponse>) => {
+  return useItemQuery<BookResponse>(['books', id], () => BookApi.findById(id), {
+    enabled: !!id,
     ...options,
   });
 };
 
-export const useBook = (id: string) => {
-  return useQuery({
-    queryKey: ['books', id],
-    queryFn: () => BookApi.findById(id),
-    enabled: !!id,
-    staleTime: 10 * 60 * 1000,
-  });
+/**
+ * Hook to create a new book
+ * @param options Mutation options
+ */
+export const useCreateBook = (options?: CreateMutationOptions<BookRequest, BookResponse>) => {
+  return useCreateMutation<BookRequest, BookResponse>(
+    (data) => BookApi.create(data),
+    [['books']],
+    options
+  );
 };
 
-export const useCreateBook = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (newBook: Partial<Book>) => BookApi.create(newBook),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
-  });
+/**
+ * Hook to update an existing book
+ * @param options Mutation options
+ */
+export const useUpdateBook = (options?: UpdateMutationOptions<BookRequest, BookResponse>) => {
+  return useUpdateMutation<BookRequest, BookResponse>(
+    ({ id, data }) => BookApi.update(id, data),
+    (variables) => [['books', variables.id], ['books']],
+    options
+  );
 };
 
-export const useUpdateBook = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Book> }) => BookApi.update(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['books', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
-  });
-};
-
-export const useDeleteBook = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => BookApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
-  });
+/**
+ * Hook to delete a book
+ * @param options Mutation options
+ */
+export const useDeleteBook = (options?: DeleteMutationOptions) => {
+  return useDeleteMutation((id) => BookApi.delete(id), [['books']], options);
 };

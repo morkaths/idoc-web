@@ -1,112 +1,126 @@
-"use client";
+'use client';
 
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@repo/ui/components/button";
+import { useState } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocale } from '@/hooks/ui/useLocale';
+import { Button } from '@repo/ui/components/button';
 import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@repo/ui/components/dialog";
-import { Textarea } from "@repo/ui/components/textarea";
-import { Form, FormControl, FormField, FormLabel, FormMessage } from "@repo/ui/components/form";
-import { BorrowRangePicker } from "./borrows-ranger-picker";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@repo/ui/components/dialog';
+import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/components/form';
+import { Textarea } from '@repo/ui/components/textarea';
+import { BorrowRangePicker } from './borrows-ranger-picker';
 
 const BorrowFormSchema = z.object({
-    expireTime: z.date()
-        .refine(
-            (val) => {
-                const now = new Date();
-                now.setHours(0, 0, 0, 0);
-                return val > now;
-            },
-            { message: "Expire date must be after today" }
-        ),
-    note: z.string().optional(),
+  dueDate: z.date().refine(
+    (val) => {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      return val > now;
+    },
+    { message: 'Due date must be after today' }
+  ),
+  notes: z.string().optional(),
 });
 type BorrowForm = z.infer<typeof BorrowFormSchema>;
 
 type BorrowBookDialogProps = {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onSubmit: (data: BorrowForm) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (data: BorrowForm) => void;
 };
 
 export function BorrowBookDialog({ open, onOpenChange, onSubmit }: BorrowBookDialogProps) {
-    const form = useForm<BorrowForm>({
-        resolver: zodResolver(BorrowFormSchema),
-        defaultValues: {
-            expireTime: undefined,
-            note: "",
-        },
-    });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t, keys } = useLocale('book');
+  const form = useForm<BorrowForm>({
+    resolver: zodResolver(BorrowFormSchema),
+    defaultValues: {
+      dueDate: undefined,
+      notes: '',
+    },
+  });
 
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle>Borrow Book</DialogTitle>
-                    <DialogDescription>
-                        Enter the borrow book information below.
-                    </DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit((data) => {
-                            onSubmit(data);
-                            console.log(data);
-                            onOpenChange(false);
-                            form.reset();
-                        })}
-                    >
-                        <div className="grid gap-4 mb-4">
-                            <FormField
-                                control={form.control}
-                                name="expireTime"
-                                render={({ field }) => (
-                                    <div className="grid gap-3">
-                                        <FormLabel>Expire Time</FormLabel>
-                                        <FormControl>
-                                            <BorrowRangePicker
-                                                borrowTime={new Date()}
-                                                expireTime={field.value ? new Date(field.value) : undefined}
-                                                onChange={field.onChange}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </div>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="note"
-                                render={({ field }) => (
-                                    <div className="grid gap-3">
-                                        <FormLabel>Note</FormLabel>
-                                        <FormControl>
-                                            <Textarea {...field} rows={2} placeholder="Note (optional)" />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </div>
-                                )}
-                            />
-                        </div>
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button variant="outline" type="button">
-                                    Cancel
-                                </Button>
-                            </DialogClose>
-                            <Button type="submit">Confirm</Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
-    );
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='sm:max-w-md'>
+        <DialogHeader>
+          <DialogTitle>{t(keys.borrow.title)}</DialogTitle>
+          <DialogDescription>{t(keys.borrow.description)}</DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(async (data) => {
+              if (isSubmitting) return;
+              setIsSubmitting(true);
+              try {
+                await onSubmit(data);
+                onOpenChange(false);
+                form.reset();
+              } finally {
+                setIsSubmitting(false);
+              }
+            })}
+          >
+            <fieldset disabled={isSubmitting} className='space-y-4'>
+              <div className='mb-4 grid gap-4'>
+                <FormField
+                  control={form.control}
+                  name='dueDate'
+                  render={({ field }) => (
+                    <div className='grid gap-3'>
+                      <FormLabel>{t(keys.borrow.dueDate.label)}</FormLabel>
+                      <FormControl>
+                        <BorrowRangePicker
+                          borrowTime={new Date()}
+                          expireTime={field.value ? new Date(field.value) : undefined}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='notes'
+                  render={({ field }) => (
+                    <div className='grid gap-3'>
+                      <FormLabel>{t(keys.borrow.notes.label)}</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          rows={2}
+                          placeholder={t(keys.borrow.notes.placeholder)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                  )}
+                />
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant='outline' type='button'>
+                    {t(keys.borrow.actions.cancel)}
+                  </Button>
+                </DialogClose>
+                <Button type='submit' disabled={isSubmitting}>
+                  {isSubmitting ? t(keys.borrow.states.loading) : t(keys.borrow.actions.confirm)}
+                </Button>
+              </DialogFooter>
+            </fieldset>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
 }

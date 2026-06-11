@@ -1,128 +1,186 @@
-import NextAuth, { NextAuthConfig, CredentialsSignin } from "next-auth";
-import Google from "next-auth/providers/google";
-import Credentials from "next-auth/providers/credentials";
-import env from "@/config/env";
-import { AuthApi } from "@/apis/auth.api";
+import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
+import env from '@/config/env';
+import { AuthProvider, type AuthResponse } from '@repo/types';
+import NextAuth, { type NextAuthConfig, CredentialsSignin, type User } from 'next-auth';
+import { AuthApi } from '@/apis/auth.api';
+
+/**
+ * Helper to set auth cookies in the browser.
+ */
+const setAuthCookies = async (data: AuthResponse) => {
+  try {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax' as const,
+      path: '/',
+    };
+
+    cookieStore.set(env.cookie.accessToken, data.token.accessToken, {
+      ...cookieOptions,
+      maxAge: data.token.accessTokenExpiresIn,
+    });
+  } catch (_error) {
+    // Silent catch
+  }
+};
 
 export const authConfig = {
   providers: [
     Credentials({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
-          const result = await AuthApi.login({
-            identifier: credentials.email as string,
+          const response = await AuthApi.login({
+            email: credentials.email as string,
             password: credentials.password as string,
           });
 
-          if (result && result.user && result.token) {
+          // eslint-disable-next-line no-console
+          console.log('[AUTH DEBUG] login response:', JSON.stringify(response, null, 2));
+
+          if (response?.success && response.data) {
+            const { data } = response;
+            await setAuthCookies(data);
+
             return {
-              ...result.user,
-              accessToken: result.token.accessToken,
-              refreshToken: result.token.refreshToken,
-              accessTokenExpiresIn: result.token.accessTokenExpiresIn,
-            } as any;
+              ...data.user,
+              id: data.user.id,
+              accessToken: data.token.accessToken,
+              accessTokenExpiresIn: data.token.accessTokenExpiresIn,
+              emailVerified: null,
+            };
           }
+
+          // eslint-disable-next-line no-console
+          console.error('[AUTH DEBUG] login failed, response data:', response);
           throw new CredentialsSignin();
-        } catch (error) {
+        } catch (_error: any) {
+          if (_error instanceof CredentialsSignin) {
+            throw _error;
+          }
+          // eslint-disable-next-line no-console
+          console.error(
+            '[AUTH ERROR DEBUG] real exception:',
+            _error?.response?.data || _error?.message || _error
+          );
           throw new CredentialsSignin();
         }
       },
     }),
     Google({
-      clientId: env.auth.google.clientId,
-      clientSecret: env.auth.google.clientSecret,
+      clientId: env.auth.oauth.google.clientId,
+      clientSecret: env.auth.oauth.google.clientSecret,
     }),
   ],
   callbacks: {
     async session({ session, token }) {
-      if (token) {
-        session.user = { ...session.user, ...token.user } as any;
-        session.accessToken = token.accessToken;
-        session.refreshToken = token.refreshToken;
-        session.error = token.error;
+      if (token && session.user) {
+        const tokenUser = token.user;
+
+        session.user = {
+          ...session.user,
+          ...(tokenUser || {}),
+          id: (token.sub as string) || tokenUser?.id || session.user.id,
+          image: tokenUser?.avatar || session.user.image,
+          emailVerified: null,
+        } as User;
+
+        session.accessToken = token.accessToken as string;
+        session.error = token.error as string;
       }
       return session;
     },
+
     async jwt({ token, user, account }) {
+      // Initial sign in
       if (user) {
-        if (account?.provider === "google") {
+        const provider = account?.provider?.toUpperCase();
+
+        // Handle OAuth (Google)
+        if (provider === AuthProvider.GOOGLE) {
+          const idToken = account?.id_token;
+          if (!idToken) return null;
+
           try {
-            const backendResponse = await AuthApi.loginGoogle(account.id_token!);
-            if (backendResponse && backendResponse.token) {
+            const response = await AuthApi.loginGoogle({
+              token: idToken,
+              provider: AuthProvider.GOOGLE,
+            });
+
+            if (response?.success && response.data) {
+              const { data } = response;
+              await setAuthCookies(data);
+
               return {
                 ...token,
-                user: backendResponse.user as any,
-                accessToken: backendResponse.token.accessToken,
-                refreshToken: backendResponse.token.refreshToken,
-                expiresAt: Date.now() + (backendResponse.token.accessTokenExpiresIn * 1000),
-                error: undefined,
-              };
-            } else {
-              return {
-                ...token,
-                user: token.user ?? null,
-                accessToken: token.accessToken ?? null,
-                refreshToken: token.refreshToken ?? null,
-                expiresAt: token.expiresAt ?? 0,
-                error: "InvalidCredentials" as const,
+                sub: data.user.id,
+                user: {
+                  ...data.user,
+                  emailVerified: null,
+                },
+                accessToken: data.token.accessToken,
+                expiresAt: Date.now() + data.token.accessTokenExpiresIn * 1000,
               };
             }
-          } catch (error) {
-            console.error("Google verify failed", error);
-            return {
-              ...token,
-              error: "InvalidCredentials" as const,
-            };
+          } catch (_error) {
+            return null;
           }
+          return null;
         }
+
+        // Handle Credentials
         return {
           ...token,
-          user: user as any,
-          accessToken: (user as any).accessToken,
-          refreshToken: (user as any).refreshToken,
-          expiresAt: Date.now() + ((user as any).accessTokenExpiresIn * 1000),
-          error: undefined,
+          sub: user.id || token.sub,
+          user: user,
+          accessToken: user.accessToken,
+          expiresAt:
+            Date.now() + (user.accessTokenExpiresIn ? user.accessTokenExpiresIn * 1000 : 0),
         };
       }
 
-      // Return previous token if the access token has not expired yet
-      if (Date.now() < token.expiresAt) {
+      // Return previous token if the access token has not expired yet (with 1 minute buffer)
+      if (token.expiresAt && Date.now() < (token.expiresAt as number) - 60000) {
         return token;
       }
 
-      // Access token has expired, try to update it
+      // Access token has expired, try to refresh it
       try {
-        const result = await AuthApi.refresh(token.refreshToken);
-        if (!result || !result.token) {
-          return {
-            ...token,
-            error: "InvalidCredentials" as const,
-          };
+        const result = await AuthApi.refresh();
+        if (!result?.success || !result.data) {
+          return { ...token, error: 'RefreshAccessTokenError', accessToken: undefined };
         }
+
+        const { data } = result;
+        await setAuthCookies(data);
+
         return {
           ...token,
-          accessToken: result.token.accessToken,
-          refreshToken: result.token.refreshToken,
-          expiresAt: Date.now() + (result.token.accessTokenExpiresIn * 1000),
+          accessToken: data.token.accessToken,
+          expiresAt: Date.now() + data.token.accessTokenExpiresIn * 1000,
           error: undefined,
         };
-      } catch (error) {
-        console.error("Error refreshing access token", error);
-        return {
-          ...token,
-          error: "InvalidCredentials" as const,
-        };
+      } catch (_error) {
+        return { ...token, error: 'RefreshAccessTokenError' };
       }
-    }
+    },
   },
-  session: { strategy: "jwt" },
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
+  },
   secret: env.auth.secret,
 } satisfies NextAuthConfig;
 

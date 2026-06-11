@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type Row } from '@tanstack/react-table';
-import { AuthorSchema } from '@/types/schema';
+import type { AuthorResponse } from '@/types';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -17,7 +17,7 @@ type AuthorsTableRowActionsProps<TData> = {
 };
 
 export function AuthorsTableRowActions<TData>({ row }: AuthorsTableRowActionsProps<TData>) {
-  const author = AuthorSchema.parse(row.original);
+  const author = row.original as AuthorResponse;
   const ctx = useAuthorsContext();
   if (!ctx) throw new Error('AuthorsTableRowActions must be used inside AuthorsProvider');
   const { setOpen, setCurrentRow } = ctx;

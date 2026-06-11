@@ -1,14 +1,19 @@
-import type { Metadata } from "next";
-import { BookDetailView } from "./_components/view";
-import { BookApi } from "@/apis";
+import { BookApi } from '@/apis';
+import type { Metadata } from 'next';
+import { BookDetailView } from './_components/view';
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
   try {
     const { id } = await params;
-    const book = await BookApi.findById(id);
+    const response = await BookApi.findById(id);
+    const book = response.data;
     if (!book) {
       return {
-        title: "Sách không tồn tại",
+        title: 'Book not found',
       };
     }
     return {
@@ -18,9 +23,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         images: book.coverUrl ? [book.coverUrl] : [],
       },
     };
-  } catch (error) {
+  } catch {
     return {
-      title: "Chi tiết sách",
+      title: 'Error',
     };
   }
 }

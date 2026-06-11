@@ -1,145 +1,155 @@
+import { useRouter } from 'next/navigation';
+import { useState, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
+import paths from '@/config/path';
+import { isValidCover } from '@/lib/book-utils';
+import { type BookResponse } from '@/types';
 import { Icon } from '@iconify/react';
-import { Book } from "@/types";
-import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { useCreateBookmark, useDeleteBookmark } from "@/hooks/data/useBookmark";
-import { BookmarkDialog } from './bookmark-dialog';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useDeleteBookmark } from '@/hooks/data/useBookmark';
+import { useLocale } from '@/hooks/ui/useLocale';
+import BookCover3d from '@repo/ui/components/book-cover-3d';
+import { useBookmarkContext } from './bookmark-provider';
 
 type BookGridItemProps = {
-  book: Book;
+  book: BookResponse;
   onClick?: () => void;
 };
 
-export function BookGridItem({
-  book,
-  onClick,
-}: BookGridItemProps) {
-  const [imageError, setImageError] = useState(false);
-  const [bookmarkId, setBookmarkId] = useState(book.bookmarkId);
+export function BookGridItem({ book, onClick }: BookGridItemProps) {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const { t, keys } = useLocale('books');
+  const [localBookmarkId, setLocalBookmarkId] = useState<string | undefined | null>(null);
+  const bookmarkId = localBookmarkId !== null ? localBookmarkId : book.bookmarkId;
   const isBookmarked = !!bookmarkId;
+  const coverSrc = isValidCover(book.coverUrl) ? book.coverUrl : undefined;
 
-  const [showBookmarkDialog, setShowBookmarkDialog] = useState(false);
+  const { setOpen, setCurrentBook } = useBookmarkContext();
+  const { mutate: deleteBookmark, isPending: isDeleting } = useDeleteBookmark();
 
-  const { mutate: createBookmark } = useCreateBookmark();
-  const { mutate: deleteBookmark } = useDeleteBookmark();
+  const isLoading = isDeleting;
 
-  // Sync state with props
-  useEffect(() => {
-    setBookmarkId(book.bookmarkId);
-  }, [book.bookmarkId]);
-
-  const handleToggleBookmark = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isBookmarked) {
-      if (bookmarkId) {
-        deleteBookmark(bookmarkId, {
-          onSuccess: () => {
-            setBookmarkId(undefined);
-          },
-          onError: (error) => {
-            console.error("Failed to unbookmark:", error);
-          }
-        });
-      } else {
-        console.warn("Cannot unbookmark: Missing bookmark ID");
-      }
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
     } else {
-      setShowBookmarkDialog(true);
+      router.push(paths.book(book.id));
     }
   };
 
-  const handleSelectCollection = (collectionId?: string) => {
-    createBookmark(
-      {
-        itemId: book.id,
-        collectionId: collectionId,
-      },
-      {
-        onSuccess: (data: any) => {
-          // Assuming data is the created bookmark object
-          if (data && data.id) {
-            setBookmarkId(data.id);
-          }
-          setShowBookmarkDialog(false);
-        },
-        onError: (error) => {
-          console.error("Failed to bookmark:", error);
-        }
+  const handleToggleBookmark = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isLoading) return;
+
+    if (isBookmarked) {
+      const activeBookmarkId = book.bookmarkId || bookmarkId;
+      if (activeBookmarkId) {
+        deleteBookmark(String(activeBookmarkId), {
+          onSuccess: () => {
+            setLocalBookmarkId(undefined);
+            toast.success(t(keys.view.bookmark.removed));
+          },
+          onError: () => {
+            toast.error(t(keys.view.bookmark.error));
+          },
+        });
       }
-    );
+    } else {
+      if (!session?.user) {
+        router.push(`/sign-in?redirect=${encodeURIComponent(window.location.pathname)}`);
+        return;
+      }
+      setCurrentBook(book);
+      setOpen(true);
+    }
   };
+
+  const authorNames = useMemo(() => {
+    return book.authors?.map((a) => a.name).join(', ');
+  }, [book.authors]);
 
   return (
     <>
       <div
-        onClick={onClick}
-        className="group relative flex flex-col w-full max-w-[240px] bg-white dark:bg-zinc-900 rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-zinc-800 h-full"
-        role="button"
+        onClick={handleClick}
+        className={`group relative flex h-full w-[180px] shrink-0 cursor-pointer flex-col rounded-md border border-gray-200/80 bg-zinc-50/90 pb-1 transition-colors duration-200 hover:border-gray-300 dark:border-zinc-800 dark:bg-zinc-900/80 dark:hover:border-zinc-700`}
+        role='button'
         tabIndex={0}
-        onKeyDown={(e) => { if (e.key === 'Enter') onClick?.(); }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') handleClick();
+        }}
       >
-        {/* Top Background Pattern */}
-        <div className="h-46 w-full bg-primary/10 dark:bg-primary/10" />
+        {/* Top Background Pattern - Wrapped in container to handle overflow-hidden locally */}
+        <div
+          className={`pointer-events-none absolute top-0 right-0 left-0 h-[40%] overflow-hidden rounded-md`}
+        >
+          <div className='bg-primary/10 dark:bg-primary/20 h-full w-full' />
+        </div>
+        <div className={`invisible h-20 w-full`} aria-hidden='true' />
 
-        {/* Book Cover Container */}
-        <div className="relative px-4 -mt-36 w-full flex justify-center z-10 w-full">
-          <div className="relative w-36 aspect-[3/4] shadow-[0_8px_16px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_16px_rgb(0,0,0,0.3)] rounded-sm overflow-hidden transition-transform duration-300 group-hover:-translate-y-1 bg-white dark:bg-zinc-800">
-            {!imageError && book.coverUrl ? (
-              <Image
-                src={book.coverUrl}
-                alt={book.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, 200px"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center p-3 text-center bg-muted/20 dark:bg-zinc-800/50">
-                <span className="font-medium text-xs sm:text-sm line-clamp-4 leading-tight opacity-60 break-words w-full px-2">
-                  {book.title}
-                </span>
-              </div>
-            )}
-          </div>
+        <div
+          className={`relative z-10 -mt-14 flex w-full justify-center px-2 transition-transform duration-500 sm:px-3`}
+        >
+          <BookCover3d
+            src={coverSrc}
+            title={book.title}
+            width={115}
+            wrapperClassName='p-1 sm:p-1.5'
+            className='p-1 sm:p-1.5'
+          />
         </div>
 
         {/* Content */}
-        <div className="p-3 pt-3 flex flex-col flex-grow">
-          <span className="text-xs text-muted-foreground mb-1 font-medium tracking-wide block text-left">
+        <div className={`flex flex-grow flex-col !p-2.5 !pt-0.5 sm:!p-3 sm:!pt-0.5`}>
+          <span className='text-muted-foreground mb-0.5 block text-left text-[10px] font-medium tracking-wide sm:text-xs'>
             Ebook
           </span>
 
-          <h3 className="font-bold text-foreground text-base leading-snug line-clamp-2 mb-1 text-left h-[44px]" title={book.title}>
+          <h3
+            className='text-foreground line-clamp-2 h-[35px] text-left text-sm leading-snug font-bold sm:h-[40px] sm:text-base'
+            title={book.title}
+          >
             {book.title}
           </h3>
 
-          <div className="text-sm text-muted-foreground mb-2 line-clamp-1 text-left" title={book.authors?.map(a => a.name).join(", ")}>
-            {book.authors?.length ? (
-              book.authors.map((a, i) => (
-                <span key={i}>
-                  <span className="underline decoration-gray-300 underline-offset-2 hover:text-primary hover:decoration-primary transition-colors">
-                    {a.name}
+          <div
+            className='text-muted-foreground mt-1 line-clamp-1 text-left text-xs sm:text-sm'
+            title={authorNames}
+          >
+            {book.authors?.length
+              ? book.authors.map((a, i) => (
+                  <span key={i}>
+                    <span className='hover:text-primary hover:decoration-primary underline decoration-gray-300 underline-offset-2 transition-colors'>
+                      {a.name}
+                    </span>
+                    {i < (book.authors?.length || 0) - 1 && ', '}
                   </span>
-                  {i < (book.authors?.length || 0) - 1 && ", "}
-                </span>
-              ))
-            ) : (
-              "Unknown Author"
-            )}
+                ))
+              : t(keys.view.author)}
           </div>
 
-          <div className="mt-auto flex items-center justify-between">
-            <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-0.5 text-amber-500">
+          <div className={`mt-auto flex items-center justify-between`}>
+            <div className='flex flex-col gap-0.5'>
+              <div className='flex items-center gap-1 text-amber-500 sm:hidden'>
+                <Icon icon='mdi:star' width={14} height={14} />
+                <span className='text-foreground text-xs font-semibold'>
+                  {book.rating ? book.rating.toFixed(1) : '0'}
+                </span>
+                <span className='text-muted-foreground text-xs'>({book.totalReviews || 0})</span>
+              </div>
+
+              <div className={`hidden items-center gap-0.5 text-amber-500 sm:flex`}>
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Icon
                     key={i}
-                    icon={i < Math.round(book.rating || 0) ? "mdi:star" : "mdi:star-outline"}
+                    icon={i < Math.round(book.rating || 0) ? 'mdi:star' : 'mdi:star-outline'}
                     width={14}
                     height={14}
                   />
                 ))}
-                <span className="text-xs text-muted-foreground ml-1">
+                <span className='text-muted-foreground ml-1 text-xs'>
                   ({book.totalReviews || 0})
                 </span>
               </div>
@@ -147,26 +157,26 @@ export function BookGridItem({
 
             <button
               onClick={handleToggleBookmark}
-              className={`transition-colors p-1 ${isBookmarked
-                ? "text-primary hover:text-primary/80"
-                : "text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-zinc-200"
-                }`}
+              disabled={isLoading}
+              className={`p-1 transition-colors ${
+                isBookmarked
+                  ? 'text-primary hover:text-primary/80'
+                  : 'text-gray-400 hover:text-gray-900 dark:text-gray-500 dark:hover:text-zinc-200'
+              } ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
             >
-              <Icon
-                icon={isBookmarked ? "mdi:bookmark" : "mdi:bookmark-outline"}
-                width={20}
-                height={20}
-              />
+              {isLoading ? (
+                <Loader2 className={`text-primary h-5 w-5 animate-spin`} />
+              ) : (
+                <Icon
+                  icon={isBookmarked ? 'mdi:bookmark' : 'mdi:bookmark-outline'}
+                  width={20}
+                  height={20}
+                />
+              )}
             </button>
           </div>
         </div>
       </div>
-
-      <BookmarkDialog
-        open={showBookmarkDialog}
-        onOpenChange={setShowBookmarkDialog}
-        onSelectCollection={handleSelectCollection}
-      />
     </>
   );
 }

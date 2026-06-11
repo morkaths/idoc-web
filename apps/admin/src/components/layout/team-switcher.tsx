@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ChevronsUpDown, Plus } from 'lucide-react';
+import { useDirection } from '@/context/direction-provider';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +27,7 @@ type TeamSwitcherProps = {
 
 export function TeamSwitcher({ teams }: TeamSwitcherProps) {
   const { isMobile } = useSidebar();
+  const { dir } = useDirection();
   const [activeTeam, setActiveTeam] = React.useState(teams[0]);
 
   return (
@@ -37,8 +39,8 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
               size='lg'
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
             >
-              <div className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'>
-                <activeTeam.logo className='size-4' />
+              <div className='flex aspect-square size-10 items-center justify-center rounded-md'>
+                <activeTeam.logo className='size-6' />
               </div>
               <div className='grid flex-1 text-start text-sm leading-tight'>
                 <span className='truncate font-semibold'>{activeTeam.name}</span>
@@ -50,7 +52,7 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
           <DropdownMenuContent
             className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
             align='start'
-            side={isMobile ? 'bottom' : 'right'}
+            side={isMobile ? 'bottom' : dir === 'rtl' ? 'left' : 'right'}
             sideOffset={4}
           >
             <DropdownMenuLabel className='text-muted-foreground text-xs'>Teams</DropdownMenuLabel>

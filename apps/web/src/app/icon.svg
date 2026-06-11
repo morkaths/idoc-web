@@ -1,0 +1,39 @@
+<svg viewBox='0 0 64 64' fill='none' xmlns='http://www.w3.org/2000/svg'>
+  <style>
+    .icon-color { stroke: #000000; }
+    .icon-fill { fill: #000000; }
+    @media (prefers-color-scheme: dark) {
+      .icon-color { stroke: #ffffff; }
+      .icon-fill { fill: #ffffff; }
+    }
+  </style>
+  <defs>
+    <mask id='logo-mask'>
+      <rect width='64' height='64' fill='white' />
+      <rect x='22' y='14' width='36' height='36' rx='6' fill='black' />
+    </mask>
+  </defs>
+  <rect
+    class='icon-color'
+    x='14'
+    y='22'
+    width='36'
+    height='36'
+    rx='6'
+    stroke-opacity='0.4'
+    stroke-width='3'
+    mask='url(#logo-mask)'
+  />
+  <rect
+    class='icon-color'
+    x='22'
+    y='14'
+    width='36'
+    height='36'
+    rx='6'
+    fill='none'
+    stroke-width='4'
+  />
+  <circle class='icon-fill' cx='32' cy='25' r='2.5' />
+  <rect class='icon-fill' x='30.5' y='31' width='3' height='11' rx='1.5' />
+</svg>

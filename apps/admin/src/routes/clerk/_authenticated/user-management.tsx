@@ -1,28 +1,33 @@
 import { useEffect, useState } from 'react';
 import { createFileRoute, Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { SignedIn, useAuth, UserButton } from '@clerk/clerk-react';
-import { ExternalLink, Loader2 } from 'lucide-react';
+import { ExternalLink, Loader2, UsersRound } from 'lucide-react';
 import { ClerkLogo } from '@/assets/clerk-logo';
+import { useUsers } from '@/hooks/data/useUser';
+import { Badge } from '@repo/ui/components/badge';
 import { Button } from '@repo/ui/components/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@repo/ui/components/table';
 import { Header } from '@/components/layout/header';
 import { Main } from '@/components/layout/main';
-import { LearnMore } from '@/components/learn-more';
 import { Search } from '@/components/layout/search';
 import { ThemeSwitch } from '@/components/layout/theme-switch';
+import { LearnMore } from '@/components/learn-more';
 import { UsersDialogs } from '@/features/users/components/users-dialogs';
 import { UsersPrimaryButtons } from '@/features/users/components/users-primary-buttons';
-import { UsersProvider } from '@/features/users/components/users-provider';
-import { UsersTable } from '@/features/users/components/users-table';
-import { users } from '@/features/users/data/users';
+import { UsersProvider, useUsersContext } from '@/features/users/components/users-provider';
 
 export const Route = createFileRoute('/clerk/_authenticated/user-management')({
   component: UserManagement,
 });
 
 function UserManagement() {
-  const search = Route.useSearch();
-  const navigate = Route.useNavigate();
-
   const [opened, setOpened] = useState(true);
   const { isLoaded, isSignedIn } = useAuth();
 
@@ -82,7 +87,7 @@ function UserManagement() {
               <UsersPrimaryButtons />
             </div>
             <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-              <UsersTable data={users} navigate={navigate} search={search} />
+              <UserListTable />
             </div>
           </Main>
 
@@ -169,6 +174,92 @@ function Unauthorized() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function UserListTable() {
+  const { data: usersData, isLoading } = useUsers();
+  const { setOpen, setCurrentRow } = useUsersContext();
+  const users = usersData?.data ?? [];
+
+  if (isLoading) {
+    return (
+      <div className='flex h-96 items-center justify-center'>
+        <Loader2 className='text-primary size-8 animate-spin' />
+      </div>
+    );
+  }
+
+  return (
+    <div className='rounded-md border'>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Username</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className='w-[100px]'>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {users.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={5} className='py-16 text-center'>
+                <div className='flex flex-col items-center gap-3'>
+                  <div className='bg-muted rounded-full p-4'>
+                    <UsersRound className='text-muted-foreground h-10 w-10' />
+                  </div>
+                  <div className='space-y-1'>
+                    <p className='text-foreground font-medium'>No users found</p>
+                    <p className='text-muted-foreground text-sm'>
+                      There are no users matching your criteria.
+                    </p>
+                  </div>
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : (
+            users.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell className='font-medium'>{user.username}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell className='capitalize'>{user.role}</TableCell>
+                <TableCell>
+                  <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
+                    {user.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className='flex gap-2'>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={() => {
+                        setCurrentRow(user);
+                        setOpen('edit');
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant='destructive'
+                      size='sm'
+                      onClick={() => {
+                        setCurrentRow(user);
+                        setOpen('delete');
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
     </div>
   );
 }

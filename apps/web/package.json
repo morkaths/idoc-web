@@ -7,17 +7,27 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "check:lint": "eslint .",
+    "check:type": "tsc --noEmit",
+    "check:format": "prettier --check .",
+    "check": "npm run check:lint && npm run check:type && npm run check:format",
+    "format:write": "prettier --write .",
+    "format": "npm run format:write",
+    "clean": "rimraf .next",
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "prepare": "husky"
   },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.8.0",
     "@repo/tailwind-config": "*",
+    "@repo/types": "*",
     "@repo/ui": "*",
     "negotiator": "^1.0.0",
     "next": "16.0.8",
     "next-auth": "^5.0.0-beta.30",
     "react": "19.2.1",
-    "react-dom": "19.2.1"
+    "react-dom": "19.2.1",
+    "embla-carousel-autoplay": "^8.6.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "*",

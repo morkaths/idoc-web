@@ -1,129 +1,132 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@repo/ui/components/button";
+import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SortDirection } from '@repo/types';
+import { useLocale } from '@/hooks/ui/useLocale';
+import { Button } from '@repo/ui/components/button';
+import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/components/form';
 import {
-    Form,
-    FormField,
-    FormLabel,
-    FormControl,
-    FormMessage,
-} from "@repo/ui/components/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui/components/select";
-
-const SORT_FIELDS = [
-    { value: "title", label: "Title" },
-    { value: "createdAt", label: "Created At" },
-    { value: "updatedAt", label: "Updated At" },
-    { value: "publishedYear", label: "Published Year" },
-    { value: "price", label: "Price" },
-    { value: "pages", label: "Pages" },
-];
-
-const SortSchema = z.object({
-    sortBy: z.string().default("createdAt").optional(),
-    sortOrder: z.enum(["desc", "asc"]).default("desc").optional(),
-});
-
-type SortForm = z.infer<typeof SortSchema>;
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui/components/select';
+import {
+  BookSortField,
+  bookSortSchema,
+  DEFAULT_BOOK_SORT_FIELD,
+  DEFAULT_BOOK_SORT_ORDER,
+  type BookSortState,
+} from './book-query.utils';
 
 export interface BookSortProps {
-    sort?: Partial<SortForm>;
-    onSort: (params: SortForm) => void;
-    onReset: () => void;
+  sort: BookSortState;
+  onSort: (params: BookSortState) => void;
+  onReset: () => void;
 }
 
-export default function BookSort({
-    sort,
-    onSort,
-    onReset,
-}: BookSortProps) {
-    const form = useForm<SortForm>({
-        resolver: zodResolver(SortSchema),
-        defaultValues: {
-            sortBy: "createdAt",
-            sortOrder: "desc",
-            ...sort,
-        },
-    });
+export default function BookSort({ sort, onSort, onReset }: BookSortProps) {
+  const { t, keys } = useLocale('books');
 
-    return (
-        <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit((data) => {
-                    onSort(data);
-                })}
-                className="space-y-4"
-            >
-                {/* Sort by */}
-                <FormField
-                    control={form.control}
-                    name="sortBy"
-                    render={({ field }) => (
-                        <div className="grid gap-3">
-                            <FormLabel htmlFor="sortBy">Sort by</FormLabel>
-                            <FormControl>
-                                <Select
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {SORT_FIELDS.map((col) => (
-                                            <SelectItem key={col.value} value={col.value}>
-                                                {col.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </div>
-                    )}
-                />
-                {/* Sort order */}
-                <FormField
-                    control={form.control}
-                    name="sortOrder"
-                    render={({ field }) => (
-                        <div className="grid gap-3">
-                            <FormLabel htmlFor="sortOrder">Order</FormLabel>
-                            <FormControl>
-                                <Select
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="desc">Descending</SelectItem>
-                                        <SelectItem value="asc">Ascending</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </div>
-                    )}
-                />
-                {/* Reset & Submit */}
-                <div className="flex gap-2">
-                    <Button variant="outline" type="button" className="flex-1" onClick={() => { form.reset(); onReset(); }}>
-                        Reset
-                    </Button>
-                    <Button
-                        type="submit"
-                        className="flex-1"
-                        disabled={form.formState.isSubmitting}
-                    >
-                        Apply
-                    </Button>
-                </div>
-            </form>
-        </Form>
-    );
+  const form = useForm<BookSortState>({
+    resolver: zodResolver(bookSortSchema),
+    defaultValues: sort,
+  });
+
+  // Sync form with external props
+  useEffect(() => {
+    form.reset(sort);
+  }, [sort, form]);
+
+  const SORT_OPTIONS = useMemo(
+    () => [
+      { value: BookSortField.TITLE, label: t(keys.sidebar.sort.fields.title) },
+      { value: BookSortField.CREATED_AT, label: t(keys.sidebar.sort.fields.createdAt) },
+      { value: BookSortField.UPDATED_AT, label: t(keys.sidebar.sort.fields.updatedAt) },
+      { value: BookSortField.PUBLISHED_DATE, label: t(keys.sidebar.sort.fields.publishedDate) },
+      { value: BookSortField.RATING, label: t(keys.sidebar.sort.fields.rating) },
+      { value: BookSortField.TOTAL_REVIEWS, label: t(keys.sidebar.sort.fields.totalReviews) },
+    ],
+    [t, keys]
+  );
+
+  const handleReset = () => {
+    form.reset({
+      sortBy: DEFAULT_BOOK_SORT_FIELD,
+      sortOrder: DEFAULT_BOOK_SORT_ORDER,
+    });
+    onReset();
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSort)} className='space-y-4'>
+        {/* Sort by field */}
+        <FormField
+          control={form.control}
+          name='sortBy'
+          render={({ field }) => (
+            <div className='grid gap-3'>
+              <FormLabel>{t(keys.sidebar.sort.label)}</FormLabel>
+              <FormControl>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className='w-full'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORT_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </div>
+          )}
+        />
+
+        {/* Sort direction */}
+        <FormField
+          control={form.control}
+          name='sortOrder'
+          render={({ field }) => (
+            <div className='grid gap-3'>
+              <FormLabel>{t(keys.sidebar.sort.direction)}</FormLabel>
+              <FormControl>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className='w-full'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={SortDirection.DESC}>
+                      {t(keys.sidebar.sort.order.desc)}
+                    </SelectItem>
+                    <SelectItem value={SortDirection.ASC}>
+                      {t(keys.sidebar.sort.order.asc)}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </div>
+          )}
+        />
+
+        {/* Actions */}
+        <div className='flex gap-2'>
+          <Button variant='outline' type='button' className='flex-1' onClick={handleReset}>
+            {t(keys.sidebar.actions.reset)}
+          </Button>
+          <Button type='submit' className='flex-1' disabled={form.formState.isSubmitting}>
+            {t(keys.sidebar.actions.submit)}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
 }

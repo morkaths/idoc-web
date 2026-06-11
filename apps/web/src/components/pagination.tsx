@@ -1,3 +1,6 @@
+import { type Pagination as PaginationType } from '@/types';
+import { cn } from '@repo/ui/lib/utils';
+import { useLocale } from '@/hooks/ui/useLocale';
 import {
   Pagination as ShadcnPagination,
   PaginationContent,
@@ -6,85 +9,102 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@repo/ui/components/pagination";
-import { Pagination as PaginationType } from "@/types";
+} from '@repo/ui/components/pagination';
 
 type Props = {
   pagination: PaginationType;
   onPageChange: (page: number) => void;
+  className?: string;
 };
 
-export default function Pagination({ pagination, onPageChange }: Props) {
+export function Pagination({ pagination, onPageChange, className }: Props) {
+  const { t, keys } = useLocale('common');
   const { page, pages } = pagination;
+  if (pages <= 1) return null;
 
-  const pageNumbers: number[] = [];
-  for (let i = Math.max(1, page - 2); i <= Math.min(pages, page + 2); i++) {
-    pageNumbers.push(i);
-  }
-  const firstPageNumber = pageNumbers[0] ?? 1;
-  const lastPageNumber = pageNumbers[pageNumbers.length - 1] ?? pages;
+  const startPage = Math.max(1, page - 2);
+  const endPage = Math.min(pages, page + 2);
+  const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+
+  const renderLink = (p: number, label?: string | number, isActive = false) => (
+    <PaginationItem key={p}>
+      <PaginationLink
+        href='#'
+        isActive={isActive}
+        size='default'
+        className={cn('h-9 w-auto min-w-9 px-2', !isActive && 'border-transparent')}
+        onClick={(e) => {
+          e.preventDefault();
+          if (p !== page) onPageChange(p);
+        }}
+      >
+        {label ?? p}
+      </PaginationLink>
+    </PaginationItem>
+  );
+
+  const isFirst = page <= 1;
+  const isLast = page >= pages;
 
   return (
-    <ShadcnPagination>
+    <ShadcnPagination className={cn('mt-8', className)}>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            href="#"
-            onClick={e => {
+            href='#'
+            onClick={(e) => {
               e.preventDefault();
-              if (page > 1) onPageChange(page - 1);
+              if (!isFirst) onPageChange(page - 1);
             }}
-            aria-disabled={page <= 1}
-          />
+            className={cn(
+              isFirst && 'pointer-events-none cursor-not-allowed opacity-50 select-none'
+            )}
+            aria-disabled={isFirst}
+            tabIndex={isFirst ? -1 : 0}
+          >
+            {t(keys.actions.previous)}
+          </PaginationPrevious>
         </PaginationItem>
-        {pageNumbers.length > 0 && firstPageNumber > 1 && (
+
+        {startPage > 1 && (
           <>
-            <PaginationItem>
-              <PaginationLink href="#" onClick={e => { e.preventDefault(); onPageChange(1); }}>
-                1
-              </PaginationLink>
-            </PaginationItem>
-            {firstPageNumber > 2 && (
+            {renderLink(1)}
+            {startPage > 2 && (
               <PaginationItem>
                 <PaginationEllipsis />
               </PaginationItem>
             )}
           </>
         )}
-        {pageNumbers.map(p => (
-          <PaginationItem key={p}>
-            <PaginationLink
-              href="#"
-              isActive={p === page}
-              onClick={e => { e.preventDefault(); onPageChange(p); }}
-            >
-              {p}
-            </PaginationLink>
-          </PaginationItem>
-        ))}
-        {lastPageNumber < pages && (
+
+        {pageNumbers.map((p) => renderLink(p, p, p === page))}
+
+        {endPage < pages && (
           <>
-            {lastPageNumber < pages - 1 && (
+            {endPage < pages - 1 && (
               <PaginationItem>
                 <PaginationEllipsis />
               </PaginationItem>
             )}
-            <PaginationItem>
-              <PaginationLink href="#" onClick={e => { e.preventDefault(); onPageChange(pages); }}>
-                {pages}
-              </PaginationLink>
-            </PaginationItem>
+            {renderLink(pages)}
           </>
         )}
+
         <PaginationItem>
           <PaginationNext
-            href="#"
-            onClick={e => {
+            href='#'
+            onClick={(e) => {
               e.preventDefault();
-              if (page < pages) onPageChange(page + 1);
+              if (!isLast) onPageChange(page + 1);
             }}
-            aria-disabled={page >= pages}
-          />
+            className={cn(
+              isLast && 'pointer-events-none cursor-not-allowed opacity-50 select-none'
+            )}
+            aria-disabled={isLast}
+            tabIndex={isLast ? -1 : 0}
+          >
+            {t(keys.actions.next)}
+          </PaginationNext>
         </PaginationItem>
       </PaginationContent>
     </ShadcnPagination>

@@ -5,13 +5,14 @@ import {
   type VisibilityState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
   // getFacetedRowModel,
   // getFacetedUniqueValues,
-  // getFilteredRowModel,
-  // getPaginationRowModel,
-  // getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
@@ -58,18 +59,20 @@ export function TasksTable({ data }: DataTableProps) {
     search: route.useSearch(),
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: true, key: 'filter' },
+    globalFilter: { enabled: true, key: 'query' },
     columnFilters: [
       { columnId: 'status', searchKey: 'status', type: 'array' },
       { columnId: 'priority', searchKey: 'priority', type: 'array' },
     ],
   });
 
+  type PaginationShape = { page?: number; pageIndex?: number; pageSize: number };
+  const paginationTyped = pagination as PaginationShape;
   const page =
-    typeof (pagination as any).page === 'number'
-      ? (pagination as any).page
-      : typeof (pagination as any).pageIndex === 'number'
-        ? (pagination as any).pageIndex + 1
+    typeof paginationTyped.page === 'number'
+      ? paginationTyped.page
+      : typeof paginationTyped.pageIndex === 'number'
+        ? paginationTyped.pageIndex + 1
         : 1;
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -92,9 +95,9 @@ export function TasksTable({ data }: DataTableProps) {
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
-    // getPaginationRowModel: getPaginationRowModel(),
-    // getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     // getFacetedRowModel: getFacetedRowModel(),
     // getFacetedUniqueValues: getFacetedUniqueValues(),
     onPaginationChange,
@@ -173,8 +176,18 @@ export function TasksTable({ data }: DataTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  No results.
+                <TableCell colSpan={columns.length} className='py-16 text-center'>
+                  <div className='flex flex-col items-center gap-3'>
+                    <div className='bg-muted rounded-full p-4'>
+                      <ClipboardList className='text-muted-foreground h-10 w-10' />
+                    </div>
+                    <div className='space-y-1'>
+                      <p className='text-foreground font-medium'>No tasks found</p>
+                      <p className='text-muted-foreground text-sm'>
+                        Try adjusting your search or filter to find what you&apos;re looking for.
+                      </p>
+                    </div>
+                  </div>
                 </TableCell>
               </TableRow>
             )}

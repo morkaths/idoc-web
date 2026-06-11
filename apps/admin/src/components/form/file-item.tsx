@@ -1,93 +1,134 @@
-// UploadedFileItem.tsx
-import type { FileMeta } from "@/types/schema";
-import { FileArchive, FileCode, FilePlay, FileText, Sheet, Trash2 } from "lucide-react";
+'use client';
+
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { FileApi } from '@/apis/file.api';
+import type { FileResponse } from '@/types';
+import { FileArchive, FileCode, FilePlay, FileText, Sheet, Trash2, Loader2 } from 'lucide-react';
 
 export function FileItem({
-    file,
-    progress = 100,
-    onDelete,
+  file,
+  progress = 100,
+  onDelete,
 }: {
-    file: FileMeta | File;
-    progress?: number;
-    onDelete?: () => void;
+  file: FileResponse | File;
+  progress?: number;
+  onDelete?: () => void;
 }) {
-    const url = file instanceof File ? URL.createObjectURL(file) : file.url;
-    const size = file.size;
-    const name = file instanceof File ? file.name : file.filename;
-    const ext = name.split('.').pop()?.toLowerCase() || "";
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [localUrl, setLocalUrl] = useState<string | null>(null);
 
-    function getFileIcon(ext: string) {
-        switch (ext) {
-            case "xls":
-            case "xlsx":
-                return <Sheet className="w-4 h-4 text-green-500" />;
-            case "zip":
-            case "rar":
-                return <FileArchive className="w-4 h-4 text-yellow-500" />;
-            case "png":
-            case "jpg":
-            case "jpeg":
-            case "gif":
-            case "mp4":
-            case "mov":
-            case "avi":
-            case "mp3":
-            case "wav":
-                return <FilePlay className="w-4 h-4 text-indigo-500" />;
-            case "js":
-            case "ts":
-            case "json":
-            case "html":
-            case "css":
-                return <FileCode className="w-4 h-4 text-orange-500" />;
-            default:
-                return <FileText className="w-4 h-4 text-muted-foreground" />;
-        }
+  const isLocal = file instanceof File;
+  const name = isLocal ? file.name : file.fileName;
+  const size = file.size;
+  const contentType = isLocal ? file.type : file.contentType;
+
+  useEffect(() => {
+    if (isLocal) {
+      const url = URL.createObjectURL(file);
+      setLocalUrl(url);
+      return () => URL.revokeObjectURL(url);
     }
+  }, [file, isLocal]);
 
-    return (
-        <div className="border border-border rounded-lg p-2" key={name}>
-            <div className="flex items-center gap-3 px-2">
-                <div className="w-8 h-8 bg-muted rounded-sm flex items-center justify-center overflow-hidden">
-                    {getFileIcon(ext)}
-                </div>
-                <div className="flex-1 min-w-0 flex items-center">
-                    <a
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-semibold text-primary underline truncate max-w-60"
-                    >
-                        {name}
-                    </a>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">
-                        {Math.round(size / 1024)} KB
-                    </span>
-                </div>
-                {onDelete && (
-                    <button
-                        type="button"
-                        className="bg-transparent hover:text-red-500"
-                        onClick={onDelete}
-                        aria-label="Remove file"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </button>
-                )}
-            </div>
-            <div className="flex items-center gap-2 mt-2">
-                <div className="h-2 bg-muted rounded-full overflow-hidden flex-1">
-                    <div
-                        className="h-full bg-primary transition-all"
-                        style={{
-                            width: `${progress}%`,
-                        }}
-                    ></div>
-                </div>
-                <span className="text-xs text-muted-foreground whitespace-nowrap min-w-8 text-right">
-                    {Math.round(progress)}%
-                </span>
-            </div>
+  const handleAction = useCallback(async () => {
+    if (isDownloading) return;
+
+    try {
+      if (isLocal) {
+        if (localUrl) window.open(localUrl, '_blank');
+        return;
+      }
+
+      setIsDownloading(true);
+      const blob = await FileApi.download(file.id);
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = file.fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Download failed:', error);
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [file, isDownloading, isLocal, localUrl]);
+
+  const renderIcon = useMemo(() => {
+    if (isDownloading) return <Loader2 className='text-primary h-4 w-4 animate-spin' />;
+
+    const iconProps = { className: 'h-4 w-4' };
+    const mime = contentType.toLowerCase();
+
+    if (mime === 'application/pdf')
+      return <FileText {...iconProps} className={`${iconProps.className} text-red-500`} />;
+    if (mime.includes('sheet') || mime.includes('excel') || mime.includes('csv'))
+      return <Sheet {...iconProps} className={`${iconProps.className} text-green-500`} />;
+    if (mime.includes('zip') || mime.includes('rar') || mime.includes('compressed'))
+      return <FileArchive {...iconProps} className={`${iconProps.className} text-yellow-500`} />;
+    if (mime.startsWith('image/') || mime.startsWith('video/') || mime.startsWith('audio/'))
+      return <FilePlay {...iconProps} className={`${iconProps.className} text-indigo-500`} />;
+    if (
+      mime.includes('javascript') ||
+      mime.includes('typescript') ||
+      mime.includes('json') ||
+      mime.includes('html') ||
+      mime.includes('css')
+    )
+      return <FileCode {...iconProps} className={`${iconProps.className} text-orange-500`} />;
+
+    return <FileText {...iconProps} className={`${iconProps.className} text-muted-foreground`} />;
+  }, [contentType, isDownloading]);
+
+  return (
+    <div className='border-border rounded-lg border p-2' key={name}>
+      <div className='flex items-center gap-3 px-2'>
+        <div className='bg-muted flex h-8 w-8 items-center justify-center overflow-hidden rounded-sm'>
+          {renderIcon}
         </div>
-    );
+        <div className='flex min-w-0 flex-1 items-center gap-2'>
+          <span
+            role='button'
+            tabIndex={0}
+            onClick={handleAction}
+            onKeyDown={(e) => e.key === 'Enter' && handleAction()}
+            className={`text-primary max-w-60 cursor-pointer truncate text-sm font-semibold underline transition-opacity hover:opacity-80 ${
+              isDownloading ? 'pointer-events-none opacity-50' : ''
+            }`}
+          >
+            {name}
+          </span>
+          <span className='text-muted-foreground text-xs whitespace-nowrap'>
+            {Math.round(size / 1024)} KB
+          </span>
+        </div>
+        {onDelete && (
+          <button
+            type='button'
+            className='bg-transparent transition-colors hover:text-red-500 disabled:opacity-50'
+            onClick={onDelete}
+            disabled={isDownloading}
+            aria-label='Remove file'
+          >
+            <Trash2 className='h-4 w-4' />
+          </button>
+        )}
+      </div>
+      <div className='mt-2 flex items-center gap-2'>
+        <div className='bg-muted h-2 flex-1 overflow-hidden rounded-full'>
+          <div
+            className='bg-primary h-full transition-all duration-300'
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <span className='text-muted-foreground min-w-8 text-right text-xs whitespace-nowrap'>
+          {Math.round(progress)}%
+        </span>
+      </div>
+    </div>
+  );
 }

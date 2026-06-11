@@ -1,66 +1,87 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { AuthorApi } from '@/apis/author.api';
-import type { Author, FindParams, Pagination } from '@/types';
+import type { AuthorResponse, AuthorRequest, FindParams, PageParams } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+} from './factory';
 
-type AuthorResponse = { data: Author[]; pagination?: Pagination };
+/**
+ * Hook to fetch authors with pagination
+ * @param params Pagination parameters
+ * @param options Query options
+ */
+export const useAuthors = (params: PageParams = {}, options?: ListQueryOptions<AuthorResponse>) => {
+  return useListQuery<AuthorResponse>(['authors', params], () => AuthorApi.find(params), options);
+};
 
-export const useAuthors = (
+/**
+ * Hook to search authors
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchAuthors = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<AuthorResponse, Error, AuthorResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: ListQueryOptions<AuthorResponse>
 ) => {
-  return useQuery<AuthorResponse, Error, AuthorResponse, any[]>({
-    queryKey: ['authors', params],
-    queryFn: async () => await AuthorApi.find(params),
-    enabled: true,
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
+  return useListQuery<AuthorResponse>(
+    ['authors', 'search', params],
+    () => AuthorApi.search(params),
+    options
+  );
+};
+
+/**
+ * Hook to fetch a single author by ID
+ * @param id Author ID
+ * @param options Query options
+ */
+export const useAuthor = (id: string, options?: ItemQueryOptions<AuthorResponse>) => {
+  return useItemQuery<AuthorResponse>(['authors', id], () => AuthorApi.findById(id), {
+    enabled: !!id,
     ...options,
   });
 };
 
-export const useAuthor = (id: string) => {
-  return useQuery({
-    queryKey: ['authors', id],
-    queryFn: () => AuthorApi.findById(id),
-    enabled: !!id,
-    staleTime: 10 * 60 * 1000,
-  });
+/**
+ * Hook to create a new author
+ * @param options Mutation options
+ */
+export const useCreateAuthor = <TContext = unknown>(
+  options?: CreateMutationOptions<AuthorRequest, AuthorResponse, TContext>
+) => {
+  return useCreateMutation<AuthorRequest, AuthorResponse, TContext>(
+    (data) => AuthorApi.create(data),
+    [['authors']],
+    options
+  );
 };
 
-export const useCreateAuthor = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (newAuthor: Partial<Author>) => AuthorApi.create(newAuthor),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['authors'] });
-    },
-  });
+/**
+ * Hook to update an existing author
+ * @param options Mutation options
+ */
+export const useUpdateAuthor = <TContext = unknown>(
+  options?: UpdateMutationOptions<AuthorRequest, AuthorResponse, TContext>
+) => {
+  return useUpdateMutation<AuthorRequest, AuthorResponse, TContext>(
+    ({ id, data }) => AuthorApi.update(id, data),
+    (variables) => [['authors', variables.id], ['authors']],
+    options
+  );
 };
 
-export const useUpdateAuthor = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Author> }) => AuthorApi.update(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['authors', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['authors'] });
-    },
-  });
-};
-
-export const useDeleteAuthor = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => AuthorApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['authors'] });
-    },
-  });
+/**
+ * Hook to delete an author
+ * @param options Mutation options
+ */
+export const useDeleteAuthor = <TContext = unknown>(options?: DeleteMutationOptions<TContext>) => {
+  return useDeleteMutation<TContext>((id) => AuthorApi.delete(id), [['authors']], options);
 };

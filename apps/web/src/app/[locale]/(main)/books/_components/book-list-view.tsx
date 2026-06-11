@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { BookListItems } from "@/components/book/book-list-items";
-import Pagination from "@/components/pagination";
-import { Book, Pagination as PaginationType } from "@/types";
+import { type BookResponse, type Pagination as PaginationType } from '@/types';
+import { BookListItems } from '@/components/book/book-list-items';
+import { Pagination } from '@/components/pagination';
 
 export function BookListView({
   data = [],
@@ -11,14 +11,14 @@ export function BookListView({
   pagination,
   onPageChange,
 }: {
-  data?: Book[];
+  data?: BookResponse[];
   loading?: boolean;
   error?: string;
   pagination?: PaginationType;
   onPageChange?: (page: number) => void;
 }) {
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <BookListItems data={data} loading={loading} error={error} />
       {pagination && onPageChange && (
         <Pagination pagination={pagination} onPageChange={onPageChange} />

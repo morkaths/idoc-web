@@ -1,122 +1,107 @@
-import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 import { BookApi } from '@/apis';
-import type { Book, FindParams, Pagination } from '@/types';
-import { BookmarkApi } from '@/apis/bookmark.api';
-import { useSession } from "next-auth/react";
-import { useMemo } from 'react';
+import type { BookResponse, BookRequest, PageParams } from '@/types';
+import type { BookSearchParams } from '@/apis/book.api';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+} from './factory';
 
-type BookResponse = { data: Book[]; pagination?: Pagination };
-
-export const useBooks = (
-  params: FindParams = {},
-  options?: Omit<UseQueryOptions<BookResponse, Error, BookResponse, any[]>, 'queryKey' | 'queryFn'>
-) => {
-  const { data: session, status } = useSession();
-
-  // 1. Fetch books (independent of auth status)
-  const booksQuery = useQuery<BookResponse, Error, BookResponse, any[]>({
-    queryKey: ['books', params],
-    queryFn: () => BookApi.find(params),
-    enabled: true,
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000,
-    ...options
-  });
-
-  // 2. Fetch bookmark status (dependent on books and auth)
-  // Memoize and sort bookIds to ensure stable query key
-  const bookIds = useMemo(() => {
-    if (!booksQuery.data?.data) return [];
-    return booksQuery.data.data.map(b => b.id).sort();
-  }, [booksQuery.data]);
-
-  const userId = session?.user?.id;
-
-  const bookmarksQuery = useQuery({
-    queryKey: ['bookmarks', 'status', bookIds, userId],
-    queryFn: () => BookmarkApi.status(bookIds),
-    enabled: bookIds.length > 0 && status === 'authenticated' && !!userId,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
-
-  // 3. Merge data
-  const books = booksQuery.data?.data?.map(book => ({
-    ...book,
-    bookmarkId: bookmarksQuery.data?.[book.id] || undefined
-  })) || [];
-
-  return {
-    ...booksQuery,
-    data: {
-      data: books,
-      pagination: booksQuery.data?.pagination,
+export const useBooksByIds = (bookIds: string[], enabled = true) => {
+  const query = useItemQuery<BookResponse[]>(
+    ['books', 'bulk', bookIds],
+    () => BookApi.findByIds(bookIds),
+    {
+      enabled: enabled && bookIds.length > 0,
+      staleTime: 10 * 60 * 1000,
     }
-  };
-};
-
-export const useBook = (id: string) => {
-  const { data: session, status } = useSession();
-
-  // 1. Fetch book details
-  const bookQuery = useQuery({
-    queryKey: ['books', id],
-    queryFn: () => BookApi.findById(id),
-    enabled: !!id,
-    staleTime: 10 * 60 * 1000,
-  });
-
-  // 2. Fetch bookmark status
-  const userId = session?.user?.id;
-  const bookmarksQuery = useQuery({
-    queryKey: ['bookmarks', 'status', id, userId],
-    queryFn: () => BookmarkApi.status([id]),
-    enabled: !!id && status === 'authenticated' && !!bookQuery.data,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  // 3. Merge data
-  const book = bookQuery.data ? {
-    ...bookQuery.data,
-    bookmarkId: bookmarksQuery.data?.[id] || undefined
-  } : null;
+  );
 
   return {
-    ...bookQuery,
-    data: book,
+    data: query.data || [],
+    isLoading: query.isLoading,
+    isError: query.isError,
   };
 };
 
-export const useCreateBook = () => {
-  const queryClient = useQueryClient();
+/**
+ * Hook to fetch books with pagination
+ * @param params Pagination parameters
+ * @param options Query options
+ */
+export const useBooks = (params: PageParams = {}, options?: ListQueryOptions<BookResponse>) => {
+  return useListQuery<BookResponse>(['books', params], () => BookApi.find(params), options);
+};
 
-  return useMutation({
-    mutationFn: (newBook: Partial<Book>) => BookApi.create(newBook),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
+/**
+ * Hook to search books
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchBooks = (
+  params: BookSearchParams = {},
+  options?: ListQueryOptions<BookResponse>
+) => {
+  return useListQuery<BookResponse>(
+    ['books', 'search', params],
+    () => BookApi.search(params),
+    options
+  );
+};
+
+/**
+ * Hook to fetch a single book by ID
+ * @param id Book ID
+ * @param options Query options
+ */
+export const useBook = (
+  id: string | undefined,
+  options?: Parameters<typeof useItemQuery<BookResponse>>[2]
+) => {
+  return useItemQuery<BookResponse>(['books', id], () => BookApi.findById(id!), {
+    ...options,
+    enabled: !!id && options?.enabled !== false,
   });
 };
 
-export const useUpdateBook = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Book> }) => BookApi.update(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['books', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
-  });
+/**
+ * Hook to create a new book
+ * @param options Mutation options
+ */
+export const useCreateBook = <TContext = unknown>(
+  options?: CreateMutationOptions<BookRequest, BookResponse, TContext>
+) => {
+  return useCreateMutation<BookRequest, BookResponse, TContext>(
+    (data) => BookApi.create(data),
+    [['books']],
+    options
+  );
 };
 
-export const useDeleteBook = () => {
-  const queryClient = useQueryClient();
+/**
+ * Hook to update an existing book
+ * @param options Mutation options
+ */
+export const useUpdateBook = <TContext = unknown>(
+  options?: UpdateMutationOptions<BookRequest, BookResponse, TContext>
+) => {
+  return useUpdateMutation<BookRequest, BookResponse, TContext>(
+    ({ id, data }) => BookApi.update(id, data),
+    (variables) => [['books'], ['books', variables.id]],
+    options
+  );
+};
 
-  return useMutation({
-    mutationFn: (id: string) => BookApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['books'] });
-    },
-  });
+/**
+ * Hook to delete a book
+ * @param options Mutation options
+ */
+export const useDeleteBook = <TContext = unknown>(options?: DeleteMutationOptions<TContext>) => {
+  return useDeleteMutation<TContext>((id) => BookApi.delete(id), [['books']], options);
 };

@@ -1,15 +1,13 @@
-import { UsersMutateDialog } from './users-mutate-dialog';
-import { UsersInviteDialog } from './users-invite-dialog';
-import { useUsersContext } from './users-provider';
-import { useRoles } from '@/hooks/data/useRole';
+import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/handle-server-error';
 import { useCreateUser, useDeleteUser, useUpdateUser } from '@/hooks/data/useUser';
 import { ConfirmDialog } from '@/components/confirm-dialog';
-import { toast } from 'sonner';
+import { UsersInviteDialog } from './users-invite-dialog';
+import { UsersMutateDialog } from './users-mutate-dialog';
+import { useUsersContext } from './users-provider';
 
 export function UsersDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useUsersContext();
-  const { data } = useRoles();
-  const roles = data?.data ?? [];
   const createUserMut = useCreateUser();
   const updateUserMut = useUpdateUser();
   const deleteUserMut = useDeleteUser();
@@ -19,19 +17,15 @@ export function UsersDialogs() {
         key='user-add'
         open={open === 'add'}
         onOpenChange={(open) => setOpen(open ? 'add' : null)}
-        roles={roles}
-        onSubmit={async (data) => {
-          toast.promise(
-            createUserMut.mutateAsync(data),
-            {
-              loading: 'Creating user...',
-              success: () => {
-                setOpen(null);
-                return 'User created successfully!';
-              },
-              error: (err) => err?.message || 'Failed to create user',
-            }
-          );
+        onSubmit={(data) => {
+          return toast.promise(createUserMut.mutateAsync(data), {
+            loading: 'Creating user...',
+            success: (res) => {
+              setOpen(null);
+              return res.message;
+            },
+            error: (err) => getErrorMessage(err, 'Failed to create user'),
+          });
         }}
       />
 
@@ -39,7 +33,6 @@ export function UsersDialogs() {
         key='user-invite'
         open={open === 'invite'}
         onOpenChange={() => setOpen('invite')}
-        roles={roles}
         onSubmit={async () => {
           setOpen(null);
         }}
@@ -52,20 +45,16 @@ export function UsersDialogs() {
             open={open === 'edit'}
             onOpenChange={(open) => setOpen(open ? 'edit' : null)}
             initialData={currentRow}
-            roles={roles}
-            onSubmit={async (data) => {
-              toast.promise(
-                updateUserMut.mutateAsync({ id: currentRow.id!, data }),
-                {
-                  loading: 'Updating user...',
-                  success: () => {
-                    setOpen(null);
-                    setTimeout(() => setCurrentRow(null), 500);
-                    return 'User updated successfully!';
-                  },
-                  error: (err) => err?.message || 'Failed to update user',
-                }
-              );
+            onSubmit={(data, id) => {
+              return toast.promise(updateUserMut.mutateAsync({ id: id!, data }), {
+                loading: 'Updating user...',
+                success: (res) => {
+                  setOpen(null);
+                  setTimeout(() => setCurrentRow(null), 500);
+                  return res.message;
+                },
+                error: (err) => getErrorMessage(err, 'Failed to update user'),
+              });
             }}
           />
 
@@ -80,19 +69,16 @@ export function UsersDialogs() {
               }, 500);
             }}
             handleConfirm={async () => {
-              toast.promise(
-                deleteUserMut.mutateAsync(currentRow.id),
-                {
-                  loading: 'Deleting user...',
-                  success: () => {
-                    setOpen(null);
-                    setTimeout(() => setCurrentRow(null), 500);
-                    // showSubmittedData(currentRow, 'The following user has been deleted:');
-                    return 'User deleted successfully!';
-                  },
-                  error: (err) => err?.message || 'Failed to delete user',
-                }
-              );
+              toast.promise(deleteUserMut.mutateAsync(currentRow.id), {
+                loading: 'Deleting user...',
+                success: (res) => {
+                  setOpen(null);
+                  setTimeout(() => setCurrentRow(null), 500);
+                  // showSubmittedData(currentRow, 'The following user has been deleted:');
+                  return res.message;
+                },
+                error: (err) => getErrorMessage(err, 'Failed to delete user'),
+              });
             }}
             className='max-w-md'
             title={`Delete this user: ${currentRow.username || currentRow.email} ?`}

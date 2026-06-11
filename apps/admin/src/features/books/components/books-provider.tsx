@@ -1,6 +1,5 @@
-// ...existing code...
 import React, { useState } from 'react';
-import type { Book } from '@/types';
+import type { BookResponse } from '@/types';
 import useDialogState from '@/hooks/ui/useDialogState';
 
 type DialogType = 'create' | 'update' | 'delete' | 'import';
@@ -8,15 +7,15 @@ type DialogType = 'create' | 'update' | 'delete' | 'import';
 type BooksContextType = {
   open: DialogType | null;
   setOpen: (str: DialogType | null) => void;
-  currentRow: Book | null;
-  setCurrentRow: React.Dispatch<React.SetStateAction<Book | null>>;
+  currentRow: BookResponse | null;
+  setCurrentRow: React.Dispatch<React.SetStateAction<BookResponse | null>>;
 };
 
 const BooksContext = React.createContext<BooksContextType | null>(null);
 
 export function BooksProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useDialogState<DialogType>(null);
-  const [currentRow, setCurrentRow] = useState<Book | null>(null);
+  const [currentRow, setCurrentRow] = useState<BookResponse | null>(null);
 
   return (
     <BooksContext.Provider value={{ open, setOpen, currentRow, setCurrentRow }}>

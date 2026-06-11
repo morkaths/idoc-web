@@ -1,8 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  type UserRequest,
+  UserRequestSchema,
+  UserStatus,
+  RoleType,
+  type UserResponse,
+} from '@/types';
 import { Button } from '@repo/ui/components/button';
 import {
   Dialog,
@@ -13,13 +21,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@repo/ui/components/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormLabel,
-  FormMessage,
-} from '@repo/ui/components/form';
+import { Form, FormControl, FormField, FormLabel, FormMessage } from '@repo/ui/components/form';
+import { Input } from '@repo/ui/components/input';
 import {
   Select,
   SelectContent,
@@ -27,37 +30,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/select';
-import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
-import { UserStatus, type Role, type User } from '@/types';
-import { RolesCombobox } from './roles-combobox';
 
-const UserFormSchema = z
-  .object({
-    username: z.string().min(1, 'Username is required.'),
-    email: z.string().min(1, 'Email is required.').email('Invalid email address.'),
-    status: z.number().int(),
-    roles: z.array(z.string()).min(1, 'Select at least one role'),
-    password: z.string().optional().or(z.literal('')),
-    confirmPassword: z.string().optional().or(z.literal('')),
+const UserFormSchema = UserRequestSchema.extend({
+  password: z.string().optional().or(z.literal('')),
+  confirmPassword: z.string().optional().or(z.literal('')),
+})
+  .refine((data) => !data.password || data.password.length >= 6, {
+    message: 'Password must be at least 6 characters long.',
+    path: ['password'],
   })
-  .refine(
-    (data) => !data.password || data.password.length >= 6,
-    { message: 'Password must be at least 6 characters long.', path: ['password'] }
-  )
-  .refine(
-    (data) => !data.password || data.password === data.confirmPassword,
-    { message: "Passwords don't match.", path: ['confirmPassword'] }
-  );
+  .refine((data) => !data.password || data.password === data.confirmPassword, {
+    message: "Passwords don't match.",
+    path: ['confirmPassword'],
+  });
 
 type UserForm = z.infer<typeof UserFormSchema>;
 
 type UsersMutateDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: Partial<User>;
-  onSubmit: (data: Partial<User>) => void;
-  roles: Role[];
+  initialData?: Partial<UserResponse>;
+  onSubmit: (data: UserRequest, id?: string) => void;
 };
 
 export function UsersMutateDialog({
@@ -65,15 +59,15 @@ export function UsersMutateDialog({
   onOpenChange,
   initialData,
   onSubmit,
-  roles,
 }: UsersMutateDialogProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<UserForm>({
     resolver: zodResolver(UserFormSchema),
     defaultValues: {
       username: initialData?.username ?? '',
       email: initialData?.email ?? '',
-      status: initialData?.status ?? UserStatus.Active,
-      roles: initialData?.roles?.map((role) => String(role.id)) ?? [],
+      status: (initialData?.status as UserStatus) ?? UserStatus.ACTIVE,
+      role: (initialData?.role as RoleType) ?? RoleType.USER,
       password: '',
       confirmPassword: '',
     },
@@ -81,144 +75,161 @@ export function UsersMutateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-lg max-h-[90vh] overflow-y-auto'>
+      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-lg'>
         <DialogHeader className='text-start'>
           <DialogTitle>{initialData?.id ? 'Edit User' : 'Add User'}</DialogTitle>
           <DialogDescription>
             {initialData?.id
               ? 'Update the user information below.'
-              : 'Enter the information for the new user.'
-            }
+              : 'Enter the information for the new user.'}
             Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
             id='user-form'
-            onSubmit={form.handleSubmit((data) => {
-              const payload: Partial<User> = {
-                ...initialData,
-                username: data.username,
-                email: data.email,
-                status: data.status,
-                roleIds: data.roles,
+            onSubmit={form.handleSubmit(async (data) => {
+              if (isSubmitting) return;
+              setIsSubmitting(true);
+              const { confirmPassword, ...rest } = data;
+              const payload: UserRequest = {
+                ...rest,
               };
 
-              if (data.password) {
-                payload.password = data.password;
-              } else {
+              if (!payload.password) {
                 delete payload.password;
               }
 
-              onSubmit(payload);
-              onOpenChange(false);
-              form.reset();
+              try {
+                await onSubmit(payload, initialData?.id);
+                onOpenChange(false);
+                form.reset();
+              } finally {
+                setIsSubmitting(false);
+              }
             })}
             className='space-y-4 px-0.5'
           >
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="username">Username</FormLabel>
-                  <FormControl>
-                    <Input id="username" placeholder="john_doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="email">Email</FormLabel>
-                  <FormControl>
-                    <Input id="email" placeholder="john.doe@gmail.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="status">Status</FormLabel>
-                  <Select
-                    onValueChange={(val) => field.onChange(Number(val))}
-                    value={field.value.toString()}
-                    defaultValue={field.value.toString()}
-                  >
+            <fieldset disabled={isSubmitting} className='space-y-4'>
+              <FormField
+                control={form.control}
+                name='username'
+                render={({ field }) => (
+                  <div className='grid gap-3'>
+                    <FormLabel htmlFor='username'>Username</FormLabel>
                     <FormControl>
-                      <SelectTrigger id="status" className="w-full">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
+                      <Input id='username' placeholder='john_doe' {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value={UserStatus.Active.toString()}>Active</SelectItem>
-                      <SelectItem value={UserStatus.Inactive.toString()}>Inactive</SelectItem>
-                      <SelectItem value={UserStatus.Banned.toString()}>Banned</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="roles"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="roles">Roles</FormLabel>
-                  <RolesCombobox
-                    roles={roles.map(r => ({ ...r, id: String(r.id) }))}
-                    value={field.value || []}
-                    onChange={field.onChange}
-                  />
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="password">Password</FormLabel>
-                  <FormControl>
-                    <PasswordInput id="password" placeholder="e.g., S3cur3P@ssw0rd" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
-                  <FormControl>
-                    <PasswordInput id="confirmPassword" placeholder="e.g., S3cur3P@ssw0rd" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </div>
-              )}
-            />
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline" type="button">
-                  Cancel
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='email'
+                render={({ field }) => (
+                  <div className='grid gap-3'>
+                    <FormLabel htmlFor='email'>Email</FormLabel>
+                    <FormControl>
+                      <Input id='email' placeholder='john.doe@gmail.com' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='status'
+                render={({ field }) => (
+                  <div className='grid gap-3'>
+                    <FormLabel htmlFor='status'>Status</FormLabel>
+                    <Select
+                      onValueChange={(val) => field.onChange(Number(val))}
+                      value={field.value?.toString() ?? ''}
+                      defaultValue={field.value?.toString() ?? ''}
+                    >
+                      <FormControl>
+                        <SelectTrigger id='status' className='w-full'>
+                          <SelectValue placeholder='Select status' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={UserStatus.ACTIVE.toString()}>Active</SelectItem>
+                        <SelectItem value={UserStatus.INACTIVE.toString()}>Inactive</SelectItem>
+                        <SelectItem value={UserStatus.BANNED.toString()}>Banned</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='role'
+                render={({ field }) => (
+                  <div className='grid gap-3'>
+                    <FormLabel htmlFor='role'>Role</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger id='role' className='w-full'>
+                          <SelectValue placeholder='Select role' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={RoleType.ADMIN}>{RoleType.ADMIN}</SelectItem>
+                        <SelectItem value={RoleType.USER}>{RoleType.USER}</SelectItem>
+                        <SelectItem value={RoleType.STAFF}>{RoleType.STAFF}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='password'
+                render={({ field }) => (
+                  <div className='grid gap-3'>
+                    <FormLabel htmlFor='password'>Password</FormLabel>
+                    <FormControl>
+                      <PasswordInput id='password' placeholder='e.g., S3cur3P@ssw0rd' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='confirmPassword'
+                render={({ field }) => (
+                  <div className='grid gap-3'>
+                    <FormLabel htmlFor='confirmPassword'>Confirm Password</FormLabel>
+                    <FormControl>
+                      <PasswordInput
+                        id='confirmPassword'
+                        placeholder='e.g., S3cur3P@ssw0rd'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                )}
+              />
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant='outline' type='button'>
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button type='submit' disabled={isSubmitting}>
+                  {isSubmitting ? 'Saving...' : initialData?.id ? 'Save changes' : 'Create'}
                 </Button>
-              </DialogClose>
-              <Button type='submit'>
-                {initialData?.id ? "Save changes" : "Create"}
-              </Button>
-            </DialogFooter>
+              </DialogFooter>
+            </fieldset>
           </form>
         </Form>
       </DialogContent>

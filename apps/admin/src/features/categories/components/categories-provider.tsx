@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Category } from '@/types';
+import type { CategoryResponse } from '@/types';
 import useDialogState from '@/hooks/ui/useDialogState';
 
 type DialogType = 'create' | 'update' | 'delete' | 'import';
@@ -7,15 +7,15 @@ type DialogType = 'create' | 'update' | 'delete' | 'import';
 type CategoriesContextType = {
   open: DialogType | null;
   setOpen: (str: DialogType | null) => void;
-  currentRow: Category | null;
-  setCurrentRow: React.Dispatch<React.SetStateAction<Category | null>>;
+  currentRow: CategoryResponse | null;
+  setCurrentRow: React.Dispatch<React.SetStateAction<CategoryResponse | null>>;
 };
 
 const CategoriesContext = React.createContext<CategoriesContextType | null>(null);
 
 export function CategoriesProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useDialogState<DialogType>(null);
-  const [currentRow, setCurrentRow] = useState<Category | null>(null);
+  const [currentRow, setCurrentRow] = useState<CategoryResponse | null>(null);
 
   return (
     <CategoriesContext.Provider value={{ open, setOpen, currentRow, setCurrentRow }}>

@@ -1,93 +1,80 @@
 import axios from 'axios';
-import { API_CONFIG } from '@/config/api';
-import * as ApiRequest from './config';
-import type { FileMeta, FindParams, Pagination } from '@/types';
+import { ApiEndpoint } from '@/config/api';
+import type {
+  FileResponse,
+  FileRequest,
+  PresignedUploadResponse,
+  PresignedUploadRequest,
+  StorageUsageResponse,
+  ApiResponse,
+} from '@/types';
+import { ApiClient } from './config';
+import { apiFactory } from './factory';
+
+const factory = apiFactory<FileResponse, FileRequest>(ApiEndpoint.endpoints.files, {
+  find: 'private',
+  findById: 'private',
+  delete: 'private',
+});
 
 export const FileApi = {
-    find: async (params?: FindParams): Promise<{ data: FileMeta[]; pagination?: Pagination }> => {
-        const response = await ApiRequest.apiGet<FileMeta[]>(
-            API_CONFIG.endpoints.file.find,
-            { mode: 'private', params }
-        );
-        return {
-            data: response.data ?? [],
-            pagination: response.pagination
-        };
-    },
+  ...factory,
 
-    findByUser: async (params?: FindParams): Promise<{ data: FileMeta[]; pagination?: Pagination }> => {
-        const response = await ApiRequest.apiGet<FileMeta[]>(
-            API_CONFIG.endpoints.file.findByUser,
-            { mode: 'private', params }
-        );
-        return {
-            data: response.data ?? [],
-            pagination: response.pagination
-        };
-    },
+  upload: async (file: File, folder: string = 'general'): Promise<ApiResponse<FileResponse>> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', folder);
+    return ApiClient.post<FileResponse>(ApiEndpoint.endpoints.files.upload(), {
+      security: 'private',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
 
-    findByKey: async (key: string): Promise<FileMeta> => {
-        const response = await ApiRequest.apiGet<FileMeta>(
-            API_CONFIG.endpoints.file.findByKey(key),
-            { mode: 'private' }
-        );
-        if (response.success && response.data) return response.data;
-        throw new Error('File not found');
-    },
+  uploadPresigned: async (
+    request: PresignedUploadRequest
+  ): Promise<ApiResponse<PresignedUploadResponse>> => {
+    return ApiClient.post<PresignedUploadResponse>(ApiEndpoint.endpoints.files.uploadPresigned(), {
+      security: 'private',
+      data: request,
+    });
+  },
 
-    getUploadUrl: async (filename: string, type: string, folder?: string): Promise<{ url: string; key: string }> => {
-        const response = await ApiRequest.apiPost<{ url: string; key: string }>(
-            API_CONFIG.endpoints.file.upload,
-            {
-                mode: 'private',
-                data: { filename, type, folder }
-            }
-        );
-        if (response.success && response.data) return {
-            url: response.data.url,
-            key: response.data.key
-        };
-        throw new Error('Failed to get upload URL');
-    },
+  uploadToPresignedUrl: async (url: string, file: File, contentType?: string): Promise<boolean> => {
+    try {
+      const cleanAxios = axios.create();
+      const res = await cleanAxios.put(url, file, {
+        headers: {
+          'Content-Type': contentType || file.type || 'application/octet-stream',
+        },
+      });
+      return res.status >= 200 && res.status < 300;
+    } catch {
+      return false;
+    }
+  },
 
-    upload: async (url: string, file: File): Promise<boolean> => {
-        try {
-            const res = await axios.put(url, file, {
-                headers: {
-                    "Content-Type": file.type,
-                },
-            });
-            return res.status === 200;
-        } catch {
-            return false;
-        }
-    },
+  completePresignedUpload: async (uploadId: string): Promise<ApiResponse<FileResponse>> => {
+    return ApiClient.post<FileResponse>(
+      ApiEndpoint.endpoints.files.completePresignedUpload(uploadId),
+      {
+        security: 'private',
+      }
+    );
+  },
 
-    confirm: async (key: string): Promise<FileMeta> => {
-        const response = await ApiRequest.apiPost<FileMeta>(
-            API_CONFIG.endpoints.file.confirm,
-            {
-                mode: 'private',
-                data: { key }
-            }
-        );
-        if (response.success && response.data) return response.data;
-        throw new Error('Failed to confirm upload');
-    },
+  download: async (id: string): Promise<Blob> => {
+    return ApiClient.get<Blob>(ApiEndpoint.endpoints.files.download(id), {
+      security: 'private',
+      responseType: 'blob',
+    }) as unknown as Promise<Blob>;
+  },
 
-    download: async (key: string): Promise<Blob> => {
-        const response = await ApiRequest.apiGet(
-            API_CONFIG.endpoints.file.download(key),
-            { mode: 'private', responseType: 'blob' }
-        );
-        return response.data as Blob;
-    },
-
-    delete: async (key: string): Promise<boolean> => {
-        const response = await ApiRequest.apiDelete<null>(
-            API_CONFIG.endpoints.file.delete(key),
-            { mode: 'private' }
-        );
-        return response.success;
-    },
+  getStorageUsage: async (): Promise<ApiResponse<StorageUsageResponse>> => {
+    return ApiClient.get<StorageUsageResponse>(ApiEndpoint.endpoints.files.storageUsage(), {
+      security: 'private',
+    });
+  },
 };

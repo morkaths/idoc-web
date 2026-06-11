@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
 import { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies';
 import { themeColors, themeConfig } from '@/components/layout/data/theme-data';
 
-export type Mode = "dark" | "light" | "system";
+export type Mode = 'dark' | 'light' | 'system';
 type ColorKey = string;
-type ResolvedMode = "dark" | "light";
+type ResolvedMode = 'dark' | 'light';
 
 const DEFAULT_MODE: Mode = themeConfig.defaults.mode;
 const DEFAULT_COLOR: ColorKey = themeConfig.defaults.color;
@@ -30,11 +30,11 @@ type ThemeProviderState = {
   mode: Mode;
   setMode: (mode: Mode) => void;
   resetTheme: () => void;
-  
+
   color: ColorKey;
   setColor: (color: ColorKey) => void;
   availableColors: string[];
-  
+
   radius: string;
   setRadius: (radius: string) => void;
 
@@ -130,7 +130,8 @@ export function ThemeProvider({
       // 2. Handle CSS Variables
       const selectedColor = themeColors[color];
       if (selectedColor) {
-        const styles = resolvedMode === 'dark' ? selectedColor.styles.dark : selectedColor.styles.light;
+        const styles =
+          resolvedMode === 'dark' ? selectedColor.styles.dark : selectedColor.styles.light;
         Object.entries(styles).forEach(([key, value]) => {
           if (typeof value === 'string' && key !== 'radius' && key !== 'font-sans') {
             root.style.setProperty(`--${key}`, value);

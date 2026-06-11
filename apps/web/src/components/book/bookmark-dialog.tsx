@@ -1,143 +1,194 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@repo/ui/components/dialog';
-import { Button } from '@repo/ui/components/button';
-import { useCollections, useCreateCollection } from '@/hooks/data/useCollection';
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { Icon } from '@iconify/react';
+import { toast } from 'sonner';
+import { useCreateBookmark } from '@/hooks/data/useBookmark';
+import { useMyFolders, useCreateFolder } from '@/hooks/data/useFolder';
+import { useLocale } from '@/hooks/ui/useLocale';
+import { Button } from '@repo/ui/components/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@repo/ui/components/dialog';
 import { Input } from '@repo/ui/components/input';
 import { ScrollArea } from '@repo/ui/components/scroll-area';
-import { toast } from 'sonner';
 
 type BookmarkDialogProps = {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onSelectCollection: (collectionId?: string) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  bookId: string | undefined;
 };
 
-export function BookmarkDialog({
-    open,
-    onOpenChange,
-    onSelectCollection,
-}: BookmarkDialogProps) {
-    const { data: collections, isLoading } = useCollections({ limit: 50 }, { enabled: open });
-    const [newCollectionName, setNewCollectionName] = useState('');
-    const [isCreating, setIsCreating] = useState(false);
-    const { mutate: createCollection } = useCreateCollection();
+export function BookmarkDialog({ open, onOpenChange, bookId }: BookmarkDialogProps) {
+  const { data: session } = useSession();
+  const { t, keys } = useLocale('books');
+  const { data: folders, isLoading } = useMyFolders(
+    { limit: 100 },
+    { enabled: open && !!session?.user, staleTime: 0 }
+  );
 
-    const handleCreateCollection = () => {
-        if (!newCollectionName.trim()) return;
+  const [newFolderName, setNewFolderName] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
 
-        createCollection(
-            { name: newCollectionName },
-            {
-                onSuccess: (data) => {
-                    if (data) {
-                        onSelectCollection(data.id);
-                        setNewCollectionName('');
-                        setIsCreating(false);
-                    } else {
-                        toast.error('Failed to create collection. Please try again.');
-                    }
-                },
-                onError: () => {
-                    toast.error('An error occurred while creating the collection.');
-                }
-            }
-        );
-    };
+  const { mutate: createFolder, status: createFolderStatus } = useCreateFolder();
+  const { mutate: createBookmark } = useCreateBookmark();
 
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle>Bookmark Book</DialogTitle>
-                </DialogHeader>
+  const handleSelectFolder = (folderId?: string) => {
+    if (!bookId) return;
 
-                <div className="flex flex-col gap-4 mt-2">
-                    <div className="flex flex-col gap-4 mt-2">
-                        <Button
-                            className="w-full justify-start"
-                            onClick={() => onSelectCollection(undefined)}
-                        >
-                            <Icon icon="mdi:bookmark-outline" className="mr-2 h-4 w-4" />
-                            Save to Reading List
-                        </Button>
-
-                        <div className="relative my-1">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t" />
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-background px-2 text-muted-foreground">Or add to Collection</span>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-2">
-                            {isLoading ? (
-                                <div className="flex justify-center py-4">
-                                    <Icon icon="mdi:loading" className="h-6 w-6 animate-spin text-muted-foreground" />
-                                </div>
-                            ) : collections?.data && collections.data.length > 0 ? (
-                                <ScrollArea className="h-[180px] w-full rounded-md border p-2">
-                                    <div className="flex flex-col gap-1">
-                                        {collections.data.map((collection) => (
-                                            <Button
-                                                key={collection.id}
-                                                variant="ghost"
-                                                className="justify-start font-normal w-full"
-                                                onClick={() => onSelectCollection(collection.id)}
-                                            >
-                                                <Icon icon="mdi:folder-outline" className="mr-2 h-4 w-4 text-muted-foreground" />
-                                                <span className="truncate">{collection.name}</span>
-                                                <span className="ml-auto text-xs text-muted-foreground flex-shrink-0">
-                                                    {collection.itemCount || 0} items
-                                                </span>
-                                            </Button>
-                                        ))}
-                                    </div>
-                                </ScrollArea>
-                            ) : !isCreating && (
-                                <div className="flex flex-col items-center justify-center py-2 text-center text-muted-foreground">
-                                    <p className="text-xs">No collections found.</p>
-                                </div>
-                            )}
-
-                            {isCreating || (collections && collections.data.length === 0 && !isLoading) ? (
-                                <div className="flex items-center gap-2">
-                                    <Input
-                                        value={newCollectionName}
-                                        onChange={(e) => setNewCollectionName(e.target.value)}
-                                        placeholder="New collection name..."
-                                        autoFocus
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') handleCreateCollection();
-                                            if (e.key === 'Escape') {
-                                                if (collections && collections.data.length > 0) setIsCreating(false);
-                                            }
-                                        }}
-                                    />
-                                    <Button size="icon" onClick={handleCreateCollection} disabled={!newCollectionName.trim()}>
-                                        <Icon icon="mdi:check" className="h-4 w-4" />
-                                    </Button>
-                                    {collections && collections.data.length > 0 && (
-                                        <Button size="icon" variant="ghost" onClick={() => setIsCreating(false)}>
-                                            <Icon icon="mdi:close" className="h-4 w-4" />
-                                        </Button>
-                                    )}
-                                </div>
-                            ) : (
-                                <Button
-                                    variant="outline"
-                                    className="w-full justify-start border-dashed text-muted-foreground hover:text-foreground"
-                                    onClick={() => setIsCreating(true)}
-                                >
-                                    <Icon icon="mdi:plus" className="mr-2 h-4 w-4" />
-                                    Create new collection
-                                </Button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </DialogContent>
-        </Dialog>
+    createBookmark(
+      {
+        bookId: bookId,
+        folderId: folderId,
+      },
+      {
+        onSuccess: (response) => {
+          if (response.success) {
+            onOpenChange(false);
+            toast.success(t(keys.view.bookmark.success));
+          } else {
+            toast.error(response.message || t(keys.view.bookmark.error));
+          }
+        },
+        onError: (err: unknown) => {
+          const error = err as Error;
+          toast.error(error?.message || t(keys.view.bookmark.error));
+        },
+      }
     );
+  };
+
+  const handleCreateFolder = () => {
+    if (!newFolderName.trim()) return;
+
+    createFolder(
+      { name: newFolderName },
+      {
+        onSuccess: (response) => {
+          if (response.success && response.data) {
+            handleSelectFolder(response.data.id);
+            setNewFolderName('');
+            setIsCreating(false);
+          } else {
+            toast.error(response.message || 'Failed to create folder. Please try again.');
+          }
+        },
+        onError: (err: unknown) => {
+          const error = err as Error;
+          toast.error(error?.message || 'An error occurred while creating the folder.');
+        },
+      }
+    );
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='sm:max-w-md'>
+        <DialogHeader>
+          <DialogTitle>{t(keys.view.bookmark.title)}</DialogTitle>
+        </DialogHeader>
+
+        <div className='mt-2 flex flex-col gap-4'>
+          <Button className='w-full justify-start' onClick={() => handleSelectFolder(undefined)}>
+            <Icon icon='mdi:bookmark-outline' className='mr-2 h-4 w-4' />
+            {t(keys.view.bookmark.default)}
+          </Button>
+
+          <div className='relative my-1'>
+            <div className='absolute inset-0 flex items-center'>
+              <span className='w-full border-t' />
+            </div>
+            <div className='relative flex justify-center text-xs uppercase'>
+              <span className='bg-background text-muted-foreground px-2'>
+                {t(keys.view.folder.add)}
+              </span>
+            </div>
+          </div>
+
+          <div className='flex flex-col gap-2'>
+            {isLoading ? (
+              <div className='flex justify-center py-4'>
+                <Icon icon='mdi:loading' className='text-muted-foreground h-6 w-6 animate-spin' />
+              </div>
+            ) : folders?.data && folders.data.length > 0 ? (
+              <>
+                <ScrollArea className='h-[180px] w-full rounded-md border p-2'>
+                  <div className='flex flex-col gap-1'>
+                    {folders.data.map((folder) => (
+                      <Button
+                        key={folder.id}
+                        variant='ghost'
+                        className='group w-full justify-start font-normal'
+                        onClick={() => handleSelectFolder(folder.id)}
+                      >
+                        <Icon
+                          icon='mdi:folder-outline'
+                          className='text-muted-foreground group-hover:text-primary mr-2 h-4 w-4'
+                        />
+                        <span className='truncate'>{folder.name}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </ScrollArea>
+                {!isCreating && (
+                  <Button
+                    variant='outline'
+                    className='text-muted-foreground hover:text-foreground w-full justify-start border-dashed'
+                    onClick={() => setIsCreating(true)}
+                  >
+                    <Icon icon='mdi:plus' className='mr-2 h-4 w-4' />
+                    {t(keys.view.folder.create)}
+                  </Button>
+                )}
+              </>
+            ) : (
+              !isCreating && (
+                <div className='text-muted-foreground bg-muted/20 flex flex-col items-center justify-center rounded-md border border-dashed py-6 text-center'>
+                  <Icon icon='mdi:folder-open-outline' className='mb-2 h-8 w-8 opacity-20' />
+                  <p className='text-xs'>{t(keys.view.folder.empty)}</p>
+                </div>
+              )
+            )}
+
+            {(isCreating || (folders && folders.data.length === 0 && !isLoading)) && (
+              <div className='mt-1 flex items-center gap-2'>
+                <Input
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  placeholder='New folder name...'
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleCreateFolder();
+                    if (e.key === 'Escape') {
+                      if (folders && folders.data.length > 0) setIsCreating(false);
+                    }
+                  }}
+                  className='h-9'
+                />
+                <Button
+                  size='icon'
+                  className='h-9 w-9 shrink-0'
+                  onClick={handleCreateFolder}
+                  disabled={!newFolderName.trim() || createFolderStatus === 'pending'}
+                >
+                  {createFolderStatus === 'pending' ? (
+                    <Icon icon='mdi:loading' className='h-4 w-4 animate-spin' />
+                  ) : (
+                    <Icon icon='mdi:check' className='h-4 w-4' />
+                  )}
+                </Button>
+                {folders && folders.data.length > 0 && (
+                  <Button
+                    size='icon'
+                    variant='ghost'
+                    className='h-9 w-9 shrink-0'
+                    onClick={() => setIsCreating(false)}
+                  >
+                    <Icon icon='mdi:close' className='h-4 w-4' />
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }

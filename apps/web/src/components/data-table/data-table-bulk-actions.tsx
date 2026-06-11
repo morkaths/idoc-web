@@ -13,7 +13,7 @@ export type DataTableBulkActionsProps<T> = {
     icon: React.ReactNode;
     label: string;
     onClick: (items: T[]) => void | Promise<void>;
-    variant?: "default" | "outline" | "destructive" | "secondary" | "ghost" | "link";
+    variant?: 'default' | 'outline' | 'destructive' | 'secondary' | 'ghost' | 'link';
     tooltip?: string;
     title?: string;
     disabled?: boolean;
@@ -82,5 +82,3 @@ export function DataTableBulkActions<T>({
     </BulkActionsToolbar>
   );
 }
-
-export default DataTableBulkActions;

@@ -1,6 +1,7 @@
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { MixerHorizontalIcon } from '@radix-ui/react-icons';
 import { type Table } from '@tanstack/react-table';
+import { useLocale } from '@/hooks/ui/useLocale';
 import { Button } from '@repo/ui/components/button';
 import {
   DropdownMenu,
@@ -15,16 +16,18 @@ type DataTableViewOptionsProps<TData> = {
 };
 
 export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps<TData>) {
+  const { t, keys } = useLocale('common');
+
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant='outline' size='sm' className='ms-auto hidden h-8 lg:flex'>
           <MixerHorizontalIcon className='size-4' />
-          View
+          {t(keys.actions.view)}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-37.5'>
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+        <DropdownMenuLabel>{t(keys.actions.cancel)}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
@@ -37,7 +40,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.id}
+                {(column.columnDef.meta as { title?: string })?.title || column.id}
               </DropdownMenuCheckboxItem>
             );
           })}

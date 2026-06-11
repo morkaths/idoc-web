@@ -1,80 +1,43 @@
-import { API_CONFIG } from '@/config/api';
-import type { Borrow, FindParams, Pagination } from '../types';
-import * as ApiRequest from './config';
+import { ApiEndpoint } from '@/config/api';
+import type {
+  BorrowResponse,
+  BorrowRequest,
+  FindParams,
+  ApiResponse,
+  PageResponse,
+  RenewBorrowRequest,
+} from '../types';
+import { ApiClient } from './config';
+import { apiFactory } from './factory';
+
+const factory = apiFactory<BorrowResponse, BorrowRequest>(ApiEndpoint.endpoints.borrows, {
+  find: 'public',
+  findById: 'public',
+});
 
 export const BorrowApi = {
-  find: async (params?: FindParams): Promise<{ data: Borrow[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<Borrow[]>(
-      API_CONFIG.endpoints.borrow.find,
-      { mode: 'public', params }
-    );
-    return {
-      data: response.data ?? [],
-      pagination: response.pagination
-    };
+  ...factory,
+
+  history: async (params?: FindParams): Promise<ApiResponse<PageResponse<BorrowResponse>>> => {
+    return ApiClient.get<PageResponse<BorrowResponse>>(ApiEndpoint.endpoints.borrows.history(), {
+      security: 'private',
+      params,
+    });
   },
 
-  history: async (params?: FindParams): Promise<{ data: Borrow[]; pagination?: Pagination }> => {
-    const response = await ApiRequest.apiGet<Borrow[]>(
-      API_CONFIG.endpoints.borrow.history,
-      { mode: 'private', params }
-    );
-    return {
-      data: response.data ?? [],
-      pagination: response.pagination
-    };
+  extend: async (
+    id: string,
+    request: Partial<RenewBorrowRequest>
+  ): Promise<ApiResponse<BorrowResponse>> => {
+    return ApiClient.put<BorrowResponse>(ApiEndpoint.endpoints.borrows.extend(id), {
+      security: 'private',
+      data: request,
+    });
   },
 
-  findById: async (id: string): Promise<Borrow | null> => {
-    const response = await ApiRequest.apiGet<Borrow>(
-      API_CONFIG.endpoints.borrow.findById(id),
-      { mode: 'public' }
-    );
-    if (response.success && response.data) return response.data;
-    return null;
-  },
-
-  create: async (data: Partial<Borrow>): Promise<Borrow | null> => {
-    const response = await ApiRequest.apiPost<Borrow>(
-      API_CONFIG.endpoints.borrow.create,
-      { mode: 'private', data }
-    );
-    if (response.success && response.data) return response.data;
-    return null;
-  },
-
-  update: async (id: string, data: Partial<Borrow>): Promise<Borrow | null> => {
-    const response = await ApiRequest.apiPatch<Borrow>(
-      API_CONFIG.endpoints.borrow.update(id),
-      { mode: 'private', data }
-    );
-    if (response.success && response.data) return response.data;
-    return null;
-  },
-
-  delete: async (id: string): Promise<boolean> => {
-    const response = await ApiRequest.apiDelete<null>(
-      API_CONFIG.endpoints.borrow.delete(id),
-      { mode: 'private' }
-    );
-    return response.success;
-  },
-
-  extend: async (id: string, extraDays: number, note?: string): Promise<Borrow | null> => {
-    const response = await ApiRequest.apiPut<Borrow>(
-      API_CONFIG.endpoints.borrow.extend(id),
-      { mode: 'private', data: { extraDays, note } }
-    );
-    if (response.success && response.data) return response.data;
-    return null;
-  },
-
-  return: async (id: string): Promise<Borrow | null> => {
-    const response = await ApiRequest.apiPut<Borrow>(
-      API_CONFIG.endpoints.borrow.return(id),
-      { mode: 'private' }
-    );
-    if (response.success && response.data) return response.data;
-    return null;
+  return: async (id: string): Promise<ApiResponse<BorrowResponse>> => {
+    return ApiClient.put<BorrowResponse>(ApiEndpoint.endpoints.borrows.return(id), {
+      security: 'private',
+    });
   },
 };

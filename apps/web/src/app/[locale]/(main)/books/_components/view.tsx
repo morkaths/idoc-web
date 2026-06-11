@@ -1,99 +1,149 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
-import { Button } from "@repo/ui/components/button";
-import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "@repo/ui/components/sheet";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@repo/ui/components/tabs";
-import { Card } from "@repo/ui/components/card";
-import BookFilter from "./book-filter";
-import BookSort from "./book-sort";
-import { FindParams } from "@/types";
-import { ArrowDownAZ, FilterIcon, LayoutGrid, List, SlidersHorizontal, Sparkles } from "lucide-react";
-import { BookView } from "./book-view";
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useState, useMemo, useCallback } from 'react';
+import {
+  ArrowDownAZ,
+  FilterIcon,
+  LayoutGrid,
+  List,
+  SlidersHorizontal,
+  Sparkles,
+} from 'lucide-react';
+import { useLocale } from '@/hooks/ui/useLocale';
+import { Button } from '@repo/ui/components/button';
+import { Card } from '@repo/ui/components/card';
+import { Sheet, SheetTrigger, SheetContent, SheetTitle } from '@repo/ui/components/sheet';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@repo/ui/components/tabs';
+import BookFilter from './book-filter';
+import {
+  type BookSortState,
+  type BookFilterState,
+  parseBookQuery,
+  buildBookQuery,
+  buildBookFindParams,
+  DEFAULT_BOOK_FILTER,
+  DEFAULT_BOOK_SORT,
+} from './book-query.utils';
+import BookSort from './book-sort';
+import { BookView } from './book-view';
 
 export function BooksView() {
-  const [view, setView] = useState<"grid" | "list">("grid");
-  const [filter, setFilter] = useState<Partial<FindParams>>({});
-  const [sort, setSort] = useState<{ sortBy: string; sortOrder: "desc" | "asc" }>({ sortBy: "createdAt", sortOrder: "desc" });
+  const { t, keys } = useLocale('books');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [view, setView] = useState<'grid' | 'list'>('grid');
+  const state = useMemo(() => parseBookQuery(searchParams), [searchParams]);
+  const { page, limit } = state;
 
-  const handleSetSort = (params: { sortBy?: string; sortOrder?: "desc" | "asc" }) => {
-    setSort({
-      sortBy: params.sortBy ?? "createdAt",
-      sortOrder: params.sortOrder ?? "desc",
-    });
-  };
+  const filter = useMemo(
+    () => ({ query: state.query, categories: state.categories, languages: state.languages }),
+    [state]
+  );
+  const sort = useMemo(() => ({ sortBy: state.sortBy, sortOrder: state.sortOrder }), [state]);
 
-  const activeFilter = useMemo(() => ({ ...filter, ...sort }), [filter, sort]);
+  // Write filter changes to URL (resets page to 1)
+  const handleSetFilter = useCallback(
+    (next: BookFilterState) => {
+      router.replace(`${pathname}?${buildBookQuery(next, sort, 1, limit)}`, { scroll: false });
+    },
+    [router, pathname, sort, limit]
+  );
+
+  // Write sort changes to URL (resets page to 1)
+  const handleSetSort = useCallback(
+    (next: BookSortState) => {
+      router.replace(`${pathname}?${buildBookQuery(filter, next, 1, limit)}`, { scroll: false });
+    },
+    [router, pathname, filter, limit]
+  );
+
+  // Write page changes to URL
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      router.replace(`${pathname}?${buildBookQuery(filter, sort, newPage, limit)}`, {
+        scroll: false,
+      });
+    },
+    [router, pathname, filter, sort, limit]
+  );
+
+  // Build the FindParams object to pass down to BookView
+  const findParams = useMemo(
+    () => buildBookFindParams(filter, sort, page, limit),
+    [filter, sort, page, limit]
+  );
 
   return (
-    <main className="container py-8 flex gap-8">
+    <main className='container flex gap-8 pt-20 pb-8'>
       {/* Sidebar */}
-      <aside className="w-64 hidden lg:block">
-        <Card className="p-4 mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4" />
-            <span className="font-semibold">Discover</span>
+      <aside className='hidden w-64 lg:block'>
+        <Card className='mb-4 p-4'>
+          <div className='mb-2 flex items-center gap-2'>
+            <Sparkles className='h-4 w-4' />
+            <span className='font-semibold'>{t(keys.sidebar.title)}</span>
           </div>
           <FilterTabs
             filter={filter}
-            setFilter={setFilter}
+            setFilter={handleSetFilter}
             sort={sort}
             setSort={handleSetSort}
-            defaultValue="filter"
+            defaultValue='filter'
           />
         </Card>
       </aside>
 
       {/* Main content */}
-      <section className="flex-1">
+      <section className='flex-1'>
         {/* Toolbar */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="block lg:hidden mb-4">
+        <div className='mb-4 flex items-center justify-between'>
+          <div className='mb-4 block lg:hidden'>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" aria-label="Open filter">
-                  <SlidersHorizontal className="w-5 h-5" />
+                <Button variant='outline' size='icon' aria-label='Open filter'>
+                  <SlidersHorizontal className='h-5 w-5' />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="p-4">
-                <SheetTitle className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-4 h-4" />
-                    <span className="font-semibold">Discover</span>
+              <SheetContent side='right' className='p-4'>
+                <SheetTitle className='mb-4'>
+                  <div className='mb-2 flex items-center gap-2'>
+                    <Sparkles className='h-4 w-4' />
+                    <span className='font-semibold'>{t(keys.sidebar.title)}</span>
                   </div>
                 </SheetTitle>
                 <FilterTabs
                   filter={filter}
-                  setFilter={setFilter}
+                  setFilter={handleSetFilter}
                   sort={sort}
                   setSort={handleSetSort}
-                  defaultValue="filter"
+                  defaultValue='filter'
                 />
               </SheetContent>
             </Sheet>
           </div>
-          <div className="flex gap-2">
+          <div className='flex gap-2'>
             <Button
-              variant={view === "grid" ? "default" : "outline"}
-              size="icon"
-              onClick={() => setView("grid")}
-              aria-label="Grid view"
+              variant={view === 'grid' ? 'default' : 'outline'}
+              size='icon'
+              onClick={() => setView('grid')}
+              aria-label='Grid view'
             >
-              <LayoutGrid className="w-4 h-4" />
+              <LayoutGrid className='h-4 w-4' />
             </Button>
             <Button
-              variant={view === "list" ? "default" : "outline"}
-              size="icon"
-              onClick={() => setView("list")}
-              aria-label="List view"
+              variant={view === 'list' ? 'default' : 'outline'}
+              size='icon'
+              onClick={() => setView('list')}
+              aria-label='List view'
             >
-              <List className="w-4 h-4" />
+              <List className='h-4 w-4' />
             </Button>
           </div>
         </div>
 
-        {/* Danh sách sách */}
-        <BookView filter={activeFilter} view={view} />
+        {/* Book list */}
+        <BookView params={findParams} onPageChange={handlePageChange} view={view} />
       </section>
     </main>
   );
@@ -104,48 +154,42 @@ function FilterTabs({
   setFilter,
   sort,
   setSort,
-  defaultValue = "filter",
+  defaultValue = 'filter',
 }: {
-  filter: Partial<FindParams>;
-  setFilter: (params: Partial<FindParams>) => void;
-  sort: { sortBy: string; sortOrder: "desc" | "asc" };
-  setSort: (params: { sortBy?: string; sortOrder?: "desc" | "asc" }) => void;
+  filter: BookFilterState;
+  setFilter: (params: BookFilterState) => void;
+  sort: BookSortState;
+  setSort: (params: BookSortState) => void;
   defaultValue?: string;
 }) {
+  const { t, keys } = useLocale('books');
   return (
-    <Tabs defaultValue={defaultValue} className="w-full">
-      <TabsList className="w-full mb-4 bg-background gap-1 border p-1">
+    <Tabs defaultValue={defaultValue} className='w-full'>
+      <TabsList className='bg-background mb-4 w-full gap-1 border p-1'>
         <TabsTrigger
-          value="filter"
-          className="flex-1 data-[state=active]:bg-primary dark:data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:border-transparent"
+          value='filter'
+          className='data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1'
         >
-          <FilterIcon className="w-4 h-4" />
-          Filter
+          <FilterIcon className='mr-1 h-4 w-4' />
+          {t(keys.sidebar.tabs.filter)}
         </TabsTrigger>
         <TabsTrigger
-          value="sort"
-          className="flex-1 data-[state=active]:bg-primary dark:data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:border-transparent"
+          value='sort'
+          className='data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1'
         >
-          <ArrowDownAZ className="w-4 h-4" />
-          Sort
+          <ArrowDownAZ className='h-4 w-4' />
+          {t(keys.sidebar.tabs.sort)}
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="filter">
+      <TabsContent value='filter'>
         <BookFilter
           filter={filter}
           onFilter={setFilter}
-          onReset={() => setFilter({})}
+          onReset={() => setFilter(DEFAULT_BOOK_FILTER)}
         />
       </TabsContent>
-      <TabsContent value="sort">
-        <BookSort
-          sort={sort}
-          onSort={params => setSort({
-            sortBy: params.sortBy ?? "createdAt",
-            sortOrder: params.sortOrder ?? "desc"
-          })}
-          onReset={() => setSort({ sortBy: "createdAt", sortOrder: "desc" })}
-        />
+      <TabsContent value='sort'>
+        <BookSort sort={sort} onSort={setSort} onReset={() => setSort(DEFAULT_BOOK_SORT)} />
       </TabsContent>
     </Tabs>
   );

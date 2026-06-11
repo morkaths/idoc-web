@@ -14,7 +14,10 @@
     "components": "@/components",
     "utils": "@repo/ui/lib/utils",
     "ui": "@repo/ui/components",
-    "hooks": "@/hooks",
-    "lib": "@/lib"
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "registries": {
+    "@smoothui": "https://smoothui.dev/r/{name}.json"
   }
 }

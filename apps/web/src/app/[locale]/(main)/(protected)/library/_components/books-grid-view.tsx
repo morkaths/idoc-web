@@ -1,39 +1,30 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import { BookGridItems } from "@/components/book/book-grid-items";
-import Pagination from "@/components/pagination";
-import { useBorrowHistory } from "@/hooks/data/useBorrow";
-import { Book, FindParams } from "@/types";
+import { useSession } from 'next-auth/react';
+import { RecommendationStrategy } from '@/types';
+import { useRecommendations } from '@/hooks/data/useRecommendation';
+import { BookGridItems } from '@/components/book/book-grid-items';
 
-export default function BookGridView({ filter }: { filter: Partial<FindParams> }) {
-    const [page, setPage] = useState(1);
+export default function BookGridView() {
+  const { data: session } = useSession();
+  const userId = session?.user?.id?.toString();
 
-    const { data, isLoading, error } = useBorrowHistory({ page, ...filter });
-    const books: Book[] = useMemo(() => {
-        const seen = new Set<string>();
-        return (data?.data || [])
-            .map(borrow => borrow.item)
-            .filter((book): book is Book => {
-                if (!book || seen.has(book.id)) return false;
-                seen.add(book.id);
-                return true;
-            });
-    }, [data]);
+  const {
+    data: books = [],
+    isLoading,
+    isError,
+  } = useRecommendations(userId, {
+    strategy: RecommendationStrategy.HYBRID,
+    limit: 12,
+  });
 
-    return (
-        <div className="space-y-6">
-            <BookGridItems
-                data={books}
-                loading={isLoading}
-                error={error?.message}
-            />
-            {data?.pagination && (
-                <Pagination
-                    pagination={data.pagination}
-                    onPageChange={setPage}
-                />
-            )}
-        </div>
-    );
+  return (
+    <div className='space-y-6'>
+      <BookGridItems
+        data={books}
+        loading={isLoading}
+        error={isError ? 'Không thể tải danh sách gợi ý. Vui lòng thử lại sau.' : undefined}
+      />
+    </div>
+  );
 }

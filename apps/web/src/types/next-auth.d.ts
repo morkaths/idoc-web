@@ -1,23 +1,31 @@
-import { User } from './schema';
-import { AuthToken } from './api';
-import 'next-auth';
 import 'next-auth/jwt';
+import { type UserResponse, type BookmarkResponse } from '@repo/types';
+import 'next-auth';
 
 declare module 'next-auth' {
-    interface Session {
-        user: User;
-        accessToken: string;
-        refreshToken: string;
-        error?: 'RefreshAccessTokenError' | 'InvalidCredentials' | string;
-    }
+  interface User extends UserResponse {
+    id: string;
+    email: string;
+    accessToken?: string;
+    accessTokenExpiresIn?: number;
+    emailVerified: Date | null;
+    bookmarks?: BookmarkResponse[];
+  }
+
+  interface Session {
+    user?: User;
+    accessToken?: string;
+    error?: 'RefreshAccessTokenError' | 'InvalidCredentials' | string;
+    [key: string]: unknown;
+  }
 }
 
 declare module 'next-auth/jwt' {
-    interface JWT {
-        user: User;
-        accessToken: string;
-        refreshToken: string;
-        expiresAt: number;
-        error?: 'RefreshAccessTokenError' | 'InvalidCredentials' | string;
-    }
+  interface JWT {
+    user?: User;
+    accessToken?: string;
+    expiresAt?: number;
+    error?: 'RefreshAccessTokenError' | 'InvalidCredentials' | string;
+    [key: string]: unknown;
+  }
 }

@@ -1,114 +1,149 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import type {
+  LoanResponse,
+  BorrowRequest,
+  FindParams,
+  RenewBorrowRequest,
+  PageParams,
+} from '@/types';
 import { BorrowApi } from '@/apis/borrow.api';
-import type { Borrow, FindParams, Pagination } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+} from './factory';
 
-type BorrowResponse = { data: Borrow[]; pagination?: Pagination };
-
-export const useBorrows = (
-  params: FindParams = {},
-  options?: Omit<UseQueryOptions<BorrowResponse, Error, BorrowResponse, any[]>, 'queryKey' | 'queryFn'>
-) => {
-  return useQuery<BorrowResponse, Error, BorrowResponse, any[]>({
-    queryKey: ['borrows', params],
-    queryFn: async () => {
-      const res = await BorrowApi.find(params);
-      return res;
-    },
-    enabled: true,
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
-    ...options,
-  });
+/**
+ * Hook to fetch borrows with pagination
+ * @param params Pagination parameters
+ * @param options Query options
+ */
+export const useBorrows = (params: PageParams = {}, options?: ListQueryOptions<LoanResponse>) => {
+  return useListQuery<LoanResponse>(['borrows', params], () => BorrowApi.find(params), options);
 };
 
+/**
+ * Hook to fetch borrow history
+ * @param params Pagination parameters
+ * @param options Query options
+ */
 export const useBorrowHistory = (
   params: FindParams = {},
-  options?: Omit<UseQueryOptions<BorrowResponse, Error, BorrowResponse, any[]>, 'queryKey' | 'queryFn'>
+  options?: ListQueryOptions<LoanResponse>
 ) => {
-  return useQuery<BorrowResponse, Error, BorrowResponse, any[]>({
-    queryKey: ['borrows', 'history', params],
-    queryFn: async () => {
-      const res = await BorrowApi.history(params);
-      return res;
-    },
-    enabled: true,
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
+  return useListQuery<LoanResponse>(
+    ['borrows', 'history', params],
+    () => BorrowApi.history(params),
+    options
+  );
+};
+
+/**
+ * Hook to search borrows with complex filters
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchBorrows = (
+  params: FindParams = {},
+  options?: ListQueryOptions<LoanResponse>
+) => {
+  return useListQuery<LoanResponse>(
+    ['borrows', 'search', params],
+    () => BorrowApi.search(params),
+    options
+  );
+};
+
+/**
+ * Hook to fetch a single borrow by ID
+ * @param id Borrow ID
+ * @param options Query options
+ */
+export const useBorrow = (id: string, options?: ItemQueryOptions<LoanResponse>) => {
+  return useItemQuery<LoanResponse>(['borrows', id], () => BorrowApi.findById(id), {
+    enabled: !!id,
     ...options,
   });
 };
 
-export const useBorrow = (id: string) => {
-  return useQuery({
-    queryKey: ['borrows', id],
-    queryFn: () => BorrowApi.findById(id),
-    enabled: !!id,
-    staleTime: 10 * 60 * 1000,
-  });
+/**
+ * Hook to create a new borrow
+ * @param options Mutation options
+ */
+export const useCreateBorrow = <TContext = unknown>(
+  options?: CreateMutationOptions<BorrowRequest, LoanResponse, TContext>
+) => {
+  return useCreateMutation<BorrowRequest, LoanResponse, TContext>(
+    (data) => BorrowApi.create(data),
+    [['borrows']],
+    options
+  );
 };
 
-export const useCreateBorrow = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (newBorrow: Partial<Borrow>) => BorrowApi.create(newBorrow),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['borrows'] });
-    },
-  });
+/**
+ * Hook to update an existing borrow
+ * @param options Mutation options
+ */
+export const useUpdateBorrow = <TContext = unknown>(
+  options?: UpdateMutationOptions<BorrowRequest, LoanResponse, TContext>
+) => {
+  return useUpdateMutation<BorrowRequest, LoanResponse, TContext>(
+    ({ id, data }) => BorrowApi.update(id, data),
+    (variables) => [['borrows'], ['borrows', variables.id]],
+    options
+  );
 };
 
-export const useUpdateBorrow = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Borrow> }) => BorrowApi.update(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['borrows', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['borrows'] });
-    },
-  });
+/**
+ * Hook to delete a borrow
+ * @param options Mutation options
+ */
+export const useDeleteBorrow = <TContext = unknown>(options?: DeleteMutationOptions<TContext>) => {
+  return useDeleteMutation<TContext>((id) => BorrowApi.delete(id), [['borrows']], options);
 };
 
-export const useDeleteBorrow = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => BorrowApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['borrows'] });
-    },
-  });
+/**
+ * Hook to extend a borrow
+ * @param options Mutation options
+ */
+export const useExtendBorrow = <TContext = unknown>(
+  options?: UpdateMutationOptions<RenewBorrowRequest, LoanResponse, TContext>
+) => {
+  return useUpdateMutation<RenewBorrowRequest, LoanResponse, TContext>(
+    ({ id, data }) => BorrowApi.extend(id, data),
+    (variables) => [['borrows'], ['borrows', variables.id]],
+    options
+  );
 };
 
-export const useExtendBorrow = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, extraDays, note }: { id: string; extraDays: number; note?: string }) => BorrowApi.extend(id, extraDays, note),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['borrows', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['borrows'] });
-    },
-  });
+/**
+ * Hook to return a borrow
+ * @param options Mutation options
+ */
+export const useReturnBorrow = <TContext = unknown>(
+  options?: UpdateMutationOptions<void, LoanResponse, TContext>
+) => {
+  return useUpdateMutation<void, LoanResponse, TContext>(
+    ({ id }) => BorrowApi.return(id),
+    (variables) => [['borrows'], ['borrows', variables.id]],
+    options
+  );
 };
 
-export const useReturnBorrow = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => BorrowApi.return(id),
-    onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: ['borrows', id] });
-      queryClient.invalidateQueries({ queryKey: ['borrows'] });
-    },
+/**
+ * Hook to view/read a borrow file
+ * @param borrowId Borrow ID
+ * @param options Query options
+ */
+export const useRead = (borrowId: string, options?: ItemQueryOptions<string>) => {
+  return useItemQuery<string>(['borrows', 'read', borrowId], () => BorrowApi.view(borrowId), {
+    enabled: !!borrowId,
+    ...options,
   });
 };

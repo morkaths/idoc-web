@@ -1,10 +1,11 @@
+import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/handle-server-error';
 import { showSubmittedData } from '@/lib/show-submitted-data';
+import { useCreateBook, useDeleteBook, useUpdateBook } from '@/hooks/data/useBook';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ImportDialog } from '@/components/import-dialog';
 import { BooksMutateDialog } from './books-mutate-dialog';
 import { useBooksContext } from './books-provider';
-import { useCreateBook, useDeleteBook, useUpdateBook } from '@/hooks/data/useBook';
-import { toast } from 'sonner';
 
 export function BooksDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useBooksContext();
@@ -17,26 +18,22 @@ export function BooksDialogs() {
       <BooksMutateDialog
         key='book-create'
         open={open === 'create'}
-        onOpenChange={() => setOpen('create')}
+        onOpenChange={(val) => setOpen(val ? 'create' : null)}
         onSubmit={async (data) => {
-          toast.promise(
-            createBookMut.mutateAsync(data),
-            {
-              loading: 'Creating book...',
-              success: () => {
-                setOpen(null);
-                return 'Book created successfully!';
-              },
-              error: (err) => err?.message || 'Failed to create book',
-            }
-          );
+          const promise = createBookMut.mutateAsync(data);
+          toast.promise(promise, {
+            loading: 'Creating book...',
+            success: (res) => res.message,
+            error: (err) => getErrorMessage(err, 'Failed to create book'),
+          });
+          await promise;
         }}
       />
 
       <ImportDialog
         key='books-import'
         open={open === 'import'}
-        onOpenChange={() => setOpen('import')}
+        onOpenChange={(val) => setOpen(val ? 'import' : null)}
       />
 
       {currentRow && (
@@ -44,26 +41,19 @@ export function BooksDialogs() {
           <BooksMutateDialog
             key={`book-update-${currentRow.id}`}
             open={open === 'update'}
-            onOpenChange={() => {
-              setOpen('update');
-              setTimeout(() => {
-                setCurrentRow(null);
-              }, 500);
+            onOpenChange={(val) => {
+              setOpen(val ? 'update' : null);
+              if (!val) setTimeout(() => setCurrentRow(null), 500);
             }}
             initialData={currentRow}
             onSubmit={async (data) => {
-              toast.promise(
-                updateBookMut.mutateAsync({ id: currentRow.id!, data }),
-                {
-                  loading: 'Updating book...',
-                  success: () => {
-                    setOpen(null);
-                    setTimeout(() => setCurrentRow(null), 500);
-                    return 'Book updated successfully!';
-                  },
-                  error: (err) => err?.message || 'Failed to update book',
-                }
-              );
+              const promise = updateBookMut.mutateAsync({ id: currentRow.id!, data });
+              toast.promise(promise, {
+                loading: 'Updating book...',
+                success: (res) => res.message,
+                error: (err) => getErrorMessage(err, 'Failed to update book'),
+              });
+              await promise;
             }}
           />
 
@@ -71,26 +61,23 @@ export function BooksDialogs() {
             key='book-delete'
             destructive
             open={open === 'delete'}
-            onOpenChange={() => {
-              setOpen('delete');
-              setTimeout(() => {
-                setCurrentRow(null);
-              }, 500);
+            onOpenChange={(val) => {
+              setOpen(val ? 'delete' : null);
+              if (!val) setTimeout(() => setCurrentRow(null), 500);
             }}
             handleConfirm={async () => {
-              toast.promise(
-                deleteBookMut.mutateAsync(currentRow.id!),
-                {
-                  loading: 'Deleting book...',
-                  success: () => {
-                    setOpen(null);
-                    setTimeout(() => setCurrentRow(null), 500);
-                    showSubmittedData(currentRow, 'The following book has been deleted:');
-                    return 'Book deleted successfully!';
-                  },
-                  error: (err) => err?.message || 'Failed to delete book',
-                }
-              );
+              const promise = deleteBookMut.mutateAsync(currentRow.id!);
+              toast.promise(promise, {
+                loading: 'Deleting book...',
+                success: (res) => {
+                  showSubmittedData(currentRow, 'The following book has been deleted:');
+                  return res.message;
+                },
+                error: (err) => getErrorMessage(err, 'Failed to delete book'),
+              });
+              await promise;
+              setOpen(null);
+              setTimeout(() => setCurrentRow(null), 500);
             }}
             className='max-w-md'
             title={`Delete this book: ${currentRow.title || currentRow.id} ?`}

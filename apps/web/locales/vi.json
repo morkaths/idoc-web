@@ -9,15 +9,53 @@
       "create": "Tạo mới",
       "update": "Cập nhật",
       "close": "Đóng",
-      "search": "Tìm kiếm..."
+      "select": "Chọn",
+      "search": "Tìm kiếm...",
+      "next": "Tiếp theo",
+      "previous": "Trước đó",
+      "view": "Hiển thị",
+      "viewAll": "Xem tất cả",
+      "viewDetails": "Xem chi tiết",
+      "submit": "Gửi",
+      "reset": "Đặt lại",
+      "backToHome": "Về trang chủ",
+      "goBack": "Quay lại"
+    },
+    "table": {
+      "asc": "Tăng dần",
+      "desc": "Giảm dần",
+      "hide": "Ẩn cột",
+      "selected": "đã chọn",
+      "actions": {
+        "clear": "Bỏ chọn"
+      },
+      "confirmByTyping": "Nhập \"{word}\" để xác nhận:",
+      "typeToConfirm": "Nhập từ khóa để xác nhận.",
+      "warning": "Cảnh báo!",
+      "operationRisk": "Hãy cẩn thận, thao tác này không thể hoàn tác.",
+      "actionSucceeded": "{action} {count} {entity} thành công!",
+      "actionFailed": "Thao tác {action} thất bại!",
+      "defaultConfirmTitle": "{action} {count} {entity}",
+      "defaultConfirmDesc": "Bạn có chắc chắn muốn {action} các {entity} đã chọn không?"
     },
     "states": {
-      "loading": "Đang tải...",
+      "loading": "Đng tải...",
       "redirecting": "Đang chuyển hướng...",
       "error": "Lỗi",
       "success": "Thành công",
       "noData": "Không tìm thấy dữ liệu"
-    }
+    },
+    "pagination": {
+      "rowsPerPage": "Số hàng mỗi trang",
+      "of": "trên",
+      "page": "Trang",
+      "first": "Trang đầu",
+      "last": "Trang cuối",
+      "next": "Trang sau",
+      "previous": "Trang trước"
+    },
+    "item": "mục",
+    "items": "tác phẩm"
   },
   "theme": {
     "title": "Cài đặt giao diện",
@@ -47,13 +85,13 @@
     "search": "Tìm kiếm",
     "catalog": {
       "label": "Danh mục",
+      "all": {
+        "title": "Tất cả sách",
+        "description": "Duyệt qua toàn bộ bộ sưu tập sách của chúng tôi."
+      },
       "discover": {
         "title": "Khám phá",
         "description": "Khám phá các bộ sưu tập và đề xuất được chọn lọc dành riêng cho bạn."
-      },
-      "newArrivals": {
-        "title": "Mới cập nhật",
-        "description": "Những cuốn sách mới nhất được thêm vào bộ sưu tập tuần này."
       },
       "popular": {
         "title": "Phổ biến",
@@ -70,26 +108,23 @@
         "title": "Nổi bật",
         "description": "Tiêu điểm về các nhà văn đoạt giải và kiệt tác của họ."
       },
-      "directory": {
-        "title": "Danh bạ",
-        "description": "Khám phá tiểu sử và thư mục sách của tất cả các tác giả."
+      "all": {
+        "title": "Tất cả tác giả",
+        "description": "Duyệt qua tất cả các tác giả trong bộ sưu tập của chúng tôi."
       }
     },
     "library": {
       "label": "Thư viện",
-      "borrowed": {
-        "title": "Đang mượn",
-        "description": "Sách bạn đang mượn từ thư viện."
+      "all": {
+        "title": "Thư viện của tôi",
+        "description": "Tổng quan về hoạt động thư viện và sách đang mượn."
       },
       "wishlist": {
         "title": "Danh sách mong muốn",
         "description": "Sách bạn đã lưu để mượn trong tương lai."
-      },
-      "history": {
-        "title": "Lịch sử",
-        "description": "Lịch sử mượn trả và tương tác của bạn với thư viện."
       }
     },
+    "chatbot": "Trợ lý AI",
     "user": {
       "signIn": "Đăng nhập",
       "signUp": "Đăng ký",
@@ -204,10 +239,10 @@
       },
       "username": {
         "label": "Tên đăng nhập",
-        "placeholder": "ten_cua_ban",
+        "placeholder": "username",
         "validation": {
           "usernameRequired": "Vui lòng nhập tên đăng nhập",
-          "usernameLength": "Tên đăng nhập phải có ít nhất 3 ký tự"
+          "usernameLength": "Tên đăng nhập phải có ít nhất {min} ký tự"
         }
       },
       "password": {
@@ -226,22 +261,37 @@
           "passwordsNotMatch": "Mật khẩu xác nhận không khớp"
         }
       },
-      "messages": {
-        "loadingSignIn": "Đang đăng nhập...",
-        "loadingGoogleSignIn": "Đang đăng nhập với Google...",
-        "loadingSignUp": "Đang tạo tài khoản...",
-        "loadingSignOut": "Đang đăng xuất...",
-        "loadingForgotPassword": "Đang đặt lại mật khẩu...",
-        "successSignIn": "Chào mừng trở lại! Bạn đã đăng nhập thành công.",
-        "successGoogleSignIn": "Đăng nhập bằng Google thành công.",
-        "successSignUp": "Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.",
-        "successSignOut": "Đăng xuất thành công!",
-        "successForgotPassword": "Đặt lại mật khẩu thành công! Vui lòng đăng nhập để tiếp tục.",
-        "errorSignIn": "Email hoặc mật khẩu không chính xác",
-        "errorGoogleSignIn": "Lỗi khi đăng nhập bằng Google.",
-        "errorSignUp": "Lỗi khi tạo tài khoản.",
-        "errorSignOut": "Lỗi khi đăng xuất.",
-        "errorForgotPassword": "Lỗi khi đặt lại mật khẩu."
+      "states": {
+        "signIn": {
+          "loading": "Đang đăng nhập...",
+          "success": "Đăng nhập thành công!",
+          "error": "Lỗi đăng nhập."
+        },
+        "googleSignIn": {
+          "loading": "Đang đăng nhập bằng Google...",
+          "success": "Đăng nhập bằng Google thành công!",
+          "error": "Lỗi đăng nhập bằng Google."
+        },
+        "signUp": {
+          "loading": "Đang tạo tài khoản...",
+          "success": "Tạo tài khoản thành công!",
+          "error": "Lỗi tạo tài khoản."
+        },
+        "signOut": {
+          "loading": "Đang đăng xuất...",
+          "success": "Đăng xuất thành công!",
+          "error": "Lỗi đăng xuất."
+        },
+        "forgotPassword": {
+          "loading": "Đang đặt lại mật khẩu...",
+          "success": "Đặt lại mật khẩu thành công!",
+          "error": "Lỗi đặt lại mật khẩu."
+        },
+        "sendResetLink": {
+          "loading": "Đang gửi liên kết đặt lại mật khẩu...",
+          "success": "Nếu tài khoản tồn tại cho {email}, bạn sẽ nhận được liên kết đặt lại mật khẩu trong giây lát.",
+          "error": "Đã có lỗi xảy ra. Vui lòng thử lại."
+        }
       }
     }
   },
@@ -266,6 +316,515 @@
     "503": {
       "title": "Website đang bảo trì!",
       "description": "Trang web hiện không khả dụng. <br /> Vui lòng thử lại sau."
+    }
+  },
+  "books": {
+    "sidebar": {
+      "title": "Khám phá",
+      "actions": {},
+      "tabs": {
+        "filter": "Bộ lọc",
+        "sort": "Sắp xếp"
+      },
+      "filter": {
+        "search": {
+          "label": "Tìm kiếm",
+          "placeholder": "Tìm kiếm theo tiêu đề, ISBN..."
+        },
+        "categories": {
+          "label": "Thể loại",
+          "placeholder": "Chọn thể loại...",
+          "searchPlaceholder": "Tìm kiếm thể loại...",
+          "empty": "Không tìm thấy thể loại.",
+          "loading": "Đang tải thể loại..."
+        },
+        "languages": {
+          "label": "Ngôn ngữ",
+          "placeholder": "Chọn ngôn ngữ...",
+          "searchPlaceholder": "Tìm kiếm ngôn ngữ...",
+          "empty": "Không tìm thấy ngôn ngữ.",
+          "loading": "Đang tải ngôn ngữ..."
+        }
+      },
+      "sort": {
+        "label": "Sắp xếp theo",
+        "direction": "Thứ tự",
+        "fields": {
+          "title": "Tiêu đề",
+          "createdAt": "Ngày tạo",
+          "updatedAt": "Ngày cập nhật",
+          "publishedDate": "Ngày xuất bản",
+          "rating": "Đánh giá",
+          "totalReviews": "Lượt đánh giá"
+        },
+        "order": {
+          "asc": "Tăng dần",
+          "desc": "Giảm dần"
+        }
+      }
+    },
+    "view": {
+      "author": "Tác giả ẩn danh",
+      "description": "Không có mô tả.",
+      "empty": {
+        "title": "Không tìm thấy sách",
+        "description": "Chúng tôi không tìm thấy kết quả nào phù hợp với tiêu chí tìm kiếm của bạn. Vui lòng thử thay đổi bộ lọc hoặc từ khóa."
+      },
+      "bookmark": {
+        "title": "Đánh dấu sách",
+        "error": "Không thể đánh dấu sách. Vui lòng thử lại.",
+        "success": "Đã thêm sách vào thư mục",
+        "removed": "Đã xóa sách khỏi thư mục",
+        "default": "Sách yêu thích"
+      },
+      "folder": {
+        "add": "Thêm vào thư mục",
+        "create": "Tạo thư mục mới",
+        "empty": "Không tìm thấy thư mục.",
+        "description": "Chúng tôi không tìm thấy thư mục nào phù hợp với tiêu chí tìm kiếm của bạn. Vui lòng thử thay đổi bộ lọc hoặc từ khóa."
+      }
+    }
+  },
+  "book": {
+    "by": "Bởi",
+    "author": "Tác giả ẩn danh",
+    "actions": {
+      "addToBookmark": "Thêm vào thư mục",
+      "borrow": "Mượn ngay"
+    },
+    "borrow": {
+      "title": "Mượn sách",
+      "description": "Nhập thông tin mượn sách bên dưới.",
+      "dueDate": {
+        "label": "Ngày hết hạn",
+        "placeholder": "Chọn ngày hết hạn"
+      },
+      "notes": {
+        "label": "Ghi chú",
+        "placeholder": "Ghi chú (không bắt buộc)"
+      },
+      "actions": {},
+      "states": {
+        "loading": "Đang tạo yêu cầu mượn...",
+        "success": "Yêu cầu mượn được tạo thành công!",
+        "error": "Lỗi khi tạo yêu cầu mượn."
+      }
+    },
+    "reviews": {
+      "total": "Dựa trên {count} đánh giá",
+      "sort": {
+        "label": "Sắp xếp theo",
+        "newest": "Mới nhất",
+        "oldest": "Cũ nhất",
+        "highestRating": "Đánh giá cao nhất",
+        "lowestRating": "Đánh giá thấp nhất"
+      },
+      "error": {
+        "fetch": "Không thể tải đánh giá",
+        "tryAgain": "Vui lòng thử lại sau"
+      },
+      "empty": {
+        "title": "Chưa có đánh giá nào.",
+        "description": "Hãy là người đầu tiên chia sẻ cảm nghĩ sáng tạo của bạn."
+      }
+    },
+    "bookmarks": {
+      "title": "Lưu vào thư mục",
+      "description": "Sắp xếp cuốn sách này vào các thư mục cá nhân của bạn.",
+      "placeholder": "Chọn một thư mục",
+      "empty": "Không tìm thấy thư mục nào.",
+      "create": "Tạo thư mục mới",
+      "success": "Đã thêm vào thư mục thành công!",
+      "removed": "Đã xóa khỏi thư mục",
+      "error": "Lỗi khi cập nhật thư mục"
+    },
+    "tabs": {
+      "info": {
+        "label": "Thông tin",
+        "description": {
+          "label": "Mô tả",
+          "empty": "Không có mô tả."
+        },
+        "language": {
+          "label": "Ngôn ngữ"
+        },
+        "pages": {
+          "label": "Số trang",
+          "page": "trang"
+        },
+        "publisher": {
+          "label": "Nhà xuất bản"
+        },
+        "publishedYear": {
+          "label": "Năm xuất bản"
+        }
+      },
+      "reviews": {
+        "label": "Đánh giá"
+      },
+      "recommendations": {
+        "label": "Gợi ý"
+      },
+      "similar": {
+        "label": "Sách tương tự"
+      },
+      "tags": {
+        "label": "Thẻ",
+        "empty": "Không tìm thấy thẻ.",
+        "description": "Chúng tôi không tìm thấy thẻ nào phù hợp với tiêu chí tìm kiếm của bạn. Vui lòng thử thay đổi bộ lọc hoặc từ khóa."
+      }
+    },
+    "error": {
+      "title": "Không tìm thấy sách",
+      "description": "Cuốn sách bạn đang tìm kiếm có thể đã bị xóa, đổi tên hoặc tạm thời không khả dụng.",
+      "actions": {
+        "reload": "Tải lại",
+        "backToHome": "Về trang chủ"
+      }
+    }
+  },
+  "view": {
+    "unauthenticated": {
+      "title": "Yêu cầu đăng nhập",
+      "description": "Bạn cần đăng nhập để xem nội dung sách này.",
+      "actions": {
+        "login": "Đăng nhập ngay"
+      }
+    },
+    "unauthorized": {
+      "title": "Quyền truy cập hạn chế",
+      "description": "Bạn cần phải mượn cuốn sách này trước khi có thể đọc nội dung.",
+      "actions": {
+        "goBack": "Quay lại"
+      }
+    },
+    "error": {
+      "title": "Không có tiêu đề",
+      "book": {
+        "title": "Không tìm thấy tài liệu",
+        "description": "Tài liệu bạn đang tìm kiếm không tồn tại hoặc chưa được đính kèm."
+      },
+      "actions": {}
+    }
+  },
+  "library": {
+    "title": "Thư viện của tôi",
+    "description": "Quản lý sách đang mượn và xem lại lịch sử mượn sách cá nhân.",
+    "tabs": {
+      "recommendations": "Gợi ý",
+      "history": "Lịch sử"
+    },
+    "search": {
+      "placeholder": "Tìm kiếm bản mượn..."
+    },
+    "table": {
+      "entity": "bản mượn",
+      "columns": {
+        "cover": "Ảnh bìa",
+        "book": "Sách",
+        "renewals": "Gia hạn",
+        "borrowedDate": "Ngày mượn",
+        "dueDate": "Ngày hết hạn",
+        "returnDate": "Ngày trả",
+        "status": "Trạng thái"
+      },
+      "states": {
+        "borrowed": "Đã mượn",
+        "active": "Đang mượn",
+        "overdue": "Quá hạn",
+        "returned": "Đã trả"
+      },
+      "actions": {
+        "view": {
+          "loading": "Đang chuyển hướng..."
+        },
+        "extend": {
+          "title": "Gia hạn bản mượn",
+          "description": "Chọn thêm số ngày hoặc ngày hết hạn mới cho bản mượn này.",
+          "loading": "Đang gia hạn...",
+          "success": "Gia hạn thành công!",
+          "error": "Gia hạn thất bại. Vui lòng thử lại.",
+          "fields": {
+            "borrowedDate": "Ngày mượn",
+            "extraDays": "Số ngày thêm",
+            "borrowRange": "Khoảng mượn",
+            "notes": "Ghi chú",
+            "placeholder": "Số ngày cần gia hạn",
+            "error": "Ngày hết hạn mới phải sau ngày hết hạn hiện tại ít nhất 1 ngày.",
+            "maxError": "Thời gian gia hạn không được quá 30 ngày."
+          }
+        },
+        "mutate": {
+          "create": {
+            "title": "Thêm bản mượn",
+            "description": "Nhập thông tin cho bản mượn mới."
+          },
+          "update": {
+            "title": "Chỉnh sửa bản mượn",
+            "description": "Cập nhật thông tin bản mượn bên dưới."
+          },
+          "fields": {
+            "book": "Sách",
+            "dueDate": "Ngày hết hạn",
+            "notes": "Ghi chú",
+            "placeholder": "Chọn một ngày"
+          },
+          "loading": "Đang lưu...",
+          "success": "Lưu thành công!",
+          "error": "Lưu thất bại. Vui lòng thử lại."
+        },
+        "review": {
+          "create": {
+            "success": "Đánh giá thành công!",
+            "error": "Lỗi khi đánh giá. Vui lòng thử lại."
+          },
+          "update": {
+            "success": "Cập nhật đánh giá thành công!",
+            "error": "Lỗi khi cập nhật đánh giá. Vui lòng thử lại."
+          }
+        },
+        "return": {
+          "title": "Trả bản mượn này: {borrowId}?",
+          "loading": "Đang thực hiện trả...",
+          "success": "Trả sách thành công!",
+          "error": "Lỗi khi trả sách. Vui lòng thử lại.",
+          "confirm": "Bản mượn sau đã được trả:",
+          "confirmDesc": "Bạn có chắc chắn muốn trả <strong>{title}</strong>?<br></br>Thao tác này không thể hoàn tác."
+        },
+        "history": {
+          "title": "Lịch sử mượn",
+          "description": "Dòng thời gian các sự kiện cho bản mượn này.",
+          "unknownTitle": "Tiêu đề không xác định",
+          "unknownAuthor": "Tác giả không xác định",
+          "noCategory": "Không có danh mục",
+          "loading": "Đang tải lịch sử...",
+          "success": "Tải lịch sử thành công!",
+          "error": "Lỗi khi tải lịch sử. Vui lòng thử lại.",
+          "timeline": {
+            "borrowed": {
+              "title": "Đã mượn",
+              "content": "Người dùng <strong>{username}</strong> đã mượn <strong>{title}</strong>."
+            },
+            "renewal": {
+              "title": "Gia hạn #{index}",
+              "content": "Hạn trả mới: <strong>{date}</strong>."
+            },
+            "returned": {
+              "title": "Đã trả",
+              "content": "Sách đã được trả."
+            },
+            "overdue": {
+              "title": "Quá hạn",
+              "content": "Đã quá hạn từ ngày <strong>{date}</strong>."
+            },
+            "due": {
+              "title": "Hạn trả",
+              "content": "Hạn trả là ngày <strong>{date}</strong>."
+            },
+            "unknown": "Ngày không xác định"
+          }
+        }
+      },
+      "bulkActions": {
+        "return": {
+          "tooltip": "Trả các bản mượn đã chọn",
+          "confirmDesc": "Bạn có chắc muốn trả các bản mượn đã chọn?"
+        },
+        "export": {
+          "tooltip": "Xuất các bản mượn đã chọn",
+          "confirmDesc": "Bạn có chắc muốn xuất các bản mượn đã chọn?",
+          "loading": "Đang xuất bản mượn...",
+          "success": "Xuất bản mượn thành công!",
+          "error": "Lỗi khi xuất bản mượn. Vui lòng thử lại."
+        }
+      }
+    },
+    "review": {
+      "create": "Đánh giá sách",
+      "update": "Cập nhật đánh giá",
+      "title": "Đánh giá bản mượn",
+      "description": "Chia sẻ cảm nghĩ về \"{title}\".",
+      "fallback": "Chia sẻ cảm nghĩ về cuốn sách này.",
+      "rating": {
+        "label": "Đánh giá của bạn",
+        "error": "Vui lòng chọn mức đánh giá!",
+        "value": {
+          "excellent": "Tuyệt vời!",
+          "good": "Tốt!",
+          "neutral": "Bình thường!",
+          "poor": "Tệ!",
+          "terrible": "Rất tệ!"
+        }
+      },
+      "content": {
+        "label": "Nội dung đánh giá",
+        "placeholder": "Điều bạn thích hoặc không thích ở cuốn sách này?"
+      },
+      "actions": {}
+    }
+  },
+  "home": {
+    "banner": {
+      "descriptionFallback": "Hành trình khám phá đầy kỳ thú đang chờ đón bạn. Một tác phẩm không thể bỏ qua cho những ai đam mê thể loại này."
+    },
+    "hero": {
+      "title": "Khám phá thế giới tri thức",
+      "subtitle": "Khám phá những cuốn sách phổ biến nhất và các đề xuất cá nhân hóa dành riêng cho bạn.",
+      "action": "Duyệt danh mục",
+      "searchBooks": "Tìm kiếm sách",
+      "joinedBy": "Tham gia cùng {count} độc giả nhiệt huyết",
+      "readPreview": "Đọc thử",
+      "noFeaturedBooks": "Không có sách nổi bật",
+      "todaysPick": "Gợi ý hôm nay",
+      "trendingNow": "Xu hướng hiện nay",
+      "unknownAuthor": "Tác giả chưa rõ"
+    },
+    "recommendations": {
+      "title": "Dành riêng cho bạn",
+      "subtitle": "Dựa trên lịch sử đọc và sở thích của bạn",
+      "forYou": "Dành riêng cho bạn",
+      "trending": "Xu hướng thịnh hành",
+      "interests": "Dựa trên sở thích",
+      "similarReaders": "Người dùng tương tự cũng thích",
+      "empty": "Chưa có đề xuất nào",
+      "startBookmarking": "Hãy bắt đầu đánh dấu sách để nhận được những gợi ý cá nhân hóa!",
+      "error": "Không thể tải gợi ý sách. Vui lòng thử lại sau."
+    },
+    "popular": {
+      "title": "Đang thịnh hành",
+      "subtitle": "Những cuốn sách được đọc nhiều nhất trong cộng đồng của chúng tôi hiện nay",
+      "empty": "Hiện không tìm thấy cuốn sách phổ biến nào."
+    },
+    "categories": {
+      "title": "Duyệt theo thể loại",
+      "subtitle": "Tìm cuốn sách yêu thích tiếp theo trong bộ sưu tập đa dạng của chúng tôi",
+      "browseCollection": "Khám phá bộ sưu tập",
+      "empty": "Không tìm thấy thể loại nào."
+    },
+    "newArrivals": {
+      "title": "Sách mới cập nhật",
+      "subtitle": "Khám phá những tựa sách mới nhất vừa cập bến thư viện",
+      "empty": "Chưa có sách mới nào."
+    },
+    "featuredAuthors": {
+      "title": "Tác giả tiêu biểu",
+      "subtitle": "Gặp gỡ những cây bút tài năng đằng sau những tác phẩm vĩ đại",
+      "empty": "Chưa có tác giả nổi bật nào."
+    },
+    "stats": {
+      "title": "iDoc qua những con số",
+      "subtitle": "Một cộng đồng ngày càng lớn mạnh của những người yêu sách và tìm kiếm tri thức",
+      "books": "Số sách",
+      "authors": "Số tác giả",
+      "users": "Số độc giả",
+      "borrows": "Lượt mượn"
+    },
+    "cta": {
+      "title": "Bắt đầu hành trình đọc sách của bạn",
+      "subtitle": "Tham gia cộng đồng iDoc ngay hôm nay để truy cập hàng ngàn đầu sách và nhận đề xuất cá nhân hóa.",
+      "action": "Đăng ký ngay"
+    }
+  },
+  "discover": {
+    "hero": {
+      "title": "Khám phá cuốn sách tuyệt vời tiếp theo",
+      "subtitle": "Đắm mình vào biển truyện, các bộ sưu tập được tuyển chọn và những viên ngọc cá nhân hóa dành riêng cho bạn.",
+      "searchPlaceholder": "Tìm kiếm theo tiêu đề, tác giả hoặc thể loại..."
+    },
+    "categories": {
+      "title": "Khám phá theo thể loại",
+      "all": "Tất cả thể loại"
+    },
+    "sections": {
+      "newArrivals": {
+        "title": "Sách mới cập nhật",
+        "subtitle": "Những kho báu mới nhất vừa được thêm vào bộ sưu tập."
+      },
+      "trending": {
+        "title": "Xu hướng hiện nay",
+        "subtitle": "Những cuốn sách đang được cộng đồng quan tâm nhất tuần này."
+      },
+      "forYou": {
+        "title": "Dành riêng cho bạn",
+        "subtitle": "Những lựa chọn cá nhân hóa dựa trên sở thích độc đáo của bạn."
+      },
+      "interests": {
+        "title": "Dựa trên sở thích của bạn",
+        "subtitle": "Những cuốn sách từ các thể loại bạn yêu thích."
+      },
+      "similarReaders": {
+        "title": "Độc giả giống bạn cũng thích",
+        "subtitle": "Khám phá những gì người khác có cùng sở thích đang đọc."
+      },
+      "becauseYouRead": {
+        "title": "Gợi ý vì bạn đã đọc {category}",
+        "subtitle": "Những cuốn sách cùng thể loại với các tác phẩm bạn đã đọc gần đây."
+      }
+    },
+    "authPrompt": {
+      "title": "Bạn muốn trải nghiệm cá nhân hóa?",
+      "description": "Đăng nhập để iDoc đề xuất những cuốn sách tốt nhất dựa trên lịch sử đọc và sở thích của bạn."
+    }
+  },
+  "chatbot": {
+    "title": "Trợ lý AI iDoc Library",
+    "welcomeTitle": "<highlight2>Trợ lý</highlight2> AI <highlight1>iDoc</highlight1> Library",
+    "errorMessage": "Xin lỗi, đã có lỗi kết nối đến máy chủ AI. Vui lòng thử lại sau.",
+    "thinking": "Trợ lý AI đang suy nghĩ...",
+    "typing": "Đang trả lời...",
+    "inputPlaceholder": "Hỏi trợ lý AI bằng {modelName}...",
+    "disclaimer": "AI có thể đưa ra câu trả lời không chính xác. Hãy kiểm tra thông tin quan trọng.",
+    "copied": "Đã copy!",
+    "retry": "Khôi phục",
+    "edit": "Chỉnh sửa",
+    "voiceInput": "Nhập bằng giọng nói",
+    "recording": "Đang ghi âm...",
+    "welcomeSubtitle": "Chào mừng bạn! Tôi có thể giúp gì cho bạn hôm nay? Hãy bắt đầu với một vài gợi ý dưới đây.",
+    "widget": {
+      "title": "Hỏi trợ lý AI",
+      "headerTitle": "Trợ lý AI Thư viện iDoc",
+      "headerTitleText": "Trợ lý <highlight>iDoc</highlight>",
+      "clear": "Xóa",
+      "openFullPage": "Mở rộng toàn trang",
+      "minimize": "Thu nhỏ",
+      "placeholder": "Hỏi trợ lý iDoc...",
+      "welcome": "Chào bạn! Tôi có thể giúp gì cho bạn hôm nay về tìm sách, mượn sách?",
+      "online": "Đang hoạt động"
+    },
+    "sidebar": {
+      "searchPlaceholder": "Tìm kiếm...",
+      "newChat": "Cuộc trò chuyện mới",
+      "collapseSidebar": "Thu gọn Sidebar",
+      "noConversations": "Chưa có cuộc hội thoại nào.",
+      "noResults": "Không tìm thấy kết quả.",
+      "options": "Tùy chọn",
+      "rename": "Đổi tên",
+      "delete": "Xóa",
+      "renameTitle": "Đổi tên cuộc trò chuyện",
+      "cancel": "Hủy",
+      "save": "Lưu"
+    },
+    "prompts": {
+      "discover": {
+        "title": "Khám phá sách hay",
+        "desc": "Gợi ý cho tôi các sách khoa học viễn tưởng nổi bật.",
+        "short": "Gợi ý sách hay"
+      },
+      "borrow": {
+        "title": "Quy trình mượn sách",
+        "desc": "Tôi có thể mượn sách và gia hạn thời gian mượn như thế nào?",
+        "short": "Cách mượn sách"
+      },
+      "author": {
+        "title": "Tìm theo tác giả",
+        "desc": "Tìm kiếm những tác phẩm của nhà văn Nguyễn Nhật Ánh.",
+        "short": "Tìm theo tác giả"
+      },
+      "selfhelp": {
+        "title": "Tìm sách phát triển bản thân",
+        "desc": "Gợi ý các cuốn sách hay về kỹ năng giao tiếp và tự học.",
+        "short": "Sách phát triển bản thân"
+      }
     }
   }
 }

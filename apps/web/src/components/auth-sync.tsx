@@ -1,32 +1,43 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { setAccessToken } from "@/apis/config";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { toast } from "sonner";
+import { useSearchParams, useRouter, usePathname, useParams } from 'next/navigation';
+import { useEffect, useRef } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { toast } from 'sonner';
+import { setAccessToken } from '@/apis/config';
 
 export function AuthSync() {
-    const { data: session } = useSession();
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useParams();
+  const locale = (params?.locale as string) || 'en';
+  const loginShownRef = useRef<string | null>(null);
 
-    useEffect(() => {
-        setAccessToken(session?.accessToken ?? null);
-    }, [session?.accessToken]);
+  useEffect(() => {
+    if (status === 'loading') return;
 
-    useEffect(() => {
-        const login = searchParams.get('login');
-        if (session && login) {
-            toast.success(`Welcome back, ${session.user?.email}!`);
-        }
-        if (login) {
-            const params = new URLSearchParams(searchParams.toString());
-            params.delete('login');
-            router.replace(`${pathname}?${params.toString()}`);
-        }
-    }, [session, searchParams, router, pathname]);
+    if (session?.error === 'RefreshAccessTokenError') {
+      signOut({ redirect: true, callbackUrl: `/${locale}/sign-in` });
+      return;
+    }
 
-    return null;
+    setAccessToken(session?.accessToken ?? null);
+  }, [session, status, locale]);
+
+  useEffect(() => {
+    const login = searchParams.get('login');
+    if (session && login && loginShownRef.current !== login) {
+      toast.success(`Welcome back, ${session.user?.email}!`);
+      loginShownRef.current = login;
+    }
+    if (login) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('login');
+      router.replace(`${pathname}?${params.toString()}`);
+    }
+  }, [session, searchParams, router, pathname]);
+
+  return null;
 }

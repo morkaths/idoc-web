@@ -1,96 +1,118 @@
-"use client";
+'use client';
 
-import { Book } from "@/types";
-import { useRouter } from "next/navigation";
-import paths from "@/config/path";
-import { Skeleton } from "@repo/ui/components/skeleton";
-import { SearchX } from "lucide-react";
-import { BookGridItem } from "./book-grid-item";
+import { useRouter } from 'next/navigation';
+import paths from '@/config/path';
+import { type BookResponse } from '@/types';
+import { SearchX } from 'lucide-react';
+import { useLocale } from '@/hooks/ui/useLocale';
+import { Skeleton } from '@repo/ui/components/skeleton';
+import { BookGridItem } from './book-grid-item';
+import { BookmarkProvider } from './bookmark-provider';
 
 interface BookGridItemsProps {
-    data?: Book[];
-    loading?: boolean;
-    error?: string | null;
-    className?: string;
+  data?: BookResponse[];
+  loading?: boolean;
+  error?: string | null;
+  className?: string;
 }
 
 export function BookGridItems({
-    data = [],
-    loading = false,
-    error = null,
-    className = "",
+  data = [],
+  loading = false,
+  error = null,
+  className = '',
 }: BookGridItemsProps) {
-    const router = useRouter();
+  const router = useRouter();
+  const { t, keys } = useLocale('books');
 
-    if (loading) {
-        return (
-            <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 justify-items-center items-start ${className}`}>
-                {[...Array(10)].map((_, i) => (
-                    <div
-                        key={i}
-                        className="flex flex-col w-full max-w-[240px] bg-white dark:bg-zinc-900 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-zinc-800 h-full"
-                    >
-                        {/* Top Background Pattern Skeleton */}
-                        <Skeleton className="h-32 w-full rounded-none bg-primary/5" />
-
-                        {/* Book Cover Skeleton */}
-                        <div className="relative px-4 -mt-24 w-full flex justify-center z-10">
-                            <Skeleton className="w-36 aspect-[3/4] shadow-md rounded-sm" />
-                        </div>
-
-                        {/* Content Skeleton */}
-                        <div className="p-3 pt-3 flex flex-col flex-grow gap-2">
-                            <Skeleton className="h-3 w-10" /> {/* Ebook tag */}
-                            <div className="space-y-1">
-                                <Skeleton className="h-4 w-full" /> {/* Title line 1 */}
-                                <Skeleton className="h-4 w-2/3" /> {/* Title line 2 */}
-                            </div>
-                            <Skeleton className="h-3 w-1/2 mt-1" /> {/* Author */}
-
-                            <div className="mt-auto flex items-center justify-between pt-2">
-                                <Skeleton className="h-3 w-16" /> {/* Rating stars */}
-                                <Skeleton className="h-5 w-5 rounded-md" /> {/* Bookmark icon */}
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="p-4 text-center rounded-md bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300">
-                {error}
-            </div>
-        );
-    }
-
-    if (data.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center py-20 px-4 w-full bg-card/50 rounded-xl border border-dashed border-gray-200 dark:border-zinc-800">
-                <div className="bg-primary/5 p-6 rounded-full mb-4">
-                    <SearchX className="w-12 h-12 text-primary opacity-40" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-zinc-100 mb-2">
-                    Không tìm thấy sách nào
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400 text-center max-w-sm text-sm">
-                    Chúng tôi không tìm thấy kết quả phù hợp với tiêu chí tìm kiếm của bạn. Hãy thử thay đổi bộ lọc hoặc từ khóa nhé.
-                </p>
-            </div>
-        );
-    }
-
+  if (loading) {
     return (
-        <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 justify-items-center items-start ${className}`}>
-            {data.map((book) => (
-                <BookGridItem
-                    key={book.id}
-                    book={book}
-                    onClick={() => router.push(paths.book(book.id))}
-                />
-            ))}
-        </div>
+      <div
+        className={`grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] items-start justify-items-center gap-6 ${className}`}
+      >
+        {[...Array(10)].map((_, i) => (
+          <div
+            key={i}
+            className={`group relative flex h-full w-full max-w-[180px] flex-col overflow-hidden rounded-md border border-gray-200/80 bg-zinc-50/90 pb-1 dark:border-zinc-800 dark:bg-zinc-900/80`}
+          >
+            <div
+              className={`pointer-events-none absolute top-0 right-0 left-0 h-[50%] overflow-hidden rounded-md`}
+            >
+              <Skeleton className='h-full w-full rounded-none bg-zinc-100/80 dark:bg-zinc-800/40' />
+            </div>
+            <div className={`invisible h-20 w-full`} aria-hidden='true' />
+
+            <div
+              className={`relative z-10 -mt-14 flex w-full justify-center px-2 transition-transform duration-500 sm:px-3`}
+            >
+              <div className={`flex items-center justify-center p-1 sm:p-1.5`}>
+                <Skeleton className={`aspect-[3/4] w-[120px] rounded-sm`} />
+              </div>
+            </div>
+
+            <div className='flex flex-grow flex-col p-2 pt-1 sm:p-2'>
+              <Skeleton className='mb-1 h-2 w-10 sm:h-3' />
+              <div className='space-y-1'>
+                <Skeleton className='h-3 w-full sm:h-4' />
+                <Skeleton className='h-3 w-2/3 sm:h-4' />
+              </div>
+              <Skeleton className='mt-2 h-2 w-1/2 sm:h-3' />
+
+              <div className='mt-auto flex items-center justify-between pt-1'>
+                <div className='flex items-center gap-0.5'>
+                  <Skeleton className='h-3 w-3 rounded-full' />
+                  <Skeleton className='h-3 w-3 rounded-full' />
+                  <Skeleton className='h-3 w-3 rounded-full' />
+                  <Skeleton className='h-3 w-3 rounded-full' />
+                  <Skeleton className='h-3 w-3 rounded-full' />
+                  <Skeleton className='ml-1 h-3 w-8' />
+                </div>
+                <Skeleton className='h-5 w-5 rounded-md' />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className='rounded-md bg-red-50 p-4 text-center text-red-700 dark:bg-red-900/20 dark:text-red-300'>
+        {error}
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <div className='bg-card/50 flex w-full flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 px-4 py-20 dark:border-zinc-800'>
+        <div className='bg-primary/5 mb-4 rounded-full p-6'>
+          <SearchX className='text-primary h-12 w-12 opacity-40' />
+        </div>
+        <h3 className='mb-2 text-xl font-bold text-gray-900 dark:text-zinc-100'>
+          {t(keys.view.empty.title)}
+        </h3>
+        <p className='max-w-sm text-center text-sm text-gray-500 dark:text-gray-400'>
+          {t(keys.view.empty.description)}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <BookmarkProvider>
+      <div
+        className={`grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] items-start justify-items-center gap-6 ${className}`}
+      >
+        {data.map((book) => (
+          <BookGridItem
+            key={book.id}
+            book={book}
+            onClick={() => router.push(paths.book(book.id))}
+          />
+        ))}
+      </div>
+    </BookmarkProvider>
+  );
 }

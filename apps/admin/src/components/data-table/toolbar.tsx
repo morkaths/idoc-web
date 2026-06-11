@@ -1,11 +1,11 @@
+import { useEffect, useState } from 'react';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { type Table } from '@tanstack/react-table';
+import { useDebounce } from '@/hooks/ui/useDebounce';
 import { Button } from '@repo/ui/components/button';
 import { Input } from '@repo/ui/components/input';
 import { DataTableFacetedFilter } from './faceted-filter';
 import { DataTableViewOptions } from './view-options';
-import { useDebounce } from '@/hooks/ui/useDebounce';
-import { useEffect, useState } from 'react';
 
 type DataTableToolbarProps<TData> = {
   table: Table<TData>;
@@ -28,17 +28,43 @@ export function DataTableToolbar<TData>({
   searchKey,
   filters = [],
 }: DataTableToolbarProps<TData>) {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(() => {
+    if (searchKey) {
+      return (table.getColumn(searchKey)?.getFilterValue() as string) ?? '';
+    }
+    return (table.getState().globalFilter as string) ?? '';
+  });
   const debouncedSearch = useDebounce(search, 500);
   const isFiltered = table.getState().columnFilters.length > 0 || table.getState().globalFilter;
 
   useEffect(() => {
     if (searchKey) {
-      table.getColumn(searchKey)?.setFilterValue(debouncedSearch);
+      const column = table.getColumn(searchKey);
+      if (column) {
+        const currentVal = (column.getFilterValue() as string) ?? '';
+        if (debouncedSearch !== currentVal) {
+          column.setFilterValue(debouncedSearch);
+        }
+      }
     } else {
-      table.setGlobalFilter(debouncedSearch);
+      const currentVal = (table.getState().globalFilter as string) ?? '';
+      if (debouncedSearch !== currentVal) {
+        table.setGlobalFilter(debouncedSearch);
+      }
     }
   }, [debouncedSearch, searchKey, table]);
+
+  // Sync search input with table state if it changes externally (e.g. reset or browser navigation)
+  useEffect(() => {
+    const externalVal = searchKey
+      ? ((table.getColumn(searchKey)?.getFilterValue() as string) ?? '')
+      : ((table.getState().globalFilter as string) ?? '');
+
+    if (externalVal !== debouncedSearch) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSearch(externalVal);
+    }
+  }, [table, searchKey, debouncedSearch]);
 
   return (
     <div className='flex items-center justify-between'>

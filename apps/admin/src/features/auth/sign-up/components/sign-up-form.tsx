@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from '@tanstack/react-router';
+import { toast } from 'sonner';
 import { IconFacebook, IconGithub } from '@/assets/brand-icons';
+import { useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -15,9 +18,6 @@ import {
 } from '@repo/ui/components/form';
 import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
-import { useAuthStore } from '@/stores/auth-store';
-import { useNavigate } from '@tanstack/react-router';
-import { toast } from 'sonner';
 
 const formSchema = z
   .object({

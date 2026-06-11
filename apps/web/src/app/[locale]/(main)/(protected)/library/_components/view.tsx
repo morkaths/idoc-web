@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@repo/ui/components/tabs";
-import BookGridView from "./books-grid-view";
-import { BorrowsProvider } from "./borrows-provider";
-import { BorrowsPrimaryButtons } from "./borrows-primary-buttons";
-import { BorrowsTable } from "./borrows-table";
-import { BorrowsDialogs } from "./borrows-dialogs";
+import { useLocale } from '@/hooks/ui/useLocale';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@repo/ui/components/tabs';
+import BookGridView from './books-grid-view';
+import { BorrowsDialogs } from './borrows-dialogs';
+import { BorrowsPrimaryButtons } from './borrows-primary-buttons';
+import { BorrowsProvider } from './borrows-provider';
+import { BorrowsTable } from './borrows-table';
 
 export function LibraryView() {
+  const { t, keys } = useLocale('library');
   return (
-    <main className="container py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">My Library</h1>
-        <p className="text-muted-foreground">Manage your borrowed books and explore your personal library history.</p>
+    <main className='container w-full max-w-full overflow-x-hidden pt-20 pb-8'>
+      <div className='mb-6'>
+        <h1 className='mb-2 text-2xl font-bold'>{t(keys.title)}</h1>
+        <p className='text-muted-foreground'>{t(keys.description)}</p>
       </div>
-      <Tabs defaultValue="books" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="books">Book List</TabsTrigger>
-          <TabsTrigger value="borrows">Borrow List</TabsTrigger>
+      <Tabs defaultValue='recommendations' className='w-full'>
+        <TabsList className='mb-6'>
+          <TabsTrigger value='recommendations'>{t(keys.tabs.recommendations)}</TabsTrigger>
+          <TabsTrigger value='history'>{t(keys.tabs.history)}</TabsTrigger>
         </TabsList>
-        <TabsContent value="books">
-          <BookGridView filter={{}} />
+        <TabsContent value='recommendations'>
+          <BookGridView />
         </TabsContent>
-        <TabsContent value="borrows">
+        <TabsContent value='history'>
           <BorrowsProvider>
-            <div className='flex flex-col gap-4 sm:gap-6'>
+            <div className='@container/content flex w-full max-w-full flex-col gap-4 overflow-hidden sm:gap-6'>
               <div className='flex flex-wrap items-end justify-end gap-4 sm:gap-6'>
-                <div>
-                </div>
                 <BorrowsPrimaryButtons />
               </div>
               <BorrowsTable />

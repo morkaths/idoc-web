@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { Link, useLocation } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
+import { useDirection } from '@/context/direction-provider';
 import { Badge } from '@repo/ui/components/badge';
 import {
   Collapsible,
@@ -83,14 +84,14 @@ function SidebarMenuCollapsible({ item, href }: { item: NavCollapsible; href: st
       className='group/collapsible'
     >
       <SidebarMenuItem>
-        <CollapsibleTrigger asChild>
-          <SidebarMenuButton tooltip={item.title}>
+        <SidebarMenuButton asChild tooltip={item.title}>
+          <CollapsibleTrigger>
             {item.icon && <item.icon />}
             <span>{item.title}</span>
             {item.badge && <NavBadge>{item.badge}</NavBadge>}
             <ChevronRight className='ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 rtl:rotate-180' />
-          </SidebarMenuButton>
-        </CollapsibleTrigger>
+          </CollapsibleTrigger>
+        </SidebarMenuButton>
         <CollapsibleContent className='CollapsibleContent'>
           <SidebarMenuSub>
             {item.items.map((subItem) => (
@@ -112,18 +113,24 @@ function SidebarMenuCollapsible({ item, href }: { item: NavCollapsible; href: st
 }
 
 function SidebarMenuCollapsedDropdown({ item, href }: { item: NavCollapsible; href: string }) {
+  const { dir } = useDirection();
   return (
     <SidebarMenuItem>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <SidebarMenuButton tooltip={item.title} isActive={checkIsActive(href, item)}>
+        <SidebarMenuButton asChild tooltip={item.title} isActive={checkIsActive(href, item)}>
+          <DropdownMenuTrigger>
             {item.icon && <item.icon />}
             <span>{item.title}</span>
             {item.badge && <NavBadge>{item.badge}</NavBadge>}
-            <ChevronRight className='ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
-          </SidebarMenuButton>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side='right' align='start' sideOffset={4}>
+            <ChevronRight className='ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 rtl:rotate-180' />
+          </DropdownMenuTrigger>
+        </SidebarMenuButton>
+        <DropdownMenuContent
+          side={dir === 'rtl' ? 'left' : 'right'}
+          align='start'
+          sideOffset={4}
+          className='min-w-52'
+        >
           <DropdownMenuLabel>
             {item.title} {item.badge ? `(${item.badge})` : ''}
           </DropdownMenuLabel>

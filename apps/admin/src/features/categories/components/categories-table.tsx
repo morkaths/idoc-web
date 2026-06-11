@@ -9,8 +9,10 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { Languages } from '@/types';
+import { LayoutGrid, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useCategories } from '@/hooks/data/useCategory';
+import { useSearchCategories } from '@/hooks/data/useCategory';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
 import {
   Table,
@@ -22,6 +24,7 @@ import {
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
 import { categoriesColumns as columns } from './categories-columns';
+import { buildCategoryFindParams } from './categories-query.utils';
 import CategoriesTableBulkActions from './categories-table-bulk-actions';
 
 const route = getRouteApi('/_authenticated/categories/');
@@ -29,7 +32,9 @@ const route = getRouteApi('/_authenticated/categories/');
 export function CategoriesTable() {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    lang: false,
+  });
 
   const {
     globalFilter,
@@ -43,34 +48,25 @@ export function CategoriesTable() {
     search: route.useSearch(),
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: true, key: 'q' },
-    columnFilters: [],
+    globalFilter: { enabled: true, key: 'query' },
+    columnFilters: [{ columnId: 'lang', searchKey: 'lang', type: 'array' }],
   });
 
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
 
-  const categoryParams = useMemo(() => {
-    const apiSort = sorting[0]
-      ? {
-          sortBy: String(sorting[0].id),
-          sortOrder: sorting[0].desc ? 'desc' : 'asc',
-        }
-      : undefined;
-
-    return {
-      page,
-      limit,
-      query: globalFilter ?? '',
-      ...(apiSort || {}),
-    };
-  }, [page, limit, globalFilter, sorting]);
+  const categoryParams = useMemo(
+    () => buildCategoryFindParams(page, limit, globalFilter ?? '', sorting, columnFilters),
+    [page, limit, globalFilter, sorting, columnFilters]
+  );
 
   // fetch server-side page
-  const { data: categoriesData, isFetching: isCategoriesFetching } = useCategories(categoryParams);
+  const { data: categoriesData, isFetching: isCategoriesFetching } =
+    useSearchCategories(categoryParams);
   const categories = categoriesData?.data ?? [];
   const categoryPagination = categoriesData?.pagination;
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: categories,
     columns,
@@ -98,24 +94,29 @@ export function CategoriesTable() {
   });
 
   useEffect(() => {
-    if (!onPaginationChange) return;
     setRowSelection({});
-    onPaginationChange((prev) => ({
-      ...prev,
-      pageIndex: 0,
-      pageSize: pagination.pageSize ?? 10,
-    }));
-  }, [globalFilter]);
+  }, [globalFilter, columnFilters]);
 
+  const pageCount = table.getPageCount();
   useEffect(() => {
-    ensurePageInRange(table.getPageCount());
-  }, [table.getPageCount(), ensurePageInRange]);
+    ensurePageInRange(pageCount);
+  }, [pageCount, ensurePageInRange]);
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
       <DataTableToolbar
         table={table}
         searchPlaceholder='Search categories...'
+        filters={[
+          {
+            columnId: 'lang',
+            title: 'Language',
+            options: Languages.filter((l) => l.enabled).map((l) => ({
+              label: l.label,
+              value: l.value,
+            })),
+          },
+        ]}
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>
@@ -159,8 +160,22 @@ export function CategoriesTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  {isCategoriesFetching ? 'Loading...' : 'No results.'}
+                <TableCell colSpan={columns.length} className='py-16 text-center'>
+                  {isCategoriesFetching ? (
+                    <Loader2 className='text-primary mx-auto h-5 w-5 animate-spin' />
+                  ) : (
+                    <div className='flex flex-col items-center gap-3'>
+                      <div className='bg-muted rounded-full p-4'>
+                        <LayoutGrid className='text-muted-foreground h-10 w-10' />
+                      </div>
+                      <div className='space-y-1'>
+                        <p className='text-foreground font-medium'>No categories found</p>
+                        <p className='text-muted-foreground text-sm'>
+                          Try adjusting your search or filter to find what you&apos;re looking for.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </TableCell>
               </TableRow>
             )}

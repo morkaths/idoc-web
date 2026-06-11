@@ -1,11 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import type { Table } from '@tanstack/react-table';
-import type { Category } from '@/types';
+import type { CategoryResponse } from '@/types';
 import { useDeleteCategory } from '@/hooks/data/useCategory';
 import DataTableBulkActions from '@/components/data-table/data-table-bulk-actions';
 
 type Props = {
-  table: Table<Category>;
+  table: Table<CategoryResponse>;
 };
 
 export function CategoriesTableBulkActions({ table }: Props) {

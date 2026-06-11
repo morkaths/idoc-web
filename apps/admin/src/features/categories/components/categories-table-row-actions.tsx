@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type Row } from '@tanstack/react-table';
-import { CategorySchema } from '@/types/schema';
+import type { CategoryResponse } from '@/types';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@repo/ui/components/button';
 import {
@@ -17,7 +17,7 @@ type CategoriesTableRowActionsProps<TData> = {
 };
 
 export function CategoriesTableRowActions<TData>({ row }: CategoriesTableRowActionsProps<TData>) {
-  const category = CategorySchema.parse(row.original);
+  const category = row.original as CategoryResponse;
   const ctx = useCategoriesContext();
   if (!ctx) throw new Error('CategoriesTableRowActions must be used inside CategoriesProvider');
   const { setOpen, setCurrentRow } = ctx;

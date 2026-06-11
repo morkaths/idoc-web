@@ -1,53 +1,72 @@
-import { API_CONFIG } from '@/config/api';
-import type { AuthenticationResponse, User } from '../types';
-import * as ApiRequest from './config';
+import { ApiEndpoint } from '@/config/api';
+import type { AuthResponse, UserRequest, ApiResponse } from '../types';
+import { ApiClient } from './config';
 
 export const AuthApi = {
-  login: async (data: { identifier: string; password: string }): Promise<AuthenticationResponse | null> => {
-    const response = await ApiRequest.apiPost<AuthenticationResponse>(
-      API_CONFIG.endpoints.auth.login,
-      { mode: 'public', data }
-    );
-    return (response.success && response.data) ? response.data : null;
+  register: async (data: Partial<UserRequest>): Promise<ApiResponse<AuthResponse>> => {
+    return ApiClient.post<AuthResponse>(ApiEndpoint.endpoints.auth.register(), {
+      security: 'public',
+      data,
+    });
   },
 
-  register: async (data: Partial<User>): Promise<AuthenticationResponse | null> => {
-    const response = await ApiRequest.apiPost<AuthenticationResponse>(
-      API_CONFIG.endpoints.auth.register,
-      { mode: 'public', data }
-    );
-    return (response.success && response.data) ? response.data : null;
+  login: async (data: { email: string; password: string }): Promise<ApiResponse<AuthResponse>> => {
+    return ApiClient.post<AuthResponse>(ApiEndpoint.endpoints.auth.login(), {
+      security: 'public',
+      data,
+    });
   },
 
-  verify: async (data: { token: string }): Promise<User | null> => {
-    const response = await ApiRequest.apiPost<User>(
-      API_CONFIG.endpoints.auth.verify,
-      { mode: 'public', data }
-    );
-    return (response.success && response.data) ? response.data : null;
+  refresh: async (): Promise<ApiResponse<AuthResponse>> => {
+    return ApiClient.post<AuthResponse>(ApiEndpoint.endpoints.auth.refresh(), {
+      security: 'public',
+    });
   },
 
-  refresh: async (refreshToken: string): Promise<AuthenticationResponse | null> => {
-    const response = await ApiRequest.apiPost<AuthenticationResponse>(
-      API_CONFIG.endpoints.auth.refresh,
-      { mode: 'public', data: { refreshToken } }
-    );
-    return (response.success && response.data) ? response.data : null;
+  logout: async (): Promise<ApiResponse<void>> => {
+    return ApiClient.post<void>(ApiEndpoint.endpoints.auth.logout(), {
+      security: 'private',
+    });
   },
 
-  logout: async (): Promise<boolean> => {
-    const response = await ApiRequest.apiPost<{ success: boolean }>(
-      API_CONFIG.endpoints.auth.logout,
-      { mode: 'private' }
-    );
-    return response.success || false;
+  verify: async (data: { email: string; otp: string }): Promise<ApiResponse<void>> => {
+    return ApiClient.put<void>(ApiEndpoint.endpoints.auth.verify(), {
+      security: 'public',
+      data,
+    });
   },
 
-  update: async (data: Partial<User>): Promise<User | null> => {
-    const response = await ApiRequest.apiPatch<User>(
-      API_CONFIG.endpoints.auth.update,
-      { mode: 'private', data }
-    );
-    return (response.success && response.data) ? response.data : null;
-  }
+  resend: async (data: { email: string }): Promise<ApiResponse<void>> => {
+    return ApiClient.post<void>(ApiEndpoint.endpoints.auth.resend(), {
+      security: 'public',
+      params: data,
+    });
+  },
+
+  changePassword: async (data: {
+    oldPassword: string;
+    newPassword: string;
+  }): Promise<ApiResponse<void>> => {
+    return ApiClient.post<void>(ApiEndpoint.endpoints.auth.changePassword(), {
+      security: 'private',
+      data,
+    });
+  },
+
+  forgotPassword: async (data: { email: string }): Promise<ApiResponse<void>> => {
+    return ApiClient.post<void>(ApiEndpoint.endpoints.auth.forgotPassword(), {
+      security: 'public',
+      data,
+    });
+  },
+
+  resetPassword: async (data: {
+    token: string;
+    newPassword: string;
+  }): Promise<ApiResponse<void>> => {
+    return ApiClient.post<void>(ApiEndpoint.endpoints.auth.resetPassword(), {
+      security: 'public',
+      data,
+    });
+  },
 };

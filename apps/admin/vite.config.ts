@@ -8,8 +8,11 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
+  const base = env.VITE_BASE_URL || '/';
+  const formattedBase = base.endsWith('/') ? base : `${base}/`;
+
   return {
-    base: env.VITE_BASE_URL || '/',
+    base: formattedBase,
     plugins: [
       tanstackRouter({
         target: 'react',

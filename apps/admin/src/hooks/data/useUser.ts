@@ -1,64 +1,84 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { UserApi } from '@/apis';
-import type { FindParams, User, Pagination } from '@/types';
+import type { FindParams, UserResponse, UserRequest, PageParams } from '@/types';
+import {
+  useListQuery,
+  useItemQuery,
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+  type ListQueryOptions,
+  type ItemQueryOptions,
+  type CreateMutationOptions,
+  type UpdateMutationOptions,
+  type DeleteMutationOptions,
+} from './factory';
 
-type UserResponse = { data: User[]; pagination?: Pagination };
-
-export const useUsers = (
-  params: FindParams = {},
-  options?: Omit<UseQueryOptions<UserResponse, Error, UserResponse, any[]>, 'queryKey' | 'queryFn'>
-) => {
-  return useQuery<UserResponse, Error, UserResponse, any[]>({
-    queryKey: ['users', params],
-    queryFn: async () => await UserApi.find(params),
-    enabled: true,
-    refetchOnWindowFocus: false,
+/**
+ * Hook to fetch users with pagination
+ * @param params Pagination parameters
+ * @param options Query options
+ */
+export const useUsers = (params: PageParams = {}, options?: ListQueryOptions<UserResponse>) => {
+  return useListQuery<UserResponse>(['users', params], () => UserApi.find(params), {
     staleTime: 60 * 60 * 1000,
-    select: (data) => ({
-      data: data.data,
-      pagination: data.pagination,
-    }),
     ...options,
   });
 };
 
-export const useUser = (id: string) => {
-  return useQuery({
-    queryKey: ['users', id],
-    queryFn: () => UserApi.findById(id),
+/**
+ * Hook to search users
+ * @param params Search parameters
+ * @param options Query options
+ */
+export const useSearchUsers = (
+  params: FindParams = {},
+  options?: ListQueryOptions<UserResponse>
+) => {
+  return useListQuery<UserResponse>(['users', 'search', params], () => UserApi.search(params), {
+    ...options,
+  });
+};
+
+/**
+ * Hook to fetch a single user by ID
+ * @param id User ID
+ * @param options Query options
+ */
+export const useUser = (id: string, options?: ItemQueryOptions<UserResponse>) => {
+  return useItemQuery<UserResponse>(['users', id], () => UserApi.findById(id), {
     enabled: !!id,
-    staleTime: 10 * 60 * 1000,
+    ...options,
   });
 };
 
-export const useCreateUser = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (newUser: Partial<User>) => UserApi.create(newUser),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-  });
+/**
+ * Hook to create a new user
+ * @param options Mutation options
+ */
+export const useCreateUser = (options?: CreateMutationOptions<UserRequest, UserResponse>) => {
+  return useCreateMutation<UserRequest, UserResponse>(
+    (data) => UserApi.create(data),
+    [['users']],
+    options
+  );
 };
 
-export const useUpdateUser = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<User> }) =>
-      UserApi.update(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['users', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-  });
+/**
+ * Hook to update an existing user
+ * @param options Mutation options
+ */
+export const useUpdateUser = (options?: UpdateMutationOptions<UserRequest, UserResponse>) => {
+  return useUpdateMutation<UserRequest, UserResponse>(
+    ({ id, data }) => UserApi.update(id, data),
+    (variables) => [['users', variables.id], ['users']],
+    options
+  );
 };
 
-export const useDeleteUser = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => UserApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-  });
+/**
+ * Hook to delete a user
+ * @param options Mutation options
+ */
+export const useDeleteUser = (options?: DeleteMutationOptions) => {
+  return useDeleteMutation((id) => UserApi.delete(id), [['users']], options);
 };

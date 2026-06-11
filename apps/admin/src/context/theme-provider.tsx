@@ -2,9 +2,9 @@ import { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies';
 import { themeColors, themeConfig } from '@/components/layout/data/theme-data';
 
-export type Mode = "dark" | "light" | "system";
+export type Mode = 'dark' | 'light' | 'system';
 type ColorKey = string;
-type ResolvedMode = "dark" | "light";
+type ResolvedMode = 'dark' | 'light';
 
 const DEFAULT_MODE: Mode = themeConfig.defaults.mode;
 const DEFAULT_COLOR: ColorKey = themeConfig.defaults.color;
@@ -26,11 +26,11 @@ type ThemeProviderState = {
   mode: Mode;
   setMode: (mode: Mode) => void;
   resetTheme: () => void;
-  
+
   color: ColorKey;
   setColor: (color: ColorKey) => void;
   availableColors: string[];
-  
+
   radius: string;
   setRadius: (radius: string) => void;
 
@@ -124,10 +124,10 @@ export function ThemeProvider({
       root.classList.remove('dark', 'light');
 
       if (mode === 'system') {
-         if (mediaQuery.matches) root.classList.add('dark');
+        if (mediaQuery.matches) root.classList.add('dark');
       } else if (mode === 'dark') {
-         root.classList.add('dark');
-      } 
+        root.classList.add('dark');
+      }
       // 'light' is default, generally no class needed or you can add 'light'
     };
 
@@ -144,23 +144,24 @@ export function ThemeProvider({
       const selectedColor = themeColors[color];
       if (!selectedColor) return;
 
-      const styles = effectiveMode === 'dark' ? selectedColor.styles.dark : selectedColor.styles.light;
+      const styles =
+        effectiveMode === 'dark' ? selectedColor.styles.dark : selectedColor.styles.light;
 
       // Inject variables
       Object.entries(styles).forEach(([key, value]) => {
         if (value && key !== 'radius' && key !== 'font-sans') {
-            root.style.setProperty(`--${key}`, value);
+          root.style.setProperty(`--${key}`, value);
         }
       });
-      
+
       // Apply Radius and Font separately
       root.style.setProperty('--radius', radius);
       root.style.setProperty('--font-sans', font);
     };
 
     const applyAll = () => {
-        applyModeClass();
-        applyColorStyles();
+      applyModeClass();
+      applyColorStyles();
     };
 
     applyAll();
@@ -174,14 +175,14 @@ export function ThemeProvider({
 
     mediaQuery.addEventListener?.('change', handleSystemChange);
     return () => mediaQuery.removeEventListener?.('change', handleSystemChange);
-
   }, [mode, color, radius, font]);
-
 
   const setMode = (t: Mode) => {
     try {
       setCookie(storageKey, t, THEME_COOKIE_MAX_AGE);
-    } catch {}
+    } catch {
+      // Ignore cookie error
+    }
     _setMode(t);
   };
 
@@ -189,21 +190,27 @@ export function ThemeProvider({
     if (!themeColors[p]) return; // Guard
     try {
       setCookie(colorStorageKey, p, THEME_COOKIE_MAX_AGE);
-    } catch {}
+    } catch {
+      // Ignore cookie error
+    }
     _setColor(p);
   };
-  
+
   const setRadius = (r: string) => {
     try {
       setCookie('idoc_admin_radius', r, THEME_COOKIE_MAX_AGE);
-    } catch {}
+    } catch {
+      // Ignore cookie error
+    }
     _setRadius(r);
   };
-  
+
   const setFont = (f: string) => {
     try {
       setCookie('idoc_admin_font', f, THEME_COOKIE_MAX_AGE);
-    } catch {}
+    } catch {
+      // Ignore cookie error
+    }
     _setFont(f);
   };
 
@@ -213,7 +220,9 @@ export function ThemeProvider({
       removeCookie(colorStorageKey);
       removeCookie('idoc_admin_radius');
       removeCookie('idoc_admin_font');
-    } catch {}
+    } catch {
+      // Ignore cookie error
+    }
     _setMode(DEFAULT_MODE);
     _setColor(DEFAULT_COLOR);
     _setRadius(themeConfig.defaults.radius);

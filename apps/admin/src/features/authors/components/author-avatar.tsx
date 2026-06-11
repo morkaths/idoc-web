@@ -9,17 +9,17 @@ function getInitials(name?: string) {
 
 export function AuthorAvatar({ src, name }: { src?: string; name?: string }) {
   return (
-    <Avatar className="h-8 w-8">
+    <Avatar className='h-8 w-8'>
       <AvatarImage
         src={src || undefined}
         alt={name || 'avatar'}
-        onError={e => {
+        onError={(e) => {
           const img = e.target as HTMLImageElement;
           img.onerror = null;
           img.src = '';
         }}
       />
-      <AvatarFallback className="text-xs">{getInitials(name)}</AvatarFallback>
+      <AvatarFallback className='text-xs'>{getInitials(name)}</AvatarFallback>
     </Avatar>
   );
 }

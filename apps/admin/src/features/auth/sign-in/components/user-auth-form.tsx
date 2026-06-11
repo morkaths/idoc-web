@@ -21,9 +21,7 @@ import { Input } from '@repo/ui/components/input';
 import { PasswordInput } from '@/components/password-input';
 
 const formSchema = z.object({
-  email: z.email({
-    error: (iss) => (iss.input === '' ? 'Please enter your email' : undefined),
-  }),
+  email: z.string().email('Please enter a valid email address'),
   password: z
     .string()
     .min(1, 'Please enter your password')
@@ -50,25 +48,22 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
   function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
 
-    toast.promise(
-      auth.login(data.email, data.password),
-      {
-        loading: 'Signing in...',
-        success: (result) => {
-          setIsLoading(false);
-          if (result) {
-            const targetPath = redirectTo || '/';
-            navigate({ to: targetPath, replace: true });
-            return `Welcome back, ${data.email}!`;
-          }
-          return 'Invalid email or password';
-        },
-        error: (err) => {
-          setIsLoading(false);
-          return err?.message || 'Error';
-        },
-      }
-    );
+    toast.promise(auth.login(data.email, data.password), {
+      loading: 'Signing in...',
+      success: (result) => {
+        setIsLoading(false);
+        if (result) {
+          const targetPath = redirectTo || '/';
+          navigate({ to: targetPath, replace: true });
+          return `Welcome back, ${data.email}!`;
+        }
+        return 'Invalid email or password';
+      },
+      error: (err) => {
+        setIsLoading(false);
+        return err?.message || 'Error';
+      },
+    });
   }
 
   return (

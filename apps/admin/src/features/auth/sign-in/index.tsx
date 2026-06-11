@@ -26,12 +26,12 @@ export function SignIn() {
         <CardContent>
           <UserAuthForm redirectTo={redirect} />
         </CardContent>
-        <CardFooter className="flex flex-col gap-2">
+        <CardFooter className='flex flex-col gap-2'>
           <p className='text-muted-foreground text-center text-sm'>
             Don't have an account?{' '}
             <Link
               to='/sign-up'
-              className='hover:text-primary underline underline-offset-4 font-medium'
+              className='hover:text-primary font-medium underline underline-offset-4'
             >
               Sign up
             </Link>

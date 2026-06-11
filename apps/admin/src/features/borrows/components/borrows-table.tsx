@@ -9,6 +9,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { BorrowStatus } from '@/types';
+import { BookOpen, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useBorrows } from '@/hooks/data/useBorrow';
 import { useTableUrlState } from '@/hooks/ui/useTableUrlState';
@@ -22,6 +24,7 @@ import {
 } from '@repo/ui/components/table';
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table';
 import { borrowsColumns as columns } from './borrows-columns';
+import { buildBorrowFindParams } from './borrows-query.utils';
 import BorrowsTableBulkActions from './borrows-table-bulk-actions';
 
 const route = getRouteApi('/_authenticated/borrows/');
@@ -43,35 +46,23 @@ export function BorrowsTable() {
     search: route.useSearch(),
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: true, key: 'q' },
-    // Thêm filter nếu cần
-    // columnFilters: [],
+    globalFilter: { enabled: true, key: 'query' },
+    columnFilters: [{ columnId: 'status', searchKey: 'status', type: 'array' }],
   });
 
   const page = typeof pagination.pageIndex === 'number' ? pagination.pageIndex + 1 : 1;
   const limit = typeof pagination.pageSize === 'number' ? pagination.pageSize : 10;
 
-  const borrowParams = useMemo(() => {
-    const apiSort = sorting[0]
-      ? {
-        sortBy: String(sorting[0].id),
-        sortOrder: sorting[0].desc ? 'desc' : 'asc',
-      }
-      : undefined;
+  const borrowParams = useMemo(
+    () => buildBorrowFindParams(page, limit, globalFilter ?? '', sorting, columnFilters),
+    [page, limit, globalFilter, sorting, columnFilters]
+  );
 
-    return {
-      page,
-      limit,
-      query: globalFilter ?? '',
-      ...(apiSort || {}),
-    };
-  }, [page, limit, globalFilter, sorting]);
-
-  // fetch server-side page
   const { data: borrowsData, isFetching: isBorrowsFetching } = useBorrows(borrowParams);
   const borrows = borrowsData?.data ?? [];
   const borrowPagination = borrowsData?.pagination;
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: borrows,
     columns,
@@ -99,26 +90,31 @@ export function BorrowsTable() {
   });
 
   useEffect(() => {
-    if (!onPaginationChange) return;
     setRowSelection({});
-    onPaginationChange((prev) => ({
-      ...prev,
-      pageIndex: 0,
-      pageSize: pagination.pageSize ?? 10,
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalFilter]);
+  }, [globalFilter, columnFilters]);
 
+  const pageCount = table.getPageCount();
   useEffect(() => {
-    ensurePageInRange(table.getPageCount());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [table.getPageCount(), ensurePageInRange]);
+    ensurePageInRange(pageCount);
+  }, [pageCount, ensurePageInRange]);
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
       <DataTableToolbar
         table={table}
         searchPlaceholder='Search borrows...'
+        filters={[
+          {
+            columnId: 'status',
+            title: 'Status',
+            options: [
+              { label: 'Borrowed', value: BorrowStatus.BORROWED },
+              { label: 'Returned', value: BorrowStatus.RETURNED },
+              { label: 'Overdue', value: BorrowStatus.OVERDUE },
+              { label: 'Canceled', value: BorrowStatus.CANCELED },
+            ],
+          },
+        ]}
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>
@@ -162,8 +158,22 @@ export function BorrowsTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  {isBorrowsFetching ? 'Loading...' : 'No results.'}
+                <TableCell colSpan={columns.length} className='py-16 text-center'>
+                  {isBorrowsFetching ? (
+                    <Loader2 className='text-primary mx-auto h-5 w-5 animate-spin' />
+                  ) : (
+                    <div className='flex flex-col items-center gap-3'>
+                      <div className='bg-muted rounded-full p-4'>
+                        <BookOpen className='text-muted-foreground h-10 w-10' />
+                      </div>
+                      <div className='space-y-1'>
+                        <p className='text-foreground font-medium'>No borrows found</p>
+                        <p className='text-muted-foreground text-sm'>
+                          Try adjusting your search or filter to find what you&apos;re looking for.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </TableCell>
               </TableRow>
             )}

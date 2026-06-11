@@ -19,6 +19,7 @@ const paths = {
   signin: '/signin',
   signup: '/signup',
   search: '/search',
+  discover: '/discover',
   books: '/books',
   book: (slug: string | undefined) => `/books/${slug}`,
 };

@@ -9,7 +9,34 @@
       "create": "Create",
       "update": "Update",
       "close": "Close",
-      "search": "Search..."
+      "select": "Select",
+      "search": "Search...",
+      "next": "Next",
+      "previous": "Previous",
+      "view": "View",
+      "viewAll": "View All",
+      "viewDetails": "View Details",
+      "submit": "Submit",
+      "reset": "Reset",
+      "backToHome": "Back to Home",
+      "goBack": "Go Back"
+    },
+    "table": {
+      "asc": "Asc",
+      "desc": "Desc",
+      "hide": "Hide",
+      "selected": "selected",
+      "actions": {
+        "clear": "Clear selection"
+      },
+      "confirmByTyping": "Confirm by typing \"{word}\":",
+      "typeToConfirm": "Type keyword to confirm.",
+      "warning": "Warning!",
+      "operationRisk": "Please be careful, this operation cannot be rolled back.",
+      "actionSucceeded": "{action} {count} {entity} successfully!",
+      "actionFailed": "{action} failed!",
+      "defaultConfirmTitle": "{action} {count} {entity}",
+      "defaultConfirmDesc": "Are you sure you want to {action} the selected {entity}?"
     },
     "states": {
       "loading": "Loading...",
@@ -17,7 +44,18 @@
       "error": "Error",
       "success": "Success",
       "noData": "No data found"
-    }
+    },
+    "pagination": {
+      "rowsPerPage": "Rows per page",
+      "of": "of",
+      "page": "Page",
+      "first": "First page",
+      "last": "Last page",
+      "next": "Next page",
+      "previous": "Previous page"
+    },
+    "item": "item",
+    "items": "items"
   },
   "theme": {
     "title": "Theme Settings",
@@ -47,13 +85,13 @@
     "search": "Search",
     "catalog": {
       "label": "Catalog",
+      "all": {
+        "title": "All Books",
+        "description": "Browse through our extensive collection of books."
+      },
       "discover": {
         "title": "Discover",
         "description": "Explore curated collections and recommendations tailored for you."
-      },
-      "newArrivals": {
-        "title": "New Arrivals",
-        "description": "The latest additions to our collection this week."
       },
       "popular": {
         "title": "Popular",
@@ -70,26 +108,23 @@
         "title": "Featured",
         "description": "Spotlight on award-winning writers and their masterpieces."
       },
-      "directory": {
-        "title": "Directory",
-        "description": "Explore biographies and bibliographies of all authors."
+      "all": {
+        "title": "All Authors",
+        "description": "Browse all authors in our collection."
       }
     },
     "library": {
       "label": "Library",
-      "borrowed": {
-        "title": "Borrowed",
-        "description": "Books you have currently borrowed from the library."
+      "all": {
+        "title": "My Library",
+        "description": "Overview of your library activity and borrowed books."
       },
       "wishlist": {
         "title": "Wish List",
         "description": "Books you have added to your wish list for future borrowing."
-      },
-      "history": {
-        "title": "History",
-        "description": "Your borrowing history and past interactions with the library."
       }
     },
+    "chatbot": "AI Assistant",
     "user": {
       "signIn": "Sign In",
       "signUp": "Sign Up",
@@ -207,7 +242,7 @@
         "placeholder": "your username",
         "validation": {
           "usernameRequired": "Please enter your username",
-          "usernameLength": "Username must be at least 3 characters long"
+          "usernameLength": "Username must be at least {min} characters long"
         }
       },
       "password": {
@@ -226,22 +261,37 @@
           "passwordsNotMatch": "Passwords do not match"
         }
       },
-      "messages": {
-        "loadingSignIn": "Signing in...",
-        "loadingGoogleSignIn": "Signing in with Google...",
-        "loadingSignUp": "Creating account...",
-        "loadingSignOut": "Signing out...",
-        "loadingForgotPassword": "Resetting password...",
-        "successSignIn": "Welcome back! You have signed in successfully.",
-        "successGoogleSignIn": "Signed in with Google successfully.",
-        "successSignUp": "Account created! Please sign in to continue.",
-        "successSignOut": "Signed out successfully!",
-        "successForgotPassword": "Password reset successfully! Please sign in to continue.",
-        "errorSignIn": "Invalid email or password",
-        "errorGoogleSignIn": "Error signing in with Google.",
-        "errorSignUp": "Error creating account.",
-        "errorSignOut": "Error signing out.",
-        "errorForgotPassword": "Error resetting password."
+      "states": {
+        "signIn": {
+          "loading": "Signing in...",
+          "success": "Signed in successfully!",
+          "error": "Error signing in."
+        },
+        "googleSignIn": {
+          "loading": "Signing in with Google...",
+          "success": "Signed in with Google successfully!",
+          "error": "Error signing in with Google."
+        },
+        "signUp": {
+          "loading": "Creating account...",
+          "success": "Account created successfully!",
+          "error": "Error creating account."
+        },
+        "signOut": {
+          "loading": "Signing out...",
+          "success": "Signed out successfully!",
+          "error": "Error signing out."
+        },
+        "forgotPassword": {
+          "loading": "Resetting password...",
+          "success": "Password reset successfully!",
+          "error": "Error resetting password."
+        },
+        "sendResetLink": {
+          "loading": "Sending reset link...",
+          "success": "If an account exists for {email}, you will receive a reset link shortly.",
+          "error": "Something went wrong. Please try again."
+        }
       }
     }
   },
@@ -266,6 +316,550 @@
     "503": {
       "title": "Website is under maintenance!",
       "description": "The site is not available at the moment. <br /> Please try again later."
+    }
+  },
+  "books": {
+    "sidebar": {
+      "title": "Discover",
+      "actions": {
+        "reset": "Reset",
+        "submit": "Apply"
+      },
+      "tabs": {
+        "filter": "Filter",
+        "sort": "Sort"
+      },
+      "filter": {
+        "search": {
+          "label": "Search",
+          "placeholder": "Search by title, ISBN..."
+        },
+        "categories": {
+          "label": "Categories",
+          "placeholder": "Select categories...",
+          "searchPlaceholder": "Search categories...",
+          "empty": "No categories found.",
+          "loading": "Loading categories..."
+        },
+        "languages": {
+          "label": "Language",
+          "placeholder": "Select languages...",
+          "searchPlaceholder": "Search languages...",
+          "empty": "No languages found.",
+          "loading": "Loading languages..."
+        }
+      },
+      "sort": {
+        "label": "Sort by",
+        "direction": "Order",
+        "fields": {
+          "title": "Title",
+          "createdAt": "Created At",
+          "updatedAt": "Updated At",
+          "publishedDate": "Published Date",
+          "rating": "Rating",
+          "totalReviews": "Total Reviews"
+        },
+        "order": {
+          "asc": "Ascending",
+          "desc": "Descending"
+        }
+      }
+    },
+    "view": {
+      "author": "Unknown Author",
+      "description": "No description available.",
+      "empty": {
+        "title": "No books found",
+        "description": "We couldn't find any results matching your search criteria. Please try changing your filters or keywords."
+      },
+      "bookmark": {
+        "title": "Bookmark Book",
+        "error": "Failed to bookmark book. Please try again.",
+        "success": "Book added to your folder",
+        "removed": "Book removed from your folder",
+        "default": "Favourite books"
+      },
+      "folder": {
+        "add": "Add Folder",
+        "create": "Create new folder",
+        "empty": "No folders found.",
+        "description": "We couldn't find any folders matching your search criteria. Please try changing your filters or keywords."
+      }
+    }
+  },
+  "book": {
+    "by": "By",
+    "author": "Unknown Author",
+    "actions": {
+      "addToBookmark": "Add to Folder",
+      "borrow": "Borrow Now"
+    },
+    "borrow": {
+      "title": "Borrow Book",
+      "description": "Enter the borrow book information below.",
+      "dueDate": {
+        "label": "Expire Date",
+        "placeholder": "Pick expire date"
+      },
+      "notes": {
+        "label": "Notes",
+        "placeholder": "Notes (optional)"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      },
+      "states": {
+        "loading": "Creating borrow request...",
+        "success": "Borrow request created successfully!",
+        "error": "Error creating borrow request."
+      }
+    },
+    "reviews": {
+      "total": "Based on {count} reviews",
+      "sort": {
+        "label": "Sort by",
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "highestRating": "Highest Rating",
+        "lowestRating": "Lowest Rating"
+      },
+      "error": {
+        "fetch": "Could not load reviews",
+        "tryAgain": "Please try again later"
+      },
+      "empty": {
+        "title": "No reviews yet.",
+        "description": "Be the first to share your creative thoughts."
+      }
+    },
+    "bookmarks": {
+      "title": "Add to Folder",
+      "description": "Organize this book into your personal folders.",
+      "placeholder": "Choose a folder",
+      "empty": "No folders found.",
+      "create": "Create New Folder",
+      "success": "Added to folder successfully!",
+      "removed": "Removed from folder",
+      "error": "Failed to update folder"
+    },
+    "tabs": {
+      "info": {
+        "label": "Info",
+        "description": {
+          "label": "Description",
+          "empty": "No description available."
+        },
+        "language": {
+          "label": "Language"
+        },
+        "pages": {
+          "label": "Pages",
+          "page": "page"
+        },
+        "publisher": {
+          "label": "Publisher"
+        },
+        "publishedYear": {
+          "label": "Published Year"
+        }
+      },
+      "reviews": {
+        "label": "Reviews"
+      },
+      "recommendations": {
+        "label": "Recommendations"
+      },
+      "similar": {
+        "label": "Similar"
+      },
+      "tags": {
+        "label": "Tags",
+        "empty": "No tags found.",
+        "description": "We couldn't find any tags matching your search criteria. Please try changing your filters or keywords."
+      }
+    },
+    "error": {
+      "title": "Book not found",
+      "description": "The book you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+      "actions": {
+        "reload": "Reload",
+        "backToHome": "Back to Home"
+      }
+    }
+  },
+  "view": {
+    "unauthenticated": {
+      "title": "You need to be logged in to view this book.",
+      "description": "Please log in to view this book.",
+      "actions": {
+        "login": "Login Now"
+      }
+    },
+    "unauthorized": {
+      "title": "You don't have permission to view this book.",
+      "description": "Please log in to view this book.",
+      "actions": {
+        "goBack": "Go Back"
+      }
+    },
+    "error": {
+      "title": "Failed to access file",
+      "description": "Creating a secure link or you don't have permission to view this file.",
+      "actions": {
+        "goBack": "Go Back"
+      }
+    }
+  },
+  "library": {
+    "title": "My Library",
+    "description": "Manage your borrowed books and explore your personal library history.",
+    "tabs": {
+      "recommendations": "Recommendations",
+      "history": "History"
+    },
+    "search": {
+      "placeholder": "Search borrows..."
+    },
+    "table": {
+      "entity": "borrow",
+      "columns": {
+        "cover": "Cover",
+        "book": "Book",
+        "renewals": "Renewals",
+        "borrowedDate": "Borrow Date",
+        "dueDate": "Expire Date",
+        "returnDate": "Return Date",
+        "status": "Status"
+      },
+      "states": {
+        "borrowed": "Borrowed",
+        "active": "Active",
+        "overdue": "Overdue",
+        "returned": "Returned"
+      },
+      "actions": {
+        "view": {
+          "label": "View",
+          "loading": "Redirecting..."
+        },
+        "extend": {
+          "label": "Extend",
+          "title": "Extend Borrow",
+          "description": "Choose extra days or pick a new expire date for this borrow.",
+          "loading": "Extending borrow...",
+          "success": "Borrow extended successfully!",
+          "error": "Failed to extend borrow. Please try again.",
+          "fields": {
+            "borrowedDate": "Borrow Date",
+            "extraDays": "Extra Days",
+            "borrowRange": "Borrow Range",
+            "notes": "Notes",
+            "placeholder": "Number of days to extend",
+            "error": "Expire date must be at least 1 day after current expire date.",
+            "maxError": "The extension period cannot exceed 30 days."
+          }
+        },
+        "mutate": {
+          "create": {
+            "title": "Add Borrow",
+            "description": "Enter the information for the new borrow.",
+            "submit": "Create"
+          },
+          "update": {
+            "title": "Edit Borrow",
+            "description": "Update the borrow information below.",
+            "submit": "Save changes"
+          },
+          "fields": {
+            "book": "Book",
+            "dueDate": "Due Date",
+            "notes": "Notes",
+            "placeholder": "Pick a date"
+          },
+          "loading": "Saving...",
+          "success": "Saved successfully!",
+          "error": "Failed to save. Please try again.",
+          "cancel": "Cancel"
+        },
+        "review": {
+          "label": "Review",
+          "create": "Create Review",
+          "update": "Update Review",
+          "description": "Share your thoughts on {title}",
+          "fallback": "Share your thoughts on this book",
+          "rating": {
+            "label": "Rating",
+            "error": "Please select a rating",
+            "value": {
+              "excellent": "Excellent",
+              "good": "Good",
+              "neutral": "Neutral",
+              "poor": "Poor",
+              "terrible": "Terrible"
+            }
+          },
+          "content": {
+            "label": "Comment",
+            "placeholder": "Write your review here..."
+          },
+          "actions": {
+            "submit": "Submit Review",
+            "update": "Update Review"
+          },
+          "messages": {
+            "create": {
+              "success": "Borrow reviewed successfully!",
+              "error": "Failed to review borrow. Please try again."
+            },
+            "update": {
+              "success": "Borrow reviewed successfully!",
+              "error": "Failed to review borrow. Please try again."
+            }
+          }
+        },
+        "return": {
+          "label": "Return",
+          "title": "Return this borrow: {borrowId}?",
+          "loading": "Returning borrow...",
+          "success": "Borrow returned successfully!",
+          "error": "Failed to return borrow. Please try again.",
+          "confirmDesc": "Are you sure you want to return <strong>{title}</strong>?<br></br>This action cannot be undone."
+        },
+        "history": {
+          "label": "History",
+          "title": "Borrow History",
+          "description": "Timeline of events for this borrow record.",
+          "unknownTitle": "Unknown Title",
+          "unknownAuthor": "Unknown Author",
+          "noCategory": "No Category",
+          "loading": "Loading borrow history...",
+          "success": "Borrow history loaded successfully!",
+          "error": "Failed to load borrow history. Please try again.",
+          "timeline": {
+            "borrowed": {
+              "title": "Borrowed",
+              "content": "User <strong>{username}</strong> borrowed <strong>{title}</strong>."
+            },
+            "renewal": {
+              "title": "Renewal #{index}",
+              "content": "Extended until <strong>{date}</strong>."
+            },
+            "returned": {
+              "title": "Returned",
+              "content": "Item was returned."
+            },
+            "overdue": {
+              "title": "Overdue",
+              "content": "Item is overdue since <strong>{date}</strong>."
+            },
+            "due": {
+              "title": "Due Date",
+              "content": "Item is due on <strong>{date}</strong>."
+            },
+            "unknown": "Unknown Date"
+          }
+        }
+      },
+      "bulkActions": {
+        "return": {
+          "label": "Return",
+          "tooltip": "Return selected borrows",
+          "confirmDesc": "Are you sure you want to return the selected borrows?"
+        },
+        "export": {
+          "label": "Export",
+          "tooltip": "Export selected borrows",
+          "confirmDesc": "Are you sure you want to export the selected borrows?",
+          "loading": "Exporting borrows...",
+          "success": "Borrows exported successfully!",
+          "error": "Failed to export borrows. Please try again."
+        }
+      }
+    },
+    "review": {
+      "create": "Review Book",
+      "update": "Update Review",
+      "title": "Review Borrow",
+      "description": "Share your thoughts on \"{title}\".",
+      "fallback": "Share your thoughts on this book.",
+      "rating": {
+        "label": "Your Rating",
+        "error": "Please select a rating!",
+        "value": {
+          "excellent": "Excellent!",
+          "good": "Good!",
+          "neutral": "Neutral!",
+          "poor": "Poor!",
+          "terrible": "Terrible!"
+        }
+      },
+      "content": {
+        "label": "Review Content",
+        "placeholder": "What did you like or dislike about this book?"
+      },
+      "actions": {
+        "submit": "Submit Review",
+        "update": "Update Review"
+      }
+    }
+  },
+  "home": {
+    "actions": {
+      "readNow": "Read Now"
+    },
+    "banner": {
+      "descriptionFallback": "Embark on an exciting journey of discovery. A must-read for anyone passionate about this genre.",
+      "author": "Author",
+      "unknownAuthor": "Unknown Author"
+    },
+    "recommendations": {
+      "title": "Picked for You",
+      "subtitle": "Based on your reading history and preferences",
+      "forYou": "Just for You",
+      "trending": "Trending Now",
+      "interests": "Based on Your Interests",
+      "similarReaders": "Readers Like You Enjoyed",
+      "empty": "No recommendations yet",
+      "startBookmarking": "Start bookmarking books to get personalized suggestions!",
+      "error": "Could not load recommendations. Please try again later."
+    },
+    "popular": {
+      "title": "Currently Trending",
+      "subtitle": "The most read books in our community right now",
+      "empty": "No popular books found at the moment."
+    },
+    "categories": {
+      "title": "Browse by Category",
+      "subtitle": "Find your next favorite read in our diverse collection",
+      "description": "Discover a world of knowledge and imagination through our extensive collection of books across various categories.",
+      "empty": "No categories found."
+    },
+    "newArrivals": {
+      "title": "New Arrivals",
+      "subtitle": "Discover the latest titles that have just arrived in our library",
+      "empty": "No new books available yet."
+    },
+    "featuredAuthors": {
+      "title": "Featured Authors",
+      "subtitle": "Meet the talented writers behind the great works",
+      "empty": "No featured authors available yet."
+    },
+    "stats": {
+      "title": "iDoc by the Numbers",
+      "subtitle": "A growing community of readers and knowledge seekers",
+      "books": "Books",
+      "authors": "Authors",
+      "users": "Readers",
+      "borrows": "Borrows"
+    },
+    "cta": {
+      "title": "Start Your Reading Journey",
+      "subtitle": "Join the iDoc community today to access thousands of books and get personalized recommendations.",
+      "action": "Sign Up Now"
+    }
+  },
+  "discover": {
+    "hero": {
+      "title": "Uncover Your Next Great Read",
+      "subtitle": "Dive into a sea of stories, curated collections, and personalized gems just for you.",
+      "searchPlaceholder": "Search by title, author, or genre..."
+    },
+    "categories": {
+      "title": "Explore by Genre",
+      "all": "All Categories"
+    },
+    "sections": {
+      "newArrivals": {
+        "title": "New Arrivals",
+        "subtitle": "The latest treasures added to our collection."
+      },
+      "trending": {
+        "title": "Trending Now",
+        "subtitle": "What everyone is talking about this week."
+      },
+      "forYou": {
+        "title": "Just for You",
+        "subtitle": "Personalized picks based on your unique taste."
+      },
+      "interests": {
+        "title": "Based on Your Interests",
+        "subtitle": "Books from genres you love."
+      },
+      "similarReaders": {
+        "title": "Readers Like You Enjoyed",
+        "subtitle": "Discover what others with similar tastes are reading."
+      },
+      "becauseYouRead": {
+        "title": "Because you read {category}",
+        "subtitle": "Books matching the genres of your recently read titles."
+      }
+    },
+    "authPrompt": {
+      "title": "Want a Personalized Experience?",
+      "description": "Sign in to let iDoc suggest the best books based on your reading history and interests."
+    }
+  },
+  "chatbot": {
+    "title": "iDoc Library AI Assistant",
+    "welcomeTitle": "<highlight1>iDoc</highlight1> Library <highlight2>AI</highlight2> Assistant",
+    "errorMessage": "Sorry, there was an error connecting to the AI server. Please try again later.",
+    "thinking": "AI Assistant is thinking...",
+    "typing": "Typing...",
+    "inputPlaceholder": "Ask AI assistant using {modelName}...",
+    "disclaimer": "AI can make mistakes. Consider checking important information.",
+    "copied": "Copied!",
+    "retry": "Retry",
+    "edit": "Edit",
+    "voiceInput": "Voice input",
+    "recording": "Recording...",
+    "welcomeSubtitle": "Welcome! How can I help you today? Here are a few suggestions to get you started.",
+    "widget": {
+      "title": "Ask AI Assistant",
+      "headerTitle": "iDoc Library AI Assistant",
+      "headerTitleText": "iDoc <highlight>Assistant</highlight>",
+      "clear": "Clear",
+      "openFullPage": "Open in full page",
+      "minimize": "Minimize",
+      "placeholder": "Ask iDoc assistant...",
+      "welcome": "Hi! How can I help you today with book searching or borrowing?",
+      "online": "Active"
+    },
+    "sidebar": {
+      "searchPlaceholder": "Search...",
+      "newChat": "New Chat",
+      "collapseSidebar": "Collapse Sidebar",
+      "noConversations": "No conversations yet.",
+      "noResults": "No results found.",
+      "options": "Options",
+      "rename": "Rename",
+      "delete": "Delete",
+      "renameTitle": "Rename Chat",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "prompts": {
+      "discover": {
+        "title": "Discover Great Books",
+        "desc": "Recommend some popular sci-fi books in the library.",
+        "short": "Sci-fi recommendations"
+      },
+      "borrow": {
+        "title": "Borrowing Process",
+        "desc": "How do I borrow books and extend my loan periods?",
+        "short": "How to borrow"
+      },
+      "author": {
+        "title": "Search by Author",
+        "desc": "Find works by author Nguyen Nhat Anh.",
+        "short": "Search by author"
+      },
+      "selfhelp": {
+        "title": "Self-Help Books",
+        "desc": "Suggest good books on communication skills and self-learning.",
+        "short": "Self-Help Books"
+      }
     }
   }
 }

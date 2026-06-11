@@ -1,18 +1,47 @@
-import qs from 'qs';
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
-import { API_CONFIG } from '@/config/api';
+import { ApiEndpoint } from '@/config/api';
 import env from '@/config/env';
 import type { ApiResponse } from '@/types';
-import { useAuthStore } from '@/stores/auth-store';
+import qs from 'qs';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/stores/auth-store';
 
-type ApiMode = 'public' | 'private';
+export type SecurityStrategy = 'public' | 'private';
 
-function attachInterceptors(instance: AxiosInstance, withCredentials: boolean) {
+export interface ApiOptions extends Omit<AxiosRequestConfig, 'method' | 'url' | 'baseURL'> {
+  security?: SecurityStrategy;
+}
+
+let instances: { public: AxiosInstance; private: AxiosInstance } | null = null;
+
+const createInstance = (withCredentials = false): AxiosInstance => {
+  const instance = axios.create({
+    baseURL: ApiEndpoint.meta.baseURL,
+    timeout: ApiEndpoint.meta.timeout,
+    withCredentials,
+    paramsSerializer: (params) => {
+      const processed: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(params)) {
+        if (
+          Array.isArray(value) &&
+          value.length > 0 &&
+          typeof value[0] === 'object' &&
+          value[0] !== null
+        ) {
+          processed[key] = JSON.stringify(value);
+        } else {
+          processed[key] = value;
+        }
+      }
+      return qs.stringify(processed, { arrayFormat: 'repeat', skipNulls: true });
+    },
+  });
+
   instance.interceptors.request.use((config) => {
     config.headers = config.headers || {};
     config.headers['x-api-key'] = env.api.key;
-    if (withCredentials) {
+
+    if (withCredentials && !config.headers['Authorization']) {
       const { auth } = useAuthStore.getState();
       const accessToken = auth.token?.accessToken;
       if (accessToken) {
@@ -22,99 +51,96 @@ function attachInterceptors(instance: AxiosInstance, withCredentials: boolean) {
     return config;
   });
 
-  instance.interceptors.response.use(
-    (res) => res,
-    async (error) => {
-      const originalRequest = error.config;
-      if (
-        error?.response?.status === 401 &&
-        !originalRequest._retry
-      ) {
-        originalRequest._retry = true;
-        const { auth } = useAuthStore.getState();
-        const refreshed = await auth.refresh();
-        if (refreshed) {
-          originalRequest.headers.Authorization = `Bearer ${useAuthStore.getState().auth.token?.accessToken}`;
-          return instance.request(originalRequest);
-        } else {
+  if (withCredentials) {
+    instance.interceptors.response.use(
+      (res) => res,
+      async (error) => {
+        const originalRequest = error.config;
+        // Check if it's a 401 and we haven't retried yet and it's not a refresh request itself
+        if (
+          error?.response?.status === 401 &&
+          !originalRequest._retry &&
+          !originalRequest.url?.includes('refresh')
+        ) {
+          const { auth } = useAuthStore.getState();
+
+          originalRequest._retry = true;
+          const refreshed = await auth.refresh();
+          if (refreshed) {
+            const newToken = useAuthStore.getState().auth.token?.accessToken;
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            return instance.request(originalRequest);
+          }
+
+          // If no refresh token or refresh failed, logout and redirect
           await auth.logout();
-          toast.error('Session expired. Please log in again.');
+          // Don't toast if we are already going to sign-in
+          if (!window.location.pathname.includes('sign-in')) {
+            toast.error('Session expired. Please log in again.');
+          }
         }
+        return Promise.reject(error);
       }
-      return Promise.reject({
-        success: false,
-        message: error?.response?.data?.message ?? error?.message,
-        statusCode: error?.response?.status ?? 500,
-      });
-    }
-  );
-}
+    );
+  } else {
+    // For public instance, just reject errors normally
+    instance.interceptors.response.use(
+      (res) => res,
+      (error) => Promise.reject(error)
+    );
+  }
 
-function createApiInstance(withCredentials = false): AxiosInstance {
-  const instance = axios.create({
-    baseURL: API_CONFIG.baseURL,
-    timeout: API_CONFIG.timeout,
-    withCredentials,
-    paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
-  });
-  attachInterceptors(instance, withCredentials);
   return instance;
-}
-
-function getApiInstance(mode: ApiMode): AxiosInstance {
-  return createApiInstance(mode === 'private');
-}
-
-function handleError<T>(error: unknown): ApiResponse<T> {
-  if (axios.isAxiosError(error)) {
-    return {
-      success: false,
-      message: error.response?.data?.message ?? error.message,
-      statusCode: error.response?.status ?? 500,
-    };
-  }
-  if (typeof error === 'object' && error !== null && 'message' in error) {
-    const err = error as { message?: string; statusCode?: number };
-    return {
-      success: false,
-      message: err.message,
-      statusCode: err.statusCode ?? 500,
-    };
-  }
-  return {
-    success: false,
-    message: 'Unknown error',
-    statusCode: 500,
-  };
-}
-
-type ApiOptions = Omit<AxiosRequestConfig, 'method' | 'url' | 'baseURL'> & {
-  mode?: ApiMode;
 };
 
-async function apiRequest<T>(
-  method: AxiosRequestConfig['method'],
-  url: string,
-  options: ApiOptions = {}
-): Promise<ApiResponse<T>> {
-  const { mode = 'private', ...axiosOptions } = options;
-  try {
-    const api = getApiInstance(mode);
+const getInstance = (strategy: SecurityStrategy): AxiosInstance => {
+  if (!instances) {
+    instances = {
+      public: createInstance(true),
+      private: createInstance(true),
+    };
+  }
+  return instances[strategy];
+};
+
+export const ApiClient = {
+  async request<T>(
+    method: AxiosRequestConfig['method'],
+    url: string,
+    options: ApiOptions = {}
+  ): Promise<ApiResponse<T>> {
+    const { security = 'private', ...axiosOptions } = options;
+    const api = getInstance(security);
     const response = await api.request<ApiResponse<T>>({
       method,
       url,
       ...axiosOptions,
     });
+
+    if (response.data && 'success' in response.data && response.data.success === false) {
+      throw response.data;
+    }
+
     return response.data;
-  } catch (error) {
-    return handleError<T>(error);
-  }
-}
+  },
 
-const apiGet = <T>(url: string, options?: ApiOptions) => apiRequest<T>('get', url, options);
-const apiPost = <T>(url: string, options?: ApiOptions) => apiRequest<T>('post', url, options);
-const apiPut = <T>(url: string, options?: ApiOptions) => apiRequest<T>('put', url, options);
-const apiPatch = <T>(url: string, options?: ApiOptions) => apiRequest<T>('patch', url, options);
-const apiDelete = <T>(url: string, options?: ApiOptions) => apiRequest<T>('delete', url, options);
+  get<T>(url: string, options?: ApiOptions) {
+    return ApiClient.request<T>('get', url, options);
+  },
 
-export { apiRequest, apiGet, apiPost, apiPut, apiPatch, apiDelete };
+  post<T>(url: string, options?: ApiOptions) {
+    return ApiClient.request<T>('post', url, options);
+  },
+
+  put<T>(url: string, options?: ApiOptions) {
+    return ApiClient.request<T>('put', url, options);
+  },
+
+  patch<T>(url: string, options?: ApiOptions) {
+    return ApiClient.request<T>('patch', url, options);
+  },
+
+  delete<T>(url: string, options?: ApiOptions) {
+    return ApiClient.request<T>('delete', url, options);
+  },
+};
