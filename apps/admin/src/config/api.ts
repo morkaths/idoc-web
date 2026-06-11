@@ -12,15 +12,6 @@ const crud = (path: string) => ({
   delete: (id: string) => `${path}/${id}`,
   deleteMany: (ids: readonly string[]) => `${path}/bulk?ids=${ids.join(',')}`,
 });
-
-export const AgentEndpoint = {
-  meta: {
-    baseURL: env.agent.url,
-    timeout: 15_000,
-  },
-  endpoints: {},
-} as const;
-
 export const ApiEndpoint = {
   meta: {
     baseURL: env.api.url,

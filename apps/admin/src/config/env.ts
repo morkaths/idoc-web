@@ -6,7 +6,6 @@ const envSchema = z.object({
   VITE_BASE_URL: z.string().default('http://localhost:3001/admin/'),
   VITE_API_URL: z.string().default('http://localhost:8080/api/v1'),
   VITE_API_KEY: z.string().optional(),
-  VITE_AGENT_URL: z.string().default('http://localhost:8080/api/v1'),
   VITE_TOKEN_COOKIE_KEY: z.string().default('authtoken'),
   VITE_USER_COOKIE_KEY: z.string().default('authuser'),
 });
@@ -62,9 +61,6 @@ export const env = {
   api: {
     url: _env.VITE_API_URL,
     key: _env.VITE_API_KEY,
-  },
-  agent: {
-    url: _env.VITE_AGENT_URL,
   },
   cookie: {
     token: _env.VITE_TOKEN_COOKIE_KEY,
