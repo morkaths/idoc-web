@@ -224,35 +224,31 @@ export function ChatProvider({ children }: ChatProviderProps) {
           const jsonStr = chunk.replace('[SOURCES]', '').trim();
           try {
             const sourceIds = JSON.parse(jsonStr) as string[];
-            const promises = sourceIds.map(async (id) => {
-              try {
-                const res = await BookApi.findById(id);
-                return res.data;
-              } catch (_e) {
-                return null;
-              }
-            });
-            Promise.all(promises).then((booksData) => {
-              const books = booksData.filter(Boolean) as BookResponse[];
-              setConversations((prev) => {
-                const updated = [...prev];
-                const convIdx = updated.findIndex((c) => c.id === currentConversationId);
-                if (convIdx !== -1) {
-                  const targetConv = updated[convIdx];
-                  if (targetConv) {
-                    const msgIdx = targetConv.messages.findIndex(
-                      (m) => m.id === assistantMessageId
-                    );
-                    if (msgIdx !== -1 && targetConv.messages[msgIdx]) {
-                      targetConv.messages[msgIdx].sources = sourceIds;
-                      targetConv.messages[msgIdx].books = books;
+            BookApi.findByIds(sourceIds)
+              .then((res) => {
+                const books = (res.data || []).filter(Boolean) as BookResponse[];
+                setConversations((prev) => {
+                  const updated = [...prev];
+                  const convIdx = updated.findIndex((c) => c.id === currentConversationId);
+                  if (convIdx !== -1) {
+                    const targetConv = updated[convIdx];
+                    if (targetConv) {
+                      const msgIdx = targetConv.messages.findIndex(
+                        (m) => m.id === assistantMessageId
+                      );
+                      if (msgIdx !== -1 && targetConv.messages[msgIdx]) {
+                        targetConv.messages[msgIdx].sources = sourceIds;
+                        targetConv.messages[msgIdx].books = books;
+                      }
                     }
                   }
-                }
-                localStorage.setItem('idoc_chats', JSON.stringify(updated));
-                return updated;
+                  localStorage.setItem('idoc_chats', JSON.stringify(updated));
+                  return updated;
+                });
+              })
+              .catch((_e) => {
+                // Silent catch
               });
-            });
           } catch (e) {
             // eslint-disable-next-line no-console
             console.error('Failed to parse sources', e);
@@ -371,35 +367,31 @@ export function ChatProvider({ children }: ChatProviderProps) {
             const jsonStr = chunk.replace('[SOURCES]', '').trim();
             try {
               const sourceIds = JSON.parse(jsonStr) as string[];
-              const promises = sourceIds.map(async (id) => {
-                try {
-                  const res = await BookApi.findById(id);
-                  return res.data;
-                } catch (_e) {
-                  return null;
-                }
-              });
-              Promise.all(promises).then((booksData) => {
-                const books = booksData.filter(Boolean) as BookResponse[];
-                setConversations((prev) => {
-                  const updated = [...prev];
-                  const convIdx = updated.findIndex((c) => c.id === currentConversationId);
-                  if (convIdx !== -1) {
-                    const targetConv = updated[convIdx];
-                    if (targetConv) {
-                      const msgIdx = targetConv.messages.findIndex(
-                        (m) => m.id === assistantMessageId
-                      );
-                      if (msgIdx !== -1 && targetConv.messages[msgIdx]) {
-                        targetConv.messages[msgIdx].sources = sourceIds;
-                        targetConv.messages[msgIdx].books = books;
+              BookApi.findByIds(sourceIds)
+                .then((res) => {
+                  const books = (res.data || []).filter(Boolean) as BookResponse[];
+                  setConversations((prev) => {
+                    const updated = [...prev];
+                    const convIdx = updated.findIndex((c) => c.id === currentConversationId);
+                    if (convIdx !== -1) {
+                      const targetConv = updated[convIdx];
+                      if (targetConv) {
+                        const msgIdx = targetConv.messages.findIndex(
+                          (m) => m.id === assistantMessageId
+                        );
+                        if (msgIdx !== -1 && targetConv.messages[msgIdx]) {
+                          targetConv.messages[msgIdx].sources = sourceIds;
+                          targetConv.messages[msgIdx].books = books;
+                        }
                       }
                     }
-                  }
-                  localStorage.setItem('idoc_chats', JSON.stringify(updated));
-                  return updated;
+                    localStorage.setItem('idoc_chats', JSON.stringify(updated));
+                    return updated;
+                  });
+                })
+                .catch((_e) => {
+                  // Silent catch
                 });
-              });
             } catch (e) {
               // eslint-disable-next-line no-console
               console.error('Failed to parse sources', e);
