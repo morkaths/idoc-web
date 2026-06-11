@@ -18,7 +18,16 @@ interface GlobalProcess {
 // Safely get environment variables
 const getEnv = () => {
   if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return import.meta.env;
+    return {
+      ...import.meta.env,
+      VITE_MODE: import.meta.env.VITE_MODE,
+      VITE_PORT: import.meta.env.VITE_PORT,
+      VITE_BASE_URL: import.meta.env.VITE_BASE_URL,
+      VITE_API_URL: import.meta.env.VITE_API_URL,
+      VITE_API_KEY: import.meta.env.VITE_API_KEY,
+      VITE_TOKEN_COOKIE_KEY: import.meta.env.VITE_TOKEN_COOKIE_KEY,
+      VITE_USER_COOKIE_KEY: import.meta.env.VITE_USER_COOKIE_KEY,
+    };
   }
   const globalProcess =
     typeof globalThis !== 'undefined'
