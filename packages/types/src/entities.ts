@@ -416,58 +416,45 @@ export interface NotificationResponse {
   updatedAt: Date | string;
 }
 
-// --- Dashboard Statistics ---
+// --- Library Statistics ---
 
-export interface DashboardCardStat {
-  value: string | number;
-  change: string;
-}
-
-export interface MonthlyOverviewStat {
-  name: string;
+export interface BookStats {
   total: number;
+  available: number;
+  outOfStock: number;
+  availabilityRate: number;
+  avgRating: number;
+  totalBorrows: number;
 }
 
-export interface RecentSaleStat {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  amount: string;
+export interface LoanStats {
+  total: number;
+  active: number;
+  overdue: number;
+  returned: number;
+  canceled: number;
+  overdueRate: number;
+  returnRate: number;
 }
 
-export interface TrafficWeeklyStat {
-  name: string;
-  clicks: number;
-  uniques: number;
+export interface CatalogStats {
+  totalAuthors: number;
+  totalCategories: number;
+  avgBooksPerAuthor: number;
+  avgBooksPerCategory: number;
 }
 
-export interface ReferrerStat {
-  name: string;
-  value: number;
+export interface InteractionStats {
+  totalReviews: number;
+  totalBookmarks: number;
+  totalFolders: number;
+  avgReviewsPerBook: number;
+  avgBookmarksPerBook: number;
 }
 
-export interface DeviceStat {
-  name: string;
-  value: number;
-}
-
-export interface DashboardStatsResponse {
-  overview: {
-    totalRevenue: DashboardCardStat;
-    subscriptions: DashboardCardStat;
-    sales: DashboardCardStat;
-    activeNow: DashboardCardStat;
-    monthlyData: MonthlyOverviewStat[];
-    recentSales: RecentSaleStat[];
-  };
-  analytics: {
-    totalClicks: DashboardCardStat;
-    uniqueVisitors: DashboardCardStat;
-    bounceRate: DashboardCardStat;
-    avgSession: DashboardCardStat;
-    weeklyTraffic: TrafficWeeklyStat[];
-    referrers: ReferrerStat[];
-    devices: DeviceStat[];
-  };
+export interface LibraryStatsResponse {
+  bookStats: BookStats;
+  loanStats: LoanStats;
+  catalogStats: CatalogStats;
+  interactionStats: InteractionStats;
 }

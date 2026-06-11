@@ -51,6 +51,7 @@ export function FileItem({
 
       URL.revokeObjectURL(downloadUrl);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Download failed:', error);
     } finally {
       setIsDownloading(false);

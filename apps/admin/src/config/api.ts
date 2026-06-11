@@ -84,8 +84,8 @@ export const ApiEndpoint = {
       feed: () => '/recommendations/feed',
       removeBook: (bookId: string) => `/recommendations/${bookId}`,
     },
-    dashboard: {
-      stats: () => '/dashboard/stats',
+    library: {
+      stats: () => '/library/stats',
     },
   },
 } as const;
